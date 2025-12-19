@@ -1,0 +1,28 @@
+[
+  {
+    "ContainingType": "API.Controllers.TaiKhoanController",
+    "Method": "DangNhap",
+    "RelativePath": "api/TaiKhoan/DangNhap",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "API.Controllers.TaiKhoanController\u002BLoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.TaiKhoanController",
+    "Method": "DanhSach",
+    "RelativePath": "api/TaiKhoan/DanhSach",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
