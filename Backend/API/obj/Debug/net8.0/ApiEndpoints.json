@@ -1,9 +1,199 @@
 [
   {
+    "ContainingType": "API.Controllers.ChucVuController",
+    "Method": "LayChucVuByID",
+    "RelativePath": "api/ChucVu/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ChucVuController",
+    "Method": "CapNhatChucVu",
+    "RelativePath": "api/ChucVu/CapNhatChucVu",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cv",
+        "Type": "Domain.DTO.ChucVuDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ChucVuController",
+    "Method": "DanhSach",
+    "RelativePath": "api/ChucVu/DanhSach",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ChucVuController",
+    "Method": "ThemChucVu",
+    "RelativePath": "api/ChucVu/ThemChucVu",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cv",
+        "Type": "Domain.DTO.ThemChucVuDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ChucVuController",
+    "Method": "VoHieuHoaChucVu",
+    "RelativePath": "api/ChucVu/VoHieuHoaChucVu/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.LoaiBenhController",
+    "Method": "CapNhatLoaiBenh",
+    "RelativePath": "api/LoaiBenh/CapNhatLoaiBenh",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "loaiBenh",
+        "Type": "Domain.DTO.LoaiBenhDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.LoaiBenhController",
+    "Method": "DanhSach",
+    "RelativePath": "api/LoaiBenh/DanhSachLoaiBenh",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.LoaiBenhController",
+    "Method": "ThemLoaiBenh",
+    "RelativePath": "api/LoaiBenh/ThemLoaiBenh",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "loaiBenh",
+        "Type": "Domain.DTO.LoaiBenhDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.LoaiBenhController",
+    "Method": "TimTheoID",
+    "RelativePath": "api/LoaiBenh/TimBenhTheoID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "loaiBenhID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.LoaiBenhController",
+    "Method": "TimTheoTen",
+    "RelativePath": "api/LoaiBenh/TimBenhTheoTen",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tenBenh",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.NhanVienController",
+    "Method": "NhanVien",
+    "RelativePath": "api/NhanVien/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.NhanVienController",
+    "Method": "DanhSach",
+    "RelativePath": "api/NhanVien/DanhSach",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.NhanVienController",
+    "Method": "ThemNhanVien",
+    "RelativePath": "api/NhanVien/ThemNhanVien",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nv",
+        "Type": "Domain.DTO.NhanVienDetailDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "API.Controllers.TaiKhoanController",
     "Method": "DangKy",
     "RelativePath": "api/TaiKhoan/DangKy",
-    "HttpMethod": "GET",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -45,7 +235,7 @@
     "ContainingType": "API.Controllers.TaiKhoanController",
     "Method": "DoiMatKhau",
     "RelativePath": "api/TaiKhoan/DoiMatKhau",
-    "HttpMethod": "GET",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -71,7 +261,7 @@
     "ContainingType": "API.Controllers.TaiKhoanController",
     "Method": "ResetMatKhau",
     "RelativePath": "api/TaiKhoan/ResetMatKhau",
-    "HttpMethod": "GET",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [

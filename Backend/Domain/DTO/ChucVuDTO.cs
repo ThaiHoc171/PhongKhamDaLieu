@@ -10,4 +10,11 @@ namespace Domain.DTO
 		public DateTime NgayTao { get; set; }
 		public bool TrangThai { get; set; }
 	}
+	public class ThemChucVuDTO
+	{
+		public string TenChucVu { get; set; }
+		public string MoTa { get; set; }
+		public DateTime NgayTao { get; set; }
+		public bool TrangThai { get; set; }
+	}
 }

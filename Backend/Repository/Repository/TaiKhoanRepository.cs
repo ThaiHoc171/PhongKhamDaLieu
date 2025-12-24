@@ -31,7 +31,7 @@ namespace Repository
 
 		public TaiKhoanDTO LayTaiKhoanTheoEmail(string email)
 		{
-			string sql = @"SELECT * FROM TaiKhoan WHERE Email = @Email";
+			string sql = @"SELECT * FROM TaiKhoan WHERE Email = @Email AND Status = 'active'";
 
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
