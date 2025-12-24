@@ -31,7 +31,7 @@ namespace API.Controllers
 			var result = _taiKhoan.LayDanhSachTaiKhoan();
 			return Ok(result);
 		}
-		[HttpGet("DangKy")]
+		[HttpPost("DangKy")]
 		public IActionResult DangKy([FromBody] TaiKhoanDTO taikhoan)
 		{
 			var result = _taiKhoan.DangKy(taikhoan);
@@ -41,7 +41,7 @@ namespace API.Controllers
 			}
 			return BadRequest("Email đã tồn tại.");
 		}
-		[HttpGet("DoiMatKhau")]
+		[HttpPut("DoiMatKhau")]
 		public IActionResult DoiMatKhau([FromBody] int ID,string password, string newpassword)
 		{
 			var result = _taiKhoan.DoiMatKhau(ID,password,newpassword);
@@ -51,7 +51,7 @@ namespace API.Controllers
 			}
 			return BadRequest("Đổi mật khẩu thất bại.");
 		}
-		[HttpGet("ResetMatKhau")]
+		[HttpPut("ResetMatKhau")]
 		public IActionResult ResetMatKhau([FromBody] int ID, string newpassword)
 		{
 			var result = _taiKhoan.ResetMatKhau(ID,newpassword);
