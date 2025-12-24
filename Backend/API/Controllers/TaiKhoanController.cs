@@ -31,6 +31,36 @@ namespace API.Controllers
 			var result = _taiKhoan.LayDanhSachTaiKhoan();
 			return Ok(result);
 		}
+		[HttpGet("DangKy")]
+		public IActionResult DangKy([FromBody] TaiKhoanDTO taikhoan)
+		{
+			var result = _taiKhoan.DangKy(taikhoan);
+			if (result)
+			{
+				return Ok("Đăng ký thành công.");
+			}
+			return BadRequest("Email đã tồn tại.");
+		}
+		[HttpGet("DoiMatKhau")]
+		public IActionResult DoiMatKhau([FromBody] int ID,string password, string newpassword)
+		{
+			var result = _taiKhoan.DoiMatKhau(ID,password,newpassword);
+			if (result)
+			{
+				return Ok("Đổi mật khẩu thành công.");
+			}
+			return BadRequest("Đổi mật khẩu thất bại.");
+		}
+		[HttpGet("ResetMatKhau")]
+		public IActionResult ResetMatKhau([FromBody] int ID, string newpassword)
+		{
+			var result = _taiKhoan.ResetMatKhau(ID,newpassword);
+			if (result)
+			{
+				return Ok("Reset mật khẩu thành công.");
+			}
+			return BadRequest("Reset mật khẩu thất bại.");
+		}
 		public class LoginRequest
 		{
 			public string Email { get; set; }

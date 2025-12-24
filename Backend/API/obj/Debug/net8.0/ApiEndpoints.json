@@ -1,6 +1,22 @@
 [
   {
     "ContainingType": "API.Controllers.TaiKhoanController",
+    "Method": "DangKy",
+    "RelativePath": "api/TaiKhoan/DangKy",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "taikhoan",
+        "Type": "Domain.DTO.TaiKhoanDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.TaiKhoanController",
     "Method": "DangNhap",
     "RelativePath": "api/TaiKhoan/DangNhap",
     "HttpMethod": "POST",
@@ -23,6 +39,53 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.TaiKhoanController",
+    "Method": "DoiMatKhau",
+    "RelativePath": "api/TaiKhoan/DoiMatKhau",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ID",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "password",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "newpassword",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.TaiKhoanController",
+    "Method": "ResetMatKhau",
+    "RelativePath": "api/TaiKhoan/ResetMatKhau",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ID",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "newpassword",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": []
   }
 ]
