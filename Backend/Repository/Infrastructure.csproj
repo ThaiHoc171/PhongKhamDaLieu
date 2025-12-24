@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\ChucVuReposity.cs" />
     <Compile Include="Repository\TaiKhoanRepository.cs" />
   </ItemGroup>
   <ItemGroup>
