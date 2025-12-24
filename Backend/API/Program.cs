@@ -12,6 +12,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ITaiKhoanRepository, TaiKhoanRepository>();
 builder.Services.AddScoped<TaiKhoanService>();
+builder.Services.AddScoped<IChucVuRepository, ChucVuRepository>();
+builder.Services.AddScoped<ChucVuService>();
+builder.Services.AddScoped<INhanVienRepository, NhanVienRepository>();
+builder.Services.AddScoped<ILoaiBenhRepository, LoaiBenhRepository>();
+builder.Services.AddScoped<LoaiBenhService>();
+builder.Services.AddScoped<NhanVienService>();
 
 var app = builder.Build();
 

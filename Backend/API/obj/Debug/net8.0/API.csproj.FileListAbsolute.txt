@@ -40,8 +40,6 @@ D:\GraduateProject\Backend\API\obj\Debug\net8.0\refint\API.dll
 D:\GraduateProject\Backend\API\obj\Debug\net8.0\API.pdb
 D:\GraduateProject\Backend\API\obj\Debug\net8.0\API.genruntimeconfig.cache
 D:\GraduateProject\Backend\API\obj\Debug\net8.0\ref\API.dll
-D:\GraduateProject\Backend\API\bin\Debug\net8.0\Microsoft.Extensions.Configuration.FileExtensions.dll
-D:\GraduateProject\Backend\API\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Json.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\Application.dll.config
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\Repository.dll.config
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\System.Data.SqlClient.dll
