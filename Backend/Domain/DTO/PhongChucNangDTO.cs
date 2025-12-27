@@ -11,4 +11,10 @@ namespace Domain.DTO
 		public string TrangThai { get; set; }
 		public DateTime NgayNhap { get; set; }
 	}
+	public class ThemPhongChucNangDTO
+	{
+		public string TenPhong { get; set; }
+		public string LoaiPhong { get; set; }
+		public string MoTa { get; set; }
+	}
 }

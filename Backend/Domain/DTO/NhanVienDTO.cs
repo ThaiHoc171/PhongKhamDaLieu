@@ -27,7 +27,24 @@ namespace Domain.DTO
 		public DateTime NgayTao { get; set; }
 		public DateTime NgayCapNhat { get; set; }
 	}
+	public class NhanVienCreateDTO
+	{
+		public string HoTen { get; set; }
+		public DateTime? NgaySinh { get; set; }
+		public string GioiTinh { get; set; }
+		public string SDT { get; set; }
+		public string EmailLienHe { get; set; }
+		public string DiaChi { get; set; }
+		public string Avatar { get; set; }
 
+		public int ChucVuID { get; set; }
+		public decimal? Luong { get; set; }
+		public DateTime? NgayVaoLam { get; set; }
+		public string BangCap { get; set; }
+		public string KinhNghiem { get; set; }
+
+
+	}
 	public class NhanVienListDTO
 	{
 		public int NhanVienID { get; set; }

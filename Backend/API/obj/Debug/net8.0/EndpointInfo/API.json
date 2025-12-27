@@ -5,6 +5,146 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/BenhNhan/DanhSach": {
+      "get": {
+        "tags": [
+          "BenhNhan"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/BenhNhan/TimKiem": {
+      "get": {
+        "tags": [
+          "BenhNhan"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/BenhNhan/{id}": {
+      "get": {
+        "tags": [
+          "BenhNhan"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/BenhNhan/ThemBenhNhan": {
+      "post": {
+        "tags": [
+          "BenhNhan"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BenhNhanCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BenhNhanCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BenhNhanCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/BenhNhan/CapNhatBenhNhan": {
+      "put": {
+        "tags": [
+          "BenhNhan"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BenhNhanCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BenhNhanCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BenhNhanCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/BenhNhan/XoaBenhNhan": {
+      "put": {
+        "tags": [
+          "BenhNhan"
+        ],
+        "parameters": [
+          {
+            "name": "benhNhanID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/ChucVu/DanhSach": {
       "get": {
         "tags": [
@@ -277,8 +417,60 @@
         }
       }
     },
+    "/api/NhanVien/TimKiem": {
+      "get": {
+        "tags": [
+          "NhanVien"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/NhanVien/ThemNhanVien": {
       "post": {
+        "tags": [
+          "NhanVien"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NhanVienCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NhanVienCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/NhanVienCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/NhanVien/CapNhatNhanVien": {
+      "put": {
         "tags": [
           "NhanVien"
         ],
@@ -301,6 +493,28 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/NhanVien/XoaNhanVien": {
+      "put": {
+        "tags": [
+          "NhanVien"
+        ],
+        "parameters": [
+          {
+            "name": "nhanVienID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -478,6 +692,53 @@
   },
   "components": {
     "schemas": {
+      "BenhNhanCreateDTO": {
+        "type": "object",
+        "properties": {
+          "hoTen": {
+            "type": "string",
+            "nullable": true
+          },
+          "ngaySinh": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "gioiTinh": {
+            "type": "string",
+            "nullable": true
+          },
+          "sdt": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailLienHe": {
+            "type": "string",
+            "nullable": true
+          },
+          "diaChi": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "loaiDa": {
+            "type": "string",
+            "nullable": true
+          },
+          "trangThaiTheoDoi": {
+            "type": "string",
+            "nullable": true
+          },
+          "ghiChu": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "ChucVuDTO": {
         "type": "object",
         "properties": {
@@ -549,6 +810,63 @@
             "nullable": true
           },
           "passwordHash": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NhanVienCreateDTO": {
+        "type": "object",
+        "properties": {
+          "hoTen": {
+            "type": "string",
+            "nullable": true
+          },
+          "ngaySinh": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "gioiTinh": {
+            "type": "string",
+            "nullable": true
+          },
+          "sdt": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailLienHe": {
+            "type": "string",
+            "nullable": true
+          },
+          "diaChi": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatar": {
+            "type": "string",
+            "nullable": true
+          },
+          "chucVuID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "luong": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ngayVaoLam": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "bangCap": {
+            "type": "string",
+            "nullable": true
+          },
+          "kinhNghiem": {
             "type": "string",
             "nullable": true
           }
