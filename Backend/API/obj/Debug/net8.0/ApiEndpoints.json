@@ -1,5 +1,95 @@
 [
   {
+    "ContainingType": "API.Controllers.BenhNhanController",
+    "Method": "BenhNhan",
+    "RelativePath": "api/BenhNhan/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.BenhNhanController",
+    "Method": "CapNhatBenhNhan",
+    "RelativePath": "api/BenhNhan/CapNhatBenhNhan",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "bn",
+        "Type": "Domain.DTO.BenhNhanCreateDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.BenhNhanController",
+    "Method": "DanhSach",
+    "RelativePath": "api/BenhNhan/DanhSach",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.BenhNhanController",
+    "Method": "ThemBenhNhan",
+    "RelativePath": "api/BenhNhan/ThemBenhNhan",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "bn",
+        "Type": "Domain.DTO.BenhNhanCreateDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.BenhNhanController",
+    "Method": "TimKiem",
+    "RelativePath": "api/BenhNhan/TimKiem",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.BenhNhanController",
+    "Method": "XoaBenhNhan",
+    "RelativePath": "api/BenhNhan/XoaBenhNhan",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "benhNhanID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "API.Controllers.ChucVuController",
     "Method": "LayChucVuByID",
     "RelativePath": "api/ChucVu/{id}",
@@ -165,6 +255,22 @@
   },
   {
     "ContainingType": "API.Controllers.NhanVienController",
+    "Method": "CapNhatNhanVien",
+    "RelativePath": "api/NhanVien/CapNhatNhanVien",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nv",
+        "Type": "Domain.DTO.NhanVienDetailDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.NhanVienController",
     "Method": "DanhSach",
     "RelativePath": "api/NhanVien/DanhSach",
     "HttpMethod": "GET",
@@ -183,8 +289,40 @@
     "Parameters": [
       {
         "Name": "nv",
-        "Type": "Domain.DTO.NhanVienDetailDTO",
+        "Type": "Domain.DTO.NhanVienCreateDTO",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.NhanVienController",
+    "Method": "TimKiemNhanVien",
+    "RelativePath": "api/NhanVien/TimKiem",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "keyword",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.NhanVienController",
+    "Method": "XoaNhanVien",
+    "RelativePath": "api/NhanVien/XoaNhanVien",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nhanVienID",
+        "Type": "System.Int32",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
