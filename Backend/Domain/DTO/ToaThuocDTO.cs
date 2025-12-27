@@ -8,8 +8,13 @@ namespace Domain.DTO
 		public int PhienKhamID { get; set; }
 		public int NhanVienKeDonID { get; set; }
 		public DateTime NgayLap { get; set; }
-		public decimal? TongTien { get; set; }
-		public string TrangThai { get; set; }
 		public string GhiChu { get; set; }
 	}
+    public class ToaThuocCreateDTO
+    {
+        public int PhienKhamID { get; set; }
+        public int NhanVienKeDonID { get; set; }
+        public DateTime NgayLap { get; set; }
+        public string GhiChu { get; set; }
+    }
 }
