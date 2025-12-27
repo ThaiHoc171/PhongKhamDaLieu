@@ -41,6 +41,7 @@ CREATE TABLE ThongTinCaNhan (
     Loai        NVARCHAR(20) CHECK (Loai IN ('benhnhan', 'nhanvien')) NOT NULL,
     NgayTao     DATETIME DEFAULT GETDATE(),
     NgayCapNhat DATETIME DEFAULT GETDATE(),
+    TrangThai   NVARCHAR(20) CHECK (Status IN ('active', 'inactive')) DEFAULT 'active',
     FOREIGN KEY (TaiKhoanID) REFERENCES TaiKhoan(TaiKhoanID) ON DELETE SET NULL
 );
 GO
@@ -49,9 +50,18 @@ GO
 CREATE TABLE BenhNhan (
     BenhNhanID       INT IDENTITY(1,1) PRIMARY KEY,
     ThongTinID INT NOT NULL UNIQUE,
-    MaSoBN     NVARCHAR(50),
     FOREIGN KEY (ThongTinID) REFERENCES ThongTinCaNhan(ThongTinID) ON DELETE CASCADE
 );
+GO
+ALTER TABLE BenhNhan
+ADD 
+    LoaiDa NVARCHAR(50) 
+        CHECK (LoaiDa IN (N'Da dầu', N'Da khô', N'Da hỗn hợp', N'Da nhạy cảm')),
+    -- Theo dõi
+    TrangThaiTheoDoi NVARCHAR(50) 
+        CHECK (TrangThaiTheoDoi IN (N'Bắt đầu điều trị',N'đang điều trị', N'ổn định', N'ngưng theo dõi'))
+        DEFAULT N'Bắt đầu điều trị',
+    GhiChu NVARCHAR(MAX);
 GO
 
 
@@ -313,8 +323,7 @@ CREATE TABLE Thuoc (
     ThuocID INT IDENTITY(1,1) PRIMARY KEY,
     TenThuoc NVARCHAR(200) NOT NULL,
     HoatChat NVARCHAR(MAX),
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('available', 'out-of-stock', 'discontinued')) DEFAULT 'available'
-);
+    );
 GO
 
 -- Toa thuốc cần dùng để điều trị cho bệnh nhân trong phiên khám cụ thể --
@@ -323,8 +332,6 @@ CREATE TABLE ToaThuoc (
     PhienKhamID INT NOT NULL,
     NhanVienKeDonID INT NOT NULL,
     NgayLap DATETIME DEFAULT GETDATE(),
-    TongTien DECIMAL(18,2),
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('pending', 'dispensed', 'cancelled')) DEFAULT 'pending',
     GhiChu NVARCHAR(MAX),
     FOREIGN KEY (PhienKhamID) REFERENCES PhienKham(PhienKhamID),
     FOREIGN KEY (NhanVienKeDonID) REFERENCES NhanVien(NhanVienID)
@@ -338,8 +345,6 @@ CREATE TABLE ChiTietToaThuoc (
     ThuocID INT NOT NULL,
     LieuDung NVARCHAR(500),
     SoLuong INT NOT NULL,
-    DonGia DECIMAL(18,2),
-    ThanhTien DECIMAL(18,2),
     FOREIGN KEY (ToaThuocID) REFERENCES ToaThuoc(ToaThuocID) ON DELETE CASCADE,
     FOREIGN KEY (ThuocID) REFERENCES Thuoc(ThuocID)
 );

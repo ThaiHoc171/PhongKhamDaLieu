@@ -15,10 +15,15 @@ builder.Services.AddScoped<TaiKhoanService>();
 builder.Services.AddScoped<IChucVuRepository, ChucVuRepository>();
 builder.Services.AddScoped<ChucVuService>();
 builder.Services.AddScoped<INhanVienRepository, NhanVienRepository>();
-builder.Services.AddScoped<ILoaiBenhRepository, LoaiBenhRepository>();
 builder.Services.AddScoped<LoaiBenhService>();
+builder.Services.AddScoped<ILoaiBenhRepository, LoaiBenhRepository>();
 builder.Services.AddScoped<NhanVienService>();
-
+builder.Services.AddScoped<IBenhNhanRepository, BenhNhanRepository>();
+builder.Services.AddScoped<BenhNhanService>();
+builder.Services.AddScoped<IThuocRepository, ThuocRepository>();
+builder.Services.AddScoped<ThuocService>();
+builder.Services.AddScoped<IToaThuocRepository, ToaThuocRepository>();
+builder.Services.AddScoped<ToaThuocService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
