@@ -1,0 +1,160 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\API.csproj": {}
+  },
+  "projects": {
+    "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\API.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\API.csproj",
+        "projectName": "API",
+        "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\API.csproj",
+        "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
+        "outputPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Application.csproj": {
+                "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Application.csproj"
+              },
+              "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.6.2, )"
+            },
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.9.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Application.csproj": {
+      "restore": {
+        "projectUniqueName": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Application.csproj",
+        "projectName": "Application",
+        "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Application.csproj",
+        "UsingMicrosoftNETSdk": false,
+        "frameworks": {
+          "net472": {
+            "projectReferences": {
+              "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Domain.csproj": {
+                "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Domain.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {}
+      }
+    },
+    "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Domain.csproj": {
+      "restore": {
+        "projectUniqueName": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Domain.csproj",
+        "projectName": "Domain",
+        "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Domain.csproj",
+        "UsingMicrosoftNETSdk": false,
+        "frameworks": {
+          "net472": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {}
+      }
+    },
+    "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Infrastructure.csproj": {
+      "restore": {
+        "projectUniqueName": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Infrastructure.csproj",
+        "projectName": "Infrastructure",
+        "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Infrastructure.csproj",
+        "UsingMicrosoftNETSdk": false,
+        "frameworks": {
+          "net472": {
+            "projectReferences": {
+              "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Application.csproj": {
+                "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Application.csproj"
+              },
+              "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Domain.csproj": {
+                "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Domain.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net472": {}
+      }
+    }
+  }
+}

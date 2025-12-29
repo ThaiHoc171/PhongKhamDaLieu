@@ -4,3 +4,9 @@ D:\GraduateProject\Backend\Domain\obj\Debug\Domain.csproj.AssemblyReference.cach
 D:\GraduateProject\Backend\Domain\obj\Debug\Domain.csproj.CoreCompileInputs.cache
 D:\GraduateProject\Backend\Domain\obj\Debug\Domain.dll
 D:\GraduateProject\Backend\Domain\obj\Debug\Domain.pdb
+D:\ThucTap\PhongKhamDaLieu\Backend\Domain\bin\Debug\Domain.dll
+D:\ThucTap\PhongKhamDaLieu\Backend\Domain\bin\Debug\Domain.pdb
+D:\ThucTap\PhongKhamDaLieu\Backend\Domain\obj\Debug\Domain.csproj.AssemblyReference.cache
+D:\ThucTap\PhongKhamDaLieu\Backend\Domain\obj\Debug\Domain.csproj.CoreCompileInputs.cache
+D:\ThucTap\PhongKhamDaLieu\Backend\Domain\obj\Debug\Domain.dll
+D:\ThucTap\PhongKhamDaLieu\Backend\Domain\obj\Debug\Domain.pdb
