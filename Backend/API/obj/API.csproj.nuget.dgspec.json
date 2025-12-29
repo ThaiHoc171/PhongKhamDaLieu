@@ -34,6 +34,9 @@
             "projectReferences": {
               "D:\\GraduateProject\\Backend\\Application\\Application.csproj": {
                 "projectPath": "D:\\GraduateProject\\Backend\\Application\\Application.csproj"
+              },
+              "D:\\GraduateProject\\Backend\\Infrastructure\\Infrastructure.csproj": {
+                "projectPath": "D:\\GraduateProject\\Backend\\Infrastructure\\Infrastructure.csproj"
               }
             }
           }
@@ -105,9 +108,6 @@
             "projectReferences": {
               "D:\\GraduateProject\\Backend\\Domain\\Domain.csproj": {
                 "projectPath": "D:\\GraduateProject\\Backend\\Domain\\Domain.csproj"
-              },
-              "D:\\GraduateProject\\Backend\\Repository\\Infrastructure.csproj": {
-                "projectPath": "D:\\GraduateProject\\Backend\\Repository\\Infrastructure.csproj"
               }
             }
           }
@@ -133,15 +133,18 @@
         "net472": {}
       }
     },
-    "D:\\GraduateProject\\Backend\\Repository\\Infrastructure.csproj": {
+    "D:\\GraduateProject\\Backend\\Infrastructure\\Infrastructure.csproj": {
       "restore": {
-        "projectUniqueName": "D:\\GraduateProject\\Backend\\Repository\\Infrastructure.csproj",
+        "projectUniqueName": "D:\\GraduateProject\\Backend\\Infrastructure\\Infrastructure.csproj",
         "projectName": "Infrastructure",
-        "projectPath": "D:\\GraduateProject\\Backend\\Repository\\Infrastructure.csproj",
+        "projectPath": "D:\\GraduateProject\\Backend\\Infrastructure\\Infrastructure.csproj",
         "UsingMicrosoftNETSdk": false,
         "frameworks": {
           "net472": {
             "projectReferences": {
+              "D:\\GraduateProject\\Backend\\Application\\Application.csproj": {
+                "projectPath": "D:\\GraduateProject\\Backend\\Application\\Application.csproj"
+              },
               "D:\\GraduateProject\\Backend\\Domain\\Domain.csproj": {
                 "projectPath": "D:\\GraduateProject\\Backend\\Domain\\Domain.csproj"
               }

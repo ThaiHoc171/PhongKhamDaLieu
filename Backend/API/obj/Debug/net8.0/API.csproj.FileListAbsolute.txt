@@ -12,10 +12,8 @@ D:\GraduateProject\Backend\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGe
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\Application.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\Domain.dll
-D:\GraduateProject\Backend\API\bin\Debug\net8.0\Repository.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\Application.pdb
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\Domain.pdb
-D:\GraduateProject\Backend\API\bin\Debug\net8.0\Repository.pdb
 D:\GraduateProject\Backend\API\obj\Debug\net8.0\API.csproj.AssemblyReference.cache
 D:\GraduateProject\Backend\API\obj\Debug\net8.0\rpswa.dswa.cache.json
 D:\GraduateProject\Backend\API\obj\Debug\net8.0\API.GeneratedMSBuildEditorConfig.editorconfig
@@ -41,10 +39,12 @@ D:\GraduateProject\Backend\API\obj\Debug\net8.0\API.pdb
 D:\GraduateProject\Backend\API\obj\Debug\net8.0\API.genruntimeconfig.cache
 D:\GraduateProject\Backend\API\obj\Debug\net8.0\ref\API.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\Application.dll.config
-D:\GraduateProject\Backend\API\bin\Debug\net8.0\Repository.dll.config
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\System.Data.SqlClient.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\runtimes\win-arm64\native\sni.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\runtimes\win-x64\native\sni.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\runtimes\win-x86\native\sni.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\runtimes\unix\lib\net8.0\System.Data.SqlClient.dll
 D:\GraduateProject\Backend\API\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Data.SqlClient.dll
+D:\GraduateProject\Backend\API\bin\Debug\net8.0\Repository.dll
+D:\GraduateProject\Backend\API\bin\Debug\net8.0\Repository.pdb
+D:\GraduateProject\Backend\API\bin\Debug\net8.0\Repository.dll.config
