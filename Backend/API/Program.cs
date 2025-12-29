@@ -1,5 +1,6 @@
-using Repository;
+using Domain.Repository;
 using Services;
+using Infrastructure.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ITaiKhoanRepository, TaiKhoanRepository>();
 builder.Services.AddScoped<TaiKhoanService>();
 builder.Services.AddScoped<IChucVuRepository, ChucVuRepository>();
-builder.Services.AddScoped<ChucVuService>();
+builder.Services.AddScoped<ChucVuService>();    
 builder.Services.AddScoped<INhanVienRepository, NhanVienRepository>();
 builder.Services.AddScoped<LoaiBenhService>();
 builder.Services.AddScoped<ILoaiBenhRepository, LoaiBenhRepository>();
@@ -24,6 +25,10 @@ builder.Services.AddScoped<IThuocRepository, ThuocRepository>();
 builder.Services.AddScoped<ThuocService>();
 builder.Services.AddScoped<IToaThuocRepository, ToaThuocRepository>();
 builder.Services.AddScoped<ToaThuocService>();
+builder.Services.AddScoped<IPhongChucNangRepository, PhongChucNangRepository>();
+builder.Services.AddScoped<PhongChucNangService>();
+builder.Services.AddScoped<IChiTietToaThuocRepository, ChiTietToaThuocRepository>();
+builder.Services.AddScoped<ChiTietToaThuocService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

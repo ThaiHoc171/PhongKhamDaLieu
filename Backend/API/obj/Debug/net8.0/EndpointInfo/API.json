@@ -145,6 +145,124 @@
         }
       }
     },
+    "/api/ChiTietToaThuoc/DanhSachChiTietToaThuoc": {
+      "get": {
+        "tags": [
+          "ChiTietToaThuoc"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ChiTietToaThuoc/TimChiTietTheoID": {
+      "get": {
+        "tags": [
+          "ChiTietToaThuoc"
+        ],
+        "parameters": [
+          {
+            "name": "chiTietToaThuocID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ChiTietToaThuoc/TimChiTietTheoToaThuoc": {
+      "get": {
+        "tags": [
+          "ChiTietToaThuoc"
+        ],
+        "parameters": [
+          {
+            "name": "toaThuocID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ChiTietToaThuoc/ThemChiTietToaThuoc": {
+      "post": {
+        "tags": [
+          "ChiTietToaThuoc"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChiTietToaThuocCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChiTietToaThuocCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChiTietToaThuocCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ChiTietToaThuoc/CapNhatChiTietToaThuoc": {
+      "put": {
+        "tags": [
+          "ChiTietToaThuoc"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChiTietToaThuocDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChiTietToaThuocDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChiTietToaThuocDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/ChucVu/DanhSach": {
       "get": {
         "tags": [
@@ -522,6 +640,146 @@
         }
       }
     },
+    "/api/PhongChucNang/DanhSach": {
+      "get": {
+        "tags": [
+          "PhongChucNang"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhongChucNang/ChiTiet/{id}": {
+      "get": {
+        "tags": [
+          "PhongChucNang"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhongChucNang/TimKiem": {
+      "get": {
+        "tags": [
+          "PhongChucNang"
+        ],
+        "parameters": [
+          {
+            "name": "kw",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhongChucNang/ThemPhongChucNang": {
+      "post": {
+        "tags": [
+          "PhongChucNang"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhongChucNangCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhongChucNangCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhongChucNangCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhongChucNang/CapNhatPhongChucNang": {
+      "put": {
+        "tags": [
+          "PhongChucNang"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhongChucNangDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhongChucNangDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhongChucNangDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/PhongChucNang/XoaPhongChucNang": {
+      "put": {
+        "tags": [
+          "PhongChucNang"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/TaiKhoan/DangNhap": {
       "post": {
         "tags": [
@@ -688,6 +946,241 @@
           }
         }
       }
+    },
+    "/api/Thuoc/DanhSachThuoc": {
+      "get": {
+        "tags": [
+          "Thuoc"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Thuoc/DanhSachThuocTheoKeyWords": {
+      "get": {
+        "tags": [
+          "Thuoc"
+        ],
+        "parameters": [
+          {
+            "name": "kw",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Thuoc/LayThuocTheoID": {
+      "get": {
+        "tags": [
+          "Thuoc"
+        ],
+        "parameters": [
+          {
+            "name": "thuocID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Thuoc/ThemThuoc": {
+      "post": {
+        "tags": [
+          "Thuoc"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThuocCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThuocCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThuocCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Thuoc/CapNhatThuoc": {
+      "post": {
+        "tags": [
+          "Thuoc"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThuocDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThuocDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThuocDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ToaThuoc/DanhSachToaThuoc": {
+      "get": {
+        "tags": [
+          "ToaThuoc"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ToaThuoc/TimToaThuocTheoID": {
+      "get": {
+        "tags": [
+          "ToaThuoc"
+        ],
+        "parameters": [
+          {
+            "name": "toaThuocID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ToaThuoc/TimToaThuocTheoPhienKham": {
+      "get": {
+        "tags": [
+          "ToaThuoc"
+        ],
+        "parameters": [
+          {
+            "name": "phienKhamID",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ToaThuoc/ThemToaThuoc": {
+      "post": {
+        "tags": [
+          "ToaThuoc"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToaThuocCreateDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToaThuocCreateDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToaThuocCreateDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ToaThuoc/CapNhatToaThuoc": {
+      "put": {
+        "tags": [
+          "ToaThuoc"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToaThuocDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToaThuocDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToaThuocDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -731,6 +1224,62 @@
           "trangThaiTheoDoi": {
             "type": "string",
             "nullable": true
+          },
+          "ghiChu": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChiTietToaThuocCreateDTO": {
+        "type": "object",
+        "properties": {
+          "toaThuocID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "thuocID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lieuDung": {
+            "type": "string",
+            "nullable": true
+          },
+          "soLuong": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ghiChu": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChiTietToaThuocDTO": {
+        "type": "object",
+        "properties": {
+          "chiTietToaThuocID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "toaThuocID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "thuocID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lieuDung": {
+            "type": "string",
+            "nullable": true
+          },
+          "soLuong": {
+            "type": "integer",
+            "format": "int32"
           },
           "ghiChu": {
             "type": "string",
@@ -955,6 +1504,54 @@
         },
         "additionalProperties": false
       },
+      "PhongChucNangCreateDTO": {
+        "type": "object",
+        "properties": {
+          "tenPhong": {
+            "type": "string",
+            "nullable": true
+          },
+          "loaiPhong": {
+            "type": "string",
+            "nullable": true
+          },
+          "moTa": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhongChucNangDTO": {
+        "type": "object",
+        "properties": {
+          "phongChucNangID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tenPhong": {
+            "type": "string",
+            "nullable": true
+          },
+          "loaiPhong": {
+            "type": "string",
+            "nullable": true
+          },
+          "moTa": {
+            "type": "string",
+            "nullable": true
+          },
+          "trangThai": {
+            "type": "string",
+            "nullable": true
+          },
+          "ngayNhap": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
       "TaiKhoanDTO": {
         "type": "object",
         "properties": {
@@ -1006,6 +1603,94 @@
           },
           "trangThai": {
             "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ThuocCreateDTO": {
+        "type": "object",
+        "properties": {
+          "tenThuoc": {
+            "type": "string",
+            "nullable": true
+          },
+          "hoatChat": {
+            "type": "string",
+            "nullable": true
+          },
+          "trangThai": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ThuocDTO": {
+        "type": "object",
+        "properties": {
+          "thuocID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tenThuoc": {
+            "type": "string",
+            "nullable": true
+          },
+          "hoatChat": {
+            "type": "string",
+            "nullable": true
+          },
+          "trangThai": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ToaThuocCreateDTO": {
+        "type": "object",
+        "properties": {
+          "phienKhamID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nhanVienKeDonID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ngayLap": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ghiChu": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ToaThuocDTO": {
+        "type": "object",
+        "properties": {
+          "toaThuocID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "phienKhamID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nhanVienKeDonID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ngayLap": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ghiChu": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
