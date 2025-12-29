@@ -134,7 +134,7 @@ CREATE TABLE PhongChucNang (
     LoaiPhong NVARCHAR(100),
     MoTa NVARCHAR(MAX),
     TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Hoạt động', N'Hỏng', N'Bảo trì')) DEFAULT N'Hoạt động',
-    NgayNhap DATETIME DEFAULT GETDATE()
+    NgayTao DATETIME DEFAULT GETDATE()
 );
 GO
 
@@ -173,8 +173,7 @@ CREATE TABLE LichLamViecNhanVien (
     Ngay DATE NOT NULL,
     CaLamViec INT NOT NULL,
     GhiChu NVARCHAR(500),
-    FOREIGN KEY (NhanVienID) REFERENCES NhanVien(NhanVienID) ON DELETE CASCADE,
-	FOREIGN KEY (PhongChucNangID) REFERENCES PhongChucNang(PhongChucNangID)
+    FOREIGN KEY (NhanVienID) REFERENCES NhanVien(NhanVienID) ON DELETE CASCADE
 );
 GO
 

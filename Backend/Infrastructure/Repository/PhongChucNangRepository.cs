@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
 		public List<PhongChucNangDTO> DanhSachPhongChucNang()
 		{
 			List<PhongChucNangDTO> listPhongChucNang = new List<PhongChucNangDTO>();
-			string sql = "SELECT * FROM PhongChucNang WHERE TrangThai = 'Hoạt Động'";
+			string sql = "SELECT * FROM PhongChucNang WHERE TrangThai = N'Hoạt động'";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories
 								LoaiPhong = reader["LoaiPhong"]?.ToString(),
 								MoTa = reader["MoTa"]?.ToString(),
 								TrangThai = reader["TrangThai"]?.ToString(),
-								NgayNhap = (DateTime)reader["NgayNhap"]
+								NgayTao = (DateTime)reader["NgayTao"]
 							});
 						}
 					}
@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
 		public List<PhongChucNangDTO> TimKiem(string keyword)
 		{
 			List<PhongChucNangDTO> listPhongChucNang = new List<PhongChucNangDTO>();
-			string sql = @"SELECT * FROM PhongChucNang WHERE TrangThai = 'Hoạt Động' 
+			string sql = @"SELECT * FROM PhongChucNang WHERE TrangThai = N'Hoạt động' 
 						AND (TenPhong LIKE @Keyword OR CAST(PhongChucNangID AS NVarchar) LIKE @keyword )";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
@@ -64,7 +64,7 @@ namespace Infrastructure.Repositories
 								LoaiPhong = reader["LoaiPhong"]?.ToString(),
 								MoTa = reader["MoTa"]?.ToString(),
 								TrangThai = reader["TrangThai"]?.ToString(),
-								NgayNhap = (DateTime)reader["NgayNhap"]
+								NgayTao = (DateTime)reader["NgayTao"]
 							});
 						}
 					}
@@ -75,7 +75,7 @@ namespace Infrastructure.Repositories
 		public PhongChucNangDTO GetPhongByID(int ID)
 		{
 			PhongChucNangDTO pcn = null;
-			string sql = @"SELECT * FROM PhongChucNang WHERE PhongChucNangID = @ID AND TrangThai = 'Hoạt Động'";
+			string sql = @"SELECT * FROM PhongChucNang WHERE PhongChucNangID = @ID AND TrangThai = N'Hoạt động'";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
@@ -93,7 +93,7 @@ namespace Infrastructure.Repositories
 								LoaiPhong = reader["LoaiPhong"]?.ToString(),
 								MoTa = reader["MoTa"]?.ToString(),
 								TrangThai = reader["TrangThai"]?.ToString(),
-								NgayNhap = (DateTime)reader["NgayNhap"]
+								NgayTao = (DateTime)reader["NgayTao"]
 							};
 						}
 					}
@@ -103,7 +103,7 @@ namespace Infrastructure.Repositories
 		}
 		public bool ThemPhongChucNang(PhongChucNangCreateDTO pcn)
 		{
-			string sql = @"INSERT INTO PhongChucNang (TenPhong, LoaiPhong, MoTa, NgayNhap) 
+			string sql = @"INSERT INTO PhongChucNang (TenPhong, LoaiPhong, MoTa, NgayTao) 
 						 VALUES (@TenPhong, @LoaiPhong, @MoTa, GETDATE())";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
@@ -122,7 +122,7 @@ namespace Infrastructure.Repositories
 		{
 			string sql = @"UPDATE PhongChucNang 
 						   SET TenPhong = @TenPhong, LoaiPhong = @LoaiPhong, MoTa = @MoTa 
-						   WHERE PhongChucNangID = @PhongChucNangID AND TrangThai = 'Hoạt Động'";
+						   WHERE PhongChucNangID = @PhongChucNangID AND TrangThai = N'Hoạt động'";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
@@ -141,7 +141,7 @@ namespace Infrastructure.Repositories
 		{
 			string sql = @"UPDATE PhongChucNang 
 						   SET TrangThai = 'Ngừng Hoạt Động' 
-						   WHERE PhongChucNangID = @PhongChucNangID AND TrangThai = 'Hoạt Động'";
+						   WHERE PhongChucNangID = @PhongChucNangID AND TrangThai = N'Hoạt động'";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();

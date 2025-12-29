@@ -3,11 +3,11 @@
 ####################################
 
 # VS cache
-.vs/
+**/.vs/
 
 # Build results
-bin/
-obj/
+**/bin/
+**/obj/
 
 # User-specific files
 *.suo
