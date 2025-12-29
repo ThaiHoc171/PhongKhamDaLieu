@@ -1,0 +1,6 @@
+D:\GraduateProject\Backend\Domain\bin\Debug\Domain.dll
+D:\GraduateProject\Backend\Domain\bin\Debug\Domain.pdb
+D:\GraduateProject\Backend\Domain\obj\Debug\Domain.csproj.AssemblyReference.cache
+D:\GraduateProject\Backend\Domain\obj\Debug\Domain.csproj.CoreCompileInputs.cache
+D:\GraduateProject\Backend\Domain\obj\Debug\Domain.dll
+D:\GraduateProject\Backend\Domain\obj\Debug\Domain.pdb
