@@ -90,6 +90,80 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "API.Controllers.ChiTietToaThuocController",
+    "Method": "CapNhat",
+    "RelativePath": "api/ChiTietToaThuoc/CapNhatChiTietToaThuoc",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ct",
+        "Type": "Domain.DTO.ChiTietToaThuocDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ChiTietToaThuocController",
+    "Method": "DanhSach",
+    "RelativePath": "api/ChiTietToaThuoc/DanhSachChiTietToaThuoc",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ChiTietToaThuocController",
+    "Method": "Them",
+    "RelativePath": "api/ChiTietToaThuoc/ThemChiTietToaThuoc",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ct",
+        "Type": "Domain.DTO.ChiTietToaThuocCreateDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ChiTietToaThuocController",
+    "Method": "TimTheoID",
+    "RelativePath": "api/ChiTietToaThuoc/TimChiTietTheoID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "chiTietToaThuocID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ChiTietToaThuocController",
+    "Method": "TimTheoToaThuoc",
+    "RelativePath": "api/ChiTietToaThuoc/TimChiTietTheoToaThuoc",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "toaThuocID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "API.Controllers.ChucVuController",
     "Method": "LayChucVuByID",
     "RelativePath": "api/ChucVu/{id}",
@@ -328,6 +402,96 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "API.Controllers.PhongChucNangController",
+    "Method": "CapNhatPhongChucNang",
+    "RelativePath": "api/PhongChucNang/CapNhatPhongChucNang",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pcn",
+        "Type": "Domain.DTO.PhongChucNangDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.PhongChucNangController",
+    "Method": "ChiTiet",
+    "RelativePath": "api/PhongChucNang/ChiTiet/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.PhongChucNangController",
+    "Method": "DanhSach",
+    "RelativePath": "api/PhongChucNang/DanhSach",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.PhongChucNangController",
+    "Method": "ThemPhongChucNang",
+    "RelativePath": "api/PhongChucNang/ThemPhongChucNang",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pcn",
+        "Type": "Domain.DTO.PhongChucNangCreateDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.PhongChucNangController",
+    "Method": "TimKiem",
+    "RelativePath": "api/PhongChucNang/TimKiem",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "kw",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.PhongChucNangController",
+    "Method": "XoaPhongChucNang",
+    "RelativePath": "api/PhongChucNang/XoaPhongChucNang",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "API.Controllers.TaiKhoanController",
     "Method": "DangKy",
     "RelativePath": "api/TaiKhoan/DangKy",
@@ -411,6 +575,154 @@
       {
         "Name": "newpassword",
         "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ThuocController",
+    "Method": "CapNhatThuoc",
+    "RelativePath": "api/Thuoc/CapNhatThuoc",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "thuoc",
+        "Type": "Domain.DTO.ThuocDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ThuocController",
+    "Method": "DanhSach",
+    "RelativePath": "api/Thuoc/DanhSachThuoc",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ThuocController",
+    "Method": "TimTheoTen",
+    "RelativePath": "api/Thuoc/DanhSachThuocTheoKeyWords",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "kw",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ThuocController",
+    "Method": "TimTheoID",
+    "RelativePath": "api/Thuoc/LayThuocTheoID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "thuocID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ThuocController",
+    "Method": "ThemThuoc",
+    "RelativePath": "api/Thuoc/ThemThuoc",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "thuoc",
+        "Type": "Domain.DTO.ThuocCreateDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ToaThuocController",
+    "Method": "CapNhatToaThuoc",
+    "RelativePath": "api/ToaThuoc/CapNhatToaThuoc",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "toaThuoc",
+        "Type": "Domain.DTO.ToaThuocDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ToaThuocController",
+    "Method": "DanhSach",
+    "RelativePath": "api/ToaThuoc/DanhSachToaThuoc",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ToaThuocController",
+    "Method": "ThemToaThuoc",
+    "RelativePath": "api/ToaThuoc/ThemToaThuoc",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "toaThuoc",
+        "Type": "Domain.DTO.ToaThuocCreateDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ToaThuocController",
+    "Method": "TimTheoID",
+    "RelativePath": "api/ToaThuoc/TimToaThuocTheoID",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "toaThuocID",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API.Controllers.ToaThuocController",
+    "Method": "TimTheoPhienKham",
+    "RelativePath": "api/ToaThuoc/TimToaThuocTheoPhienKham",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "phienKhamID",
+        "Type": "System.Int32",
         "IsRequired": false
       }
     ],

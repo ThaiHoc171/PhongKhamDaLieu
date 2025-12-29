@@ -365,8 +365,7 @@
       "Application/1.0.0": {
         "type": "project",
         "dependencies": {
-          "Domain": "1.0.0",
-          "Infrastructure": "1.0.0"
+          "Domain": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Application.dll": {}
@@ -387,6 +386,7 @@
       "Infrastructure/1.0.0": {
         "type": "project",
         "dependencies": {
+          "Application": "1.0.0",
           "Domain": "1.0.0"
         },
         "compile": {
@@ -1133,13 +1133,14 @@
     },
     "Infrastructure/1.0.0": {
       "type": "project",
-      "path": "../Repository/Infrastructure.csproj",
-      "msbuildProject": "../Repository/Infrastructure.csproj"
+      "path": "../Infrastructure/Infrastructure.csproj",
+      "msbuildProject": "../Infrastructure/Infrastructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
       "Application >= 1.0.0",
+      "Infrastructure >= 1.0.0",
       "Microsoft.Extensions.Configuration.Abstractions >= 6.0.0",
       "Microsoft.Extensions.Configuration.Json >= 6.0.0",
       "Swashbuckle.AspNetCore >= 6.6.2",
@@ -1180,6 +1181,9 @@
           "projectReferences": {
             "D:\\GraduateProject\\Backend\\Application\\Application.csproj": {
               "projectPath": "D:\\GraduateProject\\Backend\\Application\\Application.csproj"
+            },
+            "D:\\GraduateProject\\Backend\\Infrastructure\\Infrastructure.csproj": {
+              "projectPath": "D:\\GraduateProject\\Backend\\Infrastructure\\Infrastructure.csproj"
             }
           }
         }

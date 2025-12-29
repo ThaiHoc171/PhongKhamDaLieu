@@ -31,25 +31,25 @@ namespace API.Controllers
             var result = _thuoc.LayThuocTheoID(thuocID);
             return Ok(result);
         }
-        [HttpPost("ThemThuoc")]
-        public IActionResult ThemThuoc([FromBody] ThuocDTO thuoc)
-        {
-            var result = _thuoc.ThemThuoc(thuoc);
-            if (result)
-            {
-                return Ok("Thêm thuốc thành công.");
-            }
-            return BadRequest("Thêm thuốc thất bại");
-        }
-        [HttpPost("CapNhatThuoc")]
-        public IActionResult CapNhatThuoc([FromBody] ThuocDTO thuoc)
-        {
-            var result = _thuoc.ThemThuoc(thuoc);
-            if (result)
-            {
-                return Ok("Thêm thuốc thành công.");
-            }
-            return BadRequest("Thêm thuốc thất bại");
-        }
-    }
+		[HttpPost("ThemThuoc")]
+		public IActionResult ThemThuoc([FromBody] ThuocCreateDTO thuoc)
+		{
+			var result = _thuoc.ThemThuoc(thuoc);
+			if (result)
+			{
+				return Ok("Thêm thuốc thành công.");
+			}
+			return BadRequest("Thêm thuốc thất bại");
+		}
+		[HttpPost("CapNhatThuoc")]
+		public IActionResult CapNhatThuoc([FromBody] ThuocDTO thuoc)
+		{
+			var result = _thuoc.CapNhatThuoc(thuoc);
+			if (result)
+			{
+				return Ok("Cập nhật thuốc thành công.");
+			}
+			return BadRequest("Cập nhật thuốc thất bại");
+		}
+	}
 }

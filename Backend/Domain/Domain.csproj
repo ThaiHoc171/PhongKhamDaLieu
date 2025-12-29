@@ -71,6 +71,15 @@
     <Compile Include="DTO\ThuocDTO.cs" />
     <Compile Include="DTO\ToaThuocDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\IBenhNhanRepositories.cs" />
+    <Compile Include="Repository\IChiTietToaThuocRepositories.cs" />
+    <Compile Include="Repository\IChucVuRepositories.cs" />
+    <Compile Include="Repository\IToaThuocRepositories.cs" />
+    <Compile Include="Repository\IThuocRepositories.cs" />
+    <Compile Include="Repository\ITaiKhoanRepositories.cs" />
+    <Compile Include="Repository\IPhongChucNangRepositories.cs" />
+    <Compile Include="Repository\INhanVienRepositories.cs" />
+    <Compile Include="Repository\ILoaiBenhRepositories.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
