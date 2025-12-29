@@ -29,6 +29,10 @@ builder.Services.AddScoped<IPhongChucNangRepository, PhongChucNangRepository>();
 builder.Services.AddScoped<PhongChucNangService>();
 builder.Services.AddScoped<IChiTietToaThuocRepository, ChiTietToaThuocRepository>();
 builder.Services.AddScoped<ChiTietToaThuocService>();
+builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
+builder.Services.AddScoped<PhongKhamService>();
+builder.Services.AddScoped<IBacSiProfileRepository, BacSiProfileRepository>();
+builder.Services.AddScoped<BacSiProfileService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

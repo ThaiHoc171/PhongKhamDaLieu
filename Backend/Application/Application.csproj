@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\BacSiProfileService.cs" />
     <Compile Include="Services\BenhNhanService.cs" />
     <Compile Include="Services\ChiTietToaThuocService.cs" />
     <Compile Include="Services\ChucVuService.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="Services\LoaiBenhService.cs" />
     <Compile Include="Services\NhanVienService.cs" />
     <Compile Include="Services\PhongChucNangService.cs" />
+    <Compile Include="Services\PhongKhamService.cs" />
     <Compile Include="Services\TaiKhoanService.cs" />
     <Compile Include="Services\ThuocService.cs" />
     <Compile Include="Services\ToaThuocService.cs" />
