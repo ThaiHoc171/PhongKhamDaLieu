@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Domain.DTO;
-using Repository;
+using Domain.Repository;
 
 namespace Services
 {

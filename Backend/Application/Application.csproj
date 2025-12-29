@@ -43,10 +43,12 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\BenhNhanService.cs" />
+    <Compile Include="Services\ChiTietToaThuocService.cs" />
     <Compile Include="Services\ChucVuService.cs" />
     <Compile Include="Services\Helper\Password.cs" />
     <Compile Include="Services\LoaiBenhService.cs" />
     <Compile Include="Services\NhanVienService.cs" />
+    <Compile Include="Services\PhongChucNangService.cs" />
     <Compile Include="Services\TaiKhoanService.cs" />
     <Compile Include="Services\ThuocService.cs" />
     <Compile Include="Services\ToaThuocService.cs" />
@@ -58,10 +60,6 @@
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{517214ad-e2dc-45c6-98e0-e9225ee1c98a}</Project>
       <Name>Domain</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Repository\Infrastructure.csproj">
-      <Project>{ffad9de2-6824-4288-b30c-8f298c66f08b}</Project>
-      <Name>Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

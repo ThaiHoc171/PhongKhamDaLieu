@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Domain.DTO;
-using Repository;
+using Domain.Repository;
 
 namespace Services
 {
@@ -24,7 +24,7 @@ namespace Services
         {
             return _repo.LayThuocTheoID(thuocid);
         }
-        public bool ThemThuoc(ThuocDTO thuoc)
+        public bool ThemThuoc(ThuocCreateDTO thuoc)
         {
             return _repo.ThemThuoc(thuoc);
         }

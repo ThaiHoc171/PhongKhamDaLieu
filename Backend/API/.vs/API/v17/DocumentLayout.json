@@ -3,26 +3,47 @@
   "WorkspaceRootPath": "D:\\GraduateProject\\Backend\\API\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\graduateproject\\backend\\domain\\repository\\ibenhnhanrepositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\graduateproject\\backend\\infrastructure\\repository\\benhnhanrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\graduateproject\\backend\\api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\graduateproject\\backend\\domain\\dto\\nhanviendto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\graduateproject\\backend\\infrastructure\\repository\\chitiettoathuocrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Repository\\Infrastructure.csproj|d:\\graduateproject\\backend\\repository\\repository\\phongchucnangrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\graduateproject\\backend\\infrastructure\\repository\\taikhoanrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Repository\\Infrastructure.csproj|d:\\graduateproject\\backend\\repository\\repository\\chucvurepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\toathuocservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\GraduateProject\\Database\\PhongKham.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}"
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\chitiettoathuocservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\graduateproject\\backend\\domain\\dto\\phongchucnangdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\benhnhanservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\GraduateProject\\Database\\PhongKham.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|CodeFrame"
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\chucvuservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\loaibenhservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\nhanvienservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\phongchucnangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\taikhoanservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\thuocservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -37,78 +58,173 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\GraduateProject\\Backend\\API\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\GraduateProject\\Backend\\API\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAsAAAAAAAAAA==",
+              "Title": "IBenhNhanRepositories.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Domain\\Repository\\IBenhNhanRepositories.cs",
+              "RelativeDocumentMoniker": "..\\Domain\\Repository\\IBenhNhanRepositories.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Domain\\Repository\\IBenhNhanRepositories.cs",
+              "RelativeToolTip": "..\\Domain\\Repository\\IBenhNhanRepositories.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-27T06:43:30.697Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "NhanVienDTO.cs",
-              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Domain\\DTO\\NhanVienDTO.cs",
-              "RelativeDocumentMoniker": "..\\Domain\\DTO\\NhanVienDTO.cs",
-              "ToolTip": "D:\\GraduateProject\\Backend\\Domain\\DTO\\NhanVienDTO.cs",
-              "RelativeToolTip": "..\\Domain\\DTO\\NhanVienDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC8AAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-27T06:40:40.699Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "PhongChucNangDTO.cs",
-              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Domain\\DTO\\PhongChucNangDTO.cs",
-              "RelativeDocumentMoniker": "..\\Domain\\DTO\\PhongChucNangDTO.cs",
-              "ToolTip": "D:\\GraduateProject\\Backend\\Domain\\DTO\\PhongChucNangDTO.cs",
-              "RelativeToolTip": "..\\Domain\\DTO\\PhongChucNangDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-27T06:30:48.315Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "PhongKham.sql ",
-              "DocumentMoniker": "D:\\GraduateProject\\Database\\PhongKham.sql",
-              "RelativeDocumentMoniker": "..\\..\\Database\\PhongKham.sql",
-              "ToolTip": "PhongKham.sql ",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-12-27T06:27:38.043Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "PhongChucNangRepository.cs",
-              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Repository\\Repository\\PhongChucNangRepository.cs",
-              "RelativeDocumentMoniker": "..\\Repository\\Repository\\PhongChucNangRepository.cs",
-              "ToolTip": "D:\\GraduateProject\\Backend\\Repository\\Repository\\PhongChucNangRepository.cs",
-              "RelativeToolTip": "..\\Repository\\Repository\\PhongChucNangRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-27T06:24:58.314Z",
+              "WhenOpened": "2025-12-29T01:04:49.107Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "ChucVuRepository.cs",
-              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Repository\\Repository\\ChucVuRepository.cs",
-              "RelativeDocumentMoniker": "..\\Repository\\Repository\\ChucVuRepository.cs",
-              "ToolTip": "D:\\GraduateProject\\Backend\\Repository\\Repository\\ChucVuRepository.cs",
-              "RelativeToolTip": "..\\Repository\\Repository\\ChucVuRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAjAAAAAAAAAA==",
+              "Title": "ChiTietToaThuocRepository.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\ChiTietToaThuocRepository.cs",
+              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\ChiTietToaThuocRepository.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\ChiTietToaThuocRepository.cs",
+              "RelativeToolTip": "..\\Infrastructure\\Repository\\ChiTietToaThuocRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-27T06:24:14.525Z",
+              "WhenOpened": "2025-12-29T00:56:55.236Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BenhNhanRepository.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\BenhNhanRepository.cs",
+              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\BenhNhanRepository.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\BenhNhanRepository.cs",
+              "RelativeToolTip": "..\\Infrastructure\\Repository\\BenhNhanRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:56:48.884Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TaiKhoanRepository.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\TaiKhoanRepository.cs",
+              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\TaiKhoanRepository.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\TaiKhoanRepository.cs",
+              "RelativeToolTip": "..\\Infrastructure\\Repository\\TaiKhoanRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:55:55.094Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\API\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\API\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:53:40.69Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "TaiKhoanService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\TaiKhoanService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\TaiKhoanService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\TaiKhoanService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\TaiKhoanService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:52:38.361Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "PhongChucNangService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\PhongChucNangService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\PhongChucNangService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\PhongChucNangService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\PhongChucNangService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:52:38.313Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "NhanVienService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\NhanVienService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\NhanVienService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\NhanVienService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\NhanVienService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:52:38.269Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "LoaiBenhService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\LoaiBenhService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\LoaiBenhService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\LoaiBenhService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\LoaiBenhService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:52:38.217Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ChucVuService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\ChucVuService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\ChucVuService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\ChucVuService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\ChucVuService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:52:38.166Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ChiTietToaThuocService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\ChiTietToaThuocService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\ChiTietToaThuocService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\ChiTietToaThuocService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\ChiTietToaThuocService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:52:38.113Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "BenhNhanService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\BenhNhanService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\BenhNhanService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\BenhNhanService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\BenhNhanService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:52:38.062Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ToaThuocService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\ToaThuocService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\ToaThuocService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\ToaThuocService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\ToaThuocService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:52:37.983Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ThuocService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\ThuocService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\ThuocService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\ThuocService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\ThuocService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T00:52:38.423Z"
             }
           ]
         }
