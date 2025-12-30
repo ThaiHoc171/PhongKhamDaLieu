@@ -21,7 +21,7 @@ VALUES
 (N'Máy soi da', N'Thiết bị cận lâm sàng'),
 (N'Kính hiển vi soi nấm (KOH)', N'Thiết bị cận lâm sàng'),
 
--- Thiết bị xét nghiệm nhanh
+-- Thiết bị xét nghiệm
 (N'Máy đo đường', N'Thiết bị xét nghiệm'),
 (N'Máy CRP', N'Thiết bị xét nghiệm'),
 (N'Máy HbA1c', N'Thiết bị xét nghiệm'),
