@@ -36,7 +36,6 @@ namespace Infrastructure.Repositories
                             ThuocID = (int)reader["ThuocID"],
                             LieuDung = reader["LieuDung"].ToString(),
                             SoLuong = (int)reader["SoLuong"],
-                            GhiChu = reader["GhiChu"].ToString()
                         });
                     }
                 }
@@ -67,7 +66,6 @@ namespace Infrastructure.Repositories
                                 ThuocID = (int)reader["ThuocID"],
                                 LieuDung = reader["LieuDung"].ToString(),
                                 SoLuong = (int)reader["SoLuong"],
-                                GhiChu = reader["GhiChu"].ToString()
                             };
                         }
                     }
@@ -100,7 +98,6 @@ namespace Infrastructure.Repositories
                                 ThuocID = (int)reader["ThuocID"],
                                 LieuDung = reader["LieuDung"].ToString(),
                                 SoLuong = (int)reader["SoLuong"],
-                                GhiChu = reader["GhiChu"].ToString()
                             });
                         }
                     }
@@ -113,9 +110,9 @@ namespace Infrastructure.Repositories
         {
             string sql = @"
                 INSERT INTO ChiTietToaThuoc
-                (ToaThuocID, ThuocID, LieuDung, SoLuong, GhiChu)
+                (ToaThuocID, ThuocID, LieuDung, SoLuong)
                 VALUES
-                (@ToaThuocID, @ThuocID, @LieuDung, @SoLuong, @GhiChu)";
+                (@ToaThuocID, @ThuocID, @LieuDung, @SoLuong)";
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -126,7 +123,6 @@ namespace Infrastructure.Repositories
                     cmd.Parameters.AddWithValue("@ThuocID", ct.ThuocID);
                     cmd.Parameters.AddWithValue("@LieuDung", ct.LieuDung);
                     cmd.Parameters.AddWithValue("@SoLuong", ct.SoLuong);
-                    cmd.Parameters.AddWithValue("@GhiChu", ct.GhiChu);
 
                     return cmd.ExecuteNonQuery() > 0;
                 }
@@ -140,8 +136,7 @@ namespace Infrastructure.Repositories
                 SET ToaThuocID = @ToaThuocID,
                     ThuocID = @ThuocID,
                     LieuDung = @LieuDung,
-                    SoLuong = @SoLuong,
-                    GhiChu = @GhiChu
+                    SoLuong = @SoLuong
                 WHERE ChiTietToaThuocID = @ChiTietToaThuocID";
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -154,7 +149,6 @@ namespace Infrastructure.Repositories
                     cmd.Parameters.AddWithValue("@ThuocID", ct.ThuocID);
                     cmd.Parameters.AddWithValue("@LieuDung", ct.LieuDung);
                     cmd.Parameters.AddWithValue("@SoLuong", ct.SoLuong);
-                    cmd.Parameters.AddWithValue("@GhiChu", ct.GhiChu);
 
                     return cmd.ExecuteNonQuery() > 0;
                 }

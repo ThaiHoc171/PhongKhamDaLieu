@@ -24,7 +24,7 @@ namespace Services
         {
             return _repo.LayLoaiBenhByTen(tenbenh);
         }
-        public bool ThemLoaiBenh(LoaiBenhDTO lb)
+        public bool ThemLoaiBenh(ThemLoaiBenhDTO lb)
         {
             return _repo.ThemLoaiBenh(lb);
         }

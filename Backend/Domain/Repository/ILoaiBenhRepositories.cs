@@ -9,7 +9,7 @@ namespace Domain.Repository
 		List<LoaiBenhDTO> DanhSachLoaiBenh();
 		LoaiBenhDTO LayLoaiBenhByID(int LoaiBenhID);
 		List<LoaiBenhDTO> LayLoaiBenhByTen(string tenBenh);
-		bool ThemLoaiBenh(LoaiBenhDTO lb);
+		bool ThemLoaiBenh(ThemLoaiBenhDTO lb);
 		bool CapNhatLoaiBenh(LoaiBenhDTO lb);
 	}
 }

@@ -39,7 +39,6 @@ namespace Infrastructure.Repositories
                             Email = reader["Email"].ToString(),
                             Website = reader["Website"].ToString(),
                             GioMoCua = reader["GioMoCua"].ToString(),
-                            HinhAnhBanner = reader["HinhAnhBanner"].ToString(),
                             NgayCapNhat = (DateTime)reader["NgayCapNhat"]
                         });
                     }
@@ -59,7 +58,6 @@ namespace Infrastructure.Repositories
                     Email = @Email,
                     Website = @Website,
                     GioMoCua = @GioMoCua,
-                    HinhAnhBanner = @HinhAnhBanner,
                     NgayCapNhat = @NgayCapNhat
                 WHERE PhongKhamID = @PhongKhamID";
 
@@ -76,7 +74,6 @@ namespace Infrastructure.Repositories
                     cmd.Parameters.AddWithValue("@Email", phongKham.Email);
                     cmd.Parameters.AddWithValue("@Website", phongKham.Website);
                     cmd.Parameters.AddWithValue("@GioMoCua", phongKham.GioMoCua);
-                    cmd.Parameters.AddWithValue("@HinhAnhBanner", phongKham.HinhAnhBanner);
                     cmd.Parameters.AddWithValue("@NgayCapNhat", phongKham.NgayCapNhat);
 
                     return cmd.ExecuteNonQuery() > 0;

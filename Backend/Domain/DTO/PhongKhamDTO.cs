@@ -12,7 +12,6 @@ namespace Domain.DTO
 		public string Email { get; set; }
 		public string Website { get; set; }
 		public string GioMoCua { get; set; }
-		public string HinhAnhBanner { get; set; }
 		public DateTime NgayCapNhat { get; set; }
 	}
 }

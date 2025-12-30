@@ -9,7 +9,6 @@ namespace Domain.DTO
 		public int ThuocID { get; set; }
 		public string LieuDung { get; set; }
 		public int SoLuong { get; set; }
-		public string GhiChu { get; set; }
 	}
     public class ChiTietToaThuocCreateDTO
     {
@@ -17,6 +16,5 @@ namespace Domain.DTO
         public int ThuocID { get; set; }
         public string LieuDung { get; set; }
         public int SoLuong { get; set; }
-        public string GhiChu { get; set; }
     }
 }

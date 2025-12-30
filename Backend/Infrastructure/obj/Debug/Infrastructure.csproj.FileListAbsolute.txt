@@ -89,10 +89,6 @@ D:\GraduateProject\Backend\Infrastructure\obj\Debug\Infrastructure.csproj.CoreCo
 D:\GraduateProject\Backend\Infrastructure\obj\Debug\Infrastr.15EFFBFE.Up2Date
 D:\GraduateProject\Backend\Infrastructure\obj\Debug\Repository.dll
 D:\GraduateProject\Backend\Infrastructure\obj\Debug\Repository.pdb
-D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\obj\Debug\Infrastructure.csproj.AssemblyReference.cache
-D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\obj\Debug\Infrastructure.csproj.CoreCompileInputs.cache
-D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\obj\Debug\Repository.dll
-D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\obj\Debug\Repository.pdb
 D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\bin\Debug\Repository.dll.config
 D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\bin\Debug\Repository.dll
 D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\bin\Debug\Repository.pdb
@@ -135,4 +131,8 @@ D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\bin\Debug\System.Runtime.Compi
 D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\bin\Debug\System.Text.Encodings.Web.xml
 D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\bin\Debug\System.Text.Json.xml
 D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\bin\Debug\System.Threading.Tasks.Extensions.xml
+D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\obj\Debug\Infrastructure.csproj.AssemblyReference.cache
+D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\obj\Debug\Infrastructure.csproj.CoreCompileInputs.cache
 D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\obj\Debug\Infrastr.15EFFBFE.Up2Date
+D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\obj\Debug\Repository.dll
+D:\ThucTap\PhongKhamDaLieu\Backend\Infrastructure\obj\Debug\Repository.pdb
