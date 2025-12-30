@@ -601,7 +601,7 @@
     "Parameters": [
       {
         "Name": "taikhoan",
-        "Type": "Domain.DTO.TaiKhoanDTO",
+        "Type": "Domain.DTO.TaiKhoanCreateDTO",
         "IsRequired": true
       }
     ],
@@ -642,19 +642,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "ID",
-        "Type": "System.Int32",
+        "Name": "tk",
+        "Type": "Domain.DTO.DoiMatKhauDTO",
         "IsRequired": true
-      },
-      {
-        "Name": "password",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "newpassword",
-        "Type": "System.String",
-        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -671,11 +661,6 @@
         "Name": "ID",
         "Type": "System.Int32",
         "IsRequired": true
-      },
-      {
-        "Name": "newpassword",
-        "Type": "System.String",
-        "IsRequired": false
       }
     ],
     "ReturnTypes": []

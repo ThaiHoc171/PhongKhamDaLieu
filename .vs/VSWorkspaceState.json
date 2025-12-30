@@ -1,9 +1,7 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\Backend",
-    "\\Database\\Seed_Data"
+    ""
   ],
-  "SelectedNode": "\\Database",
+  "SelectedNode": "\\API.sln",
   "PreviewInSolutionExplorer": false
 }

@@ -1,42 +1,32 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\",
+  "WorkspaceRootPath": "D:\\GraduateProject\\Backend\\API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\bacsiprofilerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\graduateproject\\backend\\api\\controllers\\taikhoancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:controllers\\taikhoancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\graduateproject\\backend\\domain\\dto\\taikhoandto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\api\\controllers\\bacsiprofilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:controllers\\bacsiprofilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\graduateproject\\backend\\api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\application\\services\\bacsiprofileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\helper\\password.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\repository\\ibacsiprofilerepositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\graduateproject\\backend\\application\\services\\taikhoanservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\dto\\bacsiprofiledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\graduateproject\\backend\\domain\\repository\\itaikhoanrepositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\benhnhanrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\graduateproject\\backend\\infrastructure\\repository\\taikhoanrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\phongkhamrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\repository\\iphongkhamrepositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\application\\services\\phongkhamservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\api\\controllers\\phongkhamcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:controllers\\phongkhamcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\graduateproject\\backend\\infrastructure\\repository\\chucvurepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -55,142 +45,102 @@
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "BacSiProfileController.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\BacSiProfileController.cs",
-              "RelativeDocumentMoniker": "Controllers\\BacSiProfileController.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\BacSiProfileController.cs",
-              "RelativeToolTip": "Controllers\\BacSiProfileController.cs",
-              "ViewState": "AgIAACAAAAAAAAAAAAAIwDQAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T16:09:59.785Z",
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\API\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\GraduateProject\\Backend\\API\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-12-30T10:29:08.884Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "BacSiProfileService.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\BacSiProfileService.cs",
-              "RelativeDocumentMoniker": "..\\Application\\Services\\BacSiProfileService.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\BacSiProfileService.cs",
-              "RelativeToolTip": "..\\Application\\Services\\BacSiProfileService.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAA1wCAAAAAxAAAAAAAAAA==",
+              "Title": "Password.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\Helper\\Password.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\Helper\\Password.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\Helper\\Password.cs",
+              "RelativeToolTip": "..\\Application\\Services\\Helper\\Password.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T16:08:29.52Z",
+              "WhenOpened": "2025-12-30T10:26:58.33Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "BacSiProfileDTO.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\BacSiProfileDTO.cs",
-              "RelativeDocumentMoniker": "..\\Domain\\DTO\\BacSiProfileDTO.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\BacSiProfileDTO.cs",
-              "RelativeToolTip": "..\\Domain\\DTO\\BacSiProfileDTO.cs",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAgwBkAAAAFAAAAAAAAAA==",
+              "DocumentIndex": 7,
+              "Title": "ChucVuRepository.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\ChucVuRepository.cs",
+              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\ChucVuRepository.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\ChucVuRepository.cs",
+              "RelativeToolTip": "..\\Infrastructure\\Repository\\ChucVuRepository.cs",
+              "ViewState": "AgIAAFYAAAAAAAAAAAAIwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T16:07:21.23Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-30T10:10:52.763Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "BacSiProfileRepository.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\BacSiProfileRepository.cs",
-              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\BacSiProfileRepository.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\BacSiProfileRepository.cs",
-              "RelativeToolTip": "..\\Infrastructure\\Repository\\BacSiProfileRepository.cs",
-              "ViewState": "AgIAAG4AAAAAAAAAAIAwwHQAAAApAAAAAAAAAA==",
+              "Title": "TaiKhoanController.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\API\\Controllers\\TaiKhoanController.cs",
+              "RelativeDocumentMoniker": "Controllers\\TaiKhoanController.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\API\\Controllers\\TaiKhoanController.cs",
+              "RelativeToolTip": "Controllers\\TaiKhoanController.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAowEUAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T16:00:45.877Z",
+              "WhenOpened": "2025-12-30T10:04:26.9Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "IBacSiProfileRepositories.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Repository\\IBacSiProfileRepositories.cs",
-              "RelativeDocumentMoniker": "..\\Domain\\Repository\\IBacSiProfileRepositories.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Repository\\IBacSiProfileRepositories.cs",
-              "RelativeToolTip": "..\\Domain\\Repository\\IBacSiProfileRepositories.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAiAAAAAAAAAA==",
+              "Title": "TaiKhoanService.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Application\\Services\\TaiKhoanService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\TaiKhoanService.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Application\\Services\\TaiKhoanService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\TaiKhoanService.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAwDAAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T15:59:48.573Z",
+              "WhenOpened": "2025-12-30T10:02:23.56Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAACIAAAAyAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "ITaiKhoanRepositories.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Domain\\Repository\\ITaiKhoanRepositories.cs",
+              "RelativeDocumentMoniker": "..\\Domain\\Repository\\ITaiKhoanRepositories.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Domain\\Repository\\ITaiKhoanRepositories.cs",
+              "RelativeToolTip": "..\\Domain\\Repository\\ITaiKhoanRepositories.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T06:17:01.848Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "PhongKhamController.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\PhongKhamController.cs",
-              "RelativeDocumentMoniker": "Controllers\\PhongKhamController.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\PhongKhamController.cs",
-              "RelativeToolTip": "Controllers\\PhongKhamController.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAUwBYAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T06:16:29.938Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "PhongKhamService.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\PhongKhamService.cs",
-              "RelativeDocumentMoniker": "..\\Application\\Services\\PhongKhamService.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\PhongKhamService.cs",
-              "RelativeToolTip": "..\\Application\\Services\\PhongKhamService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T06:15:48.277Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "PhongKhamRepository.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\PhongKhamRepository.cs",
-              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\PhongKhamRepository.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\PhongKhamRepository.cs",
-              "RelativeToolTip": "..\\Infrastructure\\Repository\\PhongKhamRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T06:14:40.718Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "IPhongKhamRepositories.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Repository\\IPhongKhamRepositories.cs",
-              "RelativeDocumentMoniker": "..\\Domain\\Repository\\IPhongKhamRepositories.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Repository\\IPhongKhamRepositories.cs",
-              "RelativeToolTip": "..\\Domain\\Repository\\IPhongKhamRepositories.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T06:13:19.974Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-30T10:02:04.593Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "BenhNhanRepository.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\BenhNhanRepository.cs",
-              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\BenhNhanRepository.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\BenhNhanRepository.cs",
-              "RelativeToolTip": "..\\Infrastructure\\Repository\\BenhNhanRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAYAAAAAAAAAA==",
+              "Title": "TaiKhoanRepository.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\TaiKhoanRepository.cs",
+              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\TaiKhoanRepository.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Infrastructure\\Repository\\TaiKhoanRepository.cs",
+              "RelativeToolTip": "..\\Infrastructure\\Repository\\TaiKhoanRepository.cs",
+              "ViewState": "AgIAAHkAAAAAAAAAAAAcwJYAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T02:07:09.384Z",
+              "WhenOpened": "2025-12-30T09:56:20.594Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TaiKhoanDTO.cs",
+              "DocumentMoniker": "D:\\GraduateProject\\Backend\\Domain\\DTO\\TaiKhoanDTO.cs",
+              "RelativeDocumentMoniker": "..\\Domain\\DTO\\TaiKhoanDTO.cs",
+              "ToolTip": "D:\\GraduateProject\\Backend\\Domain\\DTO\\TaiKhoanDTO.cs*",
+              "RelativeToolTip": "..\\Domain\\DTO\\TaiKhoanDTO.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T09:56:01.275Z",
               "EditorCaption": ""
             }
           ]
