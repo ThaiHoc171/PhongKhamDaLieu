@@ -1,5 +1,5 @@
 ﻿INSERT INTO PhongKham 
-(TenPhongKham, GioiThieu, DiaChi, Hotline, Email, Website, GioMoCua, HinhAnhBanner)
+(TenPhongKham, GioiThieu, DiaChi, Hotline, Email, Website, GioMoCua)
 VALUES
 (
     N'Phong kham Da Lieu Aura Care',
@@ -8,8 +8,7 @@ VALUES
     N'0901 234 567',
     N'contact@auracareclinic.vn',
     N'https://auracareclinic.vn',
-    N'Thu 2 – Chu nhat: 08:00 – 20:00',
-    N'/images/banner/clinic_banner.jpg'
+    N'Thu 2 – Chu nhat: 08:00 – 20:00'
 );
 GO
 
@@ -48,6 +47,8 @@ VALUES
 (N'Phòng thủ thuật', N'Thủ thuật da liễu', N'Thực hiện thủ thuật nhỏ: đốt điện, lạnh nitơ, lăn kim, RF.'),
 (N'Phòng laser', N'Điều trị laser', N'Sử dụng công nghệ laser CO2, YAG, IPL để điều trị chuyên sâu.');
 
+
+
 --- Thiết Bị theo phòng --- 
 INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID, SoLuong)
 VALUES
@@ -84,4 +85,7 @@ VALUES
 (5, 10, 1),
 (5, 11, 1);
 
-
+select * from PhongKham
+select * from PhongChucNang_ThietBi
+select * from PhongChucNang
+select * from ThietBi
