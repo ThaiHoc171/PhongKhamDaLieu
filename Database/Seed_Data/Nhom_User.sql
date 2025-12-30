@@ -1,5 +1,5 @@
 ﻿--- ChucVu ---
-INSERT INTO ChucVu (TenChucVu, MoTa) VALUES
+INSERT INTO ChucVu (TenChucVu, MoTa) VALUES --- Thiếu NgayTao, TrangThai
 (N'Bac si tư vấn', N'Chiu trach nhiem kham'),
 (N'Bac si điều trị', N'Chiu trach nhiem dieu tri'),
 (N'Y tá', N'Ho tro cham soc benh nhan'),
@@ -8,7 +8,7 @@ INSERT INTO ChucVu (TenChucVu, MoTa) VALUES
 GO
 
 --- TaiKhoan ---
-INSERT INTO TaiKhoan (Email, PasswordHash, Role) VALUES
+INSERT INTO TaiKhoan (Email, PasswordHash, Role) VALUES --Chưa sửa lại tiếng việt, thiếu TrangThai, NgayTao, NgayCapNhat
 -- 11 nhân viên
 ('dr.lamminh@example.com','hash123','employee'),
 ('dr.hoangphuc@example.com','hash123','employee'),
@@ -57,7 +57,7 @@ INSERT INTO TaiKhoan (Email, PasswordHash, Role) VALUES
 GO
 --- ThongTinCaNhan ---
 -- 11 nhân viên
-INSERT INTO ThongTinCaNhan (TaiKhoanID, HoTen, NgaySinh, GioiTinh, SDT, EmailLienHe, DiaChi, Loai)
+INSERT INTO ThongTinCaNhan (TaiKhoanID, HoTen, NgaySinh, GioiTinh, SDT, EmailLienHe, DiaChi, Loai) ---Thiếu Avatar,NgayTao, NgayCapNhat
 VALUES
 (1, N'Lâm Minh Đức', '1980-03-12', 'Nam', '0901002001', 'dr.lamminh@example.com', N'Q1, TP.HCM', 'nhanvien'),
 (2, N'Hoàng Phúc Lợi', '1983-06-22', 'Nam', '0901002002', 'dr.hoangphuc@example.com', N'Q3, TP.HCM', 'nhanvien'),
@@ -110,7 +110,7 @@ INSERT INTO ThongTinCaNhan (TaiKhoanID, HoTen, NgaySinh, GioiTinh, SDT, EmailLie
 (41,N'Quản trị hệ thống','1990-01-01','Nam','0999000000','admin@clinic.com',N'TP.HCM','nhanvien');
 GO
 --- BenhNhan ---
-INSERT INTO BenhNhan (ThongTinID, MaSoBN) VALUES
+INSERT INTO BenhNhan (ThongTinID, MaSoBN) VALUES ---Thiếu LoaiDa, TrangThaiTheoDoi, bỏ MaSoBN
 (13,'BN0002'), (14,'BN0003'), (15,'BN0004'), (16,'BN0005'),
 (17, 'BN0006'), (18,'BN0007'), (19,'BN0008'), (20,'BN0009'), (21,'BN0010'),
 (22, 'BN0011'), (23,'BN0012'), (24,'BN0013'), (25,'BN0014'), (26,'BN0015'),
@@ -121,7 +121,7 @@ GO
 
 
 --- NhanVien ---
-INSERT INTO NhanVien (ThongTinID, ChucVuID, Luong, NgayVaoLam, BangCap, KinhNghiem)
+INSERT INTO NhanVien (ThongTinID, ChucVuID, Luong, NgayVaoLam, BangCap, KinhNghiem) ---Thiếu TrangThai
 VALUES
 -- 4 bác sĩ (2 tư vấn, 2 điều trị)
 (1, 1, 30000000, '2015-02-01', N'ĐH Y Dược', N'10 năm kinh nghiệm da liễu'),
@@ -147,7 +147,7 @@ GO
 
 
 --- BacSi ---
-INSERT INTO BacSiProfile (NhanVienID, GioiThieu, ChuyenMon, ThanhTuu, HinhAnh, KinhNghiem)
+INSERT INTO BacSiProfile (NhanVienID, GioiThieu, ChuyenMon, ThanhTuu, HinhAnh, KinhNghiem) ---Thiếu NgayCapNhat
 VALUES
 (1, N'Bác sĩ chuyên khoa da liễu.', N'Da liễu tổng quát', N'Nhiều bài báo khoa học', N'bs_lamminh.jpg', N'Hơn 10 năm kinh nghiệm'),
 (2, N'Bác sĩ da liễu chuyên trị mụn và sẹo.', N'Mụn - Sẹo - Laser', N'Giải thưởng bác sĩ trẻ giỏi', N'bs_hoangphuc.jpg', N'8 năm kinh nghiệm'),

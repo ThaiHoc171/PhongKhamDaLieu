@@ -1,4 +1,4 @@
-﻿INSERT INTO HoSoBenhAn (BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac)
+﻿INSERT INTO HoSoBenhAn (BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac)  ---Thiếu NgayTao, NgayCapNhat
 VALUES
 (1, N'Mụn trứng cá', N'Không', N'Không', N'Bố bị tiểu đường', N'Không hút thuốc', N''),
 (2, N'Dị ứng da', N'Phấn hoa', N'Không', N'Không', N'Không', N''),
@@ -22,7 +22,7 @@ VALUES
 (20, N'Mụn ẩn', N'Không', N'Không', N'Không', N'Không', N'');
 
 
-INSERT INTO PhienKham (CaKhamID, BenhNhanID, NhanVienID, PhongChucNangID, TrieuChung, GhiChu, ChuanDoanCuoi, TrangThai)
+INSERT INTO PhienKham (CaKhamID, BenhNhanID, NhanVienID, PhongChucNangID, TrieuChung, GhiChu, ChuanDoanCuoi)
 VALUES
 (1,1,1,1,N'Mụn trứng cá nặng',NULL,N'Mụn trứng cá', 'completed'),
 (2,2,2,1,N'Ngứa và nổi mẩn',NULL,N'Dị ứng da', 'completed'),
@@ -54,7 +54,7 @@ VALUES
 (16,1,1,NULL),(17,2,1,NULL),(18,3,1,NULL),(19,1,1,NULL),(20,2,1,NULL);
 
 
-INSERT INTO CanLamSang (TenCLS, MoTa, Gia, LoaiXetNghiem)
+INSERT INTO CanLamSang (TenCLS, MoTa, Gia, LoaiXetNghiem) ---Thiếu GhiChu, NgayTao
 VALUES
 (N'Xét nghiệm máu', N'Đánh giá tế bào máu', 200000, N'Huyết học'),
 (N'Xét nghiệm đường huyết', N'Kiểm tra đường huyết', 150000, N'Hóa sinh'),
@@ -78,7 +78,7 @@ VALUES
 (N'Xét nghiệm dị ứng', N'Test dị ứng', 200000, N'Dị ứng');
 
 
-INSERT INTO PhienKham_CanLamSang (PhienKhamID, CanLamSangID, TrangThai, KetQua, NhanVienChiDinhID, NhanVienThucHienID)
+INSERT INTO PhienKham_CanLamSang (PhienKhamID, CanLamSangID, KetQua, NhanVienChiDinhID, NhanVienThucHienID) ---Thiếu FileDinhKem, NgayChiDinh, NgayThucHien, GhiChu
 VALUES
 (1,1,'completed','Bình thường',1,1),
 (2,2,'completed','Tăng nhẹ',2,2),
@@ -103,7 +103,7 @@ VALUES
 
 
 -- ToaThuoc
-INSERT INTO ToaThuoc (PhienKhamID, NhanVienKeDonID, TongTien)
+INSERT INTO ToaThuoc (PhienKhamID, NhanVienKeDonID, TongTien) ---Thiếu NgayLap, GhiChu, bỏ TongTien
 VALUES
 (1,1,500000),(2,2,400000),(3,3,450000),(4,1,350000),(5,2,300000),
 (6,3,400000),(7,1,500000),(8,2,450000),(9,3,500000),(10,1,300000),
@@ -111,28 +111,21 @@ VALUES
 (16,1,500000),(17,2,450000),(18,3,400000),(19,1,350000),(20,2,300000);
 
 -- ChiTietToaThuoc
-INSERT INTO ChiTietToaThuoc (ToaThuocID, ThuocID, LieuDung, SoLuong, DonGia, ThanhTien)
+INSERT INTO ChiTietToaThuoc (ToaThuocID, ThuocID, LieuDung, SoLuong) ---Bỏ DonGia, ThanhTien
 VALUES
-(1,1,N'Sáng 1 viên',10,50000,500000),
-(2,2,N'Sáng-Tối',8,50000,400000),
-(3,3,N'Tối',9,50000,450000),
-(4,4,N'Sáng 1 viên',7,50000,350000),
-(5,5,N'Sáng-Tối',6,50000,300000),
-(6,6,N'Tối',8,50000,400000),
-(7,7,N'Sáng 1 viên',10,50000,500000),
-(8,8,N'Sáng-Tối',9,50000,450000),
-(9,9,N'Sáng 1 viên',10,50000,500000),
-(10,10,N'Tối',6,50000,300000),
-(11,11,N'Sáng 1 viên',8,50000,400000),
-(12,12,N'Tối',9,50000,450000),
-(13,13,N'Sáng-Tối',7,50000,350000),
-(14,14,N'Tối',6,50000,300000),
-(15,15,N'Sáng-Tối',8,50000,400000),
-(16,16,N'Sáng 1 viên',10,50000,500000),
-(17,17,N'Sáng-Tối',9,50000,450000),
-(18,18,N'Tối',8,50000,400000),
-(19,19,N'Sáng-Tối',7,50000,350000),
-(20,20,N'Tối',6,50000,300000);
+(1,1,N'Sáng 1 viên',10),
+(2,2,N'Sáng-Tối',8),
+(3,3,N'Tối',9),
+(4,4,N'Sáng 1 viên',7),
+(5,5,N'Sáng-Tối',6),
+(6,6,N'Tối',8),
+(7,7,N'Sáng 1 viên',10),
+(8,8,N'Sáng-Tối',9),
+(9,9,N'Sáng 1 viên',10),
+(10,10,N'Tối',6),
+(11,11,N'Sáng 1 viên',8),
+(12,12,N'Tối',9),
+(13,13,N'Sáng-Tối',7);
 
 
 INSERT INTO PhienKham_Benh (PhienKhamID, LoaiBenhID, LoaiChuanDoan, GhiChu)
@@ -159,7 +152,7 @@ VALUES
 (20,5,'primary',N'Mụn ẩn nhẹ');
 
 
-INSERT INTO TaiKham (PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai)
+INSERT INTO TaiKham (PhienKhamID, BenhNhanID, NgayDuKien, LyDo) ---Thiếu CaKhamID, NgayTao
 VALUES
 (1,1,'2025-12-19',N'Tái khám mụn', 'pending'),
 (2,2,'2025-12-20',N'Tái khám dị ứng', 'pending'),
@@ -183,7 +176,7 @@ VALUES
 (20,20,'2026-01-07',N'Tái khám mụn ẩn', 'pending');
 
 
-INSERT INTO LieuTrinhDieuTri (BenhNhanID, PhienKhamID, TenLieuTrinh, TongSoBuoi, TrangThai)
+INSERT INTO LieuTrinhDieuTri (BenhNhanID, PhienKhamID, TenLieuTrinh, TongSoBuoi) ---Thiếu GhiChu, NgayBatDau, NgayKetThuc
 VALUES
 (1,1,N'Liệu trình mụn',4,'in-progress'),
 (2,2,N'Liệu trình dị ứng',3,'in-progress'),
@@ -207,8 +200,8 @@ VALUES
 (20,20,N'Liệu trình mụn ẩn',4,'in-progress');
 
 
-INSERT INTO LieuTrinh_BuoiDieuTri (LieuTrinhID, SoBuoi, NgayDuKien, NhanVienID)
-VALUES
+INSERT INTO LieuTrinh_BuoiDieuTri (LieuTrinhID, SoBuoi, NgayDuKien, NhanVienID)  ---Thiếu NgayThucHien, GhiChu, HinhAnhJSON
+VALUES 
 (1,1,'2025-12-20',1),(1,2,'2025-12-22',1),(1,3,'2025-12-24',1),(1,4,'2025-12-26',1),
 (2,1,'2025-12-21',2),(2,2,'2025-12-23',2),(2,3,'2025-12-25',2),
 (3,1,'2025-12-22',3),(3,2,'2025-12-24',3),(3,3,'2025-12-26',3),(3,4,'2025-12-28',3),(3,5,'2025-12-30',3),
@@ -217,7 +210,7 @@ VALUES
 (6,1,'2025-12-25',3);
 
 
-INSERT INTO BuoiDieuTri_CanLamSang (BuoiDieuTriID, CanLamSangID, KetQua, TrangThai)
+INSERT INTO BuoiDieuTri_CanLamSang (BuoiDieuTriID, CanLamSangID, KetQua) ---Sửa tên ID của BuoiDieuTri_CanLamSang 
 VALUES
 (1,1,'Bình thường','done'),
 (2,2,'Tăng nhẹ','done'),

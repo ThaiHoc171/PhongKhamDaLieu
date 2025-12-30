@@ -1,4 +1,4 @@
-﻿INSERT INTO LoaiBenh (TenBenh, TenKhoaHoc, NhomBenh, MoTa, DoPhoBien, MucDoNghiemTrong) VALUES
+﻿INSERT INTO LoaiBenh (TenBenh, TenKhoaHoc, NhomBenh, MoTa, DoPhoBien, MucDoNghiemTrong)  VALUES ---Thiếu NgayTao
 (N'Viêm da cơ địa', N'Atopic dermatitis', N'Viêm da', N'Bệnh mạn tính gây khô và ngứa da.', N'phổ biến', N'trung bình'),
 (N'Viêm da tiếp xúc', N'Contact dermatitis', N'Viêm da', N'Phản ứng viêm khi da tiếp xúc chất kích ứng.', N'phổ biến', N'trung bình'),
 (N'Mề đay', N'Urticaria', N'Dị ứng', N'Nổi mẩn đỏ và ngứa đột ngột.', N'phổ biến', N'nhẹ'),

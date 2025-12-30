@@ -1,5 +1,5 @@
 ﻿INSERT INTO PhongKham 
-(TenPhongKham, GioiThieu, DiaChi, Hotline, Email, Website, GioMoCua, HinhAnhBanner)
+(TenPhongKham, GioiThieu, DiaChi, Hotline, Email, Website, GioMoCua, HinhAnhBanner) ---Thiếu NgayCapNhat
 VALUES
 (
     N'Phong kham Da Lieu Aura Care',
@@ -14,7 +14,7 @@ VALUES
 GO
 
 --- ThietBi ---
-INSERT INTO ThietBi (TenTB, LoaiTB)
+INSERT INTO ThietBi (TenTB, LoaiTB) ---Thiếu TinhTrang, NgayNhap
 VALUES
 -- Thiết bị khám & cận lâm sàng
 (N'Dermatoscope', N'Thiết bị cận lâm sàng'),
@@ -40,7 +40,7 @@ VALUES
 (N'Camera phân cực', N'Thiết bị cận lâm sàng');
 
 --- PhongChucNang ---
-INSERT INTO PhongChucNang (TenPhong, LoaiPhong, MoTa)
+INSERT INTO PhongChucNang (TenPhong, LoaiPhong, MoTa) ---Thiếu TrangThai, NgayTao
 VALUES
 (N'Phòng khám bệnh', N'Khám lâm sàng', N'Phòng khám da liễu tổng quát, đánh giá tình trạng da, chẩn đoán ban đầu.'),
 (N'Phòng xét nghiệm', N'Xét nghiệm nhanh', N'Thực hiện các xét nghiệm cơ bản như đường huyết, CRP, HbA1c, test nhanh.'),
@@ -49,7 +49,7 @@ VALUES
 (N'Phòng laser', N'Điều trị laser', N'Sử dụng công nghệ laser CO2, YAG, IPL để điều trị chuyên sâu.');
 
 --- Thiết Bị theo phòng --- 
-INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID, SoLuong)
+INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID, SoLuong) ---Thiếu GhiChu
 VALUES
 (1, 1, 1),
 (1, 2, 1),

@@ -14,7 +14,7 @@
 GO
 
 
-INSERT INTO NgayNghiNhanVien (NhanVienID, Ngay, LyDo) VALUES
+INSERT INTO NgayNghiNhanVien (NhanVienID, Ngay, LyDo) VALUES 
 (1, '2025-01-08', N'Nghỉ hàng tuần'),
 (2, '2025-01-10', N'Nghỉ hàng tuần'),
 (3, '2025-01-07', N'Nghỉ hàng tuần'),
@@ -36,7 +36,7 @@ GO
 -- ================================
 
 -- THỨ 2 (2025-01-06) - Nghỉ: NV5, NV8
-INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) VALUES
+INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) VALUES ---Thiếu GhiChu
 (1,1,'2025-01-06',1),
 (2,1,'2025-01-06',2),
 (3,1,'2025-01-06',1),
@@ -128,7 +128,7 @@ INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) V
 (10,1,'2025-01-12',2),
 (11,1,'2025-01-12',1);
 
-INSERT INTO CaKham (LichLamViecID, PhongChucNangID, NgayKham, KhungGioID, BenhNhanID, LyDoKham, TrangThai, GhiChu)
+INSERT INTO CaKham (LichLamViecID, PhongChucNangID, NgayKham, KhungGioID, BenhNhanID, LyDoKham, TrangThai, GhiChu) ---Thiếu NgayDat
 VALUES
 (1, 1, '2025-01-03', 1, 1, N'Khám da liễu tổng quát', 'booked', NULL),
 (1, 1, '2025-01-03', 2, NULL, NULL, 'available', NULL),
