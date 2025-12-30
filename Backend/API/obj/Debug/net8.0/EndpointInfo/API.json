@@ -993,17 +993,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TaiKhoanDTO"
+                "$ref": "#/components/schemas/TaiKhoanCreateDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/TaiKhoanDTO"
+                "$ref": "#/components/schemas/TaiKhoanCreateDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/TaiKhoanDTO"
+                "$ref": "#/components/schemas/TaiKhoanCreateDTO"
               }
             }
           }
@@ -1020,40 +1020,21 @@
         "tags": [
           "TaiKhoan"
         ],
-        "parameters": [
-          {
-            "name": "password",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "newpassword",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
+                "$ref": "#/components/schemas/DoiMatKhauDTO"
               }
             },
             "text/json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
+                "$ref": "#/components/schemas/DoiMatKhauDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "integer",
-                "format": "int32"
+                "$ref": "#/components/schemas/DoiMatKhauDTO"
               }
             }
           }
@@ -1069,15 +1050,6 @@
       "put": {
         "tags": [
           "TaiKhoan"
-        ],
-        "parameters": [
-          {
-            "name": "newpassword",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
         ],
         "requestBody": {
           "content": {
@@ -1512,6 +1484,24 @@
         },
         "additionalProperties": false
       },
+      "DoiMatKhauDTO": {
+        "type": "object",
+        "properties": {
+          "taiKhoanID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "matKhauCu": {
+            "type": "string",
+            "nullable": true
+          },
+          "matKhauMoi": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "LoaiBenhDTO": {
         "type": "object",
         "properties": {
@@ -1797,36 +1787,20 @@
         },
         "additionalProperties": false
       },
-      "TaiKhoanDTO": {
+      "TaiKhoanCreateDTO": {
         "type": "object",
         "properties": {
-          "taiKhoanID": {
-            "type": "integer",
-            "format": "int32"
-          },
           "email": {
             "type": "string",
             "nullable": true
           },
-          "passwordHash": {
+          "matKhau": {
             "type": "string",
             "nullable": true
           },
-          "role": {
+          "vaiTro": {
             "type": "string",
             "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "nullable": true
-          },
-          "ngayTao": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "ngayCapNhat": {
-            "type": "string",
-            "format": "date-time"
           }
         },
         "additionalProperties": false

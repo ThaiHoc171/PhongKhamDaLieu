@@ -11,9 +11,11 @@ namespace API.Controllers
 	public class TaiKhoanController : ControllerBase
 	{
 		private readonly TaiKhoanService _taiKhoan;
-		public TaiKhoanController(TaiKhoanService taiKhoan)
+		private readonly IConfiguration _config;
+		public TaiKhoanController(TaiKhoanService taiKhoan, IConfiguration config)
 		{
 			_taiKhoan = taiKhoan;
+			_config = config;
 		}
 		[HttpPost("DangNhap")]
 		public IActionResult DangNhap([FromBody] LoginRequest request)
@@ -32,9 +34,9 @@ namespace API.Controllers
 			return Ok(result);
 		}
 		[HttpPost("DangKy")]
-		public IActionResult DangKy([FromBody] TaiKhoanDTO taikhoan)
+		public IActionResult DangKy([FromBody] TaiKhoanCreateDTO taikhoan)
 		{
-			var result = _taiKhoan.DangKy(taikhoan);
+			var result = _taiKhoan.DangKyTaiKhoan(taikhoan.Email, taikhoan.MatKhau, taikhoan.VaiTro);
 			if (result)
 			{
 				return Ok("Đăng ký thành công.");
@@ -42,9 +44,9 @@ namespace API.Controllers
 			return BadRequest("Email đã tồn tại.");
 		}
 		[HttpPut("DoiMatKhau")]
-		public IActionResult DoiMatKhau([FromBody] int ID,string password, string newpassword)
+		public IActionResult DoiMatKhau([FromBody] DoiMatKhauDTO tk)
 		{
-			var result = _taiKhoan.DoiMatKhau(ID,password,newpassword);
+			var result = _taiKhoan.DoiMatKhau(tk.TaiKhoanID,tk.MatKhauCu,tk.MatKhauMoi);
 			if (result)
 			{
 				return Ok("Đổi mật khẩu thành công.");
@@ -52,9 +54,10 @@ namespace API.Controllers
 			return BadRequest("Đổi mật khẩu thất bại.");
 		}
 		[HttpPut("ResetMatKhau")]
-		public IActionResult ResetMatKhau([FromBody] int ID, string newpassword)
+		public IActionResult ResetMatKhau([FromBody] int ID)
 		{
-			var result = _taiKhoan.ResetMatKhau(ID,newpassword);
+			string defaultPassword = _config["DefaultPassword"];
+			var result = _taiKhoan.ResetMatKhau(ID, defaultPassword);
 			if (result)
 			{
 				return Ok("Reset mật khẩu thành công.");
