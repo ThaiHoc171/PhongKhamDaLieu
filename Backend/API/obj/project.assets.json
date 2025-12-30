@@ -1148,23 +1148,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ADMIN\\.nuget\\packages\\": {},
+    "C:\\Users\\Dow\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\API.csproj",
+      "projectUniqueName": "D:\\GraduateProject\\Backend\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\API.csproj",
-      "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-      "outputPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\obj\\",
+      "projectPath": "D:\\GraduateProject\\Backend\\API\\API.csproj",
+      "packagesPath": "C:\\Users\\Dow\\.nuget\\packages\\",
+      "outputPath": "D:\\GraduateProject\\Backend\\API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Dow\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1179,11 +1179,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Application.csproj": {
-              "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Application.csproj"
+            "D:\\GraduateProject\\Backend\\Application\\Application.csproj": {
+              "projectPath": "D:\\GraduateProject\\Backend\\Application\\Application.csproj"
             },
-            "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Infrastructure.csproj": {
-              "projectPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Infrastructure.csproj"
+            "D:\\GraduateProject\\Backend\\Infrastructure\\Infrastructure.csproj": {
+              "projectPath": "D:\\GraduateProject\\Backend\\Infrastructure\\Infrastructure.csproj"
             }
           }
         }
@@ -1198,7 +1198,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.200"
+      "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
       "net8.0": {
@@ -1240,7 +1240,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

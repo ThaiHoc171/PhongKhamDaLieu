@@ -34,16 +34,20 @@ namespace Services
 			TaiKhoanDTO tk = _repo.LayTaiKhoanTheoEmail(email);
 			return tk != null;
 		}
-		public bool DangKy(TaiKhoanDTO taikhoan)
+		public bool DangKyTaiKhoan(string email, string password, string vaitro)
 		{
-			if(!KiemTraEmailTonTai(taikhoan.Email))
+			if(KiemTraEmailTonTai(email))
 			{
-				string passwordHash = Helper.Password.PassWordHash(taikhoan.PasswordHash);
-				taikhoan.PasswordHash = passwordHash;
-				return _repo.ThemTaiKhoan(taikhoan);
-
+				return false;
 			}
-			return false;
+			string passwordHash = Helper.Password.PassWordHash(password);
+			TaiKhoanCreateDTO taiKhoanCreateDTO = new TaiKhoanCreateDTO
+			{
+				Email = email,
+				MatKhau = passwordHash,
+				VaiTro = vaitro
+			};
+			return _repo.TaoTaiKhoan(taiKhoanCreateDTO);
 		}
 		public bool DoiMatKhau(int taiKhoanID,string password, string newPassword)
 		{
