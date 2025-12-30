@@ -1,10 +1,10 @@
-D:\ThucTap\PhongKhamDaLieu\Backend\Application\obj\Debug\Application.csproj.AssemblyReference.cache
-D:\ThucTap\PhongKhamDaLieu\Backend\Application\obj\Debug\Application.csproj.CoreCompileInputs.cache
 D:\ThucTap\PhongKhamDaLieu\Backend\Application\bin\Debug\Application.dll.config
 D:\ThucTap\PhongKhamDaLieu\Backend\Application\bin\Debug\Application.dll
 D:\ThucTap\PhongKhamDaLieu\Backend\Application\bin\Debug\Application.pdb
 D:\ThucTap\PhongKhamDaLieu\Backend\Application\bin\Debug\Domain.dll
 D:\ThucTap\PhongKhamDaLieu\Backend\Application\bin\Debug\Domain.pdb
+D:\ThucTap\PhongKhamDaLieu\Backend\Application\obj\Debug\Application.csproj.AssemblyReference.cache
+D:\ThucTap\PhongKhamDaLieu\Backend\Application\obj\Debug\Application.csproj.CoreCompileInputs.cache
 D:\ThucTap\PhongKhamDaLieu\Backend\Application\obj\Debug\Applicat.44B5EDA2.Up2Date
 D:\ThucTap\PhongKhamDaLieu\Backend\Application\obj\Debug\Application.dll
 D:\ThucTap\PhongKhamDaLieu\Backend\Application\obj\Debug\Application.pdb

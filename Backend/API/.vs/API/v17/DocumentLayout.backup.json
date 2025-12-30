@@ -3,33 +3,61 @@
   "WorkspaceRootPath": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\bacsiprofilerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\api\\controllers\\loaibenhcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:controllers\\loaibenhcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\application\\services\\loaibenhservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\api\\controllers\\bacsiprofilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:controllers\\bacsiprofilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\loaibenhrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\application\\services\\bacsiprofileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\repository\\iloaibenhrepositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\repository\\ibacsiprofilerepositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\dto\\loaibenhdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\dto\\bacsiprofiledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\dto\\chitiettoathuocdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\benhnhanrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\chitiettoathuocrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\dto\\thuocdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\phongkhamrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\repository\\iphongkhamrepositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\dto\\phongkhamdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\dto\\bacsiprofiledto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\application\\services\\bacsiprofileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\bacsiprofilerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\api\\controllers\\bacsiprofilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D138F16B-F1C3-49D3-BE6D-81E247DFF15C}|API.csproj|solutionrelative:controllers\\bacsiprofilecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{517214AD-E2DC-45C6-98E0-E9225EE1C98A}|..\\Domain\\Domain.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\domain\\repository\\ibacsiprofilerepositories.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FFAD9DE2-6824-4288-B30C-8F298C66F08B}|..\\Infrastructure\\Infrastructure.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\infrastructure\\repository\\benhnhanrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{35B78FAA-D5A4-4EC9-B7A2-71175C6F62B9}|..\\Application\\Application.csproj|d:\\thuctap\\phongkhamdalieu\\backend\\application\\services\\phongkhamservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
@@ -46,67 +74,132 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 0,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "LoaiBenhController.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\LoaiBenhController.cs",
+              "RelativeDocumentMoniker": "Controllers\\LoaiBenhController.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\LoaiBenhController.cs*",
+              "RelativeToolTip": "Controllers\\LoaiBenhController.cs*",
+              "ViewState": "AgIAACAAAAAAAAAAAAAIwCoAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T17:09:27.916Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "LoaiBenhService.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\LoaiBenhService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\LoaiBenhService.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\LoaiBenhService.cs*",
+              "RelativeToolTip": "..\\Application\\Services\\LoaiBenhService.cs*",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABsAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T17:09:19.231Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "LoaiBenhRepository.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\LoaiBenhRepository.cs",
+              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\LoaiBenhRepository.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\LoaiBenhRepository.cs",
+              "RelativeToolTip": "..\\Infrastructure\\Repository\\LoaiBenhRepository.cs",
+              "ViewState": "AgIAAHMAAAAAAAAAAAAYwIIAAABIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T17:08:36.603Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ILoaiBenhRepositories.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Repository\\ILoaiBenhRepositories.cs",
+              "RelativeDocumentMoniker": "..\\Domain\\Repository\\ILoaiBenhRepositories.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Repository\\ILoaiBenhRepositories.cs",
+              "RelativeToolTip": "..\\Domain\\Repository\\ILoaiBenhRepositories.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T17:08:25.022Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "LoaiBenhDTO.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\LoaiBenhDTO.cs",
+              "RelativeDocumentMoniker": "..\\Domain\\DTO\\LoaiBenhDTO.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\LoaiBenhDTO.cs",
+              "RelativeToolTip": "..\\Domain\\DTO\\LoaiBenhDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T17:07:51.444Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "BacSiProfileController.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\BacSiProfileController.cs",
-              "RelativeDocumentMoniker": "Controllers\\BacSiProfileController.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\BacSiProfileController.cs",
-              "RelativeToolTip": "Controllers\\BacSiProfileController.cs",
-              "ViewState": "AgIAACAAAAAAAAAAAAAIwDQAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T16:09:59.785Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "BacSiProfileService.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\BacSiProfileService.cs",
-              "RelativeDocumentMoniker": "..\\Application\\Services\\BacSiProfileService.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\BacSiProfileService.cs",
-              "RelativeToolTip": "..\\Application\\Services\\BacSiProfileService.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAA1wCAAAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T16:08:29.52Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 5,
+              "Title": "ChiTietToaThuocDTO.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\ChiTietToaThuocDTO.cs",
+              "RelativeDocumentMoniker": "..\\Domain\\DTO\\ChiTietToaThuocDTO.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\ChiTietToaThuocDTO.cs",
+              "RelativeToolTip": "..\\Domain\\DTO\\ChiTietToaThuocDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T17:04:10.431Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ChiTietToaThuocRepository.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\ChiTietToaThuocRepository.cs",
+              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\ChiTietToaThuocRepository.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\ChiTietToaThuocRepository.cs",
+              "RelativeToolTip": "..\\Infrastructure\\Repository\\ChiTietToaThuocRepository.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T17:02:31.307Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
               "Title": "BacSiProfileDTO.cs",
               "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\BacSiProfileDTO.cs",
               "RelativeDocumentMoniker": "..\\Domain\\DTO\\BacSiProfileDTO.cs",
               "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\BacSiProfileDTO.cs",
               "RelativeToolTip": "..\\Domain\\DTO\\BacSiProfileDTO.cs",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAgwBkAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-29T16:07:21.23Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 14,
               "Title": "BacSiProfileRepository.cs",
               "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\BacSiProfileRepository.cs",
               "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\BacSiProfileRepository.cs",
               "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\BacSiProfileRepository.cs",
               "RelativeToolTip": "..\\Infrastructure\\Repository\\BacSiProfileRepository.cs",
-              "ViewState": "AgIAAG4AAAAAAAAAAIAwwHQAAAApAAAAAAAAAA==",
+              "ViewState": "AgIAAHoAAAAAAAAAAAAMwIEAAABRAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-29T16:00:45.877Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 16,
               "Title": "IBacSiProfileRepositories.cs",
               "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Repository\\IBacSiProfileRepositories.cs",
               "RelativeDocumentMoniker": "..\\Domain\\Repository\\IBacSiProfileRepositories.cs",
@@ -114,25 +207,24 @@
               "RelativeToolTip": "..\\Domain\\Repository\\IBacSiProfileRepositories.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T15:59:48.573Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-29T15:59:48.573Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 11,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAACIAAAAyAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-29T06:17:01.848Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 19,
               "Title": "PhongKhamController.cs",
               "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\PhongKhamController.cs",
               "RelativeDocumentMoniker": "Controllers\\PhongKhamController.cs",
@@ -144,7 +236,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 18,
               "Title": "PhongKhamService.cs",
               "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\PhongKhamService.cs",
               "RelativeDocumentMoniker": "..\\Application\\Services\\PhongKhamService.cs",
@@ -156,33 +248,84 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "PhongKhamRepository.cs",
-              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\PhongKhamRepository.cs",
-              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\PhongKhamRepository.cs",
-              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\PhongKhamRepository.cs",
-              "RelativeToolTip": "..\\Infrastructure\\Repository\\PhongKhamRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T06:14:40.718Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "IPhongKhamRepositories.cs",
               "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Repository\\IPhongKhamRepositories.cs",
               "RelativeDocumentMoniker": "..\\Domain\\Repository\\IPhongKhamRepositories.cs",
               "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\Repository\\IPhongKhamRepositories.cs",
               "RelativeToolTip": "..\\Domain\\Repository\\IPhongKhamRepositories.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-29T06:13:19.974Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
+              "Title": "PhongKhamRepository.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\PhongKhamRepository.cs",
+              "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\PhongKhamRepository.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\PhongKhamRepository.cs",
+              "RelativeToolTip": "..\\Infrastructure\\Repository\\PhongKhamRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T06:14:40.718Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ThuocDTO.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\ThuocDTO.cs",
+              "RelativeDocumentMoniker": "..\\Domain\\DTO\\ThuocDTO.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\ThuocDTO.cs",
+              "RelativeToolTip": "..\\Domain\\DTO\\ThuocDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T16:27:57.922Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "PhongKhamDTO.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\PhongKhamDTO.cs",
+              "RelativeDocumentMoniker": "..\\Domain\\DTO\\PhongKhamDTO.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Domain\\DTO\\PhongKhamDTO.cs",
+              "RelativeToolTip": "..\\Domain\\DTO\\PhongKhamDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-30T16:49:48.01Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "BacSiProfileService.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\BacSiProfileService.cs",
+              "RelativeDocumentMoniker": "..\\Application\\Services\\BacSiProfileService.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Application\\Services\\BacSiProfileService.cs",
+              "RelativeToolTip": "..\\Application\\Services\\BacSiProfileService.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAQwCAAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T16:08:29.52Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "BacSiProfileController.cs",
+              "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\BacSiProfileController.cs",
+              "RelativeDocumentMoniker": "Controllers\\BacSiProfileController.cs",
+              "ToolTip": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\API\\Controllers\\BacSiProfileController.cs",
+              "RelativeToolTip": "Controllers\\BacSiProfileController.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAAAIwDQAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-29T16:09:59.785Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
               "Title": "BenhNhanRepository.cs",
               "DocumentMoniker": "D:\\ThucTap\\PhongKhamDaLieu\\Backend\\Infrastructure\\Repository\\BenhNhanRepository.cs",
               "RelativeDocumentMoniker": "..\\Infrastructure\\Repository\\BenhNhanRepository.cs",
@@ -190,8 +333,7 @@
               "RelativeToolTip": "..\\Infrastructure\\Repository\\BenhNhanRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-29T02:07:09.384Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-29T02:07:09.384Z"
             }
           ]
         }

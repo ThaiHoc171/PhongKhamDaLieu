@@ -33,7 +33,7 @@ namespace API.Controllers
             return Ok(result);
         }
         [HttpPost("ThemLoaiBenh")]
-        public IActionResult ThemLoaiBenh([FromBody] LoaiBenhDTO loaiBenh)
+        public IActionResult ThemLoaiBenh([FromBody] ThemLoaiBenhDTO loaiBenh)
         {
             var result = _loaibenh.ThemLoaiBenh(loaiBenh);
             if (result)

@@ -7,12 +7,10 @@ namespace Domain.DTO
 		public int ThuocID { get; set; }
 		public string TenThuoc { get; set; }
 		public string HoatChat { get; set; }
-		public string TrangThai { get; set; }
 	}
 	public class ThuocCreateDTO
 	{
 		public string TenThuoc { get; set; }
 		public string HoatChat { get; set; }
-		public string TrangThai { get; set; }
 	}
 }

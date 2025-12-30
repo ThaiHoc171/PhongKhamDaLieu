@@ -116,7 +116,7 @@ namespace Infrastructure.Repositories
             return danhSach;
         }
 
-        public bool ThemLoaiBenh(LoaiBenhDTO lb)
+        public bool ThemLoaiBenh(ThemLoaiBenhDTO lb)
         {
             string sql = @"
             INSERT INTO LoaiBenh

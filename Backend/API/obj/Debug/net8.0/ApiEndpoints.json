@@ -347,7 +347,7 @@
     "Parameters": [
       {
         "Name": "loaiBenh",
-        "Type": "Domain.DTO.LoaiBenhDTO",
+        "Type": "Domain.DTO.ThemLoaiBenhDTO",
         "IsRequired": true
       }
     ],

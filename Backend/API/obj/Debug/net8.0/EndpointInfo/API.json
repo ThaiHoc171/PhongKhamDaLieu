@@ -565,17 +565,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoaiBenhDTO"
+                "$ref": "#/components/schemas/ThemLoaiBenhDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoaiBenhDTO"
+                "$ref": "#/components/schemas/ThemLoaiBenhDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/LoaiBenhDTO"
+                "$ref": "#/components/schemas/ThemLoaiBenhDTO"
               }
             }
           }
@@ -1449,10 +1449,6 @@
           "soLuong": {
             "type": "integer",
             "format": "int32"
-          },
-          "ghiChu": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1479,10 +1475,6 @@
           "soLuong": {
             "type": "integer",
             "format": "int32"
-          },
-          "ghiChu": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1786,10 +1778,6 @@
             "type": "string",
             "nullable": true
           },
-          "hinhAnhBanner": {
-            "type": "string",
-            "nullable": true
-          },
           "ngayCapNhat": {
             "type": "string",
             "format": "date-time"
@@ -1886,6 +1874,40 @@
         },
         "additionalProperties": false
       },
+      "ThemLoaiBenhDTO": {
+        "type": "object",
+        "properties": {
+          "tenBenh": {
+            "type": "string",
+            "nullable": true
+          },
+          "tenKhoaHoc": {
+            "type": "string",
+            "nullable": true
+          },
+          "nhomBenh": {
+            "type": "string",
+            "nullable": true
+          },
+          "moTa": {
+            "type": "string",
+            "nullable": true
+          },
+          "doPhoBien": {
+            "type": "string",
+            "nullable": true
+          },
+          "mucDoNghiemTrong": {
+            "type": "string",
+            "nullable": true
+          },
+          "ngayTao": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
       "ThuocCreateDTO": {
         "type": "object",
         "properties": {
@@ -1894,10 +1916,6 @@
             "nullable": true
           },
           "hoatChat": {
-            "type": "string",
-            "nullable": true
-          },
-          "trangThai": {
             "type": "string",
             "nullable": true
           }
@@ -1916,10 +1934,6 @@
             "nullable": true
           },
           "hoatChat": {
-            "type": "string",
-            "nullable": true
-          },
-          "trangThai": {
             "type": "string",
             "nullable": true
           }
