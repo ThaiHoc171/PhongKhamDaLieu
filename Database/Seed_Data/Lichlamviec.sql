@@ -13,27 +13,41 @@
 ('15:30', '16:00', N'Chiều 6', 5);
 GO
 
-
 INSERT INTO NgayNghiNhanVien (NhanVienID, Ngay, LyDo) VALUES 
 (1, '2025-01-08', N'Nghỉ hàng tuần'),
 (2, '2025-01-10', N'Nghỉ hàng tuần'),
 (3, '2025-01-07', N'Nghỉ hàng tuần'),
 (4, '2025-01-09', N'Nghỉ hàng tuần'),
+=======
+INSERT INTO NgayNghiNhanVien (NhanVienID, Ngay, LyDo) VALUES
+-- Thứ 2
+(5, '2025-12-30', N'Nghỉ hàng tuần'),
+(8, '2025-12-30', N'Nghỉ hàng tuần'),
+-- Thứ 3
+(3, '2025-12-31', N'Nghỉ hàng tuần'),
+(6, '2025-12-31', N'Nghỉ hàng tuần'),
+-- Thứ 4
+(1, '2026-01-01', N'Nghỉ hàng tuần'),
+-- Thứ 5
+(4, '2026-01-02', N'Nghỉ hàng tuần'),
+(9, '2026-01-02', N'Nghỉ hàng tuần'),
+-- Thứ 6
+(2, '2026-01-03', N'Nghỉ hàng tuần'),
+(7, '2026-01-03', N'Nghỉ hàng tuần');
+>>>>>>> d4d8c8708a5009f37d5e1475d791376a70469453
 
-(5, '2025-01-06', N'Nghỉ hàng tuần'),
-(6, '2025-01-07', N'Nghỉ hàng tuần'),
-(7, '2025-01-10', N'Nghỉ hàng tuần'),
-
-(8, '2025-01-06', N'Nghỉ hàng tuần'),
-(9, '2025-01-09', N'Nghỉ hàng tuần'),
-(10, '2025-01-11', N'Nghỉ hàng tuần'),
-
-(11, '2025-01-08', N'Nghỉ hàng tuần'),
-(12, '2025-01-12', N'Nghỉ hàng tuần');
-GO
 -- ================================
--- LỊCH LÀM VIỆC TUẦN HOÀN CHỈNH
+-- LỊCH LÀM VIỆC NHÂN VIÊN TUẦN HIỆN TẠI
 -- ================================
+-- Thứ 2 - 2025-12-30
+INSERT INTO LichLamViecNhanVien (NhanVienID, Ngay, CaLamViec, GhiChu) VALUES
+(1,'2025-12-30',1,N'Ca sáng'),
+(2,'2025-12-30',2,N'Ca chiều'),
+(3,'2025-12-30',1,N'Ca sáng'),
+(4,'2025-12-30',2,N'Ca chiều'),
+(6,'2025-12-30',1,N'Ca sáng'),
+(7,'2025-12-30',2,N'Ca chiều'),
+(9,'2025-12-30',1,N'Ca sáng');
 
 -- THỨ 2 (2025-01-06) - Nghỉ: NV5, NV8
 INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) VALUES ---Thiếu GhiChu
@@ -48,124 +62,118 @@ INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) V
 (11,1,'2025-01-06',1),
 (12,1,'2025-01-06',2);
 
--- THỨ 3 (2025-01-07) - Nghỉ: NV3, NV6
-INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) VALUES
-(1,1,'2025-01-07',1),
-(2,1,'2025-01-07',2),
-(4,1,'2025-01-07',1),
-(5,1,'2025-01-07',2),
-(7,1,'2025-01-07',1),
-(8,1,'2025-01-07',2),
-(9,1,'2025-01-07',1),
-(10,1,'2025-01-07',2),
-(11,1,'2025-01-07',1),
-(12,1,'2025-01-07',2);
+-- Thứ 3 - 2025-12-31
+INSERT INTO LichLamViecNhanVien (NhanVienID, Ngay, CaLamViec, GhiChu) VALUES
+(1,'2025-12-31',1,N'Ca sáng'),
+(2,'2025-12-31',2,N'Ca chiều'),
+(4,'2025-12-31',1,N'Ca sáng'),
+(5,'2025-12-31',2,N'Ca chiều'),
+(7,'2025-12-31',1,N'Ca sáng'),
+(8,'2025-12-31',2,N'Ca chiều'),
+(9,'2025-12-31',1,N'Ca sáng');
 
--- THỨ 4 (2025-01-08) - Nghỉ: NV1, NV11
-INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) VALUES
-(2,1,'2025-01-08',1),
-(3,1,'2025-01-08',2),
-(4,1,'2025-01-08',1),
-(5,1,'2025-01-08',2),
-(6,1,'2025-01-08',1),
-(7,1,'2025-01-08',2),
-(8,1,'2025-01-08',1),
-(9,1,'2025-01-08',2),
-(10,1,'2025-01-08',1),
-(12,1,'2025-01-08',2);
 
--- THỨ 5 (2025-01-09) - Nghỉ: NV4, NV9
-INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) VALUES
-(1,1,'2025-01-09',1),
-(2,1,'2025-01-09',2),
-(3,1,'2025-01-09',1),
-(5,1,'2025-01-09',2),
-(6,1,'2025-01-09',1),
-(7,1,'2025-01-09',2),
-(8,1,'2025-01-09',1),
-(10,1,'2025-01-09',2),
-(11,1,'2025-01-09',1),
-(12,1,'2025-01-09',2);
+-- Thứ 4 - 2026-01-01
+INSERT INTO LichLamViecNhanVien (NhanVienID, Ngay, CaLamViec, GhiChu) VALUES
+(2,'2026-01-01',1,N'Ca sáng'),
+(3,'2026-01-01',2,N'Ca chiều'),
+(4,'2026-01-01',1,N'Ca sáng'),
+(5,'2026-01-01',2,N'Ca chiều'),
+(6,'2026-01-01',1,N'Ca sáng'),
+(7,'2026-01-01',2,N'Ca chiều'),
+(8,'2026-01-01',1,N'Ca sáng'),
+(9,'2026-01-01',2,N'Ca chiều');
 
--- THỨ 6 (2025-01-10) - Nghỉ: NV2, NV7
-INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) VALUES
-(1,1,'2025-01-10',1),
-(3,1,'2025-01-10',2),
-(4,1,'2025-01-10',1),
-(5,1,'2025-01-10',2),
-(6,1,'2025-01-10',1),
-(8,1,'2025-01-10',2),
-(9,1,'2025-01-10',1),
-(10,1,'2025-01-10',2),
-(11,1,'2025-01-10',1),
-(12,1,'2025-01-10',2);
 
--- THỨ 7 (2025-01-11) - Nghỉ: NV10
-INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) VALUES
-(1,1,'2025-01-11',1),
-(2,1,'2025-01-11',2),
-(3,1,'2025-01-11',1),
-(4,1,'2025-01-11',2),
-(5,1,'2025-01-11',1),
-(6,1,'2025-01-11',2),
-(7,1,'2025-01-11',1),
-(8,1,'2025-01-11',2),
-(9,1,'2025-01-11',1),
-(11,1,'2025-01-11',2),
-(12,1,'2025-01-11',1);
+-- Thứ 5 - 2026-01-02
+INSERT INTO LichLamViecNhanVien (NhanVienID, Ngay, CaLamViec, GhiChu) VALUES
+(1,'2026-01-02',1,N'Ca sáng'),
+(2,'2026-01-02',2,N'Ca chiều'),
+(3,'2026-01-02',1,N'Ca sáng'),
+(5,'2026-01-02',2,N'Ca chiều'),
+(6,'2026-01-02',1,N'Ca sáng'),
+(7,'2026-01-02',2,N'Ca chiều'),
+(8,'2026-01-02',1,N'Ca sáng');
 
--- CHỦ NHẬT (2025-01-12) - Nghỉ: NV12
-INSERT INTO LichLamViecNhanVien (NhanVienID, PhongChucNangID, Ngay, CaLamViec) VALUES
-(1,1,'2025-01-12',1),
-(2,1,'2025-01-12',2),
-(3,1,'2025-01-12',1),
-(4,1,'2025-01-12',2),
-(5,1,'2025-01-12',1),
-(6,1,'2025-01-12',2),
-(7,1,'2025-01-12',1),
-(8,1,'2025-01-12',2),
-(9,1,'2025-01-12',1),
-(10,1,'2025-01-12',2),
-(11,1,'2025-01-12',1);
+=======
+-- Thứ 6 - 2026-01-03
+INSERT INTO LichLamViecNhanVien (NhanVienID, Ngay, CaLamViec, GhiChu) VALUES
+(1,'2026-01-03',1,N'Ca sáng'),
+(3,'2026-01-03',2,N'Ca chiều'),
+(4,'2026-01-03',1,N'Ca sáng'),
+(5,'2026-01-03',2,N'Ca chiều'),
+(6,'2026-01-03',1,N'Ca sáng'),
+(8,'2026-01-03',2,N'Ca chiều'),
+(9,'2026-01-03',1,N'Ca sáng');
 
-INSERT INTO CaKham (LichLamViecID, PhongChucNangID, NgayKham, KhungGioID, BenhNhanID, LyDoKham, TrangThai, GhiChu) ---Thiếu NgayDat
+
+-- Thứ 7 - 2026-01-04
+INSERT INTO LichLamViecNhanVien (NhanVienID, Ngay, CaLamViec, GhiChu) VALUES
+(1,'2026-01-04',1,N'Ca sáng'),
+(2,'2026-01-04',2,N'Ca chiều'),
+(3,'2026-01-04',1,N'Ca sáng'),
+(4,'2026-01-04',2,N'Ca chiều'),
+(5,'2026-01-04',1,N'Ca sáng'),
+(6,'2026-01-04',2,N'Ca chiều'),
+(7,'2026-01-04',1,N'Ca sáng'),
+(8,'2026-01-04',2,N'Ca chiều'),
+(9,'2026-01-04',1,N'Ca sáng');
+
+-- Chủ nhật - 2026-01-05
+INSERT INTO LichLamViecNhanVien (NhanVienID, Ngay, CaLamViec, GhiChu) VALUES
+(1,'2026-01-05',1,N'Ca sáng'),
+(2,'2026-01-05',2,N'Ca chiều'),
+(3,'2026-01-05',1,N'Ca sáng'),
+(4,'2026-01-05',2,N'Ca chiều'),
+(5,'2026-01-05',1,N'Ca sáng'),
+(6,'2026-01-05',2,N'Ca chiều'),
+(7,'2026-01-05',1,N'Ca sáng'),
+(8,'2026-01-05',2,N'Ca chiều'),
+(9,'2026-01-05',1,N'Ca sáng');
+
+
+
+-- ===============================
+-- CA KHÁM ĐẦY ĐỦ HƠN
+-- ===============================
+-- Ngày 2025-12-30
+INSERT INTO CaKham (LichLamViecID, PhongChucNangID, NgayKham, KhungGioID, BenhNhanID, LyDoKham, TrangThai, GhiChu)
 VALUES
-(1, 1, '2025-01-03', 1, 1, N'Khám da liễu tổng quát', 'booked', NULL),
-(1, 1, '2025-01-03', 2, NULL, NULL, 'available', NULL),
-(1, 1, '2025-01-03', 3, 2, N'Nổi mẩn đỏ', 'confirmed', NULL),
+(1, 1, '2025-12-30', 1, 1, N'Khám da liễu tổng quát', N'Đã đặt', NULL),
+(1, 1, '2025-12-30', 2, 2, N'Khám dị ứng da', N'Đã đặt', NULL),
+(1, 1, '2025-12-30', 3, NULL, NULL, N'Trống', NULL),
+-- Ngày 2025-12-31
 
-(2, 1, '2025-01-04', 1, NULL, NULL, 'available', NULL),
-(2, 1, '2025-01-04', 2, 3, N'Mụn trứng cá nặng', 'booked', NULL),
-(2, 1, '2025-01-04', 3, 4, N'Rụng tóc', 'completed', NULL),
+(2, 1, '2025-12-31', 1, 3, N'Khám vảy nến', N'Đã xác nhận', NULL),
+(2, 1, '2025-12-31', 2, NULL, NULL, N'Trống', NULL),
+(2, 1, '2025-12-31', 3, 4, N'Khám mụn bọc', N'Đã đặt', NULL),
 
-(3, 2, '2025-01-05', 1, 5, N'Soi da & điều trị laser', 'confirmed', NULL),
-(3, 2, '2025-01-05', 2, NULL, NULL, 'available', NULL),
-(3, 2, '2025-01-05', 3, 6, N'Nám da', 'booked', NULL),
+-- Ngày 2026-01-01
 
-(4, 2, '2025-01-06', 1, 7, N'Điều trị sẹo rỗ', 'confirmed', NULL),
-(4, 2, '2025-01-06', 2, NULL, NULL, 'available', NULL),
-(4, 2, '2025-01-06', 3, 8, N'Giãn mao mạch', 'completed', NULL),
+(3, 2, '2026-01-01', 1, 5, N'Tái khám nám da', N'Đã xác nhận', NULL),
+(3, 2, '2026-01-01', 2, NULL, NULL, N'Trống', NULL),
+(3, 2, '2026-01-01', 3, 6, N'Điều trị sẹo rỗ', N'Hoàn thành', NULL),
 
-(5, 3, '2025-01-07', 1, NULL, NULL, 'available', NULL),
-(5, 3, '2025-01-07', 2, 9, N'Theo dõi điều trị', 'booked', NULL),
-(5, 3, '2025-01-07', 3, 10, N'Tái khám', 'confirmed', NULL),
+-- Ngày 2026-01-02
 
-(6, 3, '2025-01-08', 1, 2, N'Xét nghiệm da liễu', 'booked', NULL),
-(6, 3, '2025-01-08', 2, NULL, NULL, 'available', NULL),
-(6, 3, '2025-01-08', 3, 3, N'Khám dị ứng', 'completed', NULL),
+(4, 2, '2026-01-02', 1, 7, N'Khám mụn ẩn', N'Đã đặt', NULL),
+(4, 2, '2026-01-02', 2, NULL, NULL, N'Trống', NULL),
+(4, 2, '2026-01-02', 3, 8, N'Tái khám da khô', N'Đã xác nhận', NULL),
 
-(7, 3, '2025-01-09', 1, NULL, NULL, 'available', NULL),
-(7, 3, '2025-01-09', 2, 4, N'Khám ban đỏ', 'booked', NULL),
-(7, 3, '2025-01-09', 3, 5, N'Nấm da đầu', 'confirmed', NULL),
+-- Ngày 2026-01-03
 
-(8, 2, '2025-01-10', 1, 6, N'Điều trị laser nám', 'completed', NULL),
-(8, 2, '2025-01-10', 2, NULL, NULL, 'available', NULL),
-(8, 2, '2025-01-10', 3, 7, N'Xóa xăm', 'booked', NULL),
+(5, 3, '2026-01-03', 1, 9, N'Khám da nhạy cảm', N'Đã đặt', NULL),
+(5, 3, '2026-01-03', 2, NULL, NULL, N'Trống', NULL),
+(5, 3, '2026-01-03', 3, NULL, NULL, N'Trống', NULL),
 
-(9, 2, '2025-01-11', 1, 8, N'Chăm sóc da chuyên sâu', 'confirmed', NULL),
-(9, 2, '2025-01-11', 2, NULL, NULL, 'available', NULL),
-(9, 2, '2025-01-11', 3, 9, N'Điều trị mụn', 'booked', NULL),
+-- Ngày 2026-01-04
 
-(10, 3, '2025-01-12', 1, 10, N'Theo dõi kết quả điều trị', 'confirmed', NULL),
-(10, 3, '2025-01-12', 2, NULL, NULL, 'available', NULL),
-(10, 3, '2025-01-12', 3, 1, N'Khám định kỳ', 'booked', NULL);
+(6, 3, '2026-01-04', 1, 1, N'Khám da dầu', N'Đã đặt', NULL),
+(6, 3, '2026-01-04', 2, NULL, NULL, N'Trống', NULL),
+(6, 3, '2026-01-04', 3, 2, N'Khám dị ứng mỹ phẩm', N'Đã xác nhận', NULL),
+
+-- Ngày 2026-01-05
+
+(7, 2, '2026-01-05', 1, 3, N'Khám mụn trứng cá', N'Đã đặt', NULL),
+(7, 2, '2026-01-05', 2, NULL, NULL, N'Trống', NULL),
+(7, 2, '2026-01-05', 3, 4, N'Khám rụng tóc', N'Hoàn thành', NULL);
