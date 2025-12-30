@@ -12,4 +12,16 @@ namespace Domain.DTO
         public DateTime NgayTao { get; set; }
         public DateTime NgayCapNhat { get; set; }
     }
+	public class TaiKhoanCreateDTO
+    {
+        public string Email { get; set; }
+        public string MatKhau{ get; set; }
+        public string VaiTro { get; set; }
+	}
+    public class DoiMatKhauDTO
+    {
+        public int TaiKhoanID { get; set; }
+        public string MatKhauCu { get; set; }
+        public string MatKhauMoi { get; set; }
+	}   
 }

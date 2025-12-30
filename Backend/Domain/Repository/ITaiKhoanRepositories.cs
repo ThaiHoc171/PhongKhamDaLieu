@@ -12,7 +12,7 @@ namespace Domain.Repository
 		TaiKhoanDTO LayTaiKhoanTheoEmail(string email);
 		TaiKhoanDTO LayTaiKhoanTheoID(int taiKhoanID);
 		List<TaiKhoanDTO> LayDanhSachTaiKhoan();
-		bool ThemTaiKhoan(TaiKhoanDTO tk);
+		bool TaoTaiKhoan(TaiKhoanCreateDTO taiKhoan);
 		bool CapNhatMatKhau(int taiKhoanID, string newPasswordHash);
 		bool VoHieuHoaTaiKhoan(int taiKhoanID);
 	}

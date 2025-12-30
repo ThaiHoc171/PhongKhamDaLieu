@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
 
 		public TaiKhoanDTO LayTaiKhoanTheoEmail(string email)
 		{
-			string sql = @"SELECT * FROM TaiKhoan WHERE Email = @Email AND Status = 'active'";
+			string sql = @"SELECT * FROM TaiKhoan WHERE Email = @Email AND TrangThai = N'Hoạt động'";
 
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
@@ -36,9 +36,9 @@ namespace Infrastructure.Repositories
 							{
 								TaiKhoanID = (int)reader["TaiKhoanID"],
 								Email = reader["Email"].ToString(),
-								PasswordHash = reader["PasswordHash"].ToString(),
-								Role = reader["Role"].ToString(),
-								Status = reader["Status"].ToString(),
+								PasswordHash = reader["MatKhau"].ToString(),
+								Role = reader["VaiTro"].ToString(),
+								Status = reader["TrangThai"].ToString(),
 								NgayTao = (DateTime)reader["NgayTao"],
 								NgayCapNhat = (DateTime)reader["NgayCapNhat"]
 							};
@@ -65,9 +65,9 @@ namespace Infrastructure.Repositories
 							{
 								TaiKhoanID = (int)reader["TaiKhoanID"],
 								Email = reader["Email"].ToString(),
-								PasswordHash = reader["PasswordHash"].ToString(),
-								Role = reader["Role"].ToString(),
-								Status = reader["Status"].ToString(),
+								PasswordHash = reader["MatKhau"].ToString(),
+								Role = reader["VaiTro"].ToString(),
+								Status = reader["TrangThai"].ToString(),
 								NgayTao = (DateTime)reader["NgayTao"],
 								NgayCapNhat = (DateTime)reader["NgayCapNhat"]
 							};
@@ -82,7 +82,7 @@ namespace Infrastructure.Repositories
 		{
 			List<TaiKhoanDTO> list = new List<TaiKhoanDTO>();
 			string sql = @"
-                SELECT TaiKhoanID, Email, Role, Status, NgayTao, NgayCapNhat
+                SELECT TaiKhoanID, Email, VaiTro, TrangThai, NgayTao, NgayCapNhat
                 FROM TaiKhoan
             ";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -98,8 +98,8 @@ namespace Infrastructure.Repositories
 							{
 								TaiKhoanID = (int)reader["TaiKhoanID"],
 								Email = reader["Email"].ToString(),
-								Role = reader["Role"].ToString(),
-								Status = reader["Status"].ToString(),
+								Role = reader["VaiTro"].ToString(),
+								Status = reader["TrangThai"].ToString(),
 								NgayTao = (DateTime)reader["NgayTao"],
 								NgayCapNhat = (DateTime)reader["NgayCapNhat"]
 							});
@@ -109,23 +109,20 @@ namespace Infrastructure.Repositories
 				}
 			}
 		}
-		public bool ThemTaiKhoan(TaiKhoanDTO tk)
+		public bool TaoTaiKhoan(TaiKhoanCreateDTO taiKhoan)
 		{
 			string sql = @"
-				INSERT INTO TaiKhoan (Email, PasswordHash, Role, Status, NgayTao, NgayCapNhat)
-				VALUES (@Email, @PasswordHash, @Role, @Status, @NgayTao, @NgayCapNhat)
+				INSERT INTO TaiKhoan (Email, MatKhau, VaiTro)
+				VALUES (@Email, @MatKhau, @VaiTro)
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@Email", tk.Email);
-					cmd.Parameters.AddWithValue("@PasswordHash", tk.PasswordHash);
-					cmd.Parameters.AddWithValue("@Role", tk.Role);
-					cmd.Parameters.AddWithValue("@Status", tk.Status);
-					cmd.Parameters.AddWithValue("@NgayTao", tk.NgayTao);
-					cmd.Parameters.AddWithValue("@NgayCapNhat", tk.NgayCapNhat);
+					cmd.Parameters.AddWithValue("@Email", taiKhoan.Email);
+					cmd.Parameters.AddWithValue("@MatKhau", taiKhoan.MatKhau);
+					cmd.Parameters.AddWithValue("@VaiTro", taiKhoan.VaiTro);
 					int rowsAffected = cmd.ExecuteNonQuery();
 					return rowsAffected > 0;
 				}
@@ -135,7 +132,7 @@ namespace Infrastructure.Repositories
 		{
 			string sql = @"
 				UPDATE TaiKhoan
-				SET PasswordHash = @PasswordHash, NgayCapNhat = @NgayCapNhat
+				SET MatKhau = @PasswordHash, NgayCapNhat = @NgayCapNhat
 				WHERE TaiKhoanID = @TaiKhoanID
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -155,7 +152,7 @@ namespace Infrastructure.Repositories
 		{
 			string sql = @"
 				UPDATE TaiKhoan
-				SET Status = 'Inactive', NgayCapNhat = @NgayCapNhat
+				SET TrangThai = N'Bị khóa' , NgayCapNhat = @NgayCapNhat
 				WHERE TaiKhoanID = @TaiKhoanID
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))

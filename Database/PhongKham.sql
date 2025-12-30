@@ -15,71 +15,75 @@ GO
 -- ============================================
 -- 1. TÀI KHOẢN VÀ THÔNG TIN CÁ NHÂN
 -- ============================================
-
--- Quản lý tài khoản chung --
 CREATE TABLE TaiKhoan (
-    TaiKhoanID      INT IDENTITY(1,1) PRIMARY KEY,
-    Email           NVARCHAR(100) UNIQUE NOT NULL,
-    PasswordHash    NVARCHAR(255) NOT NULL,
-    Role            NVARCHAR(20) CHECK (Role IN ('customer', 'employee', 'admin')) NOT NULL,
-    Status          NVARCHAR(20) CHECK (Status IN ('active', 'inactive')) DEFAULT 'active',
-    NgayTao         DATETIME DEFAULT GETDATE(),
-    NgayCapNhat     DATETIME DEFAULT GETDATE()
+    TaiKhoanID INT IDENTITY PRIMARY KEY,
+    Email NVARCHAR(100) NOT NULL UNIQUE,
+    MatKhau NVARCHAR(255) NOT NULL,
+    VaiTro NVARCHAR(20) NOT NULL
+        CHECK (VaiTro IN (N'Bệnh nhân', N'Nhân viên', N'Admin')),
+    TrangThai NVARCHAR(50) NOT NULL
+        CONSTRAINT DF_TaiKhoan_TrangThai DEFAULT N'Hoạt động'
+        CONSTRAINT CK_TaiKhoan_TrangThai CHECK (TrangThai IN (N'Hoạt động', N'Bị khóa')),
+    NgayTao DATETIME DEFAULT GETDATE(),
+    NgayCapNhat DATETIME DEFAULT GETDATE()
 );
 GO
--- Quản lý thông tin cá nhân --
+
 CREATE TABLE ThongTinCaNhan (
-    ThongTinID  INT IDENTITY(1,1) PRIMARY KEY,
-    TaiKhoanID  INT NULL,
-    HoTen       NVARCHAR(200) NOT NULL,
-    NgaySinh    DATE,
-    GioiTinh    NVARCHAR(10) CHECK (GioiTinh IN ('Nam', 'Nu', 'Khac')),
-    SDT         NVARCHAR(20),
+    ThongTinID INT IDENTITY PRIMARY KEY,
+    TaiKhoanID INT NULL,
+    HoTen NVARCHAR(200) NOT NULL,
+    NgaySinh DATE,
+    GioiTinh NVARCHAR(10)
+        CHECK (GioiTinh IN (N'Nam', N'Nữ', N'Khác')),
+    SDT NVARCHAR(20),
     EmailLienHe NVARCHAR(150),
-    DiaChi      NVARCHAR(255),
-    Avatar      NVARCHAR(300),
-    Loai        NVARCHAR(20) CHECK (Loai IN ('benhnhan', 'nhanvien')) NOT NULL,
-    NgayTao     DATETIME DEFAULT GETDATE(),
+    DiaChi NVARCHAR(255),
+    Avatar NVARCHAR(300),
+    Loai NVARCHAR(20) NOT NULL
+        CHECK (Loai IN (N'Bệnh nhân', N'Nhân viên')),
+    NgayTao DATETIME DEFAULT GETDATE(),
     NgayCapNhat DATETIME DEFAULT GETDATE(),
-    TrangThai   NVARCHAR(20) CHECK (Status IN ('active', 'inactive')) DEFAULT 'active',
     FOREIGN KEY (TaiKhoanID) REFERENCES TaiKhoan(TaiKhoanID) ON DELETE SET NULL
 );
 GO
 
--- Mã định danh bệnh nhân để thực hiện các nghiệp vụ trong hệ thống --
 CREATE TABLE BenhNhan (
-    BenhNhanID       INT IDENTITY(1,1) PRIMARY KEY,
+    BenhNhanID INT IDENTITY PRIMARY KEY,
     ThongTinID INT NOT NULL UNIQUE,
+    LoaiDa NVARCHAR(50)
+        CHECK (LoaiDa IN (N'Da dầu', N'Da khô', N'Da hỗn hợp', N'Da nhạy cảm')),
+    TrangThaiTheoDoi NVARCHAR(50) NOT NULL
+        CONSTRAINT DF_BenhNhan_TrangThaiTheoDoi DEFAULT N'Bắt đầu điều trị'
+        CHECK (TrangThaiTheoDoi IN (
+            N'Bắt đầu điều trị',
+            N'Đang điều trị',
+            N'Ổn định',
+            N'Ngưng theo dõi'
+        )),
+    GhiChu NVARCHAR(MAX),
     FOREIGN KEY (ThongTinID) REFERENCES ThongTinCaNhan(ThongTinID) ON DELETE CASCADE
 );
 GO
-ALTER TABLE BenhNhan
-ADD 
-    LoaiDa NVARCHAR(50) 
-        CHECK (LoaiDa IN (N'Da dầu', N'Da khô', N'Da hỗn hợp', N'Da nhạy cảm')),
-    -- Theo dõi
-    TrangThaiTheoDoi NVARCHAR(50) 
-        CHECK (TrangThaiTheoDoi IN (N'Bắt đầu điều trị',N'đang điều trị', N'ổn định', N'ngưng theo dõi'))
-        DEFAULT N'Bắt đầu điều trị',
-    GhiChu NVARCHAR(MAX);
-GO
 
 
 -- ============================================
--- 2. NHÂN VIÊN VÀ CHỨC VỤ
+-- 2. NHÂN SỰ VÀ TỔ CHỨC
 -- ============================================
 
--- Bảng chức vụ để phân loại các nhân viên trong phòng khám --
 CREATE TABLE ChucVu (
     ChucVuID INT IDENTITY(1,1) PRIMARY KEY,
     TenChucVu NVARCHAR(100) NOT NULL,
     MoTa NVARCHAR(MAX),
     NgayTao DATETIME DEFAULT GETDATE(),
-    TrangThai BIT DEFAULT 1
+    TrangThai NVARCHAR(50) NOT NULL
+        CONSTRAINT DF_ChucVu_TrangThai DEFAULT N'Hoạt động'
+        CONSTRAINT CK_ChucVu_TrangThai
+        CHECK (TrangThai IN (N'Hoạt động', N'Không hoạt động'))
+
 );
 GO
 
--- Mã định danh nhân viên để thực hiện các nghiệp vụ trong hệ thống --
 CREATE TABLE NhanVien (
     NhanVienID   INT IDENTITY(1,1) PRIMARY KEY,
     ThongTinID   INT NOT NULL UNIQUE,
@@ -88,6 +92,10 @@ CREATE TABLE NhanVien (
     NgayVaoLam     DATE,
     BangCap      NVARCHAR(500),
     KinhNghiem   NVARCHAR(500),
+    TrangThai NVARCHAR(50) NOT NULL
+        CONSTRAINT DF_NhanVien_TrangThai DEFAULT N'Đang làm việc'
+        CONSTRAINT CK_NhanVien_TrangThai
+        CHECK (TrangThai IN (N'Đang làm việc', N'Nghỉ việc')),
     FOREIGN KEY (ThongTinID) REFERENCES ThongTinCaNhan(ThongTinID) ON DELETE CASCADE,
     FOREIGN KEY (ChucVuID) REFERENCES ChucVu(ChucVuID)
 );
@@ -150,7 +158,7 @@ GO
 
 -- Các thiết bị có trong 1 phòng chức năng cụ thể --
 CREATE TABLE PhongChucNang_ThietBi (
-    ID INT IDENTITY(1,1) PRIMARY KEY,
+    PCN_TB_ID INT IDENTITY(1,1) PRIMARY KEY,
     PhongChucNangID INT NOT NULL,
     ThietBiID INT NOT NULL,
     SoLuong INT DEFAULT 1,
@@ -169,7 +177,6 @@ GO
 CREATE TABLE LichLamViecNhanVien (
     LichLamViecID INT IDENTITY(1,1) PRIMARY KEY,
     NhanVienID INT NOT NULL,
-	PhongChucNangID INT NOT NULL,
     Ngay DATE NOT NULL,
     CaLamViec INT NOT NULL,
     GhiChu NVARCHAR(500),
@@ -207,7 +214,9 @@ CREATE TABLE CaKham (
     KhungGioID INT NOT NULL,
     BenhNhanID INT NULL,
     LyDoKham NVARCHAR(500),
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('available', 'booked', 'confirmed', 'completed', 'cancelled', 'no-show')) DEFAULT 'available',
+    TrangThai NVARCHAR(50) NOT NULL
+        CONSTRAINT DF_CaKham_TrangThai DEFAULT N'Trống'
+        CONSTRAINT CK_CaKham_TrangThai CHECK ( TrangThai IN ( N'Trống', N'Đã đặt', N'Đã xác nhận', N'Hoàn thành', N'Đã hủy', N'Không đến' )),
     NgayDat DATETIME DEFAULT GETDATE(),
     GhiChu NVARCHAR(MAX),
     FOREIGN KEY (LichLamViecID) REFERENCES LichLamViecNhanVien(LichLamViecID) ON DELETE CASCADE,
@@ -215,8 +224,8 @@ CREATE TABLE CaKham (
 	FOREIGN KEY (PhongChucNangID) REFERENCES PhongChucNang(PhongChucNangID),
     FOREIGN KEY (KhungGioID) REFERENCES KhungGioKham(KhungGioID),
     CONSTRAINT CHK_CaKham_BenhNhan CHECK (
-        (TrangThai = 'available' AND BenhNhanID IS NULL) OR
-        (TrangThai != 'available' AND BenhNhanID IS NOT NULL)
+        (TrangThai = N'Trống' AND BenhNhanID IS NULL) OR
+        (TrangThai != N'Trống' AND BenhNhanID IS NOT NULL)
     )
 );
 GO
@@ -255,7 +264,7 @@ CREATE TABLE PhienKham (
     AI_KetQuaJSON NVARCHAR(MAX),
     ChuanDoanCuoi NVARCHAR(300),
     NgayKham DATETIME DEFAULT GETDATE(),
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('in-progress', 'completed', 'cancelled')) DEFAULT 'in-progress',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
     FOREIGN KEY (CaKhamID) REFERENCES CaKham(CaKhamID),
     FOREIGN KEY (BenhNhanID) REFERENCES BenhNhan(BenhNhanID),
     FOREIGN KEY (NhanVienID) REFERENCES NhanVien(NhanVienID),
@@ -287,7 +296,7 @@ CREATE TABLE CanLamSang (
     MoTa NVARCHAR(MAX),
     Gia DECIMAL(18,2),
     LoaiXetNghiem NVARCHAR(100),
-    ChiDinhTuBacSi BIT DEFAULT 1,
+    Ghichu NVARCHAR(100),
     NgayTao DATETIME DEFAULT GETDATE()
 );
 GO
@@ -297,7 +306,7 @@ CREATE TABLE PhienKham_CanLamSang (
     PhienKham_CanLamSangID INT IDENTITY(1,1) PRIMARY KEY,
     PhienKhamID INT NOT NULL,
     CanLamSangID INT NOT NULL,
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('pending', 'in-progress', 'completed', 'cancelled')) DEFAULT 'pending',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
     KetQua NVARCHAR(MAX),
     FileDinhKem NVARCHAR(500),
     NgayChiDinh DATETIME DEFAULT GETDATE(),
@@ -373,7 +382,7 @@ CREATE TABLE PhienKham_Benh (
     PhienKham_BenhID INT IDENTITY(1,1) PRIMARY KEY,
     PhienKhamID INT NOT NULL,
     LoaiBenhID INT NOT NULL,
-    LoaiChuanDoan NVARCHAR(50) CHECK (LoaiChuanDoan IN ('primary', 'secondary', 'suspected')),
+    LoaiChuanDoan NVARCHAR(50) CHECK (LoaiChuanDoan IN (N'Chuẩn đoán chính', N'Chuẩn đoán phát sinh')) default N'Chuẩn đoán chính' ,
     GhiChu NVARCHAR(MAX),
     FOREIGN KEY (PhienKhamID) REFERENCES PhienKham(PhienKhamID) ON DELETE CASCADE,
     FOREIGN KEY (LoaiBenhID) REFERENCES LoaiBenh(LoaiBenhID)
@@ -392,8 +401,7 @@ CREATE TABLE TaiKham (
     BenhNhanID INT NOT NULL,           -- bệnh nhân được yêu cầu tái khám
     NgayDuKien DATE NOT NULL,          -- ngày bác sĩ chỉ định
     LyDo NVARCHAR(500),                -- lý do tái khám
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('pending', 'scheduled', 'completed', 'cancelled'))
-        DEFAULT 'pending',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
     CaKhamID INT NULL,                 -- nếu đã gán lịch tái khám vào ca khám
     NgayTao DATETIME DEFAULT GETDATE(),
 
@@ -410,8 +418,7 @@ CREATE TABLE LieuTrinhDieuTri (
     PhienKhamID INT NOT NULL,          -- phiên khám bắt đầu liệu trình
     TenLieuTrinh NVARCHAR(200) NOT NULL, 
     TongSoBuoi INT NOT NULL,           -- ví dụ 4 buổi / 6 buổi
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('in-progress', 'completed', 'cancelled'))
-        DEFAULT 'in-progress',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Đang điều trị', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Đang điều trị',
     GhiChu NVARCHAR(MAX),
     NgayBatDau DATE DEFAULT GETDATE(),
     NgayKetThuc DATE NULL,
@@ -429,8 +436,7 @@ CREATE TABLE LieuTrinh_BuoiDieuTri (
     NgayDuKien DATE,
     NgayThucHien DATE NULL,
     NhanVienID INT NULL,                       -- bác sĩ thực hiện
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('pending','completed','skipped'))
-        DEFAULT 'pending',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
     GhiChu NVARCHAR(MAX),
     HinhAnhJSON NVARCHAR(MAX),                 -- ảnh theo dõi liệu trình
     FOREIGN KEY (LieuTrinhID) REFERENCES LieuTrinhDieuTri(LieuTrinhID) ON DELETE CASCADE,
@@ -444,7 +450,7 @@ CREATE TABLE BuoiDieuTri_CanLamSang (
     BuoiDieuTriID INT NOT NULL,
     CanLamSangID INT NOT NULL,
     KetQua NVARCHAR(MAX),
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('pending','done')) DEFAULT 'pending',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
 
     FOREIGN KEY (BuoiDieuTriID) REFERENCES LieuTrinh_BuoiDieuTri(BuoiDieuTriID) ON DELETE CASCADE,
     FOREIGN KEY (CanLamSangID) REFERENCES CanLamSang(CanLamSangID)
@@ -486,7 +492,7 @@ CREATE TABLE BaiViet (
     LuotXem INT DEFAULT 0,
     NgayDang DATETIME DEFAULT GETDATE(),
     NgayCapNhat DATETIME,
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('draft', 'published', 'hidden', 'archived')) DEFAULT 'draft',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN ('Bản nháp', 'Đã đăng', 'Ẩn', 'Lưu trữ')) DEFAULT 'Bản nháp',
 	FOREIGN KEY (TacGiaID) REFERENCES TaiKhoan(TaiKhoanID) ON DELETE SET NULL,
     FOREIGN KEY (LoaiBenhID) REFERENCES LoaiBenh(LoaiBenhID)
 );
