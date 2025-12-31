@@ -15,7 +15,7 @@ namespace API.Controllers
             _service = service;
         }
 
-        [HttpGet("DanhSachPhongKham")]
+        [HttpGet("DanhSach")]
         public IActionResult DanhSach()
         {
             return Ok(_service.DanhSachPhongKham());

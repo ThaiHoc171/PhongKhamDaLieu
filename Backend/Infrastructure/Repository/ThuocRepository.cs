@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
         {
             _connectionString = config.GetConnectionString("DefaultConnection");
         }
-        public List<ThuocDTO> DanhSachThuoc()
+        public List<ThuocDTO> DanhSach()
         {
             List<ThuocDTO> listThuoc = new List<ThuocDTO>();
             string sql = "SELECT * FROM Thuoc";

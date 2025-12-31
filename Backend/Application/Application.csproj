@@ -51,8 +51,10 @@
     <Compile Include="Services\LoaiBenhService.cs" />
     <Compile Include="Services\NhanVienService.cs" />
     <Compile Include="Services\PhongChucNangService.cs" />
+    <Compile Include="Services\PhongChucNang_ThietBiService.cs" />
     <Compile Include="Services\PhongKhamService.cs" />
     <Compile Include="Services\TaiKhoanService.cs" />
+    <Compile Include="Services\ThietBiService.cs" />
     <Compile Include="Services\ThuocService.cs" />
     <Compile Include="Services\ToaThuocService.cs" />
   </ItemGroup>

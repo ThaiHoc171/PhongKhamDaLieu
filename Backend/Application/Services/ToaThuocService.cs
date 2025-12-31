@@ -13,9 +13,9 @@ namespace Services
             _repo = repo;
         }
 
-        public List<ToaThuocDTO> DanhSachToaThuoc()
+        public List<ToaThuocDTO> DanhSach()
         {
-            return _repo.DanhSachToaThuoc();
+            return _repo.DanhSach();
         }
 
         public ToaThuocDTO LayToaThuocByID(int toaThuocID)

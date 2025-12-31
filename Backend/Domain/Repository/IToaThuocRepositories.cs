@@ -6,7 +6,7 @@ namespace Domain.Repository
 {
 	public interface IToaThuocRepository
 	{
-		List<ToaThuocDTO> DanhSachToaThuoc();
+		List<ToaThuocDTO> DanhSach();
 		ToaThuocDTO LayToaThuocByID(int toaThuocID);
 		List<ToaThuocDTO> LayToaThuocByPhienKhamID(int phienKhamID);
 

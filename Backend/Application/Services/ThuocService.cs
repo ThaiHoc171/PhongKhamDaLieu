@@ -12,9 +12,9 @@ namespace Services
         {
             _repo = repo;
         }
-        public List<ThuocDTO> DanhSachThuoc()
+        public List<ThuocDTO> DanhSach()
         {
-            return _repo.DanhSachThuoc();
+            return _repo.DanhSach();
         }
         public List<ThuocDTO> DanhSachThuocTheoKeywords(string kw)
         {
