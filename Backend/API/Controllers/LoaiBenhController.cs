@@ -14,7 +14,7 @@ namespace API.Controllers
         {
             _loaibenh = loaibenh;
         }
-        [HttpGet("DanhSachLoaiBenh")]
+        [HttpGet("DanhSach")]
         public IActionResult DanhSach()
         {
             var result = _loaibenh.DanhSachLoaiBenh();

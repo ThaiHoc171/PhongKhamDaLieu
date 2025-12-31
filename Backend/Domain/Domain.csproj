@@ -75,7 +75,9 @@
     <Compile Include="Repository\IBenhNhanRepositories.cs" />
     <Compile Include="Repository\IChiTietToaThuocRepositories.cs" />
     <Compile Include="Repository\IChucVuRepositories.cs" />
+    <Compile Include="Repository\IPhongChucNang_ThietBiRepositories.cs" />
     <Compile Include="Repository\IPhongKhamRepositories.cs" />
+    <Compile Include="Repository\IThietBiRepositories.cs" />
     <Compile Include="Repository\IToaThuocRepositories.cs" />
     <Compile Include="Repository\IThuocRepositories.cs" />
     <Compile Include="Repository\ITaiKhoanRepositories.cs" />

@@ -13,10 +13,10 @@ namespace API.Controllers
         {
             _thuoc = thuoc;
         }
-        [HttpGet("DanhSachThuoc")]
+        [HttpGet("DanhSach")]
         public IActionResult DanhSach()
         {
-            var result = _thuoc.DanhSachThuoc();
+            var result = _thuoc.DanhSach();
             return Ok(result);
         }
         [HttpGet("DanhSachThuocTheoKeyWords")]

@@ -10,4 +10,11 @@ namespace Domain.DTO
 		public string TinhTrang { get; set; }
 		public DateTime NgayNhap { get; set; }
 	}
+    public class ThemThietBiDTO
+    {
+        public string TenTB { get; set; }
+        public string LoaiTB { get; set; }
+        public string TinhTrang { get; set; }
+        public DateTime NgayNhap { get; set; }
+    }
 }

@@ -9,7 +9,7 @@ namespace Domain.Repository
 {
 	public interface IThuocRepository
 	{
-		List<ThuocDTO> DanhSachThuoc();
+		List<ThuocDTO> DanhSach();
 		List<ThuocDTO> DanhSachThuocTheoKeywords(string kw);
 		ThuocDTO LayThuocTheoID(int thuocid);
 		bool ThemThuoc(ThuocCreateDTO thuoc);

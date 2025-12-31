@@ -103,8 +103,10 @@
     <Compile Include="Repository\LoaiBenhRepository.cs" />
     <Compile Include="Repository\NhanVienRepository.cs" />
     <Compile Include="Repository\PhongChucNangRepository.cs" />
+    <Compile Include="Repository\PhongChucNang_ThietBiRepository.cs" />
     <Compile Include="Repository\PhongKhamRepository.cs" />
     <Compile Include="Repository\TaiKhoanRepository.cs" />
+    <Compile Include="Repository\ThietBiRepository.cs" />
     <Compile Include="Repository\ThuocRepository.cs" />
     <Compile Include="Repository\ToaThuocRepository.cs" />
   </ItemGroup>

@@ -15,10 +15,10 @@ namespace API.Controllers
             _toaThuocService = toaThuocService;
         }
 
-        [HttpGet("DanhSachToaThuoc")]
+        [HttpGet("DanhSach")]
         public IActionResult DanhSach()
         {
-            return Ok(_toaThuocService.DanhSachToaThuoc());
+            return Ok(_toaThuocService.DanhSach());
         }
 
         [HttpGet("TimToaThuocTheoID")]
