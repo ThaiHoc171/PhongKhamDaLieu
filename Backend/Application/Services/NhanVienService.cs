@@ -24,13 +24,23 @@ namespace Services
 		{
 			return _repo.LayNhanVienByKeyWord(keyword);
 		}
-		public bool ThemNhanVien(NhanVienCreateDTO nv)
+		public (bool Success, string Message) ThemNhanVien(NhanVienCreateDTO nv)
 		{
-			return _repo.ThemNhanVien(nv);
+			if(Helper.EmailHelper.IsEmail(nv.EmailLienHe) == false)
+				return (false, "Email không hợp lệ");
+			bool result = _repo.ThemNhanVien(nv);
+			if (result)
+				return (true, "Thêm nhân viên thành công.");
+			return (false, "Thêm nhân viên thất bại.");
 		}
-		public bool CapNhatNhanVien(NhanVienDetailDTO nv)
+		public (bool Success, string Message) CapNhatNhanVien(NhanVienUpdateDTO nv)
 		{
-			return _repo.CapNhatNhanVien(nv);
+			if(Helper.EmailHelper.IsEmail(nv.EmailLienHe) == false)
+				return (false, "Email không hợp lệ");
+			bool result = _repo.CapNhatNhanVien(nv);
+			if (result)
+				return (true, "Cập nhật nhân viên thành công.");
+			return (false, "Cập nhật nhân viên thất bại.");
 		}
 		public bool XoaNhanVien(int nhanVienID)
 		{

@@ -2,7 +2,6 @@
 using Services;
 using Domain.DTO;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity.Data;
 
 namespace API.Controllers
 {
@@ -18,7 +17,7 @@ namespace API.Controllers
 			_config = config;
 		}
 		[HttpPost("DangNhap")]
-		public IActionResult DangNhap([FromBody] LoginRequest request)
+		public IActionResult DangNhap([FromBody] Login request)
 		{
 			var result = _taiKhoan.DangNhap(request.Email, request.PasswordHash);
 			if (result != null)
@@ -53,8 +52,8 @@ namespace API.Controllers
 			}
 			return BadRequest("Đổi mật khẩu thất bại.");
 		}
-		[HttpPut("ResetMatKhau")]
-		public IActionResult ResetMatKhau([FromBody] int ID)
+		[HttpPut("ResetMatKhau/{ID}")]
+		public IActionResult ResetMatKhau(int ID)
 		{
 			string defaultPassword = _config["DefaultPassword"];
 			var result = _taiKhoan.ResetMatKhau(ID, defaultPassword);
@@ -63,11 +62,6 @@ namespace API.Controllers
 				return Ok("Reset mật khẩu thành công.");
 			}
 			return BadRequest("Reset mật khẩu thất bại.");
-		}
-		public class LoginRequest
-		{
-			public string Email { get; set; }
-			public string PasswordHash { get; set; }
 		}
 	}
 }

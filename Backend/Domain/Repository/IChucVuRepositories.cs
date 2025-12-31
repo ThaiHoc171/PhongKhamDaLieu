@@ -12,7 +12,7 @@ namespace Domain.Repository
 		List<ChucVuDTO> DanhSachChucVu();
 		ChucVuDTO LayChucVuByID(int chucvuID);
 		bool ThemChucVu(ThemChucVuDTO cv);
-		bool CapNhatChucVu(ChucVuDTO cv);
+		bool CapNhatChucVu(CapNhatChucVuDTO cv);
 		bool VoHieuHoaChucVu(int chucvuID);
 	}
 }

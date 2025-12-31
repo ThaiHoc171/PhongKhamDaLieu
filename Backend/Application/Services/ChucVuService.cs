@@ -28,7 +28,7 @@ namespace Services
 		{
 			return _repo.ThemChucVu(cv);
 		}
-		public bool CapNhatChucVu(ChucVuDTO cv)
+		public bool CapNhatChucVu(CapNhatChucVuDTO cv)
 		{
 			return _repo.CapNhatChucVu(cv);
 		}
