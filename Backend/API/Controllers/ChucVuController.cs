@@ -39,7 +39,7 @@ namespace API.Controllers
 			return BadRequest("Thêm chức vụ thất bại.");
 		}
 		[HttpPut("CapNhatChucVu")]
-		public IActionResult CapNhatChucVu([FromBody] ChucVuDTO cv)
+		public IActionResult CapNhatChucVu([FromBody] CapNhatChucVuDTO cv)
 		{
 			var result = _chucVu.CapNhatChucVu(cv);
 			if (result)

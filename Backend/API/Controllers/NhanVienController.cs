@@ -34,21 +34,17 @@ namespace API.Controllers
 		public IActionResult ThemNhanVien([FromBody] NhanVienCreateDTO nv)
 		{
 			var result = _nhanVien.ThemNhanVien(nv);
-			if (result)
-			{
-				return Ok("Thêm nhân viên thành công.");
-			}
-			return BadRequest("Thêm nhân viên thất bại.");
+			if (result.Success)
+				return Ok(result.Message);
+			return BadRequest(result.Message);
 		}
 		[HttpPut("CapNhatNhanVien")]
-		public IActionResult CapNhatNhanVien([FromBody] NhanVienDetailDTO nv)
+		public IActionResult CapNhatNhanVien([FromBody] NhanVienUpdateDTO nv)
 		{
 			var result = _nhanVien.CapNhatNhanVien(nv);
-			if (result)
-			{
-				return Ok("Cập nhật nhân viên thành công.");
-			}
-			return BadRequest("Cập nhật nhân viên thất bại.");
+			if (result.Success)
+				return Ok(result.Message);
+			return BadRequest(result.Message);
 		}
 		[HttpPut("XoaNhanVien")]
 		public IActionResult XoaNhanVien(int nhanVienID)
