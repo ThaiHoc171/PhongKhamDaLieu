@@ -22,6 +22,7 @@ namespace Domain.DTO
 		public string EmailLienHe { get; set; }
 		public string DiaChi { get; set; }
 		public string Avatar { get; set; }
+		public string Loai { get; set; }
 
 		public int? TaiKhoanID { get; set; }
 		public DateTime NgayTao { get; set; }
@@ -53,6 +54,24 @@ namespace Domain.DTO
 		public string SDT { get; set; }
 		public string EmailLienHe { get; set; }
 		public DateTime? NgayVaoLam { get; set; }
+	}
+	public class NhanVienUpdateDTO
+	{
+		public int NhanVienID { get; set; }
+		public string HoTen { get; set; }
+		public DateTime NgaySinh { get; set; }
+		public string GioiTinh { get; set; }
+
+		public string SDT { get; set; }
+		public string EmailLienHe { get; set; }
+		public string DiaChi { get; set; }
+		public string Avatar { get; set; }
+
+		public int ChucVuID { get; set; }
+		public decimal Luong { get; set; }
+		public DateTime NgayVaoLam { get; set; }
+		public string BangCap { get; set; }
+		public string KinhNghiem { get; set; }
 	}
 
 }

@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Domain.DTO;
+using Domain.Repository;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
-using Domain.DTO;
-using Domain.Repository;
 
 namespace Infrastructure.Repositories
 { 
@@ -21,7 +22,7 @@ namespace Infrastructure.Repositories
 					FROM NhanVien NV
 					JOIN ThongTinCaNhan TNC ON NV.ThongTinID = TNC.ThongTinID
 					JOIN ChucVu CV ON NV.ChucVuID = CV.ChucVuID
-					WHERE TNC.Loai = 'nhanvien'
+					WHERE TNC.Loai = N'Nhân viên' AND NV.TrangThai = N'Đang làm việc'
 				";
 			List<NhanVienListDTO> list = new List<NhanVienListDTO>();
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -57,11 +58,11 @@ namespace Infrastructure.Repositories
 						   NV.Luong, NV.NgayVaoLam, NV.BangCap, NV.KinhNghiem,
 						   TNC.HoTen, TNC.NgaySinh, TNC.GioiTinh,
 						   TNC.SDT, TNC.EmailLienHe, TNC.DiaChi, TNC.Avatar,
-						   TNC.TaiKhoanID, TNC.NgayTao, TNC.NgayCapNhat
+						   TNC.TaiKhoanID, TNC.NgayTao, TNC.NgayCapNhat, TNC.Loai
 					FROM NhanVien NV
 					JOIN ThongTinCaNhan TNC ON NV.ThongTinID = TNC.ThongTinID
 					JOIN ChucVu CV ON NV.ChucVuID = CV.ChucVuID
-					WHERE NV.NhanVienID = @NhanVienID AND Loai = 'nhanvien' And TNC.TrangThai = 'active'
+					WHERE NV.NhanVienID = @NhanVienID And NV.TrangThai = N'Đang làm việc'
 				";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
@@ -90,6 +91,7 @@ namespace Infrastructure.Repositories
 								EmailLienHe = reader["EmailLienHe"].ToString(),
 								DiaChi = reader["DiaChi"].ToString(),
 								Avatar = reader["Avatar"].ToString(),
+								Loai = reader["Loai"].ToString(),
 								TaiKhoanID = reader["TaiKhoanID"] as int?,
 								NgayTao = (DateTime)reader["NgayTao"],
 								NgayCapNhat = (DateTime)reader["NgayCapNhat"]
@@ -107,8 +109,9 @@ namespace Infrastructure.Repositories
 					FROM NhanVien NV
 					JOIN ThongTinCaNhan TNC ON NV.ThongTinID = TNC.ThongTinID
 					JOIN ChucVu CV ON NV.ChucVuID = CV.ChucVuID
-					WHERE TNC.Loai = 'nhanvien'
+					WHERE TNC.Loai = N'Nhân viên' 
 					AND ( TNC.HoTen LIKE @keyword OR TNC.EmailLienHe LIKE @keyword OR CAST(NV.NhanVienID AS NVARCHAR) LIKE @keyword )
+					AND NV.TrangThai = N'Đang làm việc'
 					ORDER BY NV.NhanVienID ASC
 				";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -117,23 +120,21 @@ namespace Infrastructure.Repositories
 				List<NhanVienListDTO> list = new List<NhanVienListDTO>();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@keyword", "%" + keyword + "%");
+					cmd.Parameters.Add("@keyword", SqlDbType.NVarChar, 200).Value = "%" + keyword + "%";
+
 					using (SqlDataReader reader = cmd.ExecuteReader())
 					{
-						if (reader.Read())
+						while (reader.Read())
 						{
-							while (reader.Read())
+							list.Add(new NhanVienListDTO
 							{
-								list.Add(new NhanVienListDTO
-								{
-									NhanVienID = (int)reader["NhanVienID"],
-									HoTen = reader["HoTen"]?.ToString(),
-									TenChucVu = reader["TenChucVu"]?.ToString(),
-									SDT = reader["SDT"]?.ToString(),
-									EmailLienHe = reader["EmailLienHe"]?.ToString(),
-									NgayVaoLam = (DateTime)reader["NgayVaoLam"]
-								});
-							}
+								NhanVienID = (int)reader["NhanVienID"],
+								HoTen = reader["HoTen"]?.ToString(),
+								TenChucVu = reader["TenChucVu"]?.ToString(),
+								SDT = reader["SDT"]?.ToString(),
+								EmailLienHe = reader["EmailLienHe"]?.ToString(),
+								NgayVaoLam = (DateTime)reader["NgayVaoLam"]
+							});
 						}
 					}
 				}
@@ -146,7 +147,7 @@ namespace Infrastructure.Repositories
 				INSERT INTO ThongTinCaNhan
 				(HoTen, NgaySinh, GioiTinh, SDT, EmailLienHe, DiaChi, Avatar, Loai)
 				VALUES
-				(@HoTen, @NgaySinh, @GioiTinh, @SDT, @EmailLienHe, @DiaChi, @Avatar, 'nhanvien');
+				(@HoTen, @NgaySinh, @GioiTinh, @SDT, @EmailLienHe, @DiaChi, @Avatar, N'Nhân viên');
 
 				DECLARE @ThongTinID INT = SCOPE_IDENTITY();
 
@@ -178,15 +179,22 @@ namespace Infrastructure.Repositories
 				}
 			}
 		}
-		public bool CapNhatNhanVien(NhanVienDetailDTO nv)
+		public bool CapNhatNhanVien(NhanVienUpdateDTO nv)
 		{
 			string sql = @"
-				UPDATE ThongTinCaNhan
-				SET HoTen = @HoTen, NgaySinh = @NgaySinh, GioiTinh = @GioiTinh, SDT = @SDT, EmailLienHe = @EmailLienHe,
-					DiaChi = @DiaChi, Avatar = @Avatar, NgayCapNhat = GETDATE()
-				WHERE ThongTinID = @ThongTinID;
+				UPDATE TNC
+				SET 
+					TNC.HoTen = @HoTen, TNC.NgaySinh = @NgaySinh, TNC.GioiTinh = @GioiTinh,TNC.SDT = @SDT,
+					TNC.EmailLienHe = @EmailLienHe, TNC.DiaChi = @DiaChi, TNC.Avatar = @Avatar,
+					TNC.NgayCapNhat = GETDATE()
+				FROM ThongTinCaNhan TNC
+				JOIN NhanVien NV ON NV.ThongTinID = TNC.ThongTinID
+				WHERE NV.NhanVienID = @NhanVienID;
+
 				UPDATE NhanVien
-				SET ChucVuID = @ChucVuID, Luong = @Luong, NgayVaoLam = @NgayVaoLam, BangCap = @BangCap, KinhNghiem = @KinhNghiem
+				SET 
+					ChucVuID = @ChucVuID,Luong = @Luong,NgayVaoLam = @NgayVaoLam,
+					BangCap = @BangCap, KinhNghiem = @KinhNghiem
 				WHERE NhanVienID = @NhanVienID;
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -201,7 +209,6 @@ namespace Infrastructure.Repositories
 					cmd.Parameters.AddWithValue("@EmailLienHe", nv.EmailLienHe);
 					cmd.Parameters.AddWithValue("@DiaChi", nv.DiaChi);
 					cmd.Parameters.AddWithValue("@Avatar", nv.Avatar);
-					cmd.Parameters.AddWithValue("@ThongTinID", nv.ThongTinID);
 					cmd.Parameters.AddWithValue("@ChucVuID", nv.ChucVuID);
 					cmd.Parameters.AddWithValue("@Luong", nv.Luong);
 					cmd.Parameters.AddWithValue("@NgayVaoLam", nv.NgayVaoLam);
@@ -215,9 +222,15 @@ namespace Infrastructure.Repositories
 		public bool XoaNhanVien(int nhanVienID)
 		{
 			string sql = @"
-				UPDATE ThongTinCaNhan
-				SET TrangThai = 'inactive', NgayCapNhat = GETDATE()
-				WHERE ThongTinID = (SELECT ThongTinID FROM NhanVien WHERE NhanVienID = @NhanVienID);
+				UPDATE NhanVien
+				SET TrangThai = N'Nghỉ việc'
+				WHERE NhanVienID = @NhanVienID;
+
+				UPDATE TNC
+				SET NgayCapNhat = GETDATE()
+				FROM ThongTinCaNhan TNC
+				JOIN NhanVien NV ON TNC.ThongTinID = NV.ThongTinID
+				WHERE NV.NhanVienID = @NhanVienID;
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{

@@ -23,5 +23,10 @@ namespace Domain.DTO
         public int TaiKhoanID { get; set; }
         public string MatKhauCu { get; set; }
         public string MatKhauMoi { get; set; }
-	}   
+	}
+	public class Login
+	{
+		public string Email { get; set; }
+		public string PasswordHash { get; set; }
+	}
 }
