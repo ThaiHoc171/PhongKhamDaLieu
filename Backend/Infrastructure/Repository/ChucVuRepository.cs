@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
 		public List<ChucVuDTO> DanhSachChucVu()
 		{
 			List<ChucVuDTO> listChucVu = new List<ChucVuDTO>();
-			string sql = "SELECT * FROM ChucVu WHERE TrangThai = 1";
+			string sql = "SELECT * FROM ChucVu WHERE TrangThai = N'Hoạt động'";
 
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
 								TenChucVu = reader["TenChucVu"].ToString(),
 								MoTa = reader["MoTa"].ToString(),
 								NgayTao = (DateTime)reader["NgayTao"],
-								TrangThai = (bool)reader["TrangThai"]
+								TrangThai = reader["TrangThai"].ToString()
 							});
 						}
 					}
@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories
 		}
 		public ChucVuDTO LayChucVuByID(int chucvuID)
 		{
-			string sql = "SELECT * FROM ChucVu WHERE ChucVuID = @ChucVuID AND TrangThai = 1";
+			string sql = "SELECT * FROM ChucVu WHERE ChucVuID = @ChucVuID AND TrangThai = N'Hoạt động'";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
@@ -63,7 +63,7 @@ namespace Infrastructure.Repositories
 								TenChucVu = reader["TenChucVu"].ToString(),
 								MoTa = reader["MoTa"].ToString(),
 								NgayTao = (DateTime)reader["NgayTao"],
-								TrangThai = (bool)reader["TrangThai"]
+								TrangThai = reader["TrangThai"].ToString()
 							};
 						}
 					}
@@ -73,8 +73,8 @@ namespace Infrastructure.Repositories
 		}
 		public bool ThemChucVu(ThemChucVuDTO cv)
 		{
-			string sql = @"INSERT INTO ChucVu (TenChucVu, MoTa, NgayTao, TrangThai)
-						   VALUES (@TenChucVu, @MoTa, @NgayTao, @TrangThai)";
+			string sql = @"INSERT INTO ChucVu (TenChucVu, MoTa)
+						   VALUES (@TenChucVu, @MoTa)";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
@@ -82,19 +82,16 @@ namespace Infrastructure.Repositories
 				{
 					cmd.Parameters.AddWithValue("@TenChucVu", cv.TenChucVu);
 					cmd.Parameters.AddWithValue("@MoTa", cv.MoTa);
-					cmd.Parameters.AddWithValue("@NgayTao", cv.NgayTao);
-					cmd.Parameters.AddWithValue("@TrangThai", cv.TrangThai);
 					int rowsAffected = cmd.ExecuteNonQuery();
 					return rowsAffected > 0;
 				}
 			}
 		}
-		public bool CapNhatChucVu(ChucVuDTO cv)
+		public bool CapNhatChucVu(CapNhatChucVuDTO cv)
 		{
 			string sql = @"UPDATE ChucVu
 						   SET TenChucVu = @TenChucVu,
-							   MoTa = @MoTa,
-							   TrangThai = @TrangThai
+							   MoTa = @MoTa
 						   WHERE ChucVuID = @ChucVuID";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
@@ -103,7 +100,6 @@ namespace Infrastructure.Repositories
 				{
 					cmd.Parameters.AddWithValue("@TenChucVu", cv.TenChucVu);
 					cmd.Parameters.AddWithValue("@MoTa", cv.MoTa);
-					cmd.Parameters.AddWithValue("@TrangThai", cv.TrangThai);
 					cmd.Parameters.AddWithValue("@ChucVuID", cv.ChucVuID);
 					int rowsAffected = cmd.ExecuteNonQuery();
 					return rowsAffected > 0;
@@ -113,7 +109,7 @@ namespace Infrastructure.Repositories
 		public bool VoHieuHoaChucVu(int chucvuID)
 		{
 			string sql = @"UPDATE ChucVu
-						   SET TrangThai = 0
+						   SET TrangThai = N'Không hoạt động'
 						   WHERE ChucVuID = @ChucVuID";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
