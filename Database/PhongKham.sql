@@ -131,7 +131,8 @@ CREATE TABLE PhongKham (
     Website NVARCHAR(200),
     GioMoCua NVARCHAR(100),      
     HinhAnhBanner NVARCHAR(500),
-    NgayCapNhat DATETIME DEFAULT GETDATE()
+    NgayCapNhat DATETIME DEFAULT GETDATE(),
+	TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Hoạt động',N'Đóng cửa', N'Ngưng hoạt động')) DEFAULT N'Hoạt động'
 );
 GO
 
@@ -156,7 +157,7 @@ CREATE TABLE ThietBi (
 );
 GO
 
--- Các thiết bị có trong 1 phòng chức năng cụ thể --
+-- Các thiết bị có trong 1 phòng chức năng cụ thể --  --Done--
 CREATE TABLE PhongChucNang_ThietBi (
     PCN_TB_ID INT IDENTITY(1,1) PRIMARY KEY,
     PhongChucNangID INT NOT NULL,
@@ -326,7 +327,7 @@ GO
 -- 7. THUỐC VÀ TOA THUỐC ĐIỀU TRỊ
 -- ============================================
 
--- Thông tin các loại thuốc điều trị --
+-- Thông tin các loại thuốc điều trị -- --Done--
 CREATE TABLE Thuoc (
     ThuocID INT IDENTITY(1,1) PRIMARY KEY,
     TenThuoc NVARCHAR(200) NOT NULL,
@@ -334,7 +335,7 @@ CREATE TABLE Thuoc (
     );
 GO
 
--- Toa thuốc cần dùng để điều trị cho bệnh nhân trong phiên khám cụ thể --
+-- Toa thuốc cần dùng để điều trị cho bệnh nhân trong phiên khám cụ thể -- --Done--
 CREATE TABLE ToaThuoc (
     ToaThuocID INT IDENTITY(1,1) PRIMARY KEY,
     PhienKhamID INT NOT NULL,
@@ -346,7 +347,7 @@ CREATE TABLE ToaThuoc (
 );
 GO
 
--- Các loại thuốc cần dùng để điều trị cho bệnh nhân trong phiên khám cụ thể --
+-- Các loại thuốc cần dùng để điều trị cho bệnh nhân trong phiên khám cụ thể -- --Done--
 CREATE TABLE ChiTietToaThuoc (
     ChiTietToaThuocID INT IDENTITY(1,1) PRIMARY KEY,
     ToaThuocID INT NOT NULL,
@@ -364,7 +365,7 @@ GO
 -- 8. CÁC LOẠI BỆNH DA LIỄU
 -- ============================================
 
--- Các loại bệnh da liễu --
+-- Các loại bệnh da liễu -- --Done--
 CREATE TABLE LoaiBenh (
     LoaiBenhID INT IDENTITY(1,1) PRIMARY KEY,
     TenBenh NVARCHAR(200) NOT NULL,
@@ -377,7 +378,7 @@ CREATE TABLE LoaiBenh (
 );
 GO
 
--- Các loại bệnh được khám ra trong phiên khám cụ thể --
+-- Các loại bệnh được khám ra trong phiên khám cụ thể -- 
 CREATE TABLE PhienKham_Benh (
     PhienKham_BenhID INT IDENTITY(1,1) PRIMARY KEY,
     PhienKhamID INT NOT NULL,

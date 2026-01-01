@@ -37,6 +37,12 @@ builder.Services.AddScoped<IThietBiRepository, ThietBiRepository>();
 builder.Services.AddScoped<ThietBiService>();
 builder.Services.AddScoped<IPhongChucNang_ThietBiRepository, PhongChucNang_ThietBiRepository>();
 builder.Services.AddScoped<PhongChucNang_ThietBiService>();
+builder.Services.AddScoped<ILichLamViecNhanVienRepository, LichLamViecNhanVienRepository>();
+builder.Services.AddScoped<LichLamViecNhanVienService>();
+builder.Services.AddScoped<INgayNghiNhanVienRepository, NgayNghiNhanVienRepository>();
+builder.Services.AddScoped<NgayNghiNhanVienService>();
+builder.Services.AddScoped<IKhungGioKhamRepository, KhungGioKhamRepository>();
+builder.Services.AddScoped<KhungGioKhamService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

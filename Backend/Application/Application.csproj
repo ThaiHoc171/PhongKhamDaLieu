@@ -48,7 +48,10 @@
     <Compile Include="Services\ChiTietToaThuocService.cs" />
     <Compile Include="Services\ChucVuService.cs" />
     <Compile Include="Common\Helper\Password.cs" />
+    <Compile Include="Services\KhungGioKhamService.cs" />
+    <Compile Include="Services\LichLamViecNhanVienService.cs" />
     <Compile Include="Services\LoaiBenhService.cs" />
+    <Compile Include="Services\NgayNghiNhanVienService.cs" />
     <Compile Include="Services\NhanVienService.cs" />
     <Compile Include="Services\PhongChucNangService.cs" />
     <Compile Include="Services\PhongChucNang_ThietBiService.cs" />

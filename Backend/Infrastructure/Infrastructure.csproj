@@ -100,7 +100,10 @@
     <Compile Include="Repository\BenhNhanRepository.cs" />
     <Compile Include="Repository\ChiTietToaThuocRepository.cs" />
     <Compile Include="Repository\ChucVuRepository.cs" />
+    <Compile Include="Repository\KhungGioKhamRepository.cs" />
+    <Compile Include="Repository\LichLamViecNhanVienRepository.cs" />
     <Compile Include="Repository\LoaiBenhRepository.cs" />
+    <Compile Include="Repository\NgayNghiNhanVienRepository.cs" />
     <Compile Include="Repository\NhanVienRepository.cs" />
     <Compile Include="Repository\PhongChucNangRepository.cs" />
     <Compile Include="Repository\PhongChucNang_ThietBiRepository.cs" />

@@ -10,4 +10,11 @@ namespace Domain.DTO
 		public string TenKhung { get; set; }
 		public int MaxSlot { get; set; }
 	}
+    public class ThemKhungGioKhamDTO
+    {
+        public TimeSpan GioBatDau { get; set; }
+        public TimeSpan GioKetThuc { get; set; }
+        public string TenKhung { get; set; }
+        public int MaxSlot { get; set; }
+    }
 }
