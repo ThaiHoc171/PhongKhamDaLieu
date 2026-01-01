@@ -13,5 +13,6 @@ namespace Domain.DTO
 		public string Website { get; set; }
 		public string GioMoCua { get; set; }
 		public DateTime NgayCapNhat { get; set; }
+		public string TrangThai { get; set; }
 	}
 }

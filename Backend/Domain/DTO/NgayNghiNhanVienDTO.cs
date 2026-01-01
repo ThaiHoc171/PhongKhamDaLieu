@@ -9,4 +9,10 @@ namespace Domain.DTO
 		public DateTime Ngay { get; set; }
 		public string LyDo { get; set; }
 	}
+    public class ThemNgayNghiNhanVienDTO
+    {
+        public int NhanVienID { get; set; }
+        public DateTime Ngay { get; set; }
+        public string LyDo { get; set; }
+    }
 }
