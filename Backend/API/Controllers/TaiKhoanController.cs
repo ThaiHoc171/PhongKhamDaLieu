@@ -1,6 +1,7 @@
 ﻿using System;
 using Services;
 using Domain.DTO;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -35,7 +36,7 @@ namespace API.Controllers
 		[HttpPost("DangKy")]
 		public IActionResult DangKy([FromBody] TaiKhoanCreateDTO taikhoan)
 		{
-			var result = _taiKhoan.DangKyTaiKhoan(taikhoan.Email, taikhoan.MatKhau, taikhoan.VaiTro);
+			var result = _taiKhoan.DangKyTaiKhoan(taikhoan);
 			if (result)
 			{
 				return Ok("Đăng ký thành công.");
@@ -45,7 +46,7 @@ namespace API.Controllers
 		[HttpPut("DoiMatKhau")]
 		public IActionResult DoiMatKhau([FromBody] DoiMatKhauDTO tk)
 		{
-			var result = _taiKhoan.DoiMatKhau(tk.TaiKhoanID,tk.MatKhauCu,tk.MatKhauMoi);
+			var result = _taiKhoan.DoiMatKhau(tk);
 			if (result)
 			{
 				return Ok("Đổi mật khẩu thành công.");
@@ -62,6 +63,16 @@ namespace API.Controllers
 				return Ok("Reset mật khẩu thành công.");
 			}
 			return BadRequest("Reset mật khẩu thất bại.");
+		}
+		[HttpPut("ChuyenTrangThai")]
+		public IActionResult ChuyenTrangThai([FromBody] Status stt)
+		{
+			var result = _taiKhoan.ChuyenTrangThai(stt);
+			if (result)
+			{
+				return Ok("Chuyển trạng thái thành công.");
+			}
+			return BadRequest("Chuyển trạng thái thất bại.");
 		}
 	}
 }

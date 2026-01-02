@@ -43,6 +43,8 @@ builder.Services.AddScoped<INgayNghiNhanVienRepository, NgayNghiNhanVienReposito
 builder.Services.AddScoped<NgayNghiNhanVienService>();
 builder.Services.AddScoped<IKhungGioKhamRepository, KhungGioKhamRepository>();
 builder.Services.AddScoped<KhungGioKhamService>();
+builder.Services.AddScoped<ICaKhamRepository, CaKhamRepository>();
+builder.Services.AddScoped<CaKhamService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

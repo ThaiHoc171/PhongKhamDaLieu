@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Domain.DTO;
 using Domain.Repository;
+using Domain.Entities;
 
 namespace Services
 {
@@ -34,30 +35,30 @@ namespace Services
 			TaiKhoanDTO tk = _repo.LayTaiKhoanTheoEmail(email);
 			return tk != null;
 		}
-		public bool DangKyTaiKhoan(string email, string password, string vaitro)
+		public bool DangKyTaiKhoan(TaiKhoanCreateDTO tk)
 		{
-			if(KiemTraEmailTonTai(email))
+			if(KiemTraEmailTonTai(tk.Email))
 			{
 				return false;
 			}
-			string passwordHash = Helper.Password.PassWordHash(password);
+			string passwordHash = Helper.Password.PassWordHash(tk.MatKhau);
 			TaiKhoanCreateDTO taiKhoanCreateDTO = new TaiKhoanCreateDTO
 			{
-				Email = email,
+				Email = tk.Email,
 				MatKhau = passwordHash,
-				VaiTro = vaitro
+				VaiTro = tk.VaiTro
 			};
 			return _repo.TaoTaiKhoan(taiKhoanCreateDTO);
 		}
-		public bool DoiMatKhau(int taiKhoanID,string password, string newPassword)
+		public bool DoiMatKhau(DoiMatKhauDTO taikhoan)
 		{
-			TaiKhoanDTO tk = _repo.LayTaiKhoanTheoID(taiKhoanID);
-			if(tk == null || !Helper.Password.VerifyPassword(password, tk.PasswordHash))
+			TaiKhoanDTO tk = _repo.LayTaiKhoanTheoID(taikhoan.TaiKhoanID);
+			if(tk == null || !Helper.Password.VerifyPassword(taikhoan.MatKhauCu, tk.PasswordHash))
 			{
 				return false;
 			}
-			string newPasswordHash = Helper.Password.PassWordHash(newPassword);
-			return _repo.CapNhatMatKhau(taiKhoanID, newPasswordHash);
+			string newPasswordHash = Helper.Password.PassWordHash(taikhoan.MatKhauMoi);
+			return _repo.CapNhatMatKhau(taikhoan.TaiKhoanID, newPasswordHash);
 		}
 		public bool ResetMatKhau(int taiKhoanID, string newPassword)
 		{
@@ -68,6 +69,10 @@ namespace Services
 			}
 			string newPasswordHash = Helper.Password.PassWordHash(newPassword);
 			return _repo.CapNhatMatKhau(taiKhoanID, newPasswordHash);
+		}
+		public bool ChuyenTrangThai(Status stt)
+		{
+			return _repo.ChuyenTrangThai(stt);
 		}
 	}
 }

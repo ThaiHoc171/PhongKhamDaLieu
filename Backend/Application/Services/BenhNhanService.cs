@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Domain.DTO;
 using Domain.Repository;
+using Domain.Entities;
 
 
 namespace Services
@@ -24,17 +25,39 @@ namespace Services
 		{
 			return _repo.LayBenhNhanByID(benhNhanID);
 		}
-		public bool ThemBenhNhan(BenhNhanCreateDTO bn)
+		public (bool Success, string Message) ThemThongTinBenhNhan(HoSoBenhNhanDTO hs)
+		{
+			if(Helper.EmailHelper.IsEmail(hs.EmailLienHe) == false)
+			{
+				return (false, "Email không hợp lệ.");
+			}
+			bool result = _repo.ThemThongTinBenhNhan(hs);
+			if(result)
+			{
+				return (true, "Thêm hồ sơ bệnh nhân thành công.");
+			}
+			return (false, "Thêm hồ sơ bệnh nhân thất bại.");
+		}
+		public bool ThemBenhNhan(ThemBenhNhanDTO bn)
 		{
 			return _repo.ThemBenhNhan(bn);
 		}
-		public bool CapNhatBenhNhan(BenhNhanCreateDTO bn)
+		public (bool Success, string Message) CapNhatBenhNhan(BenhNhanUpdateDTO bn)
 		{
-			return _repo.CapNhatBenhNhan(bn);
+			if (Helper.EmailHelper.IsEmail(bn.EmailLienHe) == false)
+			{
+				return (false, "Email không hợp lệ.");
+			}
+			bool result = _repo.CapNhatBenhNhan(bn);
+			if (result)
+			{
+				return (true, "Cập nhật hồ sơ bệnh nhân thành công.");
+			}
+			return (false, "Cập nhật hồ sơ bệnh nhân thất bại.");
 		}
-		public bool XoaBenhNhan(int benhNhanID)
+		public bool ChuyenTrangThai(Status stt)
 		{
-			return _repo.XoaBenhNhan(benhNhanID);
+			return _repo.ChuyenTrangThai(stt);
 		}
 	}
 }
