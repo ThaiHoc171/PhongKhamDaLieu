@@ -1,4 +1,5 @@
 ﻿using Domain.DTO;
+using Domain.Entities;
 using Domain.Repository;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -219,11 +220,11 @@ namespace Infrastructure.Repositories
 				}
 			}
 		}
-		public bool XoaNhanVien(int nhanVienID)
+		public bool ChuyenTrangThai(Status stt)
 		{
 			string sql = @"
 				UPDATE NhanVien
-				SET TrangThai = N'Nghỉ việc'
+				SET TrangThai = @TrangThai
 				WHERE NhanVienID = @NhanVienID;
 
 				UPDATE TNC
@@ -237,7 +238,8 @@ namespace Infrastructure.Repositories
 				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@NhanVienID", nhanVienID);
+					cmd.Parameters.AddWithValue("@NhanVienID", stt.Id);
+					cmd.Parameters.AddWithValue("@TrangThai", stt.TrangThai);
 					return cmd.ExecuteNonQuery() > 0;
 				}
 			}

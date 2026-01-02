@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Domain.DTO;
 using Domain.Repository;
+using Domain.Entities;
 
 namespace Services
 {
@@ -32,9 +33,9 @@ namespace Services
 		{
 			return _repo.CapNhatPhongChucNang(pcn);
 		}
-		public bool XoaPhongChucNang(int phongChucNangID)
+		public bool ChuyenTrangThai(Status stt)
 		{
-			return _repo.XoaPhongChucNang(phongChucNangID);
+			return _repo.ChuyenTrangThai(stt);
 		}
 	}
 }

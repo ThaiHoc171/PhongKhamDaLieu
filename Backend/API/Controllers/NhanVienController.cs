@@ -1,5 +1,6 @@
 ﻿using Services;
 using Domain.DTO;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
@@ -46,15 +47,13 @@ namespace API.Controllers
 				return Ok(result.Message);
 			return BadRequest(result.Message);
 		}
-		[HttpPut("XoaNhanVien")]
-		public IActionResult XoaNhanVien(int nhanVienID)
+		[HttpPut("ChuyenTrangThai")]
+		public IActionResult ChuyenTrangThai([FromBody] Status stt)
 		{
-			var result = _nhanVien.XoaNhanVien(nhanVienID);
+			var result = _nhanVien.ChuyenTrangThai(stt);
 			if (result)
-			{
-				return Ok("Xóa nhân viên thành công.");
-			}
-			return BadRequest("Xóa nhân viên thất bại.");
+				return Ok("Chuyển trạng thái thành công.");
+			return BadRequest("Chuyển trạng thái thất bại.");
 		}
 	}
 }
