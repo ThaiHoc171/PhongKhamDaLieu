@@ -1,5 +1,5 @@
 ﻿using Domain.DTO;
-using System;
+using Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +14,6 @@ namespace Domain.Repository
 		List<TaiKhoanDTO> LayDanhSachTaiKhoan();
 		bool TaoTaiKhoan(TaiKhoanCreateDTO taiKhoan);
 		bool CapNhatMatKhau(int taiKhoanID, string newPasswordHash);
-		bool VoHieuHoaTaiKhoan(int taiKhoanID);
+		bool ChuyenTrangThai(Status stt);
 	}
 }

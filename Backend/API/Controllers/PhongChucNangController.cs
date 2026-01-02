@@ -1,6 +1,7 @@
 ﻿using System;
 using Services;
 using Domain.DTO;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity.Data;
 namespace API.Controllers
@@ -52,15 +53,15 @@ namespace API.Controllers
 			}
 			return BadRequest("Cập nhật phòng chức năng thất bại.");
 		}
-		[HttpPut("XoaPhongChucNang")]
-		public IActionResult XoaPhongChucNang(int id)
+		[HttpPut("ChuyenTrangThai")]
+		public IActionResult ChuyenTrangThai(Status stt)
 		{
-			var result = _phongChucNang.XoaPhongChucNang(id);
+			var result = _phongChucNang.ChuyenTrangThai(stt);
 			if (result)
 			{
-				return Ok("Xóa phòng chức năng thành công.");
+				return Ok("Thay đổi thành công.");
 			}
-			return BadRequest("Xóa phòng chức năng thất bại.");
+			return BadRequest("Thay đổi thất bại.");
 		}
 	}
 }

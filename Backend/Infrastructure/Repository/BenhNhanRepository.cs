@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Domain.DTO;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System;
+﻿using Domain.DTO;
 using Domain.Repository;
+using Domain.Entities;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 
 
 namespace Infrastructure.Repositories
@@ -18,10 +20,10 @@ namespace Infrastructure.Repositories
 		public List<BenhNhanListDTO> LayDanhSachBenhNhan()
 		{
 			string sql = @"
-					SELECT TNC.ThongTinID, BN.BenhNhanID, TNC.HoTen, TNC.NgaySinh, TNC.GioiTinh, TNC.SDT
+					SELECT TNC.ThongTinID, BN.BenhNhanID, TNC.HoTen, TNC.NgaySinh, TNC.GioiTinh, TNC.SDT, BN.TrangThaiTheoDoi
 					FROM BenhNhan BN
 					JOIN ThongTinCaNhan TNC ON BN.ThongTinID = TNC.ThongTinID
-					WHERE TNC.Loai = 'benhnhan' AND TNC.TrangThai = 'active'
+					WHERE TNC.Loai = N'Bệnh nhân'
 			";
 			List<BenhNhanListDTO> listBenhNhan = new List<BenhNhanListDTO>();
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -40,7 +42,8 @@ namespace Infrastructure.Repositories
 								HoTen = reader["HoTen"].ToString(),
 								NgaySinh = (DateTime)reader["NgaySinh"],
 								GioiTinh = reader["GioiTinh"].ToString(),
-								SDT = reader["SDT"].ToString()
+								SDT = reader["SDT"].ToString(),
+								TrangThaiTheoDoi = reader["TrangThaiTheoDoi"].ToString()	
 							});
 						}
 
@@ -52,10 +55,10 @@ namespace Infrastructure.Repositories
 		public List<BenhNhanListDTO> LayBenhNhanByKeyWord(string keyword)
 		{
 			string sql = @"
-					SELECT TNC.ThongTinID, BN.BenhNhanID, TNC.HoTen, TNC.NgaySinh, TNC.GioiTinh, TNC.SDT
+					SELECT TNC.ThongTinID, BN.BenhNhanID, TNC.HoTen, TNC.NgaySinh, TNC.GioiTinh, TNC.SDT, BN.TrangThaiTheoDoi
 					FROM BenhNhan BN
 					JOIN ThongTinCaNhan TNC ON BN.ThongTinID = TNC.ThongTinID
-					WHERE TNC.loai = 'benhnhan' 
+					WHERE TNC.Loai = N'Bệnh nhân'
 					AND ( TNC.HoTen LIKE @keyword OR TNC.EmailLienHe LIKE @keyword OR CAST(BN.BenhNhanID AS NVARCHAR) LIKE @keyword )
 					ORDER BY BN.BenhNhanID ASC
 				";
@@ -79,7 +82,8 @@ namespace Infrastructure.Repositories
 									? (DateTime?)null
 									: (DateTime)reader["NgaySinh"],
 								GioiTinh = reader["GioiTinh"].ToString(),
-								SDT = reader["SDT"].ToString()
+								SDT = reader["SDT"].ToString(),
+								TrangThaiTheoDoi = reader["TrangThaiTheoDoi"].ToString()
 							});
 						}
 					}
@@ -90,11 +94,13 @@ namespace Infrastructure.Repositories
 		public BenhNhanDetailDTO LayBenhNhanByID(int benhNhanID)
 		{
 			string sql = @"
-					SELECT BN.BenhNhanID, BN.LoaiDa, BN.TrangThaiTheoDoi, BN.GhiChu,
-							TNC.ThongTinID, TNC.TaiKhoanID, TNC.HoTen, TNC.NgaySinh, TNC.GioiTinh, TNC.SDT, TNC.EmailLienHe, TNC.DiaChi, TNC.Avatar, TNC.TrangThai, TNC.NgayTao, TNC.NgayCapNhat
+					SELECT BN.BenhNhanID, BN.LoaiDa, BN.TrangThaiTheoDoi, BN.GhiChu, TNC.ThongTinID, 
+							TNC.TaiKhoanID, TNC.HoTen, TNC.NgaySinh, TNC.GioiTinh, TNC.SDT,
+							TNC.EmailLienHe, TNC.DiaChi, TNC.Avatar, TNC.NgayTao, TNC.NgayCapNhat, 
+							TNC.Loai
 					FROM BenhNhan BN
 					JOIN ThongTinCaNhan TNC ON BN.ThongTinID = TNC.ThongTinID
-					WHERE BN.BenhNhanID = @BenhNhanID AND TNC.Loai = 'benhnhan' AND TNC.TrangThai = 'active'
+					WHERE BN.BenhNhanID = @BenhNhanID AND TNC.Loai = N'Bệnh nhân'
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
@@ -121,7 +127,7 @@ namespace Infrastructure.Repositories
 								EmailLienHe = reader["EmailLienHe"].ToString(),
 								DiaChi = reader["DiaChi"].ToString(),
 								Avatar = reader["Avatar"].ToString(),
-								TrangThai = reader["TrangThai"].ToString(),
+								Loai = reader["Loai"].ToString(),
 								NgayTao = (DateTime)reader["NgayTao"],
 								NgayCapNhat = (DateTime)reader["NgayCapNhat"]
 							};
@@ -131,51 +137,62 @@ namespace Infrastructure.Repositories
 			}
 			return null;
 		}
-		public bool ThemBenhNhan(BenhNhanCreateDTO bn)
+		public bool ThemThongTinBenhNhan(HoSoBenhNhanDTO hs)
 		{
 			string sql = @"
-				INSERT INTO ThongTinCaNhan (HoTen, NgaySinh, GioiTinh, SDT, EmailLienHe, DiaChi, Avatar, Loai, TrangThai, NgayTao, NgayCapNhat)
-				VALUES (@HoTen, @NgaySinh, @GioiTinh, @SDT, @EmailLienHe, @DiaChi, @Avatar, 'benhnhan', 'active', GETDATE(), GETDATE());
-				SELECT SCOPE_IDENTITY();
-
-				INSERT INTO BenhNhan (ThongTinID,LoaiDa,GhiChu)	
-				VALUES (SCOPE_IDENTITY(),@LoaiDa,@GhiChu);
+				INSERT INTO ThongTinCaNhan (HoTen, NgaySinh, GioiTinh, SDT, EmailLienHe, DiaChi, Avatar, Loai)
+				VALUES (@HoTen, @NgaySinh, @GioiTinh, @SDT, @EmailLienHe, @DiaChi, @Avatar, N'Bệnh nhân');
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@HoTen", bn.HoTen);
-					cmd.Parameters.AddWithValue("@NgaySinh", (object)bn.NgaySinh ?? DBNull.Value);
-					cmd.Parameters.AddWithValue("@GioiTinh", bn.GioiTinh);
-					cmd.Parameters.AddWithValue("@SDT", bn.SDT);
-					cmd.Parameters.AddWithValue("@EmailLienHe", bn.EmailLienHe);
-					cmd.Parameters.AddWithValue("@DiaChi", bn.DiaChi);
-					cmd.Parameters.AddWithValue("@Avatar", bn.Avatar);
+					cmd.Parameters.AddWithValue("@HoTen", hs.HoTen);
+					cmd.Parameters.AddWithValue("@NgaySinh", (object)hs.NgaySinh ?? DBNull.Value);
+					cmd.Parameters.AddWithValue("@GioiTinh", hs.GioiTinh);
+					cmd.Parameters.AddWithValue("@SDT", hs.SDT);
+					cmd.Parameters.AddWithValue("@EmailLienHe", hs.EmailLienHe);
+					cmd.Parameters.AddWithValue("@DiaChi", hs.DiaChi);
+					cmd.Parameters.AddWithValue("@Avatar", hs.Avatar);
+					int rowsAffected = cmd.ExecuteNonQuery();
+					return rowsAffected > 0;
+				}
+			}
+		}
+		public bool ThemBenhNhan(ThemBenhNhanDTO bn)
+		{
+			string sql = @"
+				INSERT INTO BenhNhan (ThongTinID, LoaiDa, TrangThaiTheoDoi, GhiChu)
+				VALUES (@ThongTinID, @LoaiDa, @TrangThaiTheoDoi, @GhiChu);
+			";
+			using (SqlConnection conn = new SqlConnection(_connectionString))
+			{
+				conn.Open();
+				using (SqlCommand cmd = new SqlCommand(sql, conn))
+				{
+					cmd.Parameters.AddWithValue("@ThongTinID", bn.ThongTinID);
 					cmd.Parameters.AddWithValue("@LoaiDa", bn.LoaiDa);
+					cmd.Parameters.AddWithValue("@TrangThaiTheoDoi", bn.TrangThaiTheoDoi);
 					cmd.Parameters.AddWithValue("@GhiChu", bn.GhiChu);
 					int rowsAffected = cmd.ExecuteNonQuery();
 					return rowsAffected > 0;
 				}
 			}
 		}
-		public bool CapNhatBenhNhan(BenhNhanCreateDTO bn)
+		public bool CapNhatBenhNhan(BenhNhanUpdateDTO bn)
 		{
 			string sql = @"
-				UPDATE ThongTinCaNhan
-				SET HoTen = @HoTen,
-					NgaySinh = @NgaySinh,
-					GioiTinh = @GioiTinh,
-					SDT = @SDT,
-					EmailLienHe = @EmailLienHe,
-					DiaChi = @DiaChi,
-					Avatar = @Avatar,
-					NgayCapNhat = GETDATE()
-				WHERE ThongTinID = @ThongTinID;
+				UPDATE TNC
+				SET TNC.HoTen = @HoTen, TNC.NgaySinh = @NgaySinh, TNC.GioiTinh = @GioiTinh,TNC.SDT = @SDT,
+					TNC.EmailLienHe = @EmailLienHe, TNC.DiaChi = @DiaChi, TNC.Avatar = @Avatar,
+					TNC.NgayCapNhat = GETDATE()
+				From ThongTinCaNhan TNC
+				JOIN BenhNhan BN ON TNC.ThongTinID = BN.ThongTinID
+				WHERE BN.BenhNhanID = @BenhNhanID;
+				
 				UPDATE BenhNhan
-				SET LoaiDa = @LoaiDa,
-					GhiChu = @GhiChu
+				SET LoaiDa = @LoaiDa, TrangThaiTheoDoi = @TrangThaiTheoDoi, GhiChu = @GhiChu	
 				WHERE BenhNhanID = @BenhNhanID;
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -183,34 +200,39 @@ namespace Infrastructure.Repositories
 				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
+					cmd.Parameters.AddWithValue("@BenhNhanID", bn.BenhNhanID);
 					cmd.Parameters.AddWithValue("@HoTen", bn.HoTen);
 					cmd.Parameters.AddWithValue("@NgaySinh", (object)bn.NgaySinh ?? DBNull.Value);
 					cmd.Parameters.AddWithValue("@GioiTinh", bn.GioiTinh);
 					cmd.Parameters.AddWithValue("@SDT", bn.SDT);
 					cmd.Parameters.AddWithValue("@EmailLienHe", bn.EmailLienHe);
 					cmd.Parameters.AddWithValue("@DiaChi", bn.DiaChi);
-					cmd.Parameters.AddWithValue("@Avatar", bn.Avatar);
+					cmd.Parameters.Add("@Avatar", SqlDbType.NVarChar, 255).Value = string.IsNullOrEmpty(bn.Avatar) ? DBNull.Value : (object)bn.Avatar;
 					cmd.Parameters.AddWithValue("@LoaiDa", bn.LoaiDa);
-					cmd.Parameters.AddWithValue("@GhiChu", bn.GhiChu);
+					cmd.Parameters.AddWithValue("@TrangThaiTheoDoi", bn.TrangThaiTheoDoi);
+					cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar, 500).Value = bn.GhiChu ?? (object)DBNull.Value;
 					int rowsAffected = cmd.ExecuteNonQuery();
 					return rowsAffected > 0;
 				}
 			}
 		}
-		public bool XoaBenhNhan(int benhNhanID)
+		public bool ChuyenTrangThai(Status stt)
 		{
 			string sql = @"
-				UPDATE ThongTinCaNhan
-				SET TrangThai = 'inactive',
-					NgayCapNhat = GETDATE()
-				WHERE ThongTinID = (SELECT ThongTinID FROM BenhNhan WHERE BenhNhanID = @BenhNhanID);
+				UPDATE BN
+				SET BN.TrangThaiTheoDoi = @TrangThai, BN.NgayCapNhat = GETDATE(),
+					TCN.NgayCapNhat = GETDATE()
+				FROM BenhNhan BN
+				JOIN ThongTinCaNhan TCN ON BN.ThongTinID = TCN.ThongTinID
+				WHERE BN.BenhNhanID = @BenhNhanID
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@BenhNhanID", benhNhanID);
+					cmd.Parameters.AddWithValue("@BenhNhanID", stt.Id);
+					cmd.Parameters.AddWithValue("@TrangThai", stt.TrangThai);
 					int rowsAffected = cmd.ExecuteNonQuery();
 					return rowsAffected > 0;
 				}

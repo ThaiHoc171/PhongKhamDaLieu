@@ -1,5 +1,6 @@
 ﻿using Domain.DTO;
 using Domain.Repository;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -17,7 +18,7 @@ namespace Infrastructure.Repositories
 		public List<PhongChucNangDTO> DanhSachPhongChucNang()
 		{
 			List<PhongChucNangDTO> listPhongChucNang = new List<PhongChucNangDTO>();
-			string sql = "SELECT * FROM PhongChucNang WHERE TrangThai = N'Hoạt động'";
+			string sql = "SELECT * FROM PhongChucNang";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
@@ -45,7 +46,7 @@ namespace Infrastructure.Repositories
 		public List<PhongChucNangDTO> TimKiem(string keyword)
 		{
 			List<PhongChucNangDTO> listPhongChucNang = new List<PhongChucNangDTO>();
-			string sql = @"SELECT * FROM PhongChucNang WHERE TrangThai = N'Hoạt động' 
+			string sql = @"SELECT * FROM PhongChucNang
 						AND (TenPhong LIKE @Keyword OR CAST(PhongChucNangID AS NVarchar) LIKE @keyword )";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
@@ -75,7 +76,7 @@ namespace Infrastructure.Repositories
 		public PhongChucNangDTO GetPhongByID(int ID)
 		{
 			PhongChucNangDTO pcn = null;
-			string sql = @"SELECT * FROM PhongChucNang WHERE PhongChucNangID = @ID AND TrangThai = N'Hoạt động'";
+			string sql = @"SELECT * FROM PhongChucNang WHERE PhongChucNangID = @ID";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
@@ -122,7 +123,7 @@ namespace Infrastructure.Repositories
 		{
 			string sql = @"UPDATE PhongChucNang 
 						   SET TenPhong = @TenPhong, LoaiPhong = @LoaiPhong, MoTa = @MoTa 
-						   WHERE PhongChucNangID = @PhongChucNangID AND TrangThai = N'Hoạt động'";
+						   WHERE PhongChucNangID = @PhongChucNangID";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
@@ -137,17 +138,18 @@ namespace Infrastructure.Repositories
 				}
 			}
 		}
-		public bool XoaPhongChucNang(int phongChucNangID)
+		public bool ChuyenTrangThai(Status stt)
 		{
 			string sql = @"UPDATE PhongChucNang 
-						   SET TrangThai = 'Ngừng Hoạt Động' 
-						   WHERE PhongChucNangID = @PhongChucNangID AND TrangThai = N'Hoạt động'";
+						   SET TrangThai = @TrangThai
+						   WHERE PhongChucNangID = @PhongChucNangID";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@PhongChucNangID", phongChucNangID);
+					cmd.Parameters.AddWithValue("@PhongChucNangID", stt.Id);
+					cmd.Parameters.AddWithValue("@TrangThai", stt.TrangThai);
 					int rowsAffected = cmd.ExecuteNonQuery();
 					return rowsAffected > 0;
 				}

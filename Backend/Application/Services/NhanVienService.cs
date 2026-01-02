@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Domain.DTO;
+using Domain.Entities;
 using Domain.Repository;
 
 namespace Services
@@ -42,9 +43,9 @@ namespace Services
 				return (true, "Cập nhật nhân viên thành công.");
 			return (false, "Cập nhật nhân viên thất bại.");
 		}
-		public bool XoaNhanVien(int nhanVienID)
+		public bool ChuyenTrangThai(Status stt)
 		{
-			return _repo.XoaNhanVien(nhanVienID);
+			return _repo.ChuyenTrangThai(stt);
 		}
 	}
 }

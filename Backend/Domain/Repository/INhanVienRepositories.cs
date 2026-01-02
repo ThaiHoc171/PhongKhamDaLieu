@@ -1,4 +1,5 @@
 ﻿using Domain.DTO;
+using Domain.Entities;
 using System.Collections.Generic;
 
 namespace Domain.Repository
@@ -11,6 +12,6 @@ namespace Domain.Repository
 		List<NhanVienListDTO> LayNhanVienByKeyWord(string keyword);
 		bool ThemNhanVien(NhanVienCreateDTO nv);
 		bool CapNhatNhanVien(NhanVienUpdateDTO nv);
-		bool XoaNhanVien(int nhanVienID);
+		bool ChuyenTrangThai(Status stt);
 	}
 }

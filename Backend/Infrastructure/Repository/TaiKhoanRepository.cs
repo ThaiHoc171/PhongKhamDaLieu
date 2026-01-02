@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Domain.Entities;
 
 namespace Infrastructure.Repositories
 {
@@ -148,11 +149,11 @@ namespace Infrastructure.Repositories
 				}
 			}
 		}
-		public bool VoHieuHoaTaiKhoan(int taiKhoanID)
+		public bool ChuyenTrangThai(Status stt)
 		{
 			string sql = @"
 				UPDATE TaiKhoan
-				SET TrangThai = N'Bị khóa' , NgayCapNhat = @NgayCapNhat
+				SET TrangThai = @TrangThai , NgayCapNhat = GetDate()
 				WHERE TaiKhoanID = @TaiKhoanID
 			";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -160,8 +161,8 @@ namespace Infrastructure.Repositories
 				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@NgayCapNhat", DateTime.Now);
-					cmd.Parameters.AddWithValue("@TaiKhoanID", taiKhoanID);
+					cmd.Parameters.AddWithValue("@TaiKhoanID", stt.Id);
+					cmd.Parameters.AddWithValue("@TrangThai", stt.TrangThai);
 					int rowsAffected = cmd.ExecuteNonQuery();
 					return rowsAffected > 0;
 				}

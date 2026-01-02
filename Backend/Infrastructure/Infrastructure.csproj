@@ -98,6 +98,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\BacSiProfileRepository.cs" />
     <Compile Include="Repository\BenhNhanRepository.cs" />
+    <Compile Include="Repository\CaKhamRepository.cs" />
     <Compile Include="Repository\ChiTietToaThuocRepository.cs" />
     <Compile Include="Repository\ChucVuRepository.cs" />
     <Compile Include="Repository\KhungGioKhamRepository.cs" />
