@@ -17,4 +17,9 @@ namespace Domain.DTO
 		public string LoaiPhong { get; set; }
 		public string MoTa { get; set; }
 	}
+	public class PhongCNTrangThaiDTO
+	{
+		public int PhongChucNangID { get; set; }
+		public string TrangThai { get; set; }
+	}
 }

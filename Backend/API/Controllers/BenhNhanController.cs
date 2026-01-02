@@ -1,5 +1,6 @@
 ﻿using Services;
 using Domain.DTO;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
@@ -34,8 +35,18 @@ namespace API.Controllers
 			}
 			return NotFound("Bệnh nhân không tồn tại.");
 		}
+		[HttpPost("ThemHoSoBenhNhan")]
+		public IActionResult ThemHoSoBenhNhan([FromBody] HoSoBenhNhanDTO bn)
+		{
+			var result = _benhNhan.ThemThongTinBenhNhan(bn);
+			if (result.Success)
+			{
+				return Ok(result.Message);
+			}
+			return BadRequest(result.Message);
+		}
 		[HttpPost("ThemBenhNhan")]
-		public IActionResult ThemBenhNhan([FromBody] BenhNhanCreateDTO bn)
+		public IActionResult ThemBenhNhan([FromBody] ThemBenhNhanDTO bn)
 		{
 			var result = _benhNhan.ThemBenhNhan(bn);
 			if (result)
@@ -45,24 +56,24 @@ namespace API.Controllers
 			return BadRequest("Thêm bệnh nhân thất bại.");
 		}
 		[HttpPut("CapNhatBenhNhan")]
-		public IActionResult CapNhatBenhNhan([FromBody] BenhNhanCreateDTO bn)
+		public IActionResult CapNhatBenhNhan([FromBody] BenhNhanUpdateDTO bn)
 		{
 			var result = _benhNhan.CapNhatBenhNhan(bn);
-			if (result)
+			if (result.Success)
 			{
-				return Ok("Cập nhật bệnh nhân thành công.");
+				return Ok(result.Message);
 			}
-			return BadRequest("Cập nhật bệnh nhân thất bại.");
+			return BadRequest(result.Message);
 		}
-		[HttpPut("XoaBenhNhan")]
-		public IActionResult XoaBenhNhan(int benhNhanID)
+		[HttpPut("ChuyenTrangThai")]
+		public IActionResult ChuyenTrangThai([FromBody] Status stt)
 		{
-			var result = _benhNhan.XoaBenhNhan(benhNhanID);
+			var result = _benhNhan.ChuyenTrangThai(stt);
 			if (result)
 			{
-				return Ok("Xóa bệnh nhân thành công.");
+				return Ok("Thay đổi thành công.");
 			}
-			return BadRequest("Xóa bệnh nhân thất bại.");
+			return BadRequest("Thay đổi thất bại.");
 		}
 	}
 }

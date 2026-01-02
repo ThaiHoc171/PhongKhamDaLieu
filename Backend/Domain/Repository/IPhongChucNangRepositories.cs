@@ -1,9 +1,7 @@
 ﻿using Domain.DTO;
-using System;
+using Domain.Entities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Domain.Repository
 {
@@ -14,6 +12,6 @@ namespace Domain.Repository
 		PhongChucNangDTO GetPhongByID(int ID);
 		bool ThemPhongChucNang(PhongChucNangCreateDTO pcn);
 		bool CapNhatPhongChucNang(PhongChucNangDTO pcn);
-		bool XoaPhongChucNang(int phongChucNangID);
+		bool ChuyenTrangThai(Status stt);
 	}
 }
