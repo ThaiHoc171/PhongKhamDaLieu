@@ -75,11 +75,13 @@
     <Compile Include="Repository\IBacSiProfileRepositories.cs" />
     <Compile Include="Repository\IBenhNhanRepositories.cs" />
     <Compile Include="Repository\ICaKhamRepositories.cs" />
+    <Compile Include="Repository\ICanLamSangRepositories.cs" />
     <Compile Include="Repository\IChiTietToaThuocRepositories.cs" />
     <Compile Include="Repository\IChucVuRepositories.cs" />
     <Compile Include="Repository\IKhungGioKhamRepositories.cs" />
     <Compile Include="Repository\ILichLamViecNhanVienRepositories.cs" />
     <Compile Include="Repository\INgayNghiNhanVienRepositories.cs" />
+    <Compile Include="Repository\IPhienKhamRepositories.cs" />
     <Compile Include="Repository\IPhongChucNang_ThietBiRepositories.cs" />
     <Compile Include="Repository\IPhongKhamRepositories.cs" />
     <Compile Include="Repository\IThietBiRepositories.cs" />
