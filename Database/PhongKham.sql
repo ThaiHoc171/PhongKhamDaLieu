@@ -52,13 +52,13 @@ CREATE TABLE BenhNhan (
     BenhNhanID INT IDENTITY PRIMARY KEY,
     ThongTinID INT NOT NULL UNIQUE,
     LoaiDa NVARCHAR(50)
-        CHECK (LoaiDa IN (N'Da dầu', N'Da khô', N'Da hỗn hợp', N'Da nhạy cảm')),
+        CHECK (LoaiDa IN (N'Chưa xác định',N'Da dầu', N'Da khô', N'Da hỗn hợp', N'Da nhạy cảm')),
     TrangThaiTheoDoi NVARCHAR(50) NOT NULL
-        CONSTRAINT DF_BenhNhan_TrangThaiTheoDoi DEFAULT N'Bắt đầu điều trị'
+        CONSTRAINT DF_BenhNhan_TrangThaiTheoDoi DEFAULT  N'Chưa điều trị'
         CHECK (TrangThaiTheoDoi IN (
-            N'Bắt đầu điều trị',
+            N'Chưa điều trị',
             N'Đang điều trị',
-            N'Ổn định',
+            N'Hoàn tất điều trị',
             N'Ngưng theo dõi'
         )),
     GhiChu NVARCHAR(MAX),
@@ -262,10 +262,9 @@ CREATE TABLE PhienKham (
     TrieuChung NVARCHAR(MAX),
     GhiChu NVARCHAR(MAX),
     HinhAnhJSON NVARCHAR(MAX),
-    AI_KetQuaJSON NVARCHAR(MAX),
     ChuanDoanCuoi NVARCHAR(300),
     NgayKham DATETIME DEFAULT GETDATE(),
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Đang khám', N'Hoàn thành', N'Đã hủy')), DEFAULT N'Đang khám',
     FOREIGN KEY (CaKhamID) REFERENCES CaKham(CaKhamID),
     FOREIGN KEY (BenhNhanID) REFERENCES BenhNhan(BenhNhanID),
     FOREIGN KEY (NhanVienID) REFERENCES NhanVien(NhanVienID),
@@ -298,7 +297,8 @@ CREATE TABLE CanLamSang (
     Gia DECIMAL(18,2),
     LoaiXetNghiem NVARCHAR(100),
     Ghichu NVARCHAR(100),
-    NgayTao DATETIME DEFAULT GETDATE()
+    NgayTao DATETIME DEFAULT GETDATE(),
+    TrangThai NVARCHAR(50) NOT NULL CHECK (TrangThai IN (N'Hoạt động', N'Ngưng sử dụng')) DEFAULT N'Hoạt động'
 );
 GO
 
