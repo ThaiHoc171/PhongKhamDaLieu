@@ -7,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories
 {
-
-
     public class ToaThuocRepository : IToaThuocRepository
     {
         private readonly string _connectionString;
