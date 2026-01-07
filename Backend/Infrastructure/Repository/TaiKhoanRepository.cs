@@ -1,15 +1,13 @@
-﻿using Domain.DTO;
-using Domain.Repository;
+﻿using Application.Interfaces;
+using Domain.Entities;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Domain.Entities;
 
 namespace Infrastructure.Repositories
 {
-
-
 	public class TaiKhoanRepository : ITaiKhoanRepository
 	{
 		private readonly string _connectionString;
@@ -19,154 +17,144 @@ namespace Infrastructure.Repositories
 			_connectionString = config.GetConnectionString("DefaultConnection");
 		}
 
-		public TaiKhoanDTO LayTaiKhoanTheoEmail(string email)
+		public TaiKhoan GetByEmail(string email)
 		{
-			string sql = @"SELECT * FROM TaiKhoan WHERE Email = @Email AND TrangThai = N'Hoạt động'";
+			const string sql = @"
+            SELECT TaiKhoanID, Email, MatKhau, VaiTro, TrangThai, NgayTao
+            FROM TaiKhoan
+            WHERE Email = @Email
+        ";
 
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
-				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
 					cmd.Parameters.AddWithValue("@Email", email);
+					conn.Open();
 					using (SqlDataReader reader = cmd.ExecuteReader())
 					{
 						if (reader.Read())
 						{
-							return new TaiKhoanDTO
-							{
-								TaiKhoanID = (int)reader["TaiKhoanID"],
-								Email = reader["Email"].ToString(),
-								PasswordHash = reader["MatKhau"].ToString(),
-								Role = reader["VaiTro"].ToString(),
-								Status = reader["TrangThai"].ToString(),
-								NgayTao = (DateTime)reader["NgayTao"],
-								NgayCapNhat = (DateTime)reader["NgayCapNhat"]
-							};
+							return MapToEntity(reader);
+						}
+						else
+						{
+							return null;
 						}
 					}
 				}
 			}
-			return null;
 		}
-		public TaiKhoanDTO LayTaiKhoanTheoID(int taiKhoanID)
+		public TaiKhoan GetById(int id)
 		{
-			string sql = @"SELECT * FROM TaiKhoan WHERE TaiKhoanID = @TaiKhoanID";
+			string sql = @"
+                SELECT TaiKhoanID, Email, MatKhau, VaiTro, TrangThai, NgayTao
+                FROM TaiKhoan
+                WHERE TaiKhoanID = @Id
+            ";
+
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
-				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@TaiKhoanID", taiKhoanID);
+					cmd.Parameters.AddWithValue("@Id", id);
+					conn.Open();
 					using (SqlDataReader reader = cmd.ExecuteReader())
 					{
 						if (reader.Read())
 						{
-							return new TaiKhoanDTO
-							{
-								TaiKhoanID = (int)reader["TaiKhoanID"],
-								Email = reader["Email"].ToString(),
-								PasswordHash = reader["MatKhau"].ToString(),
-								Role = reader["VaiTro"].ToString(),
-								Status = reader["TrangThai"].ToString(),
-								NgayTao = (DateTime)reader["NgayTao"],
-								NgayCapNhat = (DateTime)reader["NgayCapNhat"]
-							};
+							return MapToEntity(reader);
+						}
+						else
+						{
+							return null;
 						}
 					}
 				}
 			}
-			return null;
 		}
 
-		public List<TaiKhoanDTO> LayDanhSachTaiKhoan()
+		public List<TaiKhoan> GetAll()
 		{
-			List<TaiKhoanDTO> list = new List<TaiKhoanDTO>();
+			List<TaiKhoan> list = new List<TaiKhoan>();
 			string sql = @"
-                SELECT TaiKhoanID, Email, VaiTro, TrangThai, NgayTao, NgayCapNhat
+                SELECT TaiKhoanID, Email, MatKhau, VaiTro, TrangThai, NgayTao
                 FROM TaiKhoan
             ";
+
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
-				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
+					conn.Open();
 					using (SqlDataReader reader = cmd.ExecuteReader())
 					{
 						while (reader.Read())
 						{
-							list.Add(new TaiKhoanDTO
-							{
-								TaiKhoanID = (int)reader["TaiKhoanID"],
-								Email = reader["Email"].ToString(),
-								Role = reader["VaiTro"].ToString(),
-								Status = reader["TrangThai"].ToString(),
-								NgayTao = (DateTime)reader["NgayTao"],
-								NgayCapNhat = (DateTime)reader["NgayCapNhat"]
-							});
+							list.Add(MapToEntity(reader));
 						}
 					}
-					return list;
 				}
 			}
+
+			return list;
 		}
-		public bool TaoTaiKhoan(TaiKhoanCreateDTO taiKhoan)
+		public void Add(TaiKhoan taiKhoan)
 		{
 			string sql = @"
-				INSERT INTO TaiKhoan (Email, MatKhau, VaiTro)
-				VALUES (@Email, @MatKhau, @VaiTro)
-			";
+                INSERT INTO TaiKhoan (Email, MatKhau, VaiTro, TrangThai, NgayTao)
+                VALUES (@Email, @MatKhau, @VaiTro, @TrangThai, @NgayTao)
+            ";
+
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
-				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
 					cmd.Parameters.AddWithValue("@Email", taiKhoan.Email);
 					cmd.Parameters.AddWithValue("@MatKhau", taiKhoan.MatKhau);
-					cmd.Parameters.AddWithValue("@VaiTro", taiKhoan.VaiTro);
-					int rowsAffected = cmd.ExecuteNonQuery();
-					return rowsAffected > 0;
+					cmd.Parameters.AddWithValue("@VaiTro", taiKhoan.Vaitro);
+					cmd.Parameters.AddWithValue("@TrangThai", taiKhoan.TrangThai);
+					cmd.Parameters.AddWithValue("@NgayTao", taiKhoan.NgayTao);
+
+					conn.Open();
+					cmd.ExecuteNonQuery();
 				}
 			}
 		}
-		public bool CapNhatMatKhau(int taiKhoanID, string newPasswordHash)
+		public void Update(TaiKhoan taiKhoan)
 		{
 			string sql = @"
-				UPDATE TaiKhoan
-				SET MatKhau = @PasswordHash, NgayCapNhat = @NgayCapNhat
-				WHERE TaiKhoanID = @TaiKhoanID
-			";
+                UPDATE TaiKhoan
+                SET MatKhau = @MatKhau,
+                    TrangThai = @TrangThai,
+                    NgayCapNhat = GETDATE()
+                WHERE TaiKhoanID = @Id
+            ";
+
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
-				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@PasswordHash", newPasswordHash);
-					cmd.Parameters.AddWithValue("@NgayCapNhat", DateTime.Now);
-					cmd.Parameters.AddWithValue("@TaiKhoanID", taiKhoanID);
-					int rowsAffected = cmd.ExecuteNonQuery();
-					return rowsAffected > 0;
+					cmd.Parameters.AddWithValue("@MatKhau", taiKhoan.MatKhau);
+					cmd.Parameters.AddWithValue("@TrangThai", taiKhoan.TrangThai);
+					cmd.Parameters.AddWithValue("@Id", taiKhoan.Id);
+
+					conn.Open();
+					cmd.ExecuteNonQuery();
 				}
 			}
 		}
-		public bool ChuyenTrangThai(Status stt)
+
+		private TaiKhoan MapToEntity(SqlDataReader reader)
 		{
-			string sql = @"
-				UPDATE TaiKhoan
-				SET TrangThai = @TrangThai , NgayCapNhat = GetDate()
-				WHERE TaiKhoanID = @TaiKhoanID
-			";
-			using (SqlConnection conn = new SqlConnection(_connectionString))
-			{
-				conn.Open();
-				using (SqlCommand cmd = new SqlCommand(sql, conn))
-				{
-					cmd.Parameters.AddWithValue("@TaiKhoanID", stt.Id);
-					cmd.Parameters.AddWithValue("@TrangThai", stt.TrangThai);
-					int rowsAffected = cmd.ExecuteNonQuery();
-					return rowsAffected > 0;
-				}
-			}
+			return new TaiKhoan(
+				id: (int)reader["TaiKhoanID"],
+				email: reader["Email"].ToString(),
+				matkhau: reader["MatKhau"].ToString(),
+				vaitro: reader["VaiTro"].ToString(),
+				trangthai: reader["TrangThai"].ToString(),
+				ngaytao: (DateTime)reader["NgayTao"]
+			);
 		}
 	}
 }

@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Application.DTOs;
 using Services;
-using Domain.DTO;
-using Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace API.Controllers
 {
@@ -10,69 +9,86 @@ namespace API.Controllers
 	[Route("api/[controller]")]
 	public class TaiKhoanController : ControllerBase
 	{
-		private readonly TaiKhoanService _taiKhoan;
-		private readonly IConfiguration _config;
-		public TaiKhoanController(TaiKhoanService taiKhoan, IConfiguration config)
+		private readonly TaiKhoanService _taiKhoanService;
+
+		public TaiKhoanController(TaiKhoanService taiKhoanService)
 		{
-			_taiKhoan = taiKhoan;
-			_config = config;
+			_taiKhoanService = taiKhoanService;
 		}
-		[HttpPost("DangNhap")]
-		public IActionResult DangNhap([FromBody] Login request)
+
+		// =====================
+		// Đăng nhập
+		// POST: api/TaiKhoan/dangnhap
+		// =====================
+		[HttpPost("dangnhap")]
+		public ActionResult<TaiKhoanResponseDto> DangNhap([FromBody] LoginRequestDto loginDto)
 		{
-			var result = _taiKhoan.DangNhap(request.Email, request.PasswordHash);
-			if (result != null)
-			{
-				return Ok(result);
-			}
-			return Unauthorized("Tài Khoản hoặc mật khẩu không đúng.");
-		}
-		[HttpGet("DanhSach")]
-		public IActionResult DanhSach()
-		{
-			var result = _taiKhoan.LayDanhSachTaiKhoan();
+			var result = _taiKhoanService.DangNhap(loginDto);
+			if (result == null)
+				return Unauthorized("Email hoặc mật khẩu không đúng.");
 			return Ok(result);
 		}
-		[HttpPost("DangKy")]
-		public IActionResult DangKy([FromBody] TaiKhoanCreateDTO taikhoan)
+
+		// =====================
+		// Đăng ký tài khoản
+		// POST: api/TaiKhoan/dangky
+		// =====================
+		[HttpPost("dangky")]
+		public IActionResult DangKy([FromBody] TaiKhoanCreateDto createDto)
 		{
-			var result = _taiKhoan.DangKyTaiKhoan(taikhoan);
-			if (result)
-			{
-				return Ok("Đăng ký thành công.");
-			}
-			return BadRequest("Email đã tồn tại.");
+			var tk = new Domain.Entities.TaiKhoan(createDto.Email, createDto.MatKhau, createDto.VaiTro);
+			_taiKhoanService.DangKy(tk);
+			return Ok("Đăng ký thành công.");
 		}
-		[HttpPut("DoiMatKhau")]
-		public IActionResult DoiMatKhau([FromBody] DoiMatKhauDTO tk)
+
+		// =====================
+		// Đổi mật khẩu
+		// PUT: api/TaiKhoan/{id}/doimatkhau
+		// =====================
+		[HttpPut("{id}/doimatkhau")]
+		public IActionResult DoiMatKhau(int id, [FromBody] DoiMatKhauDto doiMatKhauDto)
 		{
-			var result = _taiKhoan.DoiMatKhau(tk);
-			if (result)
-			{
-				return Ok("Đổi mật khẩu thành công.");
-			}
-			return BadRequest("Đổi mật khẩu thất bại.");
+			var result = _taiKhoanService.DoiMatKhau(id, doiMatKhauDto);
+			if (!result)
+				return BadRequest("Đổi mật khẩu thất bại. Mật khẩu cũ không đúng hoặc tài khoản không tồn tại.");
+			return Ok("Đổi mật khẩu thành công.");
 		}
-		[HttpPut("ResetMatKhau/{ID}")]
-		public IActionResult ResetMatKhau(int ID)
+
+		// =====================
+		// Cập nhật trạng thái
+		// PUT: api/TaiKhoan/{id}/trangthai
+		// =====================
+		[HttpPut("{id}/trangthai")]
+		public IActionResult CapNhatTrangThai(int id, [FromBody] string trangThaiMoi)
 		{
-			string defaultPassword = _config["DefaultPassword"];
-			var result = _taiKhoan.ResetMatKhau(ID, defaultPassword);
-			if (result)
-			{
-				return Ok("Reset mật khẩu thành công.");
-			}
-			return BadRequest("Reset mật khẩu thất bại.");
+			var result = _taiKhoanService.CapNhatTrangThai(id, trangThaiMoi);
+			if (!result)
+				return BadRequest("Cập nhật trạng thái thất bại. Tài khoản không tồn tại.");
+			return Ok("Cập nhật trạng thái thành công.");
 		}
-		[HttpPut("ChuyenTrangThai")]
-		public IActionResult ChuyenTrangThai([FromBody] Status stt)
+
+		// =====================
+		// Lấy tất cả tài khoản
+		// GET: api/TaiKhoan
+		// =====================
+		[HttpGet]
+		public ActionResult<List<TaiKhoanResponseDto>> LayTatCaTaiKhoan()
 		{
-			var result = _taiKhoan.ChuyenTrangThai(stt);
-			if (result)
-			{
-				return Ok("Chuyển trạng thái thành công.");
-			}
-			return BadRequest("Chuyển trạng thái thất bại.");
+			var result = _taiKhoanService.LayTatCaTaiKhoan();
+			return Ok(result);
+		}
+
+		// =====================
+		// Lấy tài khoản theo Id
+		// GET: api/TaiKhoan/{id}
+		// =====================
+		[HttpGet("{id}")]
+		public ActionResult<TaiKhoanResponseDto> LayTaiKhoanTheoId(int id)
+		{
+			var result = _taiKhoanService.LayTaiKhoanTheoId(id);
+			if (result == null)
+				return NotFound("Tài khoản không tồn tại.");
+			return Ok(result);
 		}
 	}
 }
