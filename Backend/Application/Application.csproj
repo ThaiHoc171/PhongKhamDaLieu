@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Helper\EmailHelper.cs" />
+    <Compile Include="DTOs\Auth\TaiKhoanDTO.cs" />
+    <Compile Include="Interfaces\ITaiKhoanRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\BacSiProfileService.cs" />
     <Compile Include="Services\BenhNhanService.cs" />
