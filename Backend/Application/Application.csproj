@@ -43,6 +43,8 @@
   <ItemGroup>
     <Compile Include="Common\Helper\EmailHelper.cs" />
     <Compile Include="DTOs\Auth\TaiKhoanDTO.cs" />
+    <Compile Include="DTOs\ChucVuDTO.cs" />
+    <Compile Include="Interfaces\IChucVuRepository.cs" />
     <Compile Include="Interfaces\ITaiKhoanRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\BacSiProfileService.cs" />

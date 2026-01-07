@@ -33,9 +33,9 @@ namespace Domain.Entities
 			MatKhau = newHash;
 		}
 
-		public void CapNhatTrangThai(string vaitro)
+		public void CapNhatTrangThai(string trangthai)
 		{
-			TrangThai = vaitro;
+			TrangThai = trangthai;
 		}
 	}
 }

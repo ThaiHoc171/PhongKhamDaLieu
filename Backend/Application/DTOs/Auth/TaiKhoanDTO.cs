@@ -6,28 +6,28 @@ using System.Threading.Tasks;
 
 namespace Application.DTOs
 {
-	public class LoginRequestDto
+	public class LoginRequestDTO
 	{
 		public string Email { get; set; }
 		public string MatKhau { get; set; }
 	}
 
-	public class TaiKhoanCreateDto
+	public class ThemTaiKhoanDTO
 	{
 		public string Email { get; set; }
 		public string MatKhau { get; set; }
 		public string VaiTro { get; set; }
 	}
-	public class DoiMatKhauDto
+	public class DoiMatKhauDTO
 	{
 		public string MatKhauCu { get; set; }
 		public string MatKhauMoi { get; set; }
 	}
-	public class TaiKhoanResponseDto
+	public class TaiKhoanResponseDTO
 	{
 		public int Id { get; set; }
 		public string Email { get; set; }
-		public string Role { get; set; }
-		public string Status { get; set; }
+		public string VaiTro { get; set; }
+		public string TrangThai { get; set; }
 	}
 }

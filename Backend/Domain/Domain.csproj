@@ -49,7 +49,6 @@
     <Compile Include="DTO\CaKhamDTO.cs" />
     <Compile Include="DTO\CanLamSangDTO.cs" />
     <Compile Include="DTO\ChiTietToaThuocDTO.cs" />
-    <Compile Include="DTO\ChucVuDTO.cs" />
     <Compile Include="DTO\HoSoBenhAnDTO.cs" />
     <Compile Include="DTO\KhungGioKhamDTO.cs" />
     <Compile Include="DTO\LichLamViecNhanVienDTO.cs" />
@@ -70,6 +69,7 @@
     <Compile Include="DTO\ThongTinCaNhanDTO.cs" />
     <Compile Include="DTO\ThuocDTO.cs" />
     <Compile Include="DTO\ToaThuocDTO.cs" />
+    <Compile Include="Entities\ChucVu.cs" />
     <Compile Include="Entities\Status.cs" />
     <Compile Include="Entities\TaiKhoan.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -78,7 +78,6 @@
     <Compile Include="Repository\ICaKhamRepositories.cs" />
     <Compile Include="Repository\ICanLamSangRepositories.cs" />
     <Compile Include="Repository\IChiTietToaThuocRepositories.cs" />
-    <Compile Include="Repository\IChucVuRepositories.cs" />
     <Compile Include="Repository\IKhungGioKhamRepositories.cs" />
     <Compile Include="Repository\ILichLamViecNhanVienRepositories.cs" />
     <Compile Include="Repository\INgayNghiNhanVienRepositories.cs" />
