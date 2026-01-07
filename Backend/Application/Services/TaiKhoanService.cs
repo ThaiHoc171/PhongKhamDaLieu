@@ -13,27 +13,27 @@ namespace Services
 		{
 			_repo = repo;
 		}
-		public TaiKhoanResponseDto DangNhap(LoginRequestDto dto)
+		public TaiKhoanResponseDTO DangNhap(LoginRequestDTO dto)
 		{
 			var tk = _repo.GetByEmail(dto.Email);
 			if(tk == null) return null;
 			if(!Helper.Password.VerifyPassword(dto.MatKhau, tk.MatKhau))
 				return null;
-			return new TaiKhoanResponseDto
+			return new TaiKhoanResponseDTO
 			{
 				Id = tk.Id,
 				Email = tk.Email,
-				Role = tk.Vaitro,
-				Status = tk.TrangThai
+				VaiTro = tk.Vaitro,
+				TrangThai = tk.TrangThai
 			};
 		}
-		public void DangKy(TaiKhoan taiKhoan)
+		public void DangKy(ThemTaiKhoanDTO taiKhoan)
 		{
 			var hash = Helper.Password.PassWordHash(taiKhoan.MatKhau);
-			var tk = new TaiKhoan(taiKhoan.Email, hash, taiKhoan.Vaitro);
+			var tk = new TaiKhoan(taiKhoan.Email, hash, taiKhoan.VaiTro);
 			_repo.Add(tk);
 		}
-		public bool DoiMatKhau(int taiKhoanId, DoiMatKhauDto dto)
+		public bool DoiMatKhau(int taiKhoanId, DoiMatKhauDTO dto)
 		{
 			var tk = _repo.GetById(taiKhoanId);
 			if (tk == null) return false;
@@ -55,33 +55,33 @@ namespace Services
 			_repo.Update(tk);
 			return true;
 		}
-		public List<TaiKhoanResponseDto> LayTatCaTaiKhoan()
+		public List<TaiKhoanResponseDTO> LayTatCaTaiKhoan()
 		{
 			var list = _repo.GetAll();
-			var result = new List<TaiKhoanResponseDto>();
+			var result = new List<TaiKhoanResponseDTO>();
 			foreach (var tk in list)
 			{
-				result.Add(new TaiKhoanResponseDto
+				result.Add(new TaiKhoanResponseDTO
 				{
 					Id = tk.Id,
 					Email = tk.Email,
-					Role = tk.Vaitro,
-					Status = tk.TrangThai
+					VaiTro = tk.Vaitro,
+					TrangThai = tk.TrangThai
 				});
 			}
 			return result;
 		}
-		public TaiKhoanResponseDto LayTaiKhoanTheoId(int id)
+		public TaiKhoanResponseDTO LayTaiKhoanTheoId(int id)
 		{
 			var tk = _repo.GetById(id);
 			if (tk == null) return null;
 
-			return new TaiKhoanResponseDto
+			return new TaiKhoanResponseDTO
 			{
 				Id = tk.Id,
 				Email = tk.Email,
-				Role = tk.Vaitro,
-				Status = tk.TrangThai
+				VaiTro = tk.Vaitro,
+				TrangThai = tk.TrangThai
 			};
 		}
 	}

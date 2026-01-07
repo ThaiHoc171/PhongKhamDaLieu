@@ -1,5 +1,5 @@
-﻿using Domain.DTO;
-using Domain.Repository;
+﻿using Domain.Entities;
+using Application.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -16,9 +16,9 @@ namespace Infrastructure.Repositories
 			_connectionString = config.GetConnectionString("DefaultConnection");
 
 		}
-		public List<ChucVuDTO> DanhSachChucVu()
+		public List<ChucVu> GetAll()
 		{
-			List<ChucVuDTO> listChucVu = new List<ChucVuDTO>();
+			List<ChucVu> list = new List<ChucVu>();
 			string sql = "SELECT * FROM ChucVu WHERE TrangThai = N'Hoạt động'";
 
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -30,21 +30,14 @@ namespace Infrastructure.Repositories
 					{
 						while (reader.Read())
 						{
-							listChucVu.Add(new ChucVuDTO
-							{
-								ChucVuID = (int)reader["ChucVuID"],
-								TenChucVu = reader["TenChucVu"].ToString(),
-								MoTa = reader["MoTa"].ToString(),
-								NgayTao = (DateTime)reader["NgayTao"],
-								TrangThai = reader["TrangThai"].ToString()
-							});
+							list.Add(MapToEntity(reader));
 						}
 					}
 				}
-				return listChucVu;
 			}
+			return list;
 		}
-		public ChucVuDTO LayChucVuByID(int chucvuID)
+		public ChucVu GetById(int id)
 		{
 			string sql = "SELECT * FROM ChucVu WHERE ChucVuID = @ChucVuID AND TrangThai = N'Hoạt động'";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -52,26 +45,19 @@ namespace Infrastructure.Repositories
 				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
-					cmd.Parameters.AddWithValue("@ChucVuID", chucvuID);
+					cmd.Parameters.AddWithValue("@ChucVuID", id);
 					using (SqlDataReader reader = cmd.ExecuteReader())
 					{
 						if (reader.Read())
 						{
-							return new ChucVuDTO
-							{
-								ChucVuID = (int)reader["ChucVuID"],
-								TenChucVu = reader["TenChucVu"].ToString(),
-								MoTa = reader["MoTa"].ToString(),
-								NgayTao = (DateTime)reader["NgayTao"],
-								TrangThai = reader["TrangThai"].ToString()
-							};
+							return MapToEntity(reader);
 						}
 					}
 				}
 				return null;
 			}
 		}
-		public bool ThemChucVu(ThemChucVuDTO cv)
+		public void Add(ChucVu cv)
 		{
 			string sql = @"INSERT INTO ChucVu (TenChucVu, MoTa)
 						   VALUES (@TenChucVu, @MoTa)";
@@ -82,45 +68,37 @@ namespace Infrastructure.Repositories
 				{
 					cmd.Parameters.AddWithValue("@TenChucVu", cv.TenChucVu);
 					cmd.Parameters.AddWithValue("@MoTa", cv.MoTa);
-					int rowsAffected = cmd.ExecuteNonQuery();
-					return rowsAffected > 0;
+					cmd.ExecuteNonQuery();
 				}
 			}
 		}
-		public bool CapNhatChucVu(CapNhatChucVuDTO cv)
+		public void Update(ChucVu cv)
 		{
 			string sql = @"UPDATE ChucVu
-						   SET TenChucVu = @TenChucVu,
-							   MoTa = @MoTa
+						   SET TenChucVu = @TenChucVu, MoTa = @MoTa, TrangThai = @TrangThai
 						   WHERE ChucVuID = @ChucVuID";
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
 				conn.Open();
 				using (SqlCommand cmd = new SqlCommand(sql, conn))
 				{
+					cmd.Parameters.AddWithValue("@ChucVuID", cv.ChucVuID);
 					cmd.Parameters.AddWithValue("@TenChucVu", cv.TenChucVu);
 					cmd.Parameters.AddWithValue("@MoTa", cv.MoTa);
-					cmd.Parameters.AddWithValue("@ChucVuID", cv.ChucVuID);
-					int rowsAffected = cmd.ExecuteNonQuery();
-					return rowsAffected > 0;
+					cmd.Parameters.AddWithValue("@TrangThai", cv.TrangThai);
+					cmd.ExecuteNonQuery();
 				}
 			}
 		}
-		public bool VoHieuHoaChucVu(int chucvuID)
+		private ChucVu MapToEntity(SqlDataReader reader)
 		{
-			string sql = @"UPDATE ChucVu
-						   SET TrangThai = N'Không hoạt động'
-						   WHERE ChucVuID = @ChucVuID";
-			using (SqlConnection conn = new SqlConnection(_connectionString))
-			{
-				conn.Open();
-				using (SqlCommand cmd = new SqlCommand(sql, conn))
-				{
-					cmd.Parameters.AddWithValue("@ChucVuID", chucvuID);
-					int rowsAffected = cmd.ExecuteNonQuery();
-					return rowsAffected > 0;
-				}
-			}
+			return new ChucVu(
+				(int)reader["ChucVuID"],
+				reader["TenChucVu"].ToString(),
+				reader["MoTa"].ToString(),
+				(DateTime)reader["NgayTao"],
+				reader["TrangThai"].ToString()
+			);
 		}
 	}
 }
