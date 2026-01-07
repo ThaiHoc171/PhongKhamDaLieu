@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Domain.DTO;
-using Domain.Repository;
+using Application.Interfaces;
+using Application.DTOs;
 using Domain.Entities;
 
 namespace Services
@@ -13,66 +13,76 @@ namespace Services
 		{
 			_repo = repo;
 		}
-		public TaiKhoanDTO DangNhap(string email, string password)
+		public TaiKhoanResponseDto DangNhap(LoginRequestDto dto)
 		{
-			TaiKhoanDTO tk = _repo.LayTaiKhoanTheoEmail(email);
-			if(tk != null && Helper.Password.VerifyPassword(password, tk.PasswordHash))
+			var tk = _repo.GetByEmail(dto.Email);
+			if(tk == null) return null;
+			if(!Helper.Password.VerifyPassword(dto.MatKhau, tk.MatKhau))
+				return null;
+			return new TaiKhoanResponseDto
 			{
-				return tk;
-			}
-			return null;
-		}
-		public List<TaiKhoanDTO> LayDanhSachTaiKhoan()
-		{
-			return _repo.LayDanhSachTaiKhoan();
-		}	
-		public TaiKhoanDTO LayTaiKhoanTheoEmail(string email)
-		{
-			return _repo.LayTaiKhoanTheoEmail(email);
-		}
-		public bool KiemTraEmailTonTai(string email)
-		{
-			TaiKhoanDTO tk = _repo.LayTaiKhoanTheoEmail(email);
-			return tk != null;
-		}
-		public bool DangKyTaiKhoan(TaiKhoanCreateDTO tk)
-		{
-			if(KiemTraEmailTonTai(tk.Email))
-			{
-				return false;
-			}
-			string passwordHash = Helper.Password.PassWordHash(tk.MatKhau);
-			TaiKhoanCreateDTO taiKhoanCreateDTO = new TaiKhoanCreateDTO
-			{
+				Id = tk.Id,
 				Email = tk.Email,
-				MatKhau = passwordHash,
-				VaiTro = tk.VaiTro
+				Role = tk.Vaitro,
+				Status = tk.TrangThai
 			};
-			return _repo.TaoTaiKhoan(taiKhoanCreateDTO);
 		}
-		public bool DoiMatKhau(DoiMatKhauDTO taikhoan)
+		public void DangKy(TaiKhoan taiKhoan)
 		{
-			TaiKhoanDTO tk = _repo.LayTaiKhoanTheoID(taikhoan.TaiKhoanID);
-			if(tk == null || !Helper.Password.VerifyPassword(taikhoan.MatKhauCu, tk.PasswordHash))
-			{
+			var hash = Helper.Password.PassWordHash(taiKhoan.MatKhau);
+			var tk = new TaiKhoan(taiKhoan.Email, hash, taiKhoan.Vaitro);
+			_repo.Add(tk);
+		}
+		public bool DoiMatKhau(int taiKhoanId, DoiMatKhauDto dto)
+		{
+			var tk = _repo.GetById(taiKhoanId);
+			if (tk == null) return false;
+
+			if (!Helper.Password.VerifyPassword(dto.MatKhauCu, tk.MatKhau))
 				return false;
-			}
-			string newPasswordHash = Helper.Password.PassWordHash(taikhoan.MatKhauMoi);
-			return _repo.CapNhatMatKhau(taikhoan.TaiKhoanID, newPasswordHash);
+
+			var hashMoi = Helper.Password.PassWordHash(dto.MatKhauMoi);
+			tk.DoiMatKhau(hashMoi);
+			_repo.Update(tk);
+			return true;
 		}
-		public bool ResetMatKhau(int taiKhoanID, string newPassword)
+		public bool CapNhatTrangThai(int taiKhoanId, string trangThaiMoi)
 		{
-			TaiKhoanDTO tk = _repo.LayTaiKhoanTheoID(taiKhoanID);
-			if(tk == null)
+			var tk = _repo.GetById(taiKhoanId);
+			if (tk == null) return false;
+
+			tk.CapNhatTrangThai(trangThaiMoi);
+			_repo.Update(tk);
+			return true;
+		}
+		public List<TaiKhoanResponseDto> LayTatCaTaiKhoan()
+		{
+			var list = _repo.GetAll();
+			var result = new List<TaiKhoanResponseDto>();
+			foreach (var tk in list)
 			{
-				return false;
+				result.Add(new TaiKhoanResponseDto
+				{
+					Id = tk.Id,
+					Email = tk.Email,
+					Role = tk.Vaitro,
+					Status = tk.TrangThai
+				});
 			}
-			string newPasswordHash = Helper.Password.PassWordHash(newPassword);
-			return _repo.CapNhatMatKhau(taiKhoanID, newPasswordHash);
+			return result;
 		}
-		public bool ChuyenTrangThai(Status stt)
+		public TaiKhoanResponseDto LayTaiKhoanTheoId(int id)
 		{
-			return _repo.ChuyenTrangThai(stt);
+			var tk = _repo.GetById(id);
+			if (tk == null) return null;
+
+			return new TaiKhoanResponseDto
+			{
+				Id = tk.Id,
+				Email = tk.Email,
+				Role = tk.Vaitro,
+				Status = tk.TrangThai
+			};
 		}
 	}
 }

@@ -1,0 +1,84 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0" version="29.2.9">
+  <diagram name="Use Case Diagram" id="DVN9ty8RGsfMs0TXyqA7">
+    <mxGraphModel dx="1069" dy="590" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;" value="&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;HỆ THỐNG QUẢN LÍ LỊCH LÀM VIỆC&lt;/span&gt;" vertex="1">
+          <mxGeometry height="730" width="880" x="260" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-2" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Tạo lịch làm việc tự động" vertex="1">
+          <mxGeometry height="55.05416666666666" width="154.56692307692308" x="228.46153846153848" y="76.04166666666667" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-3" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Xử lý nghỉ phép" vertex="1">
+          <mxGeometry height="63.35791666666666" width="173.46153846153848" x="232.6923076923077" y="258.5416666666667" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-4" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Xem lịch làm việc" vertex="1">
+          <mxGeometry height="68.31583333333333" width="174.46" x="236.92307692307693" y="539.8958333333334" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-5" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Thêm / cập nhật nghỉ phép nhân viên" vertex="1">
+          <mxGeometry height="59.36572916666667" width="191.0446153846154" x="236.92307692307693" y="410.625" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-6" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Kiểm tra lịch đã tồn tại" vertex="1">
+          <mxGeometry height="64.35406249999998" width="215.15153846153848" x="547.5546153846154" y="11.687604166666668" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-7" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Áp dụng ràng buộc&#xa;(Constraint Programming)" vertex="1">
+          <mxGeometry height="64.4225" width="247.83" x="541.5384615384617" y="91.25" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-8" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Loại trừ nhân viên nghỉ" vertex="1">
+          <mxGeometry height="54.2709375" width="202.89076923076925" x="564.0123076923078" y="182.5" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-9" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Phân ca công bằng" vertex="1">
+          <mxGeometry height="56.5521875" width="205.98769230769233" x="564.0123076923077" y="258.5416666666667" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-10" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Xoay ca làm việc" vertex="1">
+          <mxGeometry height="53.229166666666664" width="214.89769230769232" x="572.0253846153846" y="342.1875" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-11" parent="BtxeOlSUp7sxQdYtPPpL-1" style="ellipse;whiteSpace=wrap;html=1;" value="Tái tối ưu cục bộ" vertex="1">
+          <mxGeometry height="60.833333333333336" width="207.97615384615386" x="599.9969230769232" y="450.00333333333333" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-12" edge="1" parent="BtxeOlSUp7sxQdYtPPpL-1" source="BtxeOlSUp7sxQdYtPPpL-2" style="dashed=1;endArrow=open;" target="BtxeOlSUp7sxQdYtPPpL-6" value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-13" edge="1" parent="BtxeOlSUp7sxQdYtPPpL-1" source="BtxeOlSUp7sxQdYtPPpL-2" style="dashed=1;endArrow=open;" target="BtxeOlSUp7sxQdYtPPpL-7" value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-14" edge="1" parent="BtxeOlSUp7sxQdYtPPpL-1" source="BtxeOlSUp7sxQdYtPPpL-2" style="dashed=1;endArrow=open;" target="BtxeOlSUp7sxQdYtPPpL-8" value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-15" edge="1" parent="BtxeOlSUp7sxQdYtPPpL-1" source="BtxeOlSUp7sxQdYtPPpL-2" style="dashed=1;endArrow=open;" target="BtxeOlSUp7sxQdYtPPpL-9" value="&lt;&lt;include&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-16" edge="1" parent="BtxeOlSUp7sxQdYtPPpL-1" source="BtxeOlSUp7sxQdYtPPpL-10" style="dashed=1;endArrow=open;" target="BtxeOlSUp7sxQdYtPPpL-3" value="&lt;&lt;extend&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-17" edge="1" parent="BtxeOlSUp7sxQdYtPPpL-1" source="BtxeOlSUp7sxQdYtPPpL-11" style="dashed=1;endArrow=open;" target="BtxeOlSUp7sxQdYtPPpL-3" value="&lt;&lt;extend&gt;&gt;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-18" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" value="Admin" vertex="1">
+          <mxGeometry height="50" width="35" x="130" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-20" edge="1" parent="1" source="BtxeOlSUp7sxQdYtPPpL-18" style="endArrow=none;" target="BtxeOlSUp7sxQdYtPPpL-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-21" edge="1" parent="1" source="BtxeOlSUp7sxQdYtPPpL-18" style="endArrow=none;" target="BtxeOlSUp7sxQdYtPPpL-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-22" edge="1" parent="1" source="BtxeOlSUp7sxQdYtPPpL-18" style="endArrow=none;" target="BtxeOlSUp7sxQdYtPPpL-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-23" edge="1" parent="1" source="BtxeOlSUp7sxQdYtPPpL-18" style="endArrow=none;" target="BtxeOlSUp7sxQdYtPPpL-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-24" edge="1" parent="1" style="endArrow=none;" target="BtxeOlSUp7sxQdYtPPpL-4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="173.33000000000015" y="794.9623562677052" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="BtxeOlSUp7sxQdYtPPpL-26" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" value="Nhân viên" vertex="1">
+          <mxGeometry height="50" width="35" x="140" y="770" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
