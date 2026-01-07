@@ -1,6 +1,6 @@
-﻿using Services;
-using Microsoft.AspNetCore.Mvc;
-using Domain.DTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using Application.DTOs;
+using Services;
 namespace API.Controllers
 {
 	[ApiController]
@@ -12,22 +12,27 @@ namespace API.Controllers
 		{
 			_chucVu = chucVu;
 		}
+
+		//Danh sách chức vụ
 		[HttpGet("DanhSach")]
-		public IActionResult DanhSach()
+		public IActionResult LayDanhSachChucVu()
 		{
 			var result = _chucVu.DanhSachChucVu();
 			return Ok(result);
 		}
+		// Lấy chức vụ theo ID
 		[HttpGet("{id}")]
-		public IActionResult LayChucVuByID(int id)
+		public IActionResult LayChucVuTheoID(int id)
 		{
-			var result = _chucVu.LayChucVuByID(id);
-			if (result != null)
+			var result = _chucVu.LayChucVuTheoID(id);
+			if (result == null)
 			{
-				return Ok(result);
+				return NotFound("Chức vụ không tồn tại.");
 			}
-			return NotFound("Chức vụ không tồn tại.");
+			return Ok(result);
 		}
+
+		// Thêm chức vụ
 		[HttpPost("ThemChucVu")]
 		public IActionResult ThemChucVu([FromBody] ThemChucVuDTO cv)
 		{
@@ -38,25 +43,28 @@ namespace API.Controllers
 			}
 			return BadRequest("Thêm chức vụ thất bại.");
 		}
+
+		// Cập nhật chức vụ
 		[HttpPut("CapNhatChucVu")]
-		public IActionResult CapNhatChucVu([FromBody] CapNhatChucVuDTO cv)
+		public IActionResult CapNhatChucVu(int id, [FromBody] CapNhatChucVuDTO cv)
 		{
-			var result = _chucVu.CapNhatChucVu(cv);
+			var result = _chucVu.CapNhatChucVu(id, cv);
 			if (result)
 			{
 				return Ok("Cập nhật chức vụ thành công.");
 			}
 			return BadRequest("Cập nhật chức vụ thất bại.");
 		}
-		[HttpPut("VoHieuHoaChucVu/{id}")]
-		public IActionResult VoHieuHoaChucVu(int id)
+		// Cập nhật trạng thái chức vụ
+		[HttpPut("CapNhatTrangThai/{id}")]
+		public IActionResult CapNhatTrangThai(int id, [FromBody] string trangThaiMoi)
 		{
-			var result = _chucVu.VoHieuHoaChucVu(id);
+			var result = _chucVu.CapNhatTrangThaiChucVu(id, trangThaiMoi);
 			if (result)
 			{
-				return Ok("Vô hiệu hóa chức vụ thành công.");
+				return Ok("Cập nhật trạng thái chức vụ thành công.");
 			}
-			return BadRequest("Vô hiệu hóa chức vụ thất bại.");
+			return BadRequest("Cập nhật trạng thái chức vụ thất bại.");
 		}
 	}
 }

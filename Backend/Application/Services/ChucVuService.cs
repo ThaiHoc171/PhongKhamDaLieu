@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.DTO;
-using Domain.Repository;
-
+﻿using System.Collections.Generic;
+using Application.Interfaces;
+using Application.DTOs;
+using Domain.Entities;
 
 namespace Services
 {
@@ -18,23 +14,53 @@ namespace Services
 		}
 		public List<ChucVuDTO> DanhSachChucVu()
 		{
-			return _repo.DanhSachChucVu();
+			var list = _repo.GetAll();
+			var result = new List<ChucVuDTO>();
+			foreach (var item in list)
+			{
+				result.Add(new ChucVuDTO
+				{
+					ChucVuID = item.ChucVuID,
+					TenChucVu = item.TenChucVu,
+					MoTa = item.MoTa,
+					NgayTao = item.NgayTao
+				});
+			}
+			return result;
 		}
-		public ChucVuDTO LayChucVuByID(int chucvuID)
+		public ChucVuDTO LayChucVuTheoID(int id)
 		{
-			return _repo.LayChucVuByID(chucvuID);
+			var cv = _repo.GetById(id);
+			if (cv == null) return null;
+			return new ChucVuDTO
+			{
+				ChucVuID = cv.ChucVuID,
+				TenChucVu = cv.TenChucVu,
+				MoTa = cv.MoTa,
+				NgayTao = cv.NgayTao
+			};
 		}
-		public bool ThemChucVu(ThemChucVuDTO cv)
+		public bool ThemChucVu(ThemChucVuDTO dto)
 		{
-			return _repo.ThemChucVu(cv);
+			var cv = new ChucVu(dto.TenChucVu, dto.MoTa);
+			_repo.Add(cv);
+			return true;
 		}
-		public bool CapNhatChucVu(CapNhatChucVuDTO cv)
+		public bool CapNhatChucVu(int id, CapNhatChucVuDTO dto)
 		{
-			return _repo.CapNhatChucVu(cv);
+			var cv = _repo.GetById(id);
+			if (cv == null) return false;
+			cv.CapNhat(dto.TenChucVu, dto.MoTa);
+			_repo.Update(cv);
+			return true;
 		}
-		public bool VoHieuHoaChucVu(int chucvuID)
+		public bool CapNhatTrangThaiChucVu(int id, string trangThaiMoi)
 		{
-			return _repo.VoHieuHoaChucVu(chucvuID);
+			var cv = _repo.GetById(id);
+			if (cv == null) return false;
+			cv.CapNhatTrangThai(trangThaiMoi);
+			_repo.Update(cv);
+			return true;
 		}
 	}
 }
