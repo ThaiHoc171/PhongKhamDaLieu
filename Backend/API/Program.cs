@@ -1,7 +1,8 @@
 using Application.Interfaces;
+using Application.Services;
 using Domain.Repository;
-using Services;
 using Infrastructure.Repositories;
+using Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ITaiKhoanRepository, TaiKhoanRepository>();
 builder.Services.AddScoped<TaiKhoanService>();
 builder.Services.AddScoped<IChucVuRepository, ChucVuRepository>();
-builder.Services.AddScoped<ChucVuService>();    
+builder.Services.AddScoped<ChucVuService>(); 
+builder.Services.AddScoped<IThongTinCaNhanRepository, ThongTinCaNhanRepository>();
+builder.Services.AddScoped<ThongTinCaNhanService>();
 builder.Services.AddScoped<INhanVienRepository, NhanVienRepository>();
 builder.Services.AddScoped<LoaiBenhService>();
 builder.Services.AddScoped<ILoaiBenhRepository, LoaiBenhRepository>();

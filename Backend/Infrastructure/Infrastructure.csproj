@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Repository</RootNamespace>
     <AssemblyName>Repository</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
@@ -114,6 +114,7 @@
     <Compile Include="Repository\PhongKhamRepository.cs" />
     <Compile Include="Repository\TaiKhoanRepository.cs" />
     <Compile Include="Repository\ThietBiRepository.cs" />
+    <Compile Include="Repository\ThongTinCaNhanRepository.cs" />
     <Compile Include="Repository\ThuocRepository.cs" />
     <Compile Include="Repository\ToaThuocRepository.cs" />
   </ItemGroup>
