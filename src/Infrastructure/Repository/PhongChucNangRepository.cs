@@ -1,0 +1,159 @@
+﻿using Domain.DTO;
+using Domain.Repository;
+using Domain.Entities;
+using System;
+using System.Collections.Generic;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+
+namespace Infrastructure.Repositories
+{
+	public class PhongChucNangRepository : IPhongChucNangRepository
+	{
+		private readonly string _connectionString;
+		public PhongChucNangRepository(IConfiguration config)
+		{
+			_connectionString = config.GetConnectionString("DefaultConnection");
+		}
+		public List<PhongChucNangDTO> DanhSachPhongChucNang()
+		{
+			List<PhongChucNangDTO> listPhongChucNang = new List<PhongChucNangDTO>();
+			string sql = "SELECT * FROM PhongChucNang";
+			using (SqlConnection conn = new SqlConnection(_connectionString))
+			{
+				conn.Open();
+				using (SqlCommand cmd = new SqlCommand(sql, conn))
+				{
+					using (SqlDataReader reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							listPhongChucNang.Add(new PhongChucNangDTO
+							{
+								PhongChucNangID = (int)reader["PhongChucNangID"],
+								TenPhong = reader["TenPhong"]?.ToString(),
+								LoaiPhong = reader["LoaiPhong"]?.ToString(),
+								MoTa = reader["MoTa"]?.ToString(),
+								TrangThai = reader["TrangThai"]?.ToString(),
+								NgayTao = (DateTime)reader["NgayTao"]
+							});
+						}
+					}
+				}
+			}
+			return listPhongChucNang;
+		}
+		public List<PhongChucNangDTO> TimKiem(string keyword)
+		{
+			List<PhongChucNangDTO> listPhongChucNang = new List<PhongChucNangDTO>();
+			string sql = @"SELECT * FROM PhongChucNang
+						AND (TenPhong LIKE @Keyword OR CAST(PhongChucNangID AS NVarchar) LIKE @keyword )";
+			using (SqlConnection conn = new SqlConnection(_connectionString))
+			{
+				conn.Open();
+				using (SqlCommand cmd = new SqlCommand(sql, conn))
+				{
+					cmd.Parameters.AddWithValue("@Keyword", "%" + keyword + "%");
+					using (SqlDataReader reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							listPhongChucNang.Add(new PhongChucNangDTO
+							{
+								PhongChucNangID = (int)reader["PhongChucNangID"],
+								TenPhong = reader["TenPhong"]?.ToString(),
+								LoaiPhong = reader["LoaiPhong"]?.ToString(),
+								MoTa = reader["MoTa"]?.ToString(),
+								TrangThai = reader["TrangThai"]?.ToString(),
+								NgayTao = (DateTime)reader["NgayTao"]
+							});
+						}
+					}
+				}
+			}
+			return listPhongChucNang;
+		}
+		public PhongChucNangDTO GetPhongByID(int ID)
+		{
+			PhongChucNangDTO pcn = null;
+			string sql = @"SELECT * FROM PhongChucNang WHERE PhongChucNangID = @ID";
+			using (SqlConnection conn = new SqlConnection(_connectionString))
+			{
+				conn.Open();
+				using (SqlCommand cmd = new SqlCommand(sql, conn))
+				{
+					cmd.Parameters.AddWithValue("@ID", ID);
+					using (SqlDataReader reader = cmd.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							pcn = new PhongChucNangDTO
+							{
+								PhongChucNangID = (int)reader["PhongChucNangID"],
+								TenPhong = reader["TenPhong"]?.ToString(),
+								LoaiPhong = reader["LoaiPhong"]?.ToString(),
+								MoTa = reader["MoTa"]?.ToString(),
+								TrangThai = reader["TrangThai"]?.ToString(),
+								NgayTao = (DateTime)reader["NgayTao"]
+							};
+						}
+					}
+				}
+			}
+			return pcn;
+		}
+		public bool ThemPhongChucNang(PhongChucNangCreateDTO pcn)
+		{
+			string sql = @"INSERT INTO PhongChucNang (TenPhong, LoaiPhong, MoTa, NgayTao) 
+						 VALUES (@TenPhong, @LoaiPhong, @MoTa, GETDATE())";
+			using (SqlConnection conn = new SqlConnection(_connectionString))
+			{
+				conn.Open();
+				using (SqlCommand cmd = new SqlCommand(sql, conn))
+				{
+					cmd.Parameters.AddWithValue("@TenPhong", pcn.TenPhong);
+					cmd.Parameters.AddWithValue("@LoaiPhong", pcn.LoaiPhong);
+					cmd.Parameters.AddWithValue("@MoTa", pcn.MoTa ?? (object)DBNull.Value);
+					int rowsAffected = cmd.ExecuteNonQuery();
+					return rowsAffected > 0;
+				}
+			}
+		}
+		public bool CapNhatPhongChucNang(PhongChucNangDTO pcn)
+		{
+			string sql = @"UPDATE PhongChucNang 
+						   SET TenPhong = @TenPhong, LoaiPhong = @LoaiPhong, MoTa = @MoTa 
+						   WHERE PhongChucNangID = @PhongChucNangID";
+			using (SqlConnection conn = new SqlConnection(_connectionString))
+			{
+				conn.Open();
+				using (SqlCommand cmd = new SqlCommand(sql, conn))
+				{
+					cmd.Parameters.AddWithValue("@TenPhong", pcn.TenPhong);
+					cmd.Parameters.AddWithValue("@LoaiPhong", pcn.LoaiPhong);
+					cmd.Parameters.AddWithValue("@MoTa", pcn.MoTa ?? (object)DBNull.Value);
+					cmd.Parameters.AddWithValue("@PhongChucNangID", pcn.PhongChucNangID);
+					int rowsAffected = cmd.ExecuteNonQuery();
+					return rowsAffected > 0;
+				}
+			}
+		}
+		public bool ChuyenTrangThai(Status stt)
+		{
+			string sql = @"UPDATE PhongChucNang 
+						   SET TrangThai = @TrangThai
+						   WHERE PhongChucNangID = @PhongChucNangID";
+			using (SqlConnection conn = new SqlConnection(_connectionString))
+			{
+				conn.Open();
+				using (SqlCommand cmd = new SqlCommand(sql, conn))
+				{
+					cmd.Parameters.AddWithValue("@PhongChucNangID", stt.Id);
+					cmd.Parameters.AddWithValue("@TrangThai", stt.TrangThai);
+					int rowsAffected = cmd.ExecuteNonQuery();
+					return rowsAffected > 0;
+				}
+			}
+		}
+	}
+}
