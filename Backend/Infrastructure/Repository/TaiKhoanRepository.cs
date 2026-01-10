@@ -20,10 +20,10 @@ namespace Infrastructure.Repositories
 		public TaiKhoan GetByEmail(string email)
 		{
 			const string sql = @"
-            SELECT TaiKhoanID, Email, MatKhau, VaiTro, TrangThai, NgayTao
-            FROM TaiKhoan
-            WHERE Email = @Email
-        ";
+				SELECT TaiKhoanID, Email, MatKhau, VaiTro, TrangThai, NgayTao
+				FROM TaiKhoan
+				WHERE Email = @Email
+			";
 
 			using (SqlConnection conn = new SqlConnection(_connectionString))
 			{
