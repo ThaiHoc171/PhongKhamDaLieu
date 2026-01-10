@@ -1,59 +1,78 @@
-﻿using Services;
+﻿using Application.DTOs;
 using Domain.DTO;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 namespace API.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
 	public class NhanVienController : ControllerBase
 	{
-		private readonly NhanVienService _nhanVien;
-		public NhanVienController(NhanVienService nhanVien)
+		private readonly NhanVienService _service;
+
+		public NhanVienController(NhanVienService service)
 		{
-			_nhanVien = nhanVien;
+			_service = service;
 		}
-		[HttpGet("DanhSach")]
-		public IActionResult DanhSach()
+
+		[HttpPost]
+		public IActionResult ThemNhanVien([FromBody] ThemNhanVienDTO dto)
 		{
-			var result = _nhanVien.LayDanhSachNhanVien();
+			try
+			{
+				_service.ThemNhanVien(dto);
+				return StatusCode(201, new { message = "Thêm nhân viên thành công" });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpGet]
+		public IActionResult DanhSachNhanVien()
+		{
+			var result = _service.DanhSachNhanVien();
 			return Ok(result);
 		}
+
+		[HttpGet("search")]
+		public IActionResult TimKiemNhanVien([FromQuery] string keyword)
+		{
+			var result = _service.TimKiemNhanVien(keyword);
+			return Ok(result);
+		}
+
+
 		[HttpGet("{id}")]
-		public IActionResult NhanVien(int id)
+		public IActionResult ChiTietNhanVien(int id)
 		{
-			var result = _nhanVien.LayNhanVienTheoID(id);
-			return Ok(result);
+			var nv = _service.ChiTietNhanVien(id);
+			if (nv == null)
+				return NotFound("Nhân viên không tồn tại");
+
+			return Ok(nv);
 		}
-		[HttpGet("TimKiem")]
-		public IActionResult TimKiemNhanVien(string keyword)
+
+		[HttpPut("{id}")]
+		public IActionResult CapNhatNhanVien(int id, [FromBody] ThemNhanVienDTO dto)
 		{
-			var result = _nhanVien.LayNhanVienTheoTuKhoa(keyword);
-			return Ok(result);
+			var success = _service.CapNhatNhanVien(id, dto);
+			if (!success)
+				return NotFound("Nhân viên không tồn tại");
+
+			return Ok(new { message = "Cập nhật nhân viên thành công" });
 		}
-		[HttpPost("ThemNhanVien")]
-		public IActionResult ThemNhanVien([FromBody] NhanVienCreateDTO nv)
+
+		[HttpPut("{id}/nghi-viec")]
+		public IActionResult ChoNhanVienNghiViec(int id)
 		{
-			var result = _nhanVien.ThemNhanVien(nv);
-			if (result.Success)
-				return Ok(result.Message);
-			return BadRequest(result.Message);
-		}
-		[HttpPut("CapNhatNhanVien")]
-		public IActionResult CapNhatNhanVien([FromBody] NhanVienUpdateDTO nv)
-		{
-			var result = _nhanVien.CapNhatNhanVien(nv);
-			if (result.Success)
-				return Ok(result.Message);
-			return BadRequest(result.Message);
-		}
-		[HttpPut("ChuyenTrangThai")]
-		public IActionResult ChuyenTrangThai([FromBody] Status stt)
-		{
-			var result = _nhanVien.ChuyenTrangThai(stt);
-			if (result)
-				return Ok("Chuyển trạng thái thành công.");
-			return BadRequest("Chuyển trạng thái thất bại.");
+			var success = _service.CapNhatTrangThai(id);
+			if (!success)
+				return NotFound("Nhân viên không tồn tại");
+
+			return Ok(new { message = "Nhân viên đã nghỉ việc" });
 		}
 	}
 }

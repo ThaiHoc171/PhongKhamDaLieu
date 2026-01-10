@@ -88,7 +88,6 @@ CREATE TABLE NhanVien (
     NhanVienID   INT IDENTITY(1,1) PRIMARY KEY,
     ThongTinID   INT NOT NULL UNIQUE,
     ChucVuID	 INT NOT NULL,
-    Luong       DECIMAL(12,2),
     NgayVaoLam     DATE,
     BangCap      NVARCHAR(500),
     KinhNghiem   NVARCHAR(500),
