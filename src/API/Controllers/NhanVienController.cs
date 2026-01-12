@@ -1,8 +1,7 @@
 ﻿using Application.DTOs;
-using Domain.DTO;
-using Domain.Entities;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
-using Services;
+
 namespace API.Controllers
 {
 	[ApiController]
@@ -16,63 +15,68 @@ namespace API.Controllers
 			_service = service;
 		}
 
+		// POST: api/NhanVien
 		[HttpPost]
-		public IActionResult ThemNhanVien([FromBody] ThemNhanVienDTO dto)
+		public async Task<IActionResult> TaoNhanVien([FromBody] TaoNhanVienDTO dto)
 		{
 			try
 			{
-				_service.ThemNhanVien(dto);
-				return StatusCode(201, new { message = "Thêm nhân viên thành công" });
-			}
-			catch (Exception ex)
+				await _service.TaoNhanVienAsync(dto);
+				return Ok(new { message = "Tạo nhân viên thành công." });
+			} catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
+				return BadRequest(new { message = "Tạo nhân viên thất bại.", Message = ex.Message });
 			}
 		}
 
-		[HttpGet]
-		public IActionResult DanhSachNhanVien()
-		{
-			var result = _service.DanhSachNhanVien();
-			return Ok(result);
-		}
-
-		[HttpGet("search")]
-		public IActionResult TimKiemNhanVien([FromQuery] string keyword)
-		{
-			var result = _service.TimKiemNhanVien(keyword);
-			return Ok(result);
-		}
-
-
-		[HttpGet("{id}")]
-		public IActionResult ChiTietNhanVien(int id)
-		{
-			var nv = _service.ChiTietNhanVien(id);
-			if (nv == null)
-				return NotFound("Nhân viên không tồn tại");
-
-			return Ok(nv);
-		}
-
+		// PUT: api/NhanVien/{id}
 		[HttpPut("{id}")]
-		public IActionResult CapNhatNhanVien(int id, [FromBody] ThemNhanVienDTO dto)
+		public async Task<IActionResult> CapNhatNhanVien(
+			int id,
+			[FromBody] CapNhatNhanVienDTO dto)
 		{
-			var success = _service.CapNhatNhanVien(id, dto);
-			if (!success)
-				return NotFound("Nhân viên không tồn tại");
+			var result = await _service.CapNhatNhanVienAsync(id, dto);
 
-			return Ok(new { message = "Cập nhật nhân viên thành công" });
+			if (!result)
+				return NotFound(new { message = "Nhân viên không tồn tại." });
+
+			return Ok(new { message = "Cập nhật nhân viên thành công." });
 		}
 
-		[HttpPut("{id}/nghi-viec")]
-		public IActionResult ChoNhanVienNghiViec(int id)
+		// PUT: api/NhanVien/{id}/trangthai
+		[HttpPut("{id}/trangthai")]
+		public async Task<IActionResult> CapNhatTrangThai(
+			int id,
+			[FromBody] string trangThai)
 		{
-			var success = _service.CapNhatTrangThai(id);
-			if (!success)
-				return NotFound("Nhân viên không tồn tại");
+			var result = await _service.CapNhatTrangThaiAsync(id, trangThai);
 
-			return Ok(new { message = "Nhân viên đã nghỉ việc" });
+			if (!result)
+				return NotFound(new { message = "Nhân viên không tồn tại." });
+
+			return Ok(new { message = "Cập nhật trạng thái thành công." });
+		}
+
+		// GET: api/NhanVien
+		[HttpGet]
+		public async Task<IActionResult> LayDanhSach()
+		{
+			var list = await _service.LayDanhSachAsync();
+			return Ok(list);
+		}
+		[HttpGet("search")]
+		public async Task<IActionResult> TimKiemNhanVien([FromQuery] string keyword)
+		{
+			var list = await _service.SearchAsync(keyword);
+			return Ok(list);
+		}
+		[HttpGet("{id}")]
+		public async Task<IActionResult> LayNhanVienById(int id)
+		{
+			var nv = await _service.LayTheoIDAsync(id);
+			if (nv == null)
+				return NotFound(new { message = "Nhân viên không tồn tại." });
+			return Ok(nv);
 		}
 	}
 }

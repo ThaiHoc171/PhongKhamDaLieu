@@ -1,76 +1,112 @@
 ﻿using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
-namespace Presentation.Controllers
+namespace Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ThongTinCaNhanController : ControllerBase
 {
-	[ApiController]
-	[Route("api/[controller]")]
-	public class ThongTinCaNhanController : ControllerBase
+	private readonly ThongTinCaNhanService _service;
+
+	public ThongTinCaNhanController(ThongTinCaNhanService service)
 	{
-		private readonly ThongTinCaNhanService _service;
+		_service = service;
+	}
 
-		public ThongTinCaNhanController(ThongTinCaNhanService service)
+
+	[HttpPost("NhanVien")]
+	public async Task<IActionResult> ThemNhanVien([FromBody] ThemThongTinCaNhanDTO dto)
+	{
+		if (dto == null)
+			return BadRequest(new { message = "Dữ liệu không hợp lệ." });
+		try
 		{
-			_service = service;
+			var id = await _service.TaoNhanVien(dto);
+			return CreatedAtAction(
+				nameof(ThongTin),
+				new { id },
+				new { message = "Tạo nhân viên thành công.", thongTinID = id }
+			);
 		}
-		// THÊM NHÂN VIÊN
-		[HttpPost("NhanVien")]
-		public IActionResult ThemNhanVien([FromBody] ThemThongTinCaNhanDTO dto)
+		catch (Exception ex)
 		{
-			if (dto == null) return BadRequest();
-
-			int id = _service.ThemThongTinNhanVien(dto);
-			return CreatedAtAction(nameof(ThongTin), new { id }, null);
+			return BadRequest(new { message = ex.Message });
 		}
+	}
 
-		// THÊM BỆNH NHÂN
-		[HttpPost("BenhNhan")]
-		public IActionResult ThemBenhNhan([FromBody] ThemThongTinCaNhanDTO dto)
+	[HttpPost("BenhNhan")]
+	public async Task<IActionResult> ThemBenhNhan([FromBody] ThemThongTinCaNhanDTO dto)
+	{
+		if (dto == null)
+			return BadRequest(new { message = "Dữ liệu không hợp lệ." });
+
+		try
 		{
-			if (dto == null) return BadRequest();
-
-			int id = _service.ThemThongTinBenhNhan(dto);
-			return CreatedAtAction(nameof(ThongTin), new { id }, null);
+			var id = await _service.ThemThongTinBenhNhan(dto);
+			return CreatedAtAction(
+				nameof(ThongTin),
+				new { id },
+				new { message = "Tạo bệnh nhân thành công.", thongTinID = id }
+			);
 		}
-
-		// DANH SÁCH BỆNH NHÂN
-		[HttpGet("BenhNhan")]
-		public ActionResult<List<ThongTinCaNhanResponseDTO>> DanhSachBenhNhan()
+		catch (Exception ex)
 		{
-			return Ok(_service.DanhSachThongTinBenhNhan());
+			return BadRequest(new { message = ex.Message });
 		}
+	}
 
-		// DANH SÁCH NHÂN VIÊN
-		[HttpGet("NhanVien")]
-		public ActionResult<List<ThongTinCaNhanResponseDTO>> DanhSachNhanVien()
+
+	[HttpGet("BenhNhan")]
+	public async Task<IActionResult> DanhSachBenhNhan()
+	{
+		var result = await _service.DanhSachThongTinBenhNhan();
+		return Ok(new
 		{
-			return Ok(_service.DanhSachThongTinNhanVien());
-		}
+			message = "Lấy danh sách bệnh nhân thành công.",
+			data = result
+		});
+	}
 
-		// CHI TIẾT THEO ID
-		[HttpGet("{id}")]
-		public ActionResult<ThongTinCaNhanResponseDTO> ThongTin(int id)
+	[HttpGet("NhanVien")]
+	public async Task<IActionResult> DanhSachNhanVien()
+	{
+		var result = await _service.DanhSachThongTinNhanVien();
+		return Ok(new
 		{
-			var result = _service.ThongTin(id);
-			if (result == null)
-				return NotFound();
+			message = "Lấy danh sách nhân viên thành công.",
+			data = result
+		});
+	}
 
-			return Ok(result);
-		}
+	[HttpGet("{id}")]
+	public async Task<IActionResult> ThongTin(int id)
+	{
+		var result = await _service.ThongTin(id);
+		if (result == null)
+			return NotFound(new { message = "Không tìm thấy thông tin cá nhân." });
 
-		// CẬP NHẬT THÔNG TIN
-		[HttpPut("{id}")]
-		public IActionResult CapNhat(int id, [FromBody] CapNhatThongTinCaNhanDTO dto)
+		return Ok(new
 		{
-			if (dto == null) return BadRequest();
+			message = "Lấy thông tin cá nhân thành công.",
+			data = result
+		});
+	}
 
-			bool success = _service.CapNhatThongTin(id, dto);
-			if (!success)
-				return NotFound();
+	[HttpPut("{id}")]
+	public async Task<IActionResult> CapNhat(
+		int id,
+		[FromBody] CapNhatThongTinCaNhanDTO dto
+	)
+	{
+		if (dto == null)
+			return BadRequest(new { message = "Dữ liệu không hợp lệ." });
 
-			return NoContent();
-		}
+		var success = await _service.CapNhatThongTin(id, dto);
+		if (!success)
+			return NotFound(new { message = "Không tìm thấy thông tin để cập nhật." });
+
+		return Ok(new { message = "Cập nhật thông tin cá nhân thành công." });
 	}
 }
