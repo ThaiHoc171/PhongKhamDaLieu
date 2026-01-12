@@ -1,79 +1,85 @@
-﻿using Services;
-using Domain.DTO;
-using Domain.Entities;
+﻿using Application.DTOs;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
-namespace API.Controllers
+
+namespace Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class BenhNhanController : ControllerBase
 {
-	[ApiController]
-	[Route("api/[controller]")]
-	public class BenhNhanController : ControllerBase
+	private readonly BenhNhanService _benhNhanService;
+
+	public BenhNhanController(BenhNhanService benhNhanService)
 	{
-		private readonly BenhNhanService _benhNhan;
-		public BenhNhanController(BenhNhanService benhNhan)
+		_benhNhanService = benhNhanService;
+	}
+
+	// POST: api/BenhNhan
+	[HttpPost]
+	public async Task<IActionResult> TaoBenhNhan([FromBody] ThemBenhNhanDTO dto)
+	{
+		try
 		{
-			_benhNhan = benhNhan;
+			var benhNhanID = await _benhNhanService.ThemBenhNhanAsync(dto);
+			return Ok(new { message = "Tạo bênh nhân thành công.", BenhNhanID = benhNhanID });
 		}
-		[HttpGet("DanhSach")]
-		public IActionResult DanhSach()
+		catch (Exception ex)
 		{
-			var result = _benhNhan.LayDanhSachBenhNhan();
-			return Ok(result);
-		}
-		[HttpGet("TimKiem")]
-		public IActionResult TimKiem(string keyword)
-		{
-			var result = _benhNhan.LayBenhNhanByKeyWord(keyword);
-			return Ok(result);
-		}
-		[HttpGet("{id}")]
-		public IActionResult BenhNhan(int id)
-		{
-			var result = _benhNhan.LayBenhNhanByID(id);
-			if (result != null)
-			{
-				return Ok(result);
-			}
-			return NotFound("Bệnh nhân không tồn tại.");
-		}
-		[HttpPost("ThemHoSoBenhNhan")]
-		public IActionResult ThemHoSoBenhNhan([FromBody] HoSoBenhNhanDTO bn)
-		{
-			var result = _benhNhan.ThemThongTinBenhNhan(bn);
-			if (result.Success)
-			{
-				return Ok(result.Message);
-			}
-			return BadRequest(result.Message);
-		}
-		[HttpPost("ThemBenhNhan")]
-		public IActionResult ThemBenhNhan([FromBody] ThemBenhNhanDTO bn)
-		{
-			var result = _benhNhan.ThemBenhNhan(bn);
-			if (result)
-			{
-				return Ok("Thêm bệnh nhân thành công.");
-			}
-			return BadRequest("Thêm bệnh nhân thất bại.");
-		}
-		[HttpPut("CapNhatBenhNhan")]
-		public IActionResult CapNhatBenhNhan([FromBody] BenhNhanUpdateDTO bn)
-		{
-			var result = _benhNhan.CapNhatBenhNhan(bn);
-			if (result.Success)
-			{
-				return Ok(result.Message);
-			}
-			return BadRequest(result.Message);
-		}
-		[HttpPut("ChuyenTrangThai")]
-		public IActionResult ChuyenTrangThai([FromBody] Status stt)
-		{
-			var result = _benhNhan.ChuyenTrangThai(stt);
-			if (result)
-			{
-				return Ok("Thay đổi thành công.");
-			}
-			return BadRequest("Thay đổi thất bại.");
+			return BadRequest(new { message = "Tạo bênh nhân thất bại.", Message = ex.Message });
 		}
 	}
+
+	// PUT: api/BenhNhan/{id}
+	[HttpPut("{id}")]
+	public async Task<IActionResult> CapNhatBenhNhan(
+		int id,
+		[FromBody] CapNhatBenhNhanDTO dto)
+	{
+		var result = await _benhNhanService.CapNhatBenhNhanAsync(
+			id,
+			dto.LoaiDa,
+			dto.GhiChu
+		);
+
+		if (result) return Ok(new { message = "Cập nhật bệnh nhân thành công." });
+		return NotFound(new { Message = "Bệnh nhân không tồn tại" });
+	}
+
+	// PATCH: api/BenhNhan/{id}TrangThai/
+	[HttpPut("{id}/trangthai")]
+	public async Task<IActionResult> CapNhatTrangThai(
+		int id,
+		[FromBody] string trangThai)
+	{
+		var result = await _benhNhanService.CapNhatTrangThaiAsync(id, trangThai);
+		if (result) return Ok(new { message = "Cập nhật bệnh nhân thành công." });
+		return NotFound(new { Message = "Bệnh nhân không tồn tại" });
+	}
+
+	// GET: api/BenhNhan
+	[HttpGet]
+	public async Task<IActionResult> DanhSach()
+	{
+		var list = await _benhNhanService.DanhSachBenhNhanAsync();
+		return Ok(list);
+	}
+
+	// GET: api/BenhNhan/{id}
+	[HttpGet("{id}")]
+	public async Task<IActionResult> LayTheoId(int id)
+	{
+		var bn = await _benhNhanService.LayBenhNhanTheoIdAsync(id);
+		if (bn == null) return NotFound(new { Success = false, Message = "Bệnh nhân không tồn tại" });
+		return Ok(bn);
+	}
+
+	// GET: api/BenhNhan/Search?keyword=...
+	[HttpGet("Search")]
+	public async Task<IActionResult> Search([FromQuery] string keyword)
+	{
+		var list = await _benhNhanService.SearchdAsync(keyword);
+		return Ok(list);
+	}
 }
+
