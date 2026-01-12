@@ -1,110 +1,90 @@
-﻿using System;
-using System.Collections.Generic;
-using Domain.Entities;
-using Application.DTOs;
+﻿using Application.DTOs;
 using Application.Interfaces;
+using Domain.Entities;
+using System.Collections.Generic;
 
-namespace Services
+namespace Application.Services;
+
+public class NhanVienService
 {
-	public class NhanVienService
+	private readonly INhanVienRepository _repo;
+	private readonly ThongTinCaNhanService _thongTinService;
+
+	public NhanVienService(INhanVienRepository repo,ThongTinCaNhanService thongTinService)
 	{
-		private readonly INhanVienRepository _nhanVienRepo;
-		private readonly IThongTinCaNhanRepository _thongTinRepo;
-		public NhanVienService(INhanVienRepository nhanVienRepo,IThongTinCaNhanRepository thongTinRepo)
-		{
-			_nhanVienRepo = nhanVienRepo;
-			_thongTinRepo = thongTinRepo;
-		}
-		public void ThemNhanVien(ThemNhanVienDTO dto)
-		{
-			var thongTin = new ThongTinCaNhan(
-				hoTen: dto.HoTen,
-				ngaySinh: dto.NgaySinh,
-				gioiTinh: dto.GioiTinh,
-				sdt: dto.SDT,
-				emailLienHe: dto.EmailLienHe,
-				diaChi: dto.DiaChi,
-				avatar: dto.Avatar,
-				loai: "Nhân viên"
-			);
+		_repo = repo;
+		_thongTinService = thongTinService;
+	}
 
-			int thongTinID = _thongTinRepo.Add(thongTin);
+	public async Task TaoNhanVienAsync(TaoNhanVienDTO dto)
+	{
+		// Tạo tài khoản + thông tin cá nhân
+		var thongTinID = await _thongTinService.TaoNhanVien(dto.ThongTin);
 
-			var nhanVien = new NhanVien(
-				thongTinID: thongTinID,
-				chucVuID: dto.ChucVuID,
-				ngayVaoLam: dto.NgayVaoLam,
-				bangCap: dto.BangCap,
-				kinhNghiem: dto.KinhNghiem
-			);
+		// Tạo nhân viên
+		var nv = new NhanVien(
+			thongTinID,
+			dto.ChucVuID,
+			dto.NgayVaoLam,
+			dto.BangCap,
+			dto.KinhNghiem
+		);
 
-			_nhanVienRepo.Add(nhanVien);
-		}
-		public bool CapNhatNhanVien(int nhanVienID, ThemNhanVienDTO dto)
+		await _repo.AddAsync(nv);
+	}
+
+	public async Task<bool> CapNhatNhanVienAsync(int nhanVienID, CapNhatNhanVienDTO dto)
+	{
+		var nv = await _repo.GetByIdAsync(nhanVienID);
+		if (nv == null) return false;
+
+		nv.CapNhatThongTin(
+			dto.ChucVuID,
+			dto.NgayVaoLam,
+			dto.BangCap,
+			dto.KinhNghiem
+		);
+
+		await _repo.UpdateAsync(nv);
+		return true;
+	}
+
+	public async Task<bool> CapNhatTrangThaiAsync(int nhanVienID, string trangThai)
+	{
+		var nv = await _repo.GetByIdAsync(nhanVienID);
+		if (nv == null) return false;
+
+		nv.CapNhatTrangThai(trangThai);
+		await _repo.UpdateAsync(nv);
+		return true;
+	}
+
+	public async Task<List<NhanVienResponseDTO>> LayDanhSachAsync()
+	{
+		var list = await _repo.GetAllAsync();
+		return list.Select(MapToResponse).ToList();
+	}
+	public async Task<NhanVienResponseDTO?> LayTheoIDAsync(int nhanVienID)
+	{
+		var nv =  await _repo.GetByIdAsync(nhanVienID);
+		if (nv == null) return null;
+		return MapToResponse(nv);
+	}
+	public async Task<List<NhanVienResponseDTO?>> SearchAsync(string keyword)
+	{
+		var list = await _repo.SearchAsync(keyword);
+		return list.Select(MapToResponse).ToList();
+	}
+
+	private static NhanVienResponseDTO MapToResponse(NhanVien nv)
+	{
+		return new NhanVienResponseDTO
 		{
-			var nv = _nhanVienRepo.GetById(nhanVienID);
-			if (nv == null) return false;
-
-			nv.CapNhat(
-				chucVuID: dto.ChucVuID,
-				ngayVaoLam: dto.NgayVaoLam,
-				bangCap: dto.BangCap,
-				kinhNghiem: dto.KinhNghiem
-			);
-
-			_nhanVienRepo.Update(nv);
-			return true;
-		}
-		public List<ListNhanVienDTO> DanhSachNhanVien()
-		{
-			var list = _nhanVienRepo.GetAll();
-			var result = new List<ListNhanVienDTO>();
-
-			foreach (var nv in list)
-			{
-				result.Add(new ListNhanVienDTO
-				{
-					NhanVienID = nv.NhanVienID,
-					HoTen = nv.ThongTinCaNhan.HoTen,
-					SDT = nv.ThongTinCaNhan.SDT,
-					EmailLienHe = nv.ThongTinCaNhan.EmailLienHe,
-					TenChucVu = nv.TenChucVu,
-					TrangThai = nv.TrangThai
-				});
-			}
-
-			return result;
-		}
-		public List<ListNhanVienDTO> TimKiemNhanVien(string keyword)
-		{
-			var list = _nhanVienRepo.GetNhanViens(keyword);
-			var result = new List<ListNhanVienDTO>();
-			foreach (var nv in list)
-			{
-				result.Add(new ListNhanVienDTO
-				{
-					NhanVienID = nv.NhanVienID,
-					HoTen = nv.ThongTinCaNhan.HoTen,
-					SDT = nv.ThongTinCaNhan.SDT,
-					EmailLienHe = nv.ThongTinCaNhan.EmailLienHe,
-					TenChucVu = nv.TenChucVu,
-					TrangThai = nv.TrangThai
-				});
-			}
-			return result;
-		}
-		public bool CapNhatTrangThai(int nhanVienID)
-		{
-			var nv = _nhanVienRepo.GetById(nhanVienID);
-			if (nv == null) return false;
-			string trangThai = "Nghỉ việc";
-			nv.CapNhatTrangThai(trangThai);
-			_nhanVienRepo.UpdateTrangThai(nhanVienID, trangThai);
-			return true;
-		}
-		public NhanVien ChiTietNhanVien(int nhanVienID)
-		{
-			return _nhanVienRepo.GetById(nhanVienID);
-		}
+			NhanVienID = nv.NhanVienID,
+			HoTen = nv.ThongTinCaNhan?.HoTen,
+			Email = nv.ThongTinCaNhan?.EmailLienHe,
+			TenChucVu = nv.TenChucVu,
+			TrangThai = nv.TrangThai
+		};
 	}
 }

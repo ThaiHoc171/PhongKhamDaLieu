@@ -1,63 +1,149 @@
-﻿using System.Collections.Generic;
-using Domain.DTO;
-using Domain.Repository;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
+using Microsoft.Extensions.Configuration;
 
+namespace Application.Services;
 
-namespace Services
+public class BenhNhanService
 {
-	public class BenhNhanService
+	private readonly IBenhNhanRepository _benhNhanRepo;
+	private readonly IThongTinCaNhanRepository _thongTinRepo;
+
+	public BenhNhanService(IBenhNhanRepository benhNhanRepo, IThongTinCaNhanRepository thongTinRepo)
 	{
-		private readonly IBenhNhanRepository _repo;
-		public BenhNhanService(IBenhNhanRepository repo)
+		_benhNhanRepo = benhNhanRepo;
+		_thongTinRepo = thongTinRepo;
+	}
+
+	public async Task<int> ThemBenhNhanAsync(ThemBenhNhanDTO dto)
+	{
+		int thongTinID;
+
+		if (dto.ThongTinID.HasValue)
 		{
-			_repo = repo;
+			// Bệnh nhân đã có thông tin cá nhân
+			var existing = await _thongTinRepo.GetByIdAsync(dto.ThongTinID.Value);
+			if (existing == null)
+				throw new Exception("Thông tin cá nhân không tồn tại");
+
+			thongTinID = existing.ThongTinID;
 		}
-		public List<BenhNhanListDTO> LayDanhSachBenhNhan()
+		else
 		{
-			return _repo.LayDanhSachBenhNhan();
+			// Bệnh nhân mới, phải cung cấp ít nhất tên, SDT, Email
+			if (string.IsNullOrWhiteSpace(dto.HoTen))
+				throw new Exception("Phải cung cấp họ tên cho bệnh nhân mới");
+			if (string.IsNullOrWhiteSpace(dto.SDT))
+				throw new Exception("Phải cung cấp số điện thoại cho bệnh nhân mới");
+			if (string.IsNullOrWhiteSpace(dto.EmailLienHe))
+				throw new Exception("Phải cung cấp email cho bệnh nhân mới");
+
+			var thongTin = new ThongTinCaNhan(
+				hoTen: dto.HoTen,
+				ngaySinh: dto.NgaySinh,
+				gioiTinh: dto.GioiTinh ?? "Khác",
+				sdt: dto.SDT,
+				emailLienHe: dto.EmailLienHe,
+				diaChi: dto.DiaChi,
+				avatar: dto.Avatar,
+				loai: LoaiThongTinEnum.BenhNhan
+			);
+
+			thongTinID = await _thongTinRepo.AddAsync(thongTin);
 		}
-		public List<BenhNhanListDTO> LayBenhNhanByKeyWord(string keyword)
+
+		// Tạo BenhNhan mới
+		var benhNhan = new BenhNhan(
+			thongTinID: thongTinID,
+			loaiDa: dto.LoaiDa ?? "",
+			ghiChu: dto.GhiChu ?? ""
+		);
+
+		return await _benhNhanRepo.AddAsync(benhNhan);
+	}
+
+	public async Task<bool> CapNhatBenhNhanAsync(int benhNhanID, string loaiDa, string ghiChu)
+	{
+		var benhNhan = await _benhNhanRepo.GetByIdAsync(benhNhanID);
+		if (benhNhan == null) return false;
+
+		benhNhan.CapNhat(loaiDa, ghiChu);
+		await _benhNhanRepo.UpdateAsync(benhNhan);
+		return true;
+	}
+	public async Task<bool> CapNhatTrangThaiAsync(int benhNhanID, string trangThai)
+	{
+		var benhNhan = await _benhNhanRepo.GetByIdAsync(benhNhanID);
+		if (benhNhan == null) return false;
+		benhNhan.CapNhatTrangThai(trangThai);
+		await _benhNhanRepo.UpdateAsync(benhNhan);
+		return true;
+	}
+
+	public async Task<List<BenhNhanResponseDTO>> DanhSachBenhNhanAsync()
+	{
+		var list = await _benhNhanRepo.GetAllAsync();
+		var result = new List<BenhNhanResponseDTO>();
+		foreach (var bn in list)
 		{
-			return _repo.LayBenhNhanByKeyWord(keyword);
-		}
-		public BenhNhanDetailDTO LayBenhNhanByID(int benhNhanID)
-		{
-			return _repo.LayBenhNhanByID(benhNhanID);
-		}
-		public (bool Success, string Message) ThemThongTinBenhNhan(HoSoBenhNhanDTO hs)
-		{
-			if(Helper.EmailHelper.IsEmail(hs.EmailLienHe) == false)
+			var thongTin = await _thongTinRepo.GetByIdAsync(bn.ThongTinID);
+			result.Add(new BenhNhanResponseDTO
 			{
-				return (false, "Email không hợp lệ.");
-			}
-			bool result = _repo.ThemThongTinBenhNhan(hs);
-			if(result)
-			{
-				return (true, "Thêm hồ sơ bệnh nhân thành công.");
-			}
-			return (false, "Thêm hồ sơ bệnh nhân thất bại.");
+				BenhNhanID = bn.BenhNhanID,
+				ThongTinID = bn.ThongTinID,
+				HoTen = thongTin?.HoTen ?? "",
+				SDT = thongTin?.SDT ?? "",
+				EmailLienHe = thongTin?.EmailLienHe ?? "",
+				LoaiDa = bn.LoaiDa,
+				TrangThaiTheoDoi = bn.TrangThaiTheoDoi,
+				GhiChu = bn.GhiChu
+			});
 		}
-		public bool ThemBenhNhan(ThemBenhNhanDTO bn)
+		return result;
+	}
+	public async Task<BenhNhanResponseDTO?> LayBenhNhanTheoIdAsync(int benhNhanID)
+	{
+		var bn = await _benhNhanRepo.GetByIdAsync(benhNhanID);
+		if (bn == null) return null;
+
+		var thongTin = await _thongTinRepo.GetByIdAsync(bn.ThongTinID);
+		return new BenhNhanResponseDTO
 		{
-			return _repo.ThemBenhNhan(bn);
-		}
-		public (bool Success, string Message) CapNhatBenhNhan(BenhNhanUpdateDTO bn)
+			BenhNhanID = bn.BenhNhanID,
+			ThongTinID = bn.ThongTinID,
+			HoTen = thongTin?.HoTen ?? "",
+			SDT = thongTin?.SDT ?? "",
+			EmailLienHe = thongTin?.EmailLienHe ?? "",
+			LoaiDa = bn.LoaiDa,
+			TrangThaiTheoDoi = bn.TrangThaiTheoDoi,
+			GhiChu = bn.GhiChu
+		};
+	}
+
+	public async Task<List<BenhNhanResponseDTO>> SearchdAsync(string keyword)
+	{
+		var list = await _benhNhanRepo.GetNhanViens(keyword);
+		var result = new List<BenhNhanResponseDTO>();
+
+		foreach (var bn in list)
 		{
-			if (Helper.EmailHelper.IsEmail(bn.EmailLienHe) == false)
+			var thongTin = await _thongTinRepo.GetByIdAsync(bn.ThongTinID);
+
+			result.Add(new BenhNhanResponseDTO
 			{
-				return (false, "Email không hợp lệ.");
-			}
-			bool result = _repo.CapNhatBenhNhan(bn);
-			if (result)
-			{
-				return (true, "Cập nhật hồ sơ bệnh nhân thành công.");
-			}
-			return (false, "Cập nhật hồ sơ bệnh nhân thất bại.");
+				BenhNhanID = bn.BenhNhanID,
+				ThongTinID = bn.ThongTinID,
+				HoTen = thongTin?.HoTen ?? "",
+				SDT = thongTin?.SDT ?? "",
+				EmailLienHe = thongTin?.EmailLienHe ?? "",
+				LoaiDa = bn.LoaiDa,
+				TrangThaiTheoDoi = bn.TrangThaiTheoDoi,
+				GhiChu = bn.GhiChu
+			});
 		}
-		public bool ChuyenTrangThai(Status stt)
-		{
-			return _repo.ChuyenTrangThai(stt);
-		}
+
+		return result;
 	}
 }
