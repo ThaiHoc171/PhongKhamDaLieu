@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Application.Services;
 using Infrastructure.Repositories;
+using Infrastructure.Repository;
 using Microsoft.OpenApi.Models;
 using Services;
 
@@ -34,9 +35,14 @@ builder.Services.AddScoped<IPhongChucNangRepository, PhongChucNangRepository>();
 builder.Services.AddScoped<PhongChucNangService>();
 builder.Services.AddScoped<IThietBiRepository, ThietBiRepository>();
 builder.Services.AddScoped<ThietBiService>();
-
-//builder.Services.AddScoped<IThuocRepository, ThuocRepository>();
-//builder.Services.AddScoped<ThuocService>();
+builder.Services.AddScoped<IKhungGioKhamRepository, KhungGioKhamRepository>();
+builder.Services.AddScoped<KhungGioKhamService>();
+builder.Services.AddScoped<ICanLamSangRepository, CanLamSangRepository>();
+builder.Services.AddScoped<CanLamSangService>();
+builder.Services.AddScoped<IThuocRepository, ThuocRepository>();
+builder.Services.AddScoped<ThuocService>();
+builder.Services.AddScoped<ILoaiBenhRepository, LoaiBenhRepository>();
+builder.Services.AddScoped<LoaiBenhService>();
 //builder.Services.AddScoped<IToaThuocRepository, ToaThuocRepository>();
 //builder.Services.AddScoped<ToaThuocService>();
 
@@ -53,14 +59,11 @@ builder.Services.AddScoped<ThietBiService>();
 //builder.Services.AddScoped<LichLamViecNhanVienService>();
 //builder.Services.AddScoped<INgayNghiNhanVienRepository, NgayNghiNhanVienRepository>();
 //builder.Services.AddScoped<NgayNghiNhanVienService>();
-//builder.Services.AddScoped<IKhungGioKhamRepository, KhungGioKhamRepository>();
-//builder.Services.AddScoped<KhungGioKhamService>();
 //builder.Services.AddScoped<ICaKhamRepository, CaKhamRepository>();
 //builder.Services.AddScoped<CaKhamService>();
 //builder.Services.AddScoped<IPhienKhamRepositories, PhienKhamRepository>();
 //builder.Services.AddScoped<PhienKhamService>();
-//builder.Services.AddScoped<ICanLamSangRepositories, CanLamSangRepository>();
-//builder.Services.AddScoped<CanLamSangService>();
+
 
 var app = builder.Build();
 
