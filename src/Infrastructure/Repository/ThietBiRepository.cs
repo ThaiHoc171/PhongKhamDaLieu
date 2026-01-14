@@ -3,7 +3,7 @@ using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
-namespace Infrastructure.Repositories;
+namespace Infrastructure.Repository;
 
 public class ThietBiRepository : IThietBiRepository
 {
