@@ -37,7 +37,7 @@ namespace API.Controllers
 
 		// POST: api/ChucVu
 		[HttpPost]
-		public async Task<IActionResult> ThemChucVu([FromBody] ThemChucVuDTO dto)
+		public async Task<IActionResult> ThemChucVu([FromBody] ChucVuRequestDTO dto)
 		{
 			await _chucVuService.ThemChucVuAsync(dto);
 
@@ -49,7 +49,7 @@ namespace API.Controllers
 
 		// PUT: api/ChucVu/{id}
 		[HttpPut("{id}")]
-		public async Task<IActionResult> CapNhatChucVu(int id, [FromBody] CapNhatChucVuDTO dto)
+		public async Task<IActionResult> CapNhatChucVu(int id, [FromBody] ChucVuRequestDTO dto)
 		{
 			var result = await _chucVuService.CapNhatChucVuAsync(id, dto);
 
