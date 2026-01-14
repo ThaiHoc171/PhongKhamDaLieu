@@ -59,8 +59,6 @@ public class ChucVuRepository : IChucVuRepository
 
 		cmd.Parameters.AddWithValue("@TenChucVu", cv.TenChucVu);
 		cmd.Parameters.AddWithValue("@MoTa", (object?)cv.MoTa ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@TrangThai", cv.TrangThai);
-		cmd.Parameters.AddWithValue("@NgayTao", cv.NgayTao);
 
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
