@@ -1,4 +1,4 @@
--- ======================================
+    -- ======================================
 --   CLEAN & REBUILD DATABASE
 -- ======================================
 use master
@@ -327,11 +327,11 @@ GO
 -- ============================================
 
 -- Thông tin các loại thuốc điều trị -- --Done--
-CREATE TABLE Thuoc (
-    ThuocID INT IDENTITY(1,1) PRIMARY KEY,
-    TenThuoc NVARCHAR(200) NOT NULL,
-    HoatChat NVARCHAR(MAX),
-    );
+    CREATE TABLE Thuoc (
+        ThuocID INT IDENTITY(1,1) PRIMARY KEY,
+        TenThuoc NVARCHAR(200) NOT NULL,
+        HoatChat NVARCHAR(MAX),
+        );
 GO
 
 -- Toa thuốc cần dùng để điều trị cho bệnh nhân trong phiên khám cụ thể -- --Done--
