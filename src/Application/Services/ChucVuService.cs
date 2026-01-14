@@ -12,26 +12,26 @@ namespace Services
 		{
 			_repo = repo;
 		}
-		public async Task<List<ChucVuDTO>> DanhSachChucVuAsync()
+		public async Task<List<ChucVuResponseDTO>> DanhSachChucVuAsync()
 		{
 			var list = await _repo.GetAllAsync();
 
 			return list.Select(MapToDto).ToList();
 		}
-		public async Task<ChucVuDTO?> LayChucVuTheoIdAsync(int id)
+		public async Task<ChucVuResponseDTO?> LayChucVuTheoIdAsync(int id)
 		{
 			var cv = await _repo.GetByIdAsync(id);
 			if (cv == null) return null;
 
 			return MapToDto(cv);
 		}
-		public async Task ThemChucVuAsync(ThemChucVuDTO dto)
+		public async Task ThemChucVuAsync(ChucVuRequestDTO dto)
 		{
 			var cv = new ChucVu(dto.TenChucVu, dto.MoTa);
 			await _repo.AddAsync(cv);
 		}
 
-		public async Task<bool> CapNhatChucVuAsync(int id, CapNhatChucVuDTO dto)
+		public async Task<bool> CapNhatChucVuAsync(int id, ChucVuRequestDTO dto)
 		{
 			var cv = await _repo.GetByIdAsync(id);
 			if (cv == null) return false;
@@ -53,9 +53,9 @@ namespace Services
 			return true;
 		}
 
-		private static ChucVuDTO MapToDto(ChucVu cv)
+		private static ChucVuResponseDTO MapToDto(ChucVu cv)
 		{
-			return new ChucVuDTO
+			return new ChucVuResponseDTO
 			{
 				ChucVuID = cv.ChucVuID,
 				TenChucVu = cv.TenChucVu,
