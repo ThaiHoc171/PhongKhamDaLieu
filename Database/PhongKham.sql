@@ -136,15 +136,15 @@ CREATE TABLE PhongKham (
 GO
 
 -- Phân loại các phòng riêng với các chức năng riêng --
-CREATE TABLE PhongChucNang (
-    PhongChucNangID INT IDENTITY(1,1) PRIMARY KEY,
-    TenPhong NVARCHAR(200) NOT NULL,
-    LoaiPhong NVARCHAR(100),
-    MoTa NVARCHAR(MAX),
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Hoạt động', N'Hỏng', N'Bảo trì')) DEFAULT N'Hoạt động',
-    NgayTao DATETIME DEFAULT GETDATE()
-);
-GO
+    CREATE TABLE PhongChucNang (
+        PhongChucNangID INT IDENTITY(1,1) PRIMARY KEY,
+        TenPhong NVARCHAR(200) NOT NULL,
+        LoaiPhong NVARCHAR(100),
+        MoTa NVARCHAR(MAX),
+        TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Hoạt động', N'Hỏng', N'Bảo trì')) DEFAULT N'Hoạt động',
+        NgayTao DATETIME DEFAULT GETDATE()
+    );
+    GO
 
 -- Các thiết bị có trong phòng khám --
 CREATE TABLE ThietBi (
