@@ -49,6 +49,10 @@ builder.Services.AddScoped<BacSiProfileService>();
 builder.Services.AddScoped<IToaThuocRepository, ToaThuocRepository>();
 builder.Services.AddScoped<ToaThuocService>();
 builder.Services.AddScoped<IChiTietToaThuocRepository, ChiTietToaThuocRepository>();
+builder.Services.AddScoped<IPhienKhamRepository, PhienKhamRepository>();
+builder.Services.AddScoped<PhienKhamService>();
+builder.Services.AddScoped<IPhienKhamBenhRepository, PhienKhamBenhRepository>();
+builder.Services.AddScoped<PhienKhamBenhService>();
 
 //builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
 //builder.Services.AddScoped<PhongKhamService>();
@@ -63,8 +67,7 @@ builder.Services.AddScoped<IChiTietToaThuocRepository, ChiTietToaThuocRepository
 //builder.Services.AddScoped<NgayNghiNhanVienService>();
 //builder.Services.AddScoped<ICaKhamRepository, CaKhamRepository>();
 //builder.Services.AddScoped<CaKhamService>();
-//builder.Services.AddScoped<IPhienKhamRepositories, PhienKhamRepository>();
-//builder.Services.AddScoped<PhienKhamService>();
+
 
 
 var app = builder.Build();
