@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Application.Repository;
 using Application.Services;
 using Infrastructure.Repositories;
 using Infrastructure.Repository;
@@ -43,11 +44,12 @@ builder.Services.AddScoped<IThuocRepository, ThuocRepository>();
 builder.Services.AddScoped<ThuocService>();
 builder.Services.AddScoped<ILoaiBenhRepository, LoaiBenhRepository>();
 builder.Services.AddScoped<LoaiBenhService>();
-//builder.Services.AddScoped<IToaThuocRepository, ToaThuocRepository>();
-//builder.Services.AddScoped<ToaThuocService>();
+builder.Services.AddScoped<IBacSiProfileRepository, BacSiProfileRepository>();
+builder.Services.AddScoped<BacSiProfileService>();
+builder.Services.AddScoped<IToaThuocRepository, ToaThuocRepository>();
+builder.Services.AddScoped<ToaThuocService>();
+builder.Services.AddScoped<IChiTietToaThuocRepository, ChiTietToaThuocRepository>();
 
-//builder.Services.AddScoped<IChiTietToaThuocRepository, ChiTietToaThuocRepository>();
-//builder.Services.AddScoped<ChiTietToaThuocService>();
 //builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
 //builder.Services.AddScoped<PhongKhamService>();
 //builder.Services.AddScoped<IBacSiProfileRepository, BacSiProfileRepository>();
