@@ -49,6 +49,8 @@ builder.Services.AddScoped<BacSiProfileService>();
 builder.Services.AddScoped<IToaThuocRepository, ToaThuocRepository>();
 builder.Services.AddScoped<ToaThuocService>();
 builder.Services.AddScoped<IChiTietToaThuocRepository, ChiTietToaThuocRepository>();
+builder.Services.AddScoped<TaiKhamService>();
+builder.Services.AddScoped<ITaiKhamRepository, TaiKhamRepository>();
 
 //builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
 //builder.Services.AddScoped<PhongKhamService>();

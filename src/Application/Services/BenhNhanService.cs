@@ -124,7 +124,7 @@ public class BenhNhanService
 
 	public async Task<List<BenhNhanResponseDTO>> SearchdAsync(string keyword)
 	{
-		var list = await _benhNhanRepo.GetNhanViens(keyword);
+		var list = await _benhNhanRepo.GetBenhNhans(keyword);
 		var result = new List<BenhNhanResponseDTO>();
 
 		foreach (var bn in list)
