@@ -53,6 +53,8 @@ builder.Services.AddScoped<IPhienKhamRepository, PhienKhamRepository>();
 builder.Services.AddScoped<PhienKhamService>();
 builder.Services.AddScoped<IPhienKhamBenhRepository, PhienKhamBenhRepository>();
 builder.Services.AddScoped<PhienKhamBenhService>();
+builder.Services.AddScoped<ILichLamViecRepository, LichLamViecRepository>();
+builder.Services.AddScoped<LichLamViecService>();
 
 //builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
 //builder.Services.AddScoped<PhongKhamService>();
