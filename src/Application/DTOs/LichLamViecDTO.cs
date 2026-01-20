@@ -28,3 +28,11 @@ public class LichLamViecBatchDTO
 	public int Nam { get; set; }
 	public List<LichLamViecDTO> LichLamViecs { get; set; } = new();
 }
+
+public class WeekLichLamViecDTO
+{
+	public int Page { get; set; }
+	public DateTime TuanBatDau { get; set; }
+	public DateTime TuanKetThuc { get; set; }
+	public List<LichLamViecRespondDTO> LichLamViecs { get; set; } = new();
+}

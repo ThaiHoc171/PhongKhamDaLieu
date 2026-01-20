@@ -40,4 +40,5 @@ public class PhienKhamService
 
 		await _repo.UpdateAsync(pk);
 	}
+
 }

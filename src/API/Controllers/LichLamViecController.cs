@@ -48,4 +48,36 @@ public class LichLamViecController: ControllerBase
 			});
 		}
 	}
+	[HttpGet("GetAll")]
+	public async Task<IActionResult> GetAll()
+	{
+		try
+		{
+			var result = await _service.GetAllAsync();
+			return Ok(result);
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(new
+			{
+				message = "Lỗi: " + ex.Message
+			});
+		}
+	}
+	[HttpGet("GetByNhanVien/{nhanVienID}")]
+	public async Task<IActionResult> GetByNhanVien(int nhanVienID, [FromQuery] int page = 0)
+	{
+		try
+		{
+			var result = await _service.GetLichTheoTuanAsync(nhanVienID,page);
+			return Ok(result);
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(new
+			{
+				message = "Lỗi: " + ex.Message
+			});
+		}
+	}
 }
