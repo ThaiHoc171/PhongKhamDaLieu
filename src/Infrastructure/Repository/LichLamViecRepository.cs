@@ -37,6 +37,54 @@ public class LichLamViecRepository : ILichLamViecRepository
 			ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
 		);
 	}
+	public async Task<List<LichLamViec>> GetAllAsync()
+	{
+		const string sql = @"SELECT LichLamViecID, NhanVienID, Ngay, CaLamViec, GhiChu
+					FROM LichLamViecNhanVien";
+		var result = new List<LichLamViec>();
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+		while (await reader.ReadAsync())
+		{
+			result.Add(new LichLamViec(
+				lichLamViecID: reader.GetInt32(0),
+				nhanVienID: reader.GetInt32(1),
+				ngay:  reader.GetDateTime(2),
+				caLamViec: reader.GetInt32(3),
+				ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
+			));
+		}
+		return result;
+	}
+	public async Task<List<LichLamViec>> GetByNhanVienIdTheoTuanAsync(int NhanVienID, DateTime tuNgay, DateTime denNgay)
+	{
+		const string sql = @"SELECT LichLamViecID, NhanVienID, Ngay, CaLamViec, GhiChu
+					FROM LichLamViecNhanVien
+					WHERE NhanVienID = @NhanVienID AND Ngay >= @TuNgay AND Ngay <= @DenNgay
+					ORDER BY Ngay, CaLamViec	";
+		var result = new List<LichLamViec>();
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@NhanVienID", NhanVienID);
+		cmd.Parameters.AddWithValue("@TuNgay", tuNgay.Date);
+		cmd.Parameters.AddWithValue("@DenNgay", denNgay.Date);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+		while (await reader.ReadAsync())
+		{
+			result.Add(new LichLamViec(
+				lichLamViecID: reader.GetInt32(0),
+				nhanVienID: reader.GetInt32(1),
+				ngay: reader.GetDateTime(2),
+				caLamViec: reader.GetInt32(3),
+				ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
+			));
+		}
+		return result;
+	}
 	public async Task AddAsync(LichLamViec entity)
 	{
 		const string sql = @"

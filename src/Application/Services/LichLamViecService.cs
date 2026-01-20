@@ -1,4 +1,5 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
@@ -71,5 +72,44 @@ public class LichLamViecService
 			GhiChu = entity.GhiChu
 		};
 	}
+	public async Task<List<LichLamViecRespondDTO>> GetAllAsync()
+	{
+		var entities =  await _repo.GetAllAsync();
+		var result = new List<LichLamViecRespondDTO>();
+		foreach (var entity in entities)
+		{
+			result.Add(new LichLamViecRespondDTO
+			{
+				LichLamViecID = entity.LichLamViecID,
+				NhanVienID = entity.NhanVienID,
+				Ngay = entity.Ngay,
+				CaLamViec = entity.CaLamViec,
+				GhiChu = entity.GhiChu
+			});
+		}
+		return result;
+	}
+	public async Task<WeekLichLamViecDTO> GetLichTheoTuanAsync(
+			int nhanVienID,
+			int page
+		)
+	{
+		var (start, end) = DateTimeHelper.GetWeekByPage(page);
 
+		var entities = await _repo.GetByNhanVienIdTheoTuanAsync(nhanVienID,start,end);
+		return new WeekLichLamViecDTO
+		{
+			Page = page,
+			TuanBatDau = start,
+			TuanKetThuc = end,
+			LichLamViecs = entities.Select(e => new LichLamViecRespondDTO
+			{
+				LichLamViecID = e.LichLamViecID,
+				NhanVienID = e.NhanVienID,
+				Ngay = e.Ngay,
+				CaLamViec = e.CaLamViec,
+				GhiChu = e.GhiChu
+			}).ToList()
+		};
+	}
 }
