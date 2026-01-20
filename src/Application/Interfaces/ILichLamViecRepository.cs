@@ -6,6 +6,8 @@ public interface ILichLamViecRepository
 {
 	Task<bool> IsNgayNghiAsync(DateTime ngay, int nhanVienID);
 	Task <bool> IsExitsAsync(int nhanVienID, DateTime ngay, int caLamViec);
+	Task<bool> IsChucVuExitsAsync(int ChucVuID, DateTime ngay, int caLamViec);
+	Task<LichLamViec?> GetByIdAsync(int ID);
 	Task AddAsync(LichLamViec lich);
 	Task BeginTransactionAsync();
 	Task CommitAsync();

@@ -15,6 +15,28 @@ public class LichLamViecRepository : ILichLamViecRepository
 		_connectionString = config.GetConnectionString("DefaultConnection")
 			?? throw new ArgumentNullException("Connection string not found");
 	}
+	public async Task<LichLamViec?> GetByIdAsync(int ID)
+	{
+		const string sql = @"SELECT LichLamViecID, NhanVienID, Ngay, CaLamViec, GhiChu
+					FROM LichLamViecNhanVien
+					WHERE LichLamViecID = @Id";
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd =  new SqlCommand(sql,conn);
+		cmd.Parameters.AddWithValue("@Id", ID);
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		if (!await reader.ReadAsync())
+			return null;
+
+		return new LichLamViec(
+			lichLamViecID: reader.GetInt32(0),
+			nhanVienID: reader.GetInt32(1),
+			ngay: reader.GetDateTime(2),
+			caLamViec: reader.GetInt32(3),
+			ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
+		);
+	}
 	public async Task AddAsync(LichLamViec entity)
 	{
 		const string sql = @"
@@ -48,7 +70,23 @@ public class LichLamViecRepository : ILichLamViecRepository
 		var result = await cmd.ExecuteScalarAsync();
 		return result != null;
 	}
-
+	public async Task<bool> IsChucVuExitsAsync(int ChucVuID, DateTime ngay, int caLamViec)
+	{
+		const string sql = @"
+			SELECT COUNT(*) 
+			FROM LichLamViecNhanVien llv
+			JOIN NhanVien nv ON llv.NhanVienID = nv.NhanVienID
+			WHERE nv.ChucVuID = @ChucVuID
+			AND CONVERT(date, llv.Ngay) = @Ngay
+			AND llv.CaLamViec = @CaLamViec
+			";
+		await using var cmd = new SqlCommand( sql, _conn!, _tran);
+		cmd.Parameters.AddWithValue("@ChucVuID", ChucVuID);
+		cmd.Parameters.AddWithValue("@Ngay", ngay.Date);
+		cmd.Parameters.AddWithValue("@CaLamViec", caLamViec);
+		var result = (int) (await cmd.ExecuteScalarAsync() ?? 0);
+		return result > 0;
+	}
 	public async Task<bool> IsNgayNghiAsync(DateTime ngay, int nhanVienID)
 	{
 		const string sql = @"
