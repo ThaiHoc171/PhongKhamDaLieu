@@ -9,6 +9,15 @@ namespace Application.DTOs;
 public class LichLamViecDTO
 {
 	public int NhanVienID { get; set; }
+	public int ChucVuID { get; set; }
+	public DateTime Ngay { get; set; }
+	public int CaLamViec { get; set; }
+	public string? GhiChu { get; set; }
+}
+public class LichLamViecRespondDTO
+{
+	public int LichLamViecID { get; set; }
+	public int NhanVienID { get; set; }
 	public DateTime Ngay { get; set; }
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
