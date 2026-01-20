@@ -33,7 +33,8 @@ public class LichLamViecService
 
 				if (await _repo.IsExitsAsync(lich.NhanVienID, lich.Ngay, lich.CaLamViec))
 					throw new Exception("Trùng lịch");
-
+				if (await _repo.IsChucVuExitsAsync(lich.ChucVuID, lich.Ngay, lich.CaLamViec))
+					throw new Exception("Trùng chức vụ");
 				bool isNgayNghi = await _repo.IsNgayNghiAsync(lich.Ngay, lich.NhanVienID);
 
 				var entity = new LichLamViec(
@@ -55,4 +56,20 @@ public class LichLamViecService
 			throw;
 		}
 	}
+	public async Task<LichLamViecRespondDTO?> GetByIdAsync(int id)
+	{
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null)
+			return null;
+
+		return new LichLamViecRespondDTO
+		{
+			LichLamViecID = entity.LichLamViecID,
+			NhanVienID = entity.NhanVienID,
+			Ngay = entity.Ngay,
+			CaLamViec = entity.CaLamViec,
+			GhiChu = entity.GhiChu
+		};
+	}
+
 }
