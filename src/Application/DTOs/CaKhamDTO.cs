@@ -8,10 +8,8 @@ namespace Application.DTOs;
 
 public class TaoCaKhamDTO
 {
-    public int LichLamViecID { get; set; }
     public int PhongChucNangID { get; set; }
     public DateTime NgayKham { get; set; }
-    public int KhungGioID { get; set; }
 }
 public class DangKyCaKhamDTO
 {
