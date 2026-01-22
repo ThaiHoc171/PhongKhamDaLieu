@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using System.Reflection.Metadata;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -39,29 +40,15 @@ public class CaKhamRepository : ICaKhamRepository
         }
         return list;
     }
-    public async Task<List<CaKham>> GetCaKhamConTrongAsync()
+    public async Task<List<CaKham>> LocAsync(DateTime ngayKham, string trangThai)
     {
         const string sql = @"SELECT CaKhamID, LichLamViecID, PhongChucNangID, NgayKham , KhungGioID ,BenhNhanID ,LyDoKham ,TrangThai ,NgayDat ,GhiChu
-                                FROM CaKham WHERE TrangThai = N'Trống'";
-        var list = new List<CaKham>();
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            list.Add(MapToEntity(reader));
-        }
-        return list;
-    }
-    public async Task<List<CaKham>> GetByNgayAsync(DateTime ngayKham)
-    {
-        const string sql = @"SELECT CaKhamID, LichLamViecID, PhongChucNangID, NgayKham , KhungGioID ,BenhNhanID ,LyDoKham ,TrangThai ,NgayDat ,GhiChu
-                                FROM CaKham WHERE NgayKham = @ngayKham";
+                                FROM CaKham WHERE NgayKham = @ngayKham AND TrangThai = @trangThai";
         var list = new List<CaKham>();
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("@ngayKham", ngayKham);
+        cmd.Parameters.AddWithValue("@trangThai", trangThai);
         await conn.OpenAsync();
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -87,6 +74,37 @@ public class CaKhamRepository : ICaKhamRepository
         return list;
     }
 
+    public async Task<int> CountByNgayAndKhungGioAsync(DateTime ngay, int khungGioId)
+    {
+        const string sql = @"SELECT COUNT(CaKhamID) FROM CaKham WHERE NgayKham = @ngayKham AND KhungGioID = @khungGioId";
+        var list = new List<CaKham>();
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@ngayKham", ngay);
+        cmd.Parameters.AddWithValue("@KhungGioID", khungGioId);
+        await conn.OpenAsync();
+        return (int)await cmd.ExecuteScalarAsync();
+    }
+    public async Task<bool> ExistsAsync(DateTime ngay, int khungGioId, int lichLamViecId)
+    {
+        const string sql = @"
+        SELECT 1
+        FROM CaKham
+        WHERE NgayKham = @NgayKham
+          AND KhungGioID = @KhungGioID
+          AND LichLamViecID = @LichLamViecID";
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@NgayKham", ngay.Date);
+        cmd.Parameters.AddWithValue("@KhungGioID", khungGioId);
+        cmd.Parameters.AddWithValue("@LichLamViecID", lichLamViecId);
+
+        await conn.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+        return result != null;
+    }
     public async Task<int> AddAsync(CaKham ca)
     {
         const string sql = @"
@@ -131,11 +149,11 @@ public class CaKhamRepository : ICaKhamRepository
         await conn.OpenAsync();
         await cmd.ExecuteNonQueryAsync();
     }
-    public async Task UpdateTrangThaiAsync(int caKhamID, string trangThai)
+    public async Task UpdateTrangThaiAsync(int caKhamID, string trangThai, string ghiChu)
     {
         const string sql = @"
             UPDATE CaKham
-            SET TrangThai = @TrangThai
+            SET TrangThai = @TrangThai, GhiChu = @GhiChu
             WHERE CaKhamID = @Id";
 
         await using var conn = new SqlConnection(_connectionString);
@@ -143,6 +161,7 @@ public class CaKhamRepository : ICaKhamRepository
 
 
         cmd.Parameters.AddWithValue("@TrangThai", trangThai);
+        cmd.Parameters.AddWithValue("@GhiChu", ghiChu);
         cmd.Parameters.AddWithValue("@Id", caKhamID);
 
         await conn.OpenAsync();

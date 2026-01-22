@@ -84,9 +84,9 @@ public class CaKhamController : ControllerBase
 
     // GET: api/CaKham/ngay?ngay=2026-01-20
     [HttpGet("ngay")]
-    public async Task<IActionResult> TheoNgay([FromQuery] DateTime ngay)
+    public async Task<IActionResult> TheoNgay([FromQuery] DateTime ngay, string trangThai)
     {
-        var list = await _caKhamService.DanhSachCaKhamTheoNgayAsync(ngay);
+        var list = await _caKhamService.DanhSachCaKhamTheoNgayAsync(ngay, trangThai);
         return Ok(list);
     }
 
@@ -98,13 +98,6 @@ public class CaKhamController : ControllerBase
         return Ok(list);
     }
 
-    // GET: api/CaKham/trong
-    [HttpGet("Trống")]
-    public async Task<IActionResult> CaKhamConTrong()
-    {
-        var list = await _caKhamService.GetCaKhamConTrongAsync();
-        return Ok(list);
-    }
 
     // GET: api/CaKham
     [HttpGet]
