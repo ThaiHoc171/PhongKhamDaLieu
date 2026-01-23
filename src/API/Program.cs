@@ -57,20 +57,11 @@ builder.Services.AddScoped<ILichLamViecRepository, LichLamViecRepository>();
 builder.Services.AddScoped<LichLamViecService>();
 builder.Services.AddScoped<ICaKhamRepository, CaKhamRepository>();
 builder.Services.AddScoped<CaKhamService>();
+builder.Services.AddScoped<IPhienKhamCLSRepository, PhienKhamCLSRepository>();
+builder.Services.AddScoped<PhienKhamCLSService>();
+builder.Services.AddScoped<IPhienKhamThietBiRepository, PhienKhamThietBiRepository>();
+builder.Services.AddScoped<PhienKhamThietBiService>();
 
-//builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
-//builder.Services.AddScoped<PhongKhamService>();
-//builder.Services.AddScoped<IBacSiProfileRepository, BacSiProfileRepository>();
-//builder.Services.AddScoped<BacSiProfileService>();
-
-//builder.Services.AddScoped<IPhongChucNang_ThietBiRepository, PhongChucNang_ThietBiRepository>();
-//builder.Services.AddScoped<PhongChucNang_ThietBiService>();
-//builder.Services.AddScoped<ILichLamViecNhanVienRepository, LichLamViecNhanVienRepository>();
-//builder.Services.AddScoped<LichLamViecNhanVienService>();
-//builder.Services.AddScoped<INgayNghiNhanVienRepository, NgayNghiNhanVienRepository>();
-//builder.Services.AddScoped<NgayNghiNhanVienService>();
-//builder.Services.AddScoped<ICaKhamRepository, CaKhamRepository>();
-//builder.Services.AddScoped<CaKhamService>();
 
 
 
