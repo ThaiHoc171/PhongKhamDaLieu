@@ -306,11 +306,10 @@ CREATE TABLE PhienKham_CanLamSang (
     PhienKham_CanLamSangID INT IDENTITY(1,1) PRIMARY KEY,
     PhienKhamID INT NOT NULL,
     CanLamSangID INT NOT NULL,
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Đang chờ',N'Đang thực hiện', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Đang chờ',
     KetQua NVARCHAR(MAX),
     FileDinhKem NVARCHAR(500),
-    NgayChiDinh DATETIME DEFAULT GETDATE(),
-    NgayThucHien DATETIME NULL,
+    NgayThucHien DATETIME DEFAULT GETDATE(),
     NhanVienChiDinhID INT NULL,
     NhanVienThucHienID INT NULL,
     GhiChu NVARCHAR(MAX),
@@ -377,17 +376,28 @@ CREATE TABLE LoaiBenh (
 );
 GO
 
--- Các loại bệnh được khám ra trong phiên khám cụ thể -- 
 CREATE TABLE PhienKham_Benh (
     PhienKham_BenhID INT IDENTITY(1,1) PRIMARY KEY,
     PhienKhamID INT NOT NULL,
     LoaiBenhID INT NOT NULL,
-    LoaiChuanDoan NVARCHAR(50) CHECK (LoaiChuanDoan IN (N'Chuẩn đoán chính', N'Chuẩn đoán phát sinh')) default N'Chuẩn đoán chính' ,
+
+    LoaiChanDoan NVARCHAR(50)
+        CHECK (LoaiChanDoan IN (N'Chẩn đoán chính', N'Chẩn đoán phát sinh'))
+        DEFAULT N'Chẩn đoán chính',
+
     GhiChu NVARCHAR(MAX),
-    FOREIGN KEY (PhienKhamID) REFERENCES PhienKham(PhienKhamID) ON DELETE CASCADE,
-    FOREIGN KEY (LoaiBenhID) REFERENCES LoaiBenh(LoaiBenhID)
+
+    CONSTRAINT FK_PhienKhamBenh_PhienKham
+        FOREIGN KEY (PhienKhamID)
+        REFERENCES PhienKham(PhienKhamID)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_PhienKhamBenh_LoaiBenh
+        FOREIGN KEY (LoaiBenhID)
+        REFERENCES LoaiBenh(LoaiBenhID)
 );
 GO
+
 
 
 -- ============================================
