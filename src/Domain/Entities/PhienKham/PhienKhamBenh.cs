@@ -11,22 +11,22 @@ public class PhienKhamBenh
 	public int PhienKham_BenhID { get; private set; }
 	public int PhienKhamID { get; private set; }
 	public int LoaiBenhID { get; private set; }
-	public string? LoaiChuanDoan { get; private set; }
+	public string? LoaiChanDoan { get; private set; }
 	public string? GhiChu { get; private set; }
 
 	// Constructor map từ db
-	public PhienKhamBenh(int phienKham_BenhID, int phienKhamID, int loaiBenhID, string? loaiChuanDoan, string? ghiChu)
+	public PhienKhamBenh(int phienKham_BenhID, int phienKhamID, int loaiBenhID, string? loaiChanDoan, string? ghiChu)
 	{
 		PhienKham_BenhID = phienKham_BenhID;
 		PhienKhamID = phienKhamID;
 		LoaiBenhID = loaiBenhID;
-		LoaiChuanDoan = loaiChuanDoan;
+		LoaiChanDoan = loaiChanDoan;
 		GhiChu = ghiChu;
 	}
 	// Constructor tạo mới
-	public PhienKhamBenh(int phienKhamID, int loaiBenhID, string? loaiChuanDoan, string? ghiChu)
+	public PhienKhamBenh(int phienKhamID, int loaiBenhID, string? loaiChanDoan, string? ghiChu)
 	{
-		if (string.IsNullOrWhiteSpace(loaiChuanDoan))
+		if (string.IsNullOrWhiteSpace(loaiChanDoan))
 		{
 			throw new ArgumentException("Loại chẩn đoán không hợp lệ");
 		}
@@ -36,17 +36,17 @@ public class PhienKhamBenh
 		}
 		PhienKhamID = phienKhamID;
 		LoaiBenhID = loaiBenhID;
-		LoaiChuanDoan = loaiChuanDoan;
+		LoaiChanDoan = loaiChanDoan;
 		GhiChu = ghiChu;
 	}
 	// Cập nhật loại chẩn đoán và ghi chú (chỉ có thể cập nhật khi phiên kham chưa kết thúc)
-	public void CapNhatLoaiChuanDoan(string? loaiChuanDoan, string ghiChu)
+	public void CapNhatLoaiChanDoan(string? loaiChanDoan, string ghiChu)
 	{
-		if (string.IsNullOrWhiteSpace(loaiChuanDoan))
+		if (string.IsNullOrWhiteSpace(loaiChanDoan))
 		{
 			throw new ArgumentException("Loại chẩn đoán không hợp lệ");
 		}
-		LoaiChuanDoan = loaiChuanDoan;
+		LoaiChanDoan = loaiChanDoan;
 		GhiChu = ghiChu;
 	}
 }
