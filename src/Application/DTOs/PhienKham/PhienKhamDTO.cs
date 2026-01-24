@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs.PhienKham;
+﻿namespace Application.DTOs;
 
 public class PhienKhamCreateDTO
 {
