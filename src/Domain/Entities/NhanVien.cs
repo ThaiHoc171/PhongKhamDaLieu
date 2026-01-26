@@ -73,7 +73,7 @@ public class NhanVien
 
 		if (string.IsNullOrWhiteSpace(bangCap))
 			throw new ArgumentException("Bằng cấp không hợp lệ");
-
+		
 		if (string.IsNullOrWhiteSpace(kinhNghiem))
 			throw new ArgumentException("Kinh nghiệm không hợp lệ");
 
