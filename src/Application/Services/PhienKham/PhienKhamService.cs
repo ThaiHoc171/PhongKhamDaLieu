@@ -79,6 +79,7 @@ public class PhienKhamService
 			throw new Exception("Tất cả các chỉ định cận lâm sàng phải được hoàn thành trước khi kết thúc phiên khám");
 		}
 
+
 		// Nghiệp vụ nằm trong Entity
 		pk.KetThuc(chuanDoanCuoi);
 
