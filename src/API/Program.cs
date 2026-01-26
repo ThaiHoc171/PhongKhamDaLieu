@@ -63,6 +63,9 @@ builder.Services.AddScoped<IPhienKhamThietBiRepository, PhienKhamThietBiReposito
 builder.Services.AddScoped<PhienKhamThietBiService>();
 builder.Services.AddScoped<IHoSoBenhAnRepository, HoSoBenhAnRepository>();
 builder.Services.AddScoped<HoSoBenhAnService>();
+builder.Services.AddScoped<IPCNThietBiRepository, PCNThietBiRepository>();
+builder.Services.AddScoped<PCNThietBiService>();
+
 
 var app = builder.Build();
 
