@@ -116,8 +116,23 @@ public class NhanVienRepository : INhanVienRepository
 		}
 		return list;
 	}
+	public async Task<int> GetPhongChucNangIdByNhanVienIdAsync(int nhanVienId)
+	{
+        const string sql = @"
+			SELECT 
+				PhongChucNangID
+			FROM NhanVien 
+			WHERE NhanVienID = @NhanVienID
+		";
 
-	public async Task<List<NhanVien>> SearchAsync(string keyword)
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@NhanVienID", nhanVienId);
+
+        await conn.OpenAsync();
+        return (int)await cmd.ExecuteScalarAsync();
+    }
+    public async Task<List<NhanVien>> SearchAsync(string keyword)
 	{
 		const string sql = @"
 				SELECT

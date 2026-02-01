@@ -12,9 +12,9 @@ public interface ICaKhamRepository
 	//Xuất danh sách theo BenhNhanID
 	Task<List<CaKham>> GetByBenhNhanAsync(int benhNhanID);
 	//Đếm số ca đã có trong ngày
-	Task<int> CountByNgayAndKhungGioAsync(DateTime ngay, int khungGioId);
+	Task<int> CountByNgayAndKhungGioAsync(DateTime ngay, int khungGioId, string loaiCaKham);
 	//Kiểm tra ca khám đã tồn tại chưa, tránh tạo trùng
-	Task<bool> ExistsAsync(DateTime ngay, int khungGioId, int lichLamViecId);
+	Task<bool> ExistsAsync(DateTime ngay, int khungGioId, string loaiCaKham);
 	//Tạo ca khám
 	Task<int> AddAsync(CaKham caKham);
 	//Update ca khám sau khi bệnh nhân đăng ký lịch

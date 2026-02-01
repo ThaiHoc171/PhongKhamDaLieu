@@ -49,7 +49,7 @@ public class CaKhamController : ControllerBase
 			benhNhanID: dto.BenhNhanID,
 			lyDoKham: dto.LyDoKham,
 			ngayDat: dto.NgayDat,
-			ghiChu: dto.GhiChu
+            ghiChu: dto.GhiChu
 		);
 
 		if (!result)
