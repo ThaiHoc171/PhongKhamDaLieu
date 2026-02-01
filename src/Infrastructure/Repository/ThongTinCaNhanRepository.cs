@@ -67,11 +67,11 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		const string sql = @"
 			INSERT INTO ThongTinCaNhan
 			(HoTen, NgaySinh, GioiTinh, SDT, EmailLienHe,
-			 DiaChi, Avatar, Loai, TaiKhoanID, NgayTao, NgayCapNhat)
+			 DiaChi, Avatar, Loai, TaiKhoanID)
 			OUTPUT INSERTED.ThongTinID
 			VALUES
 			(@HoTen, @NgaySinh, @GioiTinh, @SDT, @Email,
-			 @DiaChi, @Avatar, @Loai, @TaiKhoanID, @NgayTao, @NgayCapNhat)
+			 @DiaChi, @Avatar, @Loai, @TaiKhoanID)
 		";
 
 		await using var conn = new SqlConnection(_connectionString);
@@ -86,8 +86,6 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		cmd.Parameters.AddWithValue("@Avatar", (object?)tt.Avatar ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@Loai", tt.Loai);
 		cmd.Parameters.AddWithValue("@TaiKhoanID", (object?)tt.TaiKhoanID ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@NgayTao", tt.NgayTao);
-		cmd.Parameters.AddWithValue("@NgayCapNhat", tt.NgayCapNhat);
 
 		await conn.OpenAsync();
 		var result = await cmd.ExecuteScalarAsync();
@@ -144,7 +142,7 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 			avatar: reader.IsDBNull(8) ? null : reader.GetString(8),
 			loai: reader.GetString(9),
 			ngayTao: reader.GetDateTime(10),
-			ngayCapNhat: reader.GetDateTime(11)
+			ngayCapNhat: reader.IsDBNull(11) ? null : reader.GetDateTime(11)
 		);
 	}
 

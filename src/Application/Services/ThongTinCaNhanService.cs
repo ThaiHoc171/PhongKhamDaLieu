@@ -11,14 +11,26 @@ public class ThongTinCaNhanService
 	private readonly IThongTinCaNhanRepository _repo;
 	private readonly ITaiKhoanRepository _taiKhoanRepo;
 	private readonly IConfiguration _config;
-	public ThongTinCaNhanService(IThongTinCaNhanRepository repo, ITaiKhoanRepository taiKhoanRepo, IConfiguration config)
+
+	public ThongTinCaNhanService(
+		IThongTinCaNhanRepository repo,
+		ITaiKhoanRepository taiKhoanRepo,
+		IConfiguration config)
 	{
 		_repo = repo;
 		_taiKhoanRepo = taiKhoanRepo;
 		_config = config;
 	}
 
-	public async Task<int> TaoNhanVien(ThemThongTinCaNhanDTO dto)
+	private static GioiTinhEnum ParseGioiTinh(string value)
+	{
+		if (string.IsNullOrWhiteSpace(value))
+			throw new ArgumentException("Giới tính không hợp lệ");
+
+		return GioiTinhExtensions.ToEnum(value);
+	}
+
+	public async Task<int> TaoNhanVienAsync(ThemThongTinCaNhanDTO dto)
 	{
 		var defaultPassword = _config["DefaultPassword"];
 		if (string.IsNullOrWhiteSpace(defaultPassword))
@@ -34,15 +46,13 @@ public class ThongTinCaNhanService
 
 		await _taiKhoanRepo.AddAsync(taiKhoan);
 
-		// Lấy lại tài khoản vừa tạo
 		var createdTaiKhoan = await _taiKhoanRepo.GetByEmailAsync(dto.EmailLienHe)
 			?? throw new Exception("Không tạo được tài khoản.");
 
-		// Tạo thông tin cá nhân gắn TaiKhoanID
-		var thongTin = new ThongTinCaNhan(
+		var entity = new ThongTinCaNhan(
 			hoTen: dto.HoTen,
 			ngaySinh: dto.NgaySinh,
-			gioiTinh: dto.GioiTinh,
+			gioiTinh: ParseGioiTinh(dto.GioiTinh),
 			sdt: dto.SDT,
 			emailLienHe: dto.EmailLienHe,
 			diaChi: dto.DiaChi,
@@ -51,63 +61,51 @@ public class ThongTinCaNhanService
 			taiKhoanID: createdTaiKhoan.Id
 		);
 
-		return await _repo.AddAsync(thongTin);
+		return await _repo.AddAsync(entity);
 	}
 
-	public async Task<int> ThemThongTinBenhNhan(ThemThongTinCaNhanDTO dto)
-	{
-		return await ThemThongTin(dto, LoaiThongTinEnum.BenhNhan);
-	}
-
-	private async Task<int> ThemThongTin(
-		ThemThongTinCaNhanDTO dto,
-		LoaiThongTinEnum loai
-	)
+	public async Task<int> TaoBenhNhanAsync(ThemThongTinCaNhanDTO dto)
 	{
 		var entity = new ThongTinCaNhan(
 			hoTen: dto.HoTen,
 			ngaySinh: dto.NgaySinh,
-			gioiTinh: dto.GioiTinh,
+			gioiTinh: ParseGioiTinh(dto.GioiTinh),
 			sdt: dto.SDT,
 			emailLienHe: dto.EmailLienHe,
 			diaChi: dto.DiaChi,
 			avatar: dto.Avatar,
-			loai: loai
+			loai: LoaiThongTinEnum.BenhNhan
 		);
 
 		return await _repo.AddAsync(entity);
 	}
 
-
-	public async Task<List<ThongTinCaNhanResponseDTO>> DanhSachThongTinNhanVien()
+	public async Task<List<ThongTinCaNhanResponseDTO>> DanhSachNhanVienAsync()
 	{
-		return await LayDanhSachTheoLoai(LoaiThongTinEnum.NhanVien);
+		return await LayTheoLoaiAsync(LoaiThongTinEnum.NhanVien);
 	}
 
-	public async Task<List<ThongTinCaNhanResponseDTO>> DanhSachThongTinBenhNhan()
+	public async Task<List<ThongTinCaNhanResponseDTO>> DanhSachBenhNhanAsync()
 	{
-		return await LayDanhSachTheoLoai(LoaiThongTinEnum.BenhNhan);
+		return await LayTheoLoaiAsync(LoaiThongTinEnum.BenhNhan);
 	}
 
-	private async Task<List<ThongTinCaNhanResponseDTO>> LayDanhSachTheoLoai(
-		LoaiThongTinEnum loai
-	)
+	private async Task<List<ThongTinCaNhanResponseDTO>> LayTheoLoaiAsync(
+		LoaiThongTinEnum loai)
 	{
 		var list = await _repo.GetAllByLoaiAsync(loai);
 		return list.Select(MapToResponse).ToList();
 	}
 
-	public async Task<ThongTinCaNhanResponseDTO?> ThongTin(int id)
+	public async Task<ThongTinCaNhanResponseDTO?> LayChiTietAsync(int id)
 	{
 		var entity = await _repo.GetByIdAsync(id);
 		return entity == null ? null : MapToResponse(entity);
 	}
 
-
-	public async Task<bool> CapNhatThongTin(
+	public async Task<bool> CapNhatAsync(
 		int thongTinID,
-		CapNhatThongTinCaNhanDTO dto
-	)
+		CapNhatThongTinCaNhanDTO dto)
 	{
 		var entity = await _repo.GetByIdAsync(thongTinID);
 		if (entity == null)
@@ -116,7 +114,7 @@ public class ThongTinCaNhanService
 		entity.CapNhat(
 			hoTen: dto.HoTen,
 			ngaySinh: dto.NgaySinh,
-			gioiTinh: dto.GioiTinh,
+			gioiTinh: ParseGioiTinh(dto.GioiTinh),
 			sdt: dto.SDT,
 			emailLienHe: dto.EmailLienHe,
 			diaChi: dto.DiaChi,
@@ -126,8 +124,6 @@ public class ThongTinCaNhanService
 		await _repo.UpdateAsync(entity);
 		return true;
 	}
-
-	// ================== MAP ==================
 
 	private static ThongTinCaNhanResponseDTO MapToResponse(ThongTinCaNhan e)
 	{

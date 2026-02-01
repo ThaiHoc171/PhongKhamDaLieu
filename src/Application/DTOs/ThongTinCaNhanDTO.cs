@@ -6,7 +6,7 @@ public class ThemThongTinCaNhanDTO
 {
 	public string HoTen { get; set; } = null!;
 	public DateTime? NgaySinh { get; set; }
-	public string? GioiTinh { get; set; }
+	public string GioiTinh { get; set; } = null!;   // "Nam" | "Nữ" | "Khác"
 	public string SDT { get; set; } = null!;
 	public string EmailLienHe { get; set; } = null!;
 	public string? DiaChi { get; set; }
@@ -17,7 +17,7 @@ public class CapNhatThongTinCaNhanDTO
 {
 	public string HoTen { get; set; } = null!;
 	public DateTime? NgaySinh { get; set; }
-	public string? GioiTinh { get; set; }
+	public string GioiTinh { get; set; } = null!;
 	public string SDT { get; set; } = null!;
 	public string EmailLienHe { get; set; } = null!;
 	public string? DiaChi { get; set; }
@@ -31,6 +31,6 @@ public class ThongTinCaNhanResponseDTO
 	public string HoTen { get; set; } = null!;
 	public string SDT { get; set; } = null!;
 	public string EmailLienHe { get; set; } = null!;
-	public string? Avatar { get; set; }  
+	public string? Avatar { get; set; }
 	public string Loai { get; set; } = null!;
 }
