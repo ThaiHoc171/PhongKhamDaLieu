@@ -15,64 +15,65 @@ public class ThongTinCaNhanController : ControllerBase
 		_service = service;
 	}
 
-
 	[HttpPost("NhanVien")]
-	public async Task<IActionResult> ThemNhanVien([FromBody] ThemThongTinCaNhanDTO dto)
+	public async Task<IActionResult> TaoNhanVien(
+		[FromBody] ThemThongTinCaNhanDTO dto)
 	{
 		if (dto == null)
 			return BadRequest(new { message = "Dữ liệu không hợp lệ." });
+
 		try
 		{
-			var id = await _service.TaoNhanVien(dto);
+			var id = await _service.TaoNhanVienAsync(dto);
+
 			return CreatedAtAction(
-				nameof(ThongTin),
+				nameof(LayThongTin),
 				new { id },
 				new { message = "Tạo nhân viên thành công.", thongTinID = id }
 			);
 		}
-		catch (Exception ex)
+		catch (ArgumentException ex)
 		{
 			return BadRequest(new { message = ex.Message });
 		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, new { message = ex.Message });
+		}
 	}
 
+
 	[HttpPost("BenhNhan")]
-	public async Task<IActionResult> ThemBenhNhan([FromBody] ThemThongTinCaNhanDTO dto)
+	public async Task<IActionResult> TaoBenhNhan(
+		[FromBody] ThemThongTinCaNhanDTO dto)
 	{
 		if (dto == null)
 			return BadRequest(new { message = "Dữ liệu không hợp lệ." });
 
 		try
 		{
-			var id = await _service.ThemThongTinBenhNhan(dto);
+			var id = await _service.TaoBenhNhanAsync(dto);
+
 			return CreatedAtAction(
-				nameof(ThongTin),
+				nameof(LayThongTin),
 				new { id },
 				new { message = "Tạo bệnh nhân thành công.", thongTinID = id }
 			);
 		}
-		catch (Exception ex)
+		catch (ArgumentException ex)
 		{
 			return BadRequest(new { message = ex.Message });
 		}
-	}
-
-
-	[HttpGet("BenhNhan")]
-	public async Task<IActionResult> DanhSachBenhNhan()
-	{
-		var result = await _service.DanhSachThongTinBenhNhan();
-		return Ok(new
+		catch (Exception ex)
 		{
-			message = "Lấy danh sách bệnh nhân thành công.",
-			data = result
-		});
+			return StatusCode(500, new { message = ex.Message });
+		}
 	}
 
 	[HttpGet("NhanVien")]
 	public async Task<IActionResult> DanhSachNhanVien()
 	{
-		var result = await _service.DanhSachThongTinNhanVien();
+		var result = await _service.DanhSachNhanVienAsync();
 		return Ok(new
 		{
 			message = "Lấy danh sách nhân viên thành công.",
@@ -80,10 +81,23 @@ public class ThongTinCaNhanController : ControllerBase
 		});
 	}
 
-	[HttpGet("{id}")]
-	public async Task<IActionResult> ThongTin(int id)
+	[HttpGet("BenhNhan")]
+	public async Task<IActionResult> DanhSachBenhNhan()
 	{
-		var result = await _service.ThongTin(id);
+		var result = await _service.DanhSachBenhNhanAsync();
+		return Ok(new
+		{
+			message = "Lấy danh sách bệnh nhân thành công.",
+			data = result
+		});
+	}
+
+
+	[HttpGet("{id}")]
+	public async Task<IActionResult> LayThongTin(int id)
+	{
+		var result = await _service.LayChiTietAsync(id);
+
 		if (result == null)
 			return NotFound(new { message = "Không tìm thấy thông tin cá nhân." });
 
@@ -97,16 +111,30 @@ public class ThongTinCaNhanController : ControllerBase
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhat(
 		int id,
-		[FromBody] CapNhatThongTinCaNhanDTO dto
-	)
+		[FromBody] CapNhatThongTinCaNhanDTO dto)
 	{
 		if (dto == null)
 			return BadRequest(new { message = "Dữ liệu không hợp lệ." });
 
-		var success = await _service.CapNhatThongTin(id, dto);
-		if (!success)
-			return NotFound(new { message = "Không tìm thấy thông tin để cập nhật." });
+		try
+		{
+			var success = await _service.CapNhatAsync(id, dto);
 
-		return Ok(new { message = "Cập nhật thông tin cá nhân thành công." });
+			if (!success)
+				return NotFound(new { message = "Không tìm thấy thông tin để cập nhật." });
+
+			return Ok(new
+			{
+				message = "Cập nhật thông tin cá nhân thành công."
+			});
+		}
+		catch (ArgumentException ex)
+		{
+			return BadRequest(new { message = ex.Message });
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, new { message = ex.Message });
+		}
 	}
 }

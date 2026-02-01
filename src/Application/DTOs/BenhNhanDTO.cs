@@ -16,7 +16,6 @@ public class ThemBenhNhanDTO
 	public string? EmailLienHe { get; set; }
 	public string? DiaChi { get; set; }
 	public string? Avatar { get; set; }
-	public string? LoaiDa { get; set; }
 	public string? GhiChu { get; set; }
 }
 
@@ -27,13 +26,10 @@ public class BenhNhanResponseDTO
 	public string? HoTen { get; set; }
 	public string? SDT { get; set; }
 	public string? EmailLienHe { get; set; }
-	public string? LoaiDa { get; set; }
-	public string? TrangThaiTheoDoi { get; set; }
 	public string? GhiChu { get; set; }
 }
 
 public class CapNhatBenhNhanDTO
 {
-	public string LoaiDa { get; set; }
-	public string GhiChu { get; set; }
+	public string? GhiChu { get; set; }
 }

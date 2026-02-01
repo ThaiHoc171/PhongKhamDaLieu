@@ -18,7 +18,7 @@ public class BenhNhanRepository : IBenhNhanRepository
 	public async Task<BenhNhan?> GetByIdAsync(int id)
 	{
 		const string sql = @"
-			SELECT BenhNhanID, ThongTinID, LoaiDa, TrangThaiTheoDoi, GhiChu 
+			SELECT BenhNhanID, ThongTinID, GhiChu, NgayTao, NgayCapNhat
 			FROM BenhNhan WHERE BenhNhanID = @Id";
 
 		await using var conn = new SqlConnection(_connectionString);
@@ -28,10 +28,10 @@ public class BenhNhanRepository : IBenhNhanRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<List<BenhNhan>> GetNhanViens(string keyword)
+	public async Task<List<BenhNhan>> GetBenhNhans(string keyword)
 	{
 		const string sql = @"
-				SELECT b.BenhNhanID, b.ThongTinID, b.LoaiDa, b.TrangThaiTheoDoi, b.GhiChu
+				SELECT b.BenhNhanID, b.ThongTinID, b.GhiChu
 				FROM BenhNhan b
 				INNER JOIN ThongTinCaNhan t ON b.ThongTinID = t.ThongTinID
 				WHERE t.HoTen LIKE @Keyword
@@ -50,7 +50,8 @@ public class BenhNhanRepository : IBenhNhanRepository
 	}
 	public async Task<List<BenhNhan>> GetAllAsync()
 	{
-		const string sql = @"SELECT BenhNhanID, ThongTinID, LoaiDa, TrangThaiTheoDoi, GhiChu FROM BenhNhan";
+		const string sql = @"SELECT BenhNhanID, ThongTinID, GhiChu, NgayTao, NgayCapNhat
+						FROM BenhNhan";
 		var list = new List<BenhNhan>();
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
@@ -66,14 +67,12 @@ public class BenhNhanRepository : IBenhNhanRepository
 	public async Task<int> AddAsync(BenhNhan benhNhan)
 	{
 		const string sql = @"
-			INSERT INTO BenhNhan (ThongTinID, LoaiDa, TrangThaiTheoDoi, GhiChu) 
+			INSERT INTO BenhNhan (ThongTinID, GhiChu) 
 			OUTPUT INSERTED.BenhNhanID
-			VALUES (@ThongTinID, @LoaiDa, @TrangThaiTheoDoi, @GhiChu)";
+			VALUES (@ThongTinID, @GhiChu)";
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@ThongTinID", benhNhan.ThongTinID);
-		cmd.Parameters.AddWithValue("@LoaiDa", benhNhan.LoaiDa);
-		cmd.Parameters.AddWithValue("@TrangThaiTheoDoi", benhNhan.TrangThaiTheoDoi);
 		cmd.Parameters.AddWithValue("@GhiChu", benhNhan.GhiChu ?? "");
 		await conn.OpenAsync();
 		return (int)await cmd.ExecuteScalarAsync();
@@ -83,12 +82,10 @@ public class BenhNhanRepository : IBenhNhanRepository
 	{
 		const string sql = @"
 			UPDATE BenhNhan 
-			SET LoaiDa = @LoaiDa, TrangThaiTheoDoi = @TrangThaiTheoDoi, GhiChu = @GhiChu 
+			SET GhiChu = @GhiChu, NgayCapNhat = GETDATE()
             WHERE BenhNhanID = @Id";
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@LoaiDa", benhNhan.LoaiDa);
-		cmd.Parameters.AddWithValue("@TrangThaiTheoDoi", benhNhan.TrangThaiTheoDoi);
 		cmd.Parameters.AddWithValue("@GhiChu", benhNhan.GhiChu ?? "");
 		cmd.Parameters.AddWithValue("@Id", benhNhan.BenhNhanID);
 		await conn.OpenAsync();
@@ -100,9 +97,9 @@ public class BenhNhanRepository : IBenhNhanRepository
 		return new BenhNhan(
 			benhNhanID: reader.GetInt32(0),
 			thongTinID: reader.GetInt32(1),
-			loaiDa: reader.GetString(2),
-			trangThaiTheoDoi: reader.GetString(3),
-			ghiChu: reader.IsDBNull(4) ? "" : reader.GetString(4)
+			ghiChu: reader.IsDBNull(2) ? "" : reader.GetString(2),
+			ngayTao: reader.GetDateTime(3),
+			ngayCapNhat: reader.IsDBNull(4) ? reader.GetDateTime(3) : reader.GetDateTime(4)
 		);
 	}
 }

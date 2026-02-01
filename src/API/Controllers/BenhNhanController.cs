@@ -38,21 +38,9 @@ public class BenhNhanController : ControllerBase
 	{
 		var result = await _benhNhanService.CapNhatBenhNhanAsync(
 			id,
-			dto.LoaiDa,
 			dto.GhiChu
 		);
 
-		if (result) return Ok(new { message = "Cập nhật bệnh nhân thành công." });
-		return NotFound(new { Message = "Bệnh nhân không tồn tại" });
-	}
-
-	// PATCH: api/BenhNhan/{id}TrangThai/
-	[HttpPut("{id}/trangthai")]
-	public async Task<IActionResult> CapNhatTrangThai(
-		int id,
-		[FromBody] string trangThai)
-	{
-		var result = await _benhNhanService.CapNhatTrangThaiAsync(id, trangThai);
 		if (result) return Ok(new { message = "Cập nhật bệnh nhân thành công." });
 		return NotFound(new { Message = "Bệnh nhân không tồn tại" });
 	}
