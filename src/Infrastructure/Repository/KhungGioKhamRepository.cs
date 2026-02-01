@@ -35,8 +35,32 @@ namespace Infrastructure.Repository
 
 			return list;
 		}
+        public async Task<List<int>> GetKhungGioIdsByCaLamViecAsync(int caLamViec)
+        {
+            const string sql = @"
+		SELECT KhungGioID
+		FROM KhungGioKham
+		WHERE CaLamViec = @CaLamViec
+		ORDER BY KhungGioID";
 
-		public async Task<KhungGioKham?> GetByIdAsync(int id)
+            var list = new List<int>();
+
+            await using var conn = new SqlConnection(_connectionString);
+            await using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@CaLamViec", caLamViec);
+
+            await conn.OpenAsync();
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                list.Add(reader.GetInt32(0)); // KhungGioID
+            }
+
+            return list;
+
+        }
+        public async Task<KhungGioKham?> GetByIdAsync(int id)
 		{
 			const string sql = @"SELECT KhungGioID, GioBatDau, GioKetThuc, TenKhung, MaxSlot
 								FROM KhungGioKham
@@ -51,8 +75,16 @@ namespace Infrastructure.Repository
 
 			return await reader.ReadAsync() ? MapToEntity(reader) : null;
 		}
-
-		public async Task AddAsync(KhungGioKham kg)
+        public async Task<int> CountKhungGioKhamAsync()
+        {
+            const string sql = @"SELECT COUNT(KhungGioID) FROM KhungGioKham";
+            var list = new List<CaKham>();
+            await using var conn = new SqlConnection(_connectionString);
+            await using var cmd = new SqlCommand(sql, conn);
+            await conn.OpenAsync();
+            return (int)await cmd.ExecuteScalarAsync();
+        }
+        public async Task AddAsync(KhungGioKham kg)
 		{
 			// MaxSlot KHÔNG truyền → DB dùng DEFAULT 5
 			const string sql = @"INSERT INTO KhungGioKham (GioBatDau, GioKetThuc, TenKhung)
