@@ -16,7 +16,7 @@ public class CaKhamRepository : ICaKhamRepository
 	}
 	public async Task<CaKham?> GetByIdAsync(int caKhamID)
 	{
-		const string sql = @"SELECT CaKhamID, LichLamViecID, PhongChucNangID, NgayKham , KhungGioID ,BenhNhanID ,LyDoKham ,TrangThai ,NgayDat ,GhiChu
+		const string sql = @"SELECT CaKhamID, LoaiCaKham, LichLamViecID, KhungGioID, PhongChucNangID, BenhNhanID, LyDoKham, TrangThai, NgayDat, NgayKham, GhiChu
                                 FROM CaKham WHERE CaKhamID = @caKhamID";
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
@@ -27,7 +27,7 @@ public class CaKhamRepository : ICaKhamRepository
 	}
 	public async Task<List<CaKham>> GetAllAsync()
 	{
-		const string sql = @"SELECT CaKhamID, LichLamViecID, PhongChucNangID, NgayKham , KhungGioID ,BenhNhanID ,LyDoKham ,TrangThai ,NgayDat ,GhiChu
+		const string sql = @"SELECT CaKhamID, LoaiCaKham, LichLamViecID, KhungGioID, PhongChucNangID, BenhNhanID, LyDoKham, TrangThai, NgayDat, NgayKham, GhiChu
                                 FROM CaKham";
 		var list = new List<CaKham>();
 		await using var conn = new SqlConnection(_connectionString);
@@ -42,7 +42,7 @@ public class CaKhamRepository : ICaKhamRepository
 	}
 	public async Task<List<CaKham>> LocAsync(DateTime ngayKham, string trangThai)
 	{
-		const string sql = @"SELECT CaKhamID, LichLamViecID, PhongChucNangID, NgayKham , KhungGioID ,BenhNhanID ,LyDoKham ,TrangThai ,NgayDat ,GhiChu
+		const string sql = @"SELECT CaKhamID, LoaiCaKham, LichLamViecID, KhungGioID, PhongChucNangID, BenhNhanID, LyDoKham, TrangThai, NgayDat, NgayKham, GhiChu
                                 FROM CaKham WHERE NgayKham = @ngayKham AND TrangThai = @trangThai";
 		var list = new List<CaKham>();
 		await using var conn = new SqlConnection(_connectionString);
@@ -59,7 +59,7 @@ public class CaKhamRepository : ICaKhamRepository
 	}
 	public async Task<List<CaKham>> GetByBenhNhanAsync(int benhNhanID)
 	{
-		const string sql = @"SELECT CaKhamID, LichLamViecID, PhongChucNangID, NgayKham , KhungGioID ,BenhNhanID ,LyDoKham ,TrangThai ,NgayDat ,GhiChu
+		const string sql = @"SELECT CaKhamID, LoaiCaKham, LichLamViecID, KhungGioID, PhongChucNangID, BenhNhanID, LyDoKham, TrangThai, NgayDat, NgayKham, GhiChu
                                 FROM CaKham WHERE BenhNhanID = @benhNhanID";
 		var list = new List<CaKham>();
 		await using var conn = new SqlConnection(_connectionString);
@@ -74,32 +74,33 @@ public class CaKhamRepository : ICaKhamRepository
 		return list;
 	}
 
-	public async Task<int> CountByNgayAndKhungGioAsync(DateTime ngay, int khungGioId)
+	public async Task<int> CountByNgayAndKhungGioAsync(DateTime ngay, int khungGioId, string loaiCaKham)
 	{
-		const string sql = @"SELECT COUNT(CaKhamID) FROM CaKham WHERE NgayKham = @ngayKham AND KhungGioID = @khungGioId";
+		const string sql = @"SELECT COUNT(CaKhamID) FROM CaKham WHERE NgayKham = @ngayKham AND KhungGioID = @khungGioId AND LoaiCaKham = @loaiCaKham";
 		var list = new List<CaKham>();
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@ngayKham", ngay);
 		cmd.Parameters.AddWithValue("@KhungGioID", khungGioId);
-		await conn.OpenAsync();
+        cmd.Parameters.AddWithValue("@loaiCaKham", loaiCaKham);
+        await conn.OpenAsync();
 		return (int)await cmd.ExecuteScalarAsync();
 	}
-	public async Task<bool> ExistsAsync(DateTime ngay, int khungGioId, int lichLamViecId)
+	public async Task<bool> ExistsAsync(DateTime ngay, int khungGioId, string loaiCaKham)
 	{
 		const string sql = @"
         SELECT 1
         FROM CaKham
         WHERE NgayKham = @NgayKham
           AND KhungGioID = @KhungGioID
-          AND LichLamViecID = @LichLamViecID";
+          AND LoaiCaKham = @loaiCaKham";
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 
 		cmd.Parameters.AddWithValue("@NgayKham", ngay.Date);
 		cmd.Parameters.AddWithValue("@KhungGioID", khungGioId);
-		cmd.Parameters.AddWithValue("@LichLamViecID", lichLamViecId);
+		cmd.Parameters.AddWithValue("@loaiCaKham", loaiCaKham);
 
 		await conn.OpenAsync();
 		var result = await cmd.ExecuteScalarAsync();
@@ -109,18 +110,30 @@ public class CaKhamRepository : ICaKhamRepository
 	{
 		const string sql = @"
             INSERT INTO CaKham
-            (LichLamViecID, PhongChucNangID, NgayKham, KhungGioID, TrangThai)
-            OUTPUT INSERTED.CaKhamID
-            VALUES (@LichLamViecID, @PhongChucNangID, @NgayKham, @KhungGioID, @TrangThai)";
+            (LoaiCaKham, LichLamViecID, KhungGioID, PhongChucNangID, NgayKham, TrangThai) 
+			OUTPUT INSERTED.CaKhamID
+			SELECT
+				CASE 
+					WHEN nv.PhongChucNangID = 1 THEN N'Khám'
+					WHEN nv.PhongChucNangID = 2 THEN N'Điều trị'
+				END AS LoaiCaKham,
+				llv.LichLamViecID,
+				@KhungGioID,
+				nv.PhongChucNangID,
+				@NgayKham,
+				N'Trống'
+				FROM LichLamViecNhanVien llv
+				JOIN NhanVien nv 
+					ON llv.NhanVienID = nv.NhanVienID
+				WHERE llv.LichLamViecID = @LichLamViecID";
+
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 
-		cmd.Parameters.AddWithValue("@LichLamViecID", ca.LichLamViecID);
-		cmd.Parameters.AddWithValue("@PhongChucNangID", ca.PhongChucNangID);
-		cmd.Parameters.AddWithValue("@NgayKham", ca.NgayKham);
-		cmd.Parameters.AddWithValue("@KhungGioID", ca.KhungGioID);
-		cmd.Parameters.AddWithValue("@TrangThai", ca.TrangThai);
+        cmd.Parameters.AddWithValue("@LichLamViecID", ca.LichLamViecID);
+        cmd.Parameters.AddWithValue("@KhungGioID", ca.KhungGioID);
+        cmd.Parameters.AddWithValue("@NgayKham", ca.NgayKham);
 
 		await conn.OpenAsync();
 		return (int)await cmd.ExecuteScalarAsync();
@@ -171,16 +184,16 @@ public class CaKhamRepository : ICaKhamRepository
 	{
 		return new CaKham(
 			caKhamID: reader.GetInt32(0),
-			lichLamViecID: reader.GetInt32(1),
-			phongChucNangID: reader.GetInt32(2),
-			ngayKham: reader.GetDateTime(3),
-			khungGioID: reader.GetInt32(4),
-
+			loaiCaKham: reader.GetString(1),
+			lichLamViecID: reader.GetInt32(2),
+            khungGioID: reader.GetInt32(3),
+            phongChucNangID: reader.GetInt32(4),
 			benhNhanID: reader.IsDBNull(5) ? null : reader.GetInt32(5),
 			lyDoKham: reader.IsDBNull(6) ? null : reader.GetString(6),
 			trangThai: reader.GetString(7),
 			ngayDat: reader.IsDBNull(8) ? null : reader.GetDateTime(8),
-			ghiChu: reader.IsDBNull(9) ? null : reader.GetString(9)
+            ngayKham: reader.GetDateTime(9),
+            ghiChu: reader.IsDBNull(10) ? null : reader.GetString(10)
 		);
 	}
 }
