@@ -11,12 +11,10 @@ namespace Application.Services;
 public class LichLamViecService
 {
 	private readonly ILichLamViecRepository _repo;
-	private readonly string _connectionString;
 
-	public LichLamViecService(ILichLamViecRepository repo, IConfiguration config)
+	public LichLamViecService(ILichLamViecRepository repo)
 	{
 		_repo = repo;
-		_connectionString = config.GetConnectionString("DefaultConnection")!;
 	}
 	public async Task ThemLichLamViecAsync(LichLamViecBatchDTO dto)
 	{

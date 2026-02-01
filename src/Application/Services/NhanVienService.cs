@@ -19,7 +19,7 @@ public class NhanVienService
 	public async Task TaoNhanVienAsync(TaoNhanVienDTO dto)
 	{
 		// Tạo tài khoản + thông tin cá nhân
-		var thongTinID = await _thongTinService.TaoNhanVien(dto.ThongTin);
+		var thongTinID = await _thongTinService.TaoNhanVienAsync(dto.ThongTin);
 
 		// Tạo nhân viên
 		var nv = new NhanVien(
