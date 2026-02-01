@@ -1,4 +1,5 @@
 ﻿using Domain.Enums;
+using Domain.ValueObjects;
 
 namespace Domain.Entities;
 
@@ -18,34 +19,27 @@ public class ThongTinCaNhan
 
 	public string Loai { get; private set; } = null!;
 
-	public DateTime NgayTao { get; private set; }
-	public DateTime NgayCapNhat { get; private set; }
+	public DateTime? NgayTao { get; private set; }
+	public DateTime? NgayCapNhat { get; private set; }
 
 	// Tạo mới (DÙNG ENUM)
-	public ThongTinCaNhan(
-		string hoTen,
-		DateTime? ngaySinh,
-		string? gioiTinh,
-		string sdt,
-		string emailLienHe,
-		string? diaChi,
-		string? avatar,
-		LoaiThongTinEnum loai,
-		int? taiKhoanID = null
-	)
+	public ThongTinCaNhan(string hoTen,DateTime? ngaySinh,GioiTinhEnum gioiTinh,string sdt,string emailLienHe,
+		string? diaChi,string? avatar,LoaiThongTinEnum loai,int? taiKhoanID = null)
 	{
+		if (string.IsNullOrWhiteSpace(hoTen))
+			throw new ArgumentException("Họ tên không hợp lệ");
+
+		if (string.IsNullOrWhiteSpace(sdt))
+			throw new ArgumentException("SĐT không hợp lệ");
 		HoTen = hoTen;
 		NgaySinh = ngaySinh;
-		GioiTinh = gioiTinh;
+		GioiTinh = gioiTinh.ToDbValue();
 		SDT = sdt;
-		EmailLienHe = emailLienHe;
+		EmailLienHe = Email.Create(emailLienHe).Value;
 		DiaChi = diaChi;
 		Avatar = avatar;
 		Loai = loai.ToDbValue();
 		TaiKhoanID = taiKhoanID;
-
-		NgayTao = DateTime.UtcNow;
-		NgayCapNhat = DateTime.UtcNow;
 	}
 
 	// Map từ DB
@@ -61,7 +55,7 @@ public class ThongTinCaNhan
 		string? avatar,
 		string loai,
 		DateTime ngayTao,
-		DateTime ngayCapNhat
+		DateTime? ngayCapNhat
 	)
 	{
 		ThongTinID = thongTinID;
@@ -70,7 +64,7 @@ public class ThongTinCaNhan
 		NgaySinh = ngaySinh;
 		GioiTinh = gioiTinh;
 		SDT = sdt;
-		EmailLienHe = emailLienHe;
+		EmailLienHe = Email.Create(emailLienHe).Value;
 		DiaChi = diaChi;
 		Avatar = avatar;
 		Loai = loai;
@@ -84,20 +78,24 @@ public class ThongTinCaNhan
 	public void CapNhat(
 		string hoTen,
 		DateTime? ngaySinh,
-		string? gioiTinh,
+		GioiTinhEnum gioiTinh,
 		string sdt,
 		string emailLienHe,
 		string? diaChi,
 		string? avatar
 	)
 	{
+		if (string.IsNullOrWhiteSpace(hoTen))
+			throw new ArgumentException("Họ tên không hợp lệ");
+
+		if (string.IsNullOrWhiteSpace(sdt))
+			throw new ArgumentException("SĐT không hợp lệ");
 		HoTen = hoTen;
 		NgaySinh = ngaySinh;
-		GioiTinh = gioiTinh;
+		GioiTinh = gioiTinh.ToDbValue();
 		SDT = sdt;
-		EmailLienHe = emailLienHe;
+		EmailLienHe = Email.Create(emailLienHe).Value;
 		DiaChi = diaChi;
 		Avatar = avatar;
-		NgayCapNhat = DateTime.UtcNow;
 	}
 }
