@@ -218,6 +218,7 @@ CREATE TABLE CaKham (
         CONSTRAINT DF_CaKham_TrangThai DEFAULT N'Trống'
         CONSTRAINT CK_CaKham_TrangThai CHECK ( TrangThai IN ( N'Trống', N'Đã đặt', N'Đã xác nhận', N'Hoàn thành', N'Đã hủy', N'Không đến' )),
     NgayDat DATETIME DEFAULT GETDATE(),
+	NgayKham DATE not null;
     GhiChu NVARCHAR(MAX),
     FOREIGN KEY (LichLamViecID) REFERENCES LichLamViecNhanVien(LichLamViecID) ON DELETE CASCADE,
     FOREIGN KEY (BenhNhanID) REFERENCES BenhNhan(BenhNhanID),
