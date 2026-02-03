@@ -89,6 +89,8 @@ CREATE TABLE NhanVien (
         CONSTRAINT CK_NhanVien_TrangThai
         CHECK (TrangThai IN (N'Đang làm việc', N'Nghỉ việc')),
     PhongChucNangID INT NOT NULL,
+    NgayTao DATETIME NOT NULL  CONSTRAINT DF_NhanVien_NgayTao DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL,
     CONSTRAINT FK_NhanVien_TTCN FOREIGN KEY (ThongTinID) REFERENCES ThongTinCaNhan(ThongTinID) ON DELETE CASCADE,
     CONSTRAINT FK_NhanVien_ChucVu FOREIGN KEY (ChucVuID) REFERENCES ChucVu(ChucVuID),
     CONSTRAINT FK_NhanVien_PCN FOREIGN KEY (PhongChucNangID ) REFERENCES PhongChucNang(PhongChucNangID) 
