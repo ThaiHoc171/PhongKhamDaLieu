@@ -1,12 +1,15 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Enums;
+
+namespace Domain.Entities;
 public class PhongChucNang
 {
 	public int Id { get; private set; }
 	public string TenPhong { get; private set; }
 	public string? LoaiPhong { get; private set; }
 	public string? MoTa { get; private set; }
-	public string TrangThai { get; private set; }
+	public TinhTrang TrangThai { get; private set; }
 	public DateTime NgayTao { get; private set; }
+	public DateTime? NgayCapNhat { get; private set; }
 
 	// Tạo mới
 	public PhongChucNang(string tenPhong, string? loaiPhong, string? moTa)
@@ -17,25 +20,20 @@ public class PhongChucNang
 		TenPhong = tenPhong;
 		LoaiPhong = loaiPhong;
 		MoTa = moTa;
-		TrangThai = "Hoạt động";
+		TrangThai = TinhTrang.HoatDong;
 		NgayTao = DateTime.UtcNow;
 	}
 
 	// Map từ DB
-	public PhongChucNang(
-		int id,
-		string tenPhong,
-		string? loaiPhong,
-		string? moTa,
-		string trangThai,
-		DateTime ngayTao)
+	public PhongChucNang(int id,string tenPhong,string? loaiPhong,string? moTa,string trangThai,DateTime ngayTao,DateTime? ngayCapNhat)
 	{
 		Id = id;
 		TenPhong = tenPhong;
 		LoaiPhong = loaiPhong;
 		MoTa = moTa;
-		TrangThai = trangThai;
+		TrangThai = TinhTrangExtensions.FromDb(trangThai);
 		NgayTao = ngayTao;
+		NgayCapNhat = ngayCapNhat;
 	}
 	public void CapNhat(string tenPhong, string? loaiPhong, string? moTa)
 	{
@@ -45,8 +43,11 @@ public class PhongChucNang
 		LoaiPhong = loaiPhong;
 		MoTa = moTa;
 	}
-	public void ChuyenTrangThai(string trangThaiMoi)
+	public void ChuyenTrangThai(TinhTrang trangThaiMoi)
 	{
+		if (TrangThai == TinhTrang.Hong && trangThaiMoi == TinhTrang.HoatDong)
+			throw new InvalidOperationException("Phòng đang hỏng, cần bảo trì trước");
+
 		TrangThai = trangThaiMoi;
 	}
 }

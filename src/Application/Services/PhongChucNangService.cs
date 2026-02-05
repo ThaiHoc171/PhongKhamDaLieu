@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.Services;
 
@@ -66,7 +67,7 @@ public class PhongChucNangService
 	}
 
 	// Chuyển trạng thái
-	public async Task<bool> ChuyenTrangThaiAsync(int id, string TrangThaiMoi)
+	public async Task<bool> ChuyenTrangThaiAsync(int id, TinhTrang TrangThaiMoi)
 	{
 		var phong = await _repo.GetByIdAsync(id);
 		if (phong == null)
@@ -77,6 +78,18 @@ public class PhongChucNangService
 		return true;
 	}
 
+	// Trả về ComboBox
+	public async Task<List<NameResponseDTO>> GetIdAndNameAsync()
+	{
+		var list = await _repo.GetIdAndNameAsync();
+
+		return list.Select(x => new NameResponseDTO
+		{
+			Id = x.Id,
+			Name = x.Ten
+		}).ToList();
+	}
+
 	// Map Entity → DTO
 	private static PhongChucNangResponseDTO MapToResponse(PhongChucNang p)
 		=> new()
@@ -85,7 +98,8 @@ public class PhongChucNangService
 			TenPhong = p.TenPhong,
 			LoaiPhong = p.LoaiPhong,
 			MoTa = p.MoTa,
-			TrangThai = p.TrangThai,
-			NgayTao = p.NgayTao
+			TrangThai = p.TrangThai.ToDbValue(),
+			NgayTao = p.NgayTao,
+			NgayCapNhat = p.NgayCapNhat
 		};
 }
