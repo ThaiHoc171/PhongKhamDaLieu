@@ -65,6 +65,8 @@ builder.Services.AddScoped<IHoSoBenhAnRepository, HoSoBenhAnRepository>();
 builder.Services.AddScoped<HoSoBenhAnService>();
 builder.Services.AddScoped<IPCNThietBiRepository, PCNThietBiRepository>();
 builder.Services.AddScoped<PCNThietBiService>();
+builder.Services.AddScoped<ITaiKhamRepository, TaiKhamRepository>();
+builder.Services.AddScoped<TaiKhamService>();
 
 
 var app = builder.Build();
