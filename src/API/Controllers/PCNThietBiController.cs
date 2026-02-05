@@ -1,12 +1,12 @@
 ﻿using Application.DTOs;
 using Application.Services;
-using Domain.Entities;
+using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/[Controller]")]
+[Route("api/phong-chuc-nang/{phongChucNangId:int}/thiet-bi")]
 public class PCNThietBiController : ControllerBase
 {
 	private readonly PCNThietBiService _service;
@@ -16,114 +16,97 @@ public class PCNThietBiController : ControllerBase
 		_service = service;
 	}
 
+	// ===================== QUERY =====================
 
+	// GET: api/phong-chuc-nang/{phongChucNangId}/thiet-bi
 	[HttpGet]
-	public async Task<IActionResult> GetByPCN(int pcnId)
+	public async Task<IActionResult> GetByPhongChucNang(int phongChucNangId)
 	{
-		try
-		{
-			var result = await _service.GetByPCNAsync(pcnId);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest("Lỗi khi lấy danh sách thiết bị phòng chức năng" + ex.Message);
-		}
+		var result = await _service.GetByPhongChucNangAsync(phongChucNangId);
+		return Ok(result);
 	}
 
+	// GET: api/phong-chuc-nang/{phongChucNangId}/thiet-bi/{id}
 	[HttpGet("{id:int}")]
 	public async Task<IActionResult> GetById(int id)
 	{
-		try
-		{
-			var result = await _service.GetByIdAsync(id);
-			if (result == null)
-				return NotFound(new { message = "Không tìm thấy thiết bị phòng chức năng" });
+		var result = await _service.GetByIdAsync(id);
+		if (result == null)
+			return NotFound(new { message = "Không tìm thấy thiết bị phòng chức năng" });
 
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest("Lỗi khi lấy thiết bị phòng chức năng" + ex.Message);
-		}
+		return Ok(result);
 	}
 
+	// GET: api/phong-chuc-nang/{phongChucNangId}/thiet-bi/tong
+	[HttpGet("tong")]
+	public async Task<IActionResult> GetTongTheoPhong(int phongChucNangId)
+	{
+		var result = await _service.GetTongTheoPhongAsync(phongChucNangId);
+		if (result == null)
+			return NotFound(new { message = "Không tìm thấy phòng chức năng" });
 
+		return Ok(result);
+	}
+
+	// GET: api/phong-chuc-nang/{phongChucNangId}/thiet-bi/nhap
+	[HttpGet("nhap")]
+	public async Task<IActionResult> GetThietBiNhap(int phongChucNangId)
+	{
+		var result = await _service.GetThietBiNhapAsync(phongChucNangId);
+		return Ok(result);
+	}
+
+	// ===================== COMMAND =====================
+
+	// POST: api/phong-chuc-nang/{phongChucNangId}/thiet-bi
 	[HttpPost]
 	public async Task<IActionResult> Create(
-		int pcnId,
-		[FromBody] PCNThietBiRequestDTO dto)
+		int phongChucNangId,
+		[FromBody] PCNThietBiRequestCreateDTO dto)
 	{
-		try
-		{
-			if (dto == null)
-				return BadRequest(new { message = "Dữ liệu không hợp lệ" });
+		var result = await _service.CreateAsync(phongChucNangId, dto);
 
-			var id = await _service.AddAsync(pcnId, dto);
-
-			return Ok(new
-			{
-				message = "Thêm thiết bị phòng chức năng thành công",
-				id
-			});
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-		catch (Exception ex)
-		{
-			return BadRequest("Lỗi khi thêm thiết bị phòng chức năng" + ex.Message);
-		}
+		return CreatedAtAction(
+			nameof(GetById),
+			new { phongChucNangId, id = result.Id },
+			result
+		);
 	}
 
+	// PUT: api/phong-chuc-nang/{phongChucNangId}/thiet-bi/{id}
 	[HttpPut("{id:int}")]
-	public async Task<IActionResult> Update(
+	public async Task<IActionResult> UpdateSoLuong(
 		int id,
-		[FromBody] PCNThietBiRequestDTO dto)
+		[FromBody] PCNThietBiRequestUpdateDTO dto)
 	{
-		try
-		{
-			if (dto == null)
-				return BadRequest(new { message = "Dữ liệu không hợp lệ" });
+		var success = await _service.UpdateAsync(id, dto);
+		if (!success)
+			return NotFound(new { message = "Không tìm thấy thiết bị phòng chức năng" });
 
-			var success = await _service.UpdateAsync(id, dto);
-			if (!success)
-				return NotFound(new { message = "Không tìm thấy thiết bị phòng chức năng" });
-
-			return Ok(new
-			{
-				message = "Cập nhật thiết bị phòng chức năng thành công"
-			});
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-		catch (Exception ex)
-		{
-			return BadRequest("Lỗi khi cập nhật thiết bị phòng chức năng" + ex.Message);
-		}
+		return Ok(new { message = "Cập nhật số lượng thành công" });
 	}
 
+	// PATCH: api/phong-chuc-nang/{phongChucNangId}/thiet-bi/{id}/trang-thai
+	[HttpPut("{id:int}/trang-thai")]
+	public async Task<IActionResult> ChuyenTrangThai(
+		int id,
+		[FromBody] TinhTrang trangThaiMoi)
+	{
+		var success = await _service.ChuyenTrangThaiAsync(id, trangThaiMoi);
+		if (!success)
+			return NotFound(new { message = "Không tìm thấy thiết bị phòng chức năng" });
 
+		return Ok(new { message = "Chuyển trạng thái thành công" });
+	}
+
+	// DELETE: api/phong-chuc-nang/{phongChucNangId}/thiet-bi/{id}
 	[HttpDelete("{id:int}")]
 	public async Task<IActionResult> Delete(int id)
 	{
-		try
-		{
-			var success = await _service.DeleteAsync(id);
-			if (!success)
-				return NotFound(new { message = "Không tìm thấy thiết bị phòng chức năng" });
+		var success = await _service.DeleteAsync(id);
+		if (!success)
+			return NotFound(new { message = "Không tìm thấy thiết bị phòng chức năng" });
 
-			return Ok(new
-			{
-				message = "Xóa thiết bị phòng chức năng thành công"
-			});
-		}
-		catch (Exception ex)
-		{
-			return BadRequest("Lỗi khi xóa thiết bị phòng chức năng" + ex.Message);
-		}
+		return Ok(new { message = "Xóa thiết bị phòng chức năng thành công" });
 	}
 }

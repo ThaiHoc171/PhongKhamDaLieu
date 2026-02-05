@@ -1,9 +1,21 @@
-﻿
-namespace Application.DTOs;
+﻿namespace Application.DTOs;
 
-public class PCNThietBiRequestDTO
+public class PCNThietBiRequestCreateDTO
 {
-	public int TB_Id { get; set; }
+	public int ThietBiID { get; set; }
 	public int SoLuong { get; set; }
-	public string? GhiChu { get; set; }
+}
+public class PCNThietBiRequestUpdateDTO
+{
+	public int ThietBiID { get; set; }
+	public int SoLuong { get; set; }
+}
+public class PCNThietBiResponseDTO
+{
+	public int Id { get; init; }
+	public int PhongChucNangID { get; init; }
+	public NameResponseDTO ThietBi { get; init; } = null!;
+	public int SoLuong { get; init; }
+	public string TinhTrang { get; init; }
+	public DateTime NgayNhap { get; init; }
 }

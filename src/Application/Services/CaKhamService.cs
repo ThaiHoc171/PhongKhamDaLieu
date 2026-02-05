@@ -41,8 +41,12 @@ public class CaKhamService
 
             if (chucVuId != 1 && chucVuId != 2) continue;
             var LoaiCaKham = "";
-			int PhongChucNangID = await _nhanVienRepo.GetPhongChucNangIdByNhanVienIdAsync(lich.NhanVienID);
-            if (PhongChucNangID == 1)
+			int? ID = await _nhanVienRepo.GetPhongChucNangIdByNhanVienIdAsync(lich.NhanVienID);
+			if (ID == null)
+				throw new Exception("Nhân viên không tồn tại!");
+			int PhongChucNangID = ID.Value;
+
+			if (PhongChucNangID == 1)
                 LoaiCaKham = "Khám";
 			else if (PhongChucNangID == 2)
                 LoaiCaKham = "Điều trị";

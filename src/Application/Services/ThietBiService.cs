@@ -57,17 +57,6 @@ public class ThietBiService
 		return true;
 	}
 
-	// Chuyển tình trạng
-	public async Task<bool> ChuyenTinhTrangAsync(int id, string TrangThaiMoi)
-	{
-		var tb = await _repo.GetByIdAsync(id);
-		if (tb == null)
-			return false;
-		tb.ChuyenTinhTrang(TrangThaiMoi);
-		await _repo.UpdateAsync(tb);
-
-		return true;
-	}
 
 	// Map Entity → DTO
 	private static ThietBiResponseDTO MapToResponse(ThietBi tb)
@@ -75,8 +64,6 @@ public class ThietBiService
 		{
 			Id = tb.Id,
 			TenTB = tb.TenTB,
-			LoaiTB = tb.LoaiTB,
-			TinhTrang = tb.TinhTrang,
-			NgayNhap = tb.NgayNhap
+			LoaiTB = tb.LoaiTB
 		};
 }

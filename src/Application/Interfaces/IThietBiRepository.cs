@@ -9,4 +9,7 @@ public interface IThietBiRepository
 	Task<List<ThietBi>> SearchByTenAsync(string tenTB);
 	Task AddAsync(ThietBi thietBi);
 	Task UpdateAsync(ThietBi thietBi);
+
+	Task<string?> GetNameByIdAsync(int id);
+	Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
 }
