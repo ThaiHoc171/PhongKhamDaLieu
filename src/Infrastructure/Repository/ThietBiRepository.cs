@@ -19,11 +19,7 @@ public class ThietBiRepository : IThietBiRepository
 	{
 		const string sql = @"
 			SELECT 
-				ThietBiID,
-				TenTB,
-				LoaiTB,
-				TinhTrang,
-				NgayNhap
+				ThietBiID, TenTB, LoaiTB
 			FROM ThietBi";
 
 		var list = new List<ThietBi>();
@@ -44,11 +40,7 @@ public class ThietBiRepository : IThietBiRepository
 	{
 		const string sql = @"
 			SELECT 
-				ThietBiID,
-				TenTB,
-				LoaiTB,
-				TinhTrang,
-				NgayNhap
+				ThietBiID, TenTB, LoaiTB
 			FROM ThietBi
 			WHERE ThietBiID = @Id";
 
@@ -66,11 +58,7 @@ public class ThietBiRepository : IThietBiRepository
 	{
 		const string sql = @"
 			SELECT 
-				ThietBiID,
-				TenTB,
-				LoaiTB,
-				TinhTrang,
-				NgayNhap
+				ThietBiID, TenTB, LoaiTB
 			FROM ThietBi
 			WHERE TenTB LIKE @TenTB";
 
@@ -92,17 +80,14 @@ public class ThietBiRepository : IThietBiRepository
 	public async Task AddAsync(ThietBi tb)
 	{
 		const string sql = @"
-			INSERT INTO ThietBi (TenTB, LoaiTB, TinhTrang, NgayNhap)
-			VALUES (@TenTB, @LoaiTB, @TinhTrang, @NgayNhap)";
+			INSERT INTO ThietBi (TenTB, LoaiTB)
+			VALUES (@TenTB, @LoaiTB)";
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 
 		cmd.Parameters.AddWithValue("@TenTB", tb.TenTB);
 		cmd.Parameters.AddWithValue("@LoaiTB", tb.LoaiTB ?? (object)DBNull.Value);
-		cmd.Parameters.AddWithValue("@TinhTrang", tb.TinhTrang);
-		cmd.Parameters.AddWithValue("@NgayNhap", tb.NgayNhap);
-
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
@@ -112,8 +97,7 @@ public class ThietBiRepository : IThietBiRepository
 		const string sql = @"
 			UPDATE ThietBi
 			SET TenTB = @TenTB,
-			    LoaiTB = @LoaiTB,
-			    TinhTrang = @TinhTrang
+			    LoaiTB = @LoaiTB
 			WHERE ThietBiID = @Id";
 
 		await using var conn = new SqlConnection(_connectionString);
@@ -122,18 +106,54 @@ public class ThietBiRepository : IThietBiRepository
 		cmd.Parameters.AddWithValue("@Id", tb.Id);
 		cmd.Parameters.AddWithValue("@TenTB", tb.TenTB);
 		cmd.Parameters.AddWithValue("@LoaiTB", tb.LoaiTB ?? (object)DBNull.Value);
-		cmd.Parameters.AddWithValue("@TinhTrang", tb.TinhTrang);
 
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
+	public async Task<string?> GetNameByIdAsync(int id)
+	{
+		const string sql = @"
+			SELECT TenTB
+			FROM ThietBi
+			WHERE ThietBiID = @Id";
 
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@Id", id);
+
+		await conn.OpenAsync();
+		return await cmd.ExecuteScalarAsync() as string;
+	}
+
+	public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
+	{
+		const string sql = @"
+			SELECT ThietBiID, TenTB
+			FROM ThietBi
+			ORDER BY TenTB";
+
+		var list = new List<(int, string)>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add((
+				reader.GetInt32(reader.GetOrdinal("ThietBiID")),
+				reader.GetString(reader.GetOrdinal("TenThietBi"))
+			));
+		}
+
+		return list;
+	}
 	private static ThietBi MapToEntity(SqlDataReader r)
 		=> new(
 			id: r.GetInt32(r.GetOrdinal("ThietBiID")),
 			tenTB: r.GetString(r.GetOrdinal("TenTB")),
-			loaiTB: r["LoaiTB"] as string,
-			tinhTrang: r.GetString(r.GetOrdinal("TinhTrang")),
-			ngayNhap: r.GetDateTime(r.GetOrdinal("NgayNhap"))
+			loaiTB: r["LoaiTB"] as string
 		);
 }

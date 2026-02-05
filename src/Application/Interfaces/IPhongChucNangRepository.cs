@@ -9,4 +9,7 @@ public interface IPhongChucNangRepository
 	Task<PhongChucNang?> GetByIdAsync(int id);
 	Task AddAsync(PhongChucNang phong);
 	Task UpdateAsync(PhongChucNang phong);
+
+	Task<string?> GetNameByIdAsync(int id);
+	Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
 }

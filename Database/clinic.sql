@@ -75,7 +75,8 @@ CREATE TABLE PhongChucNang (
         CONSTRAINT CK_Phong_TrangThai
         CHECK (TrangThai IN (N'Hoạt động', N'Hỏng', N'Bảo trì')),
 
-    NgayTao DATETIME NOT NULL DEFAULT GETDATE()
+    NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL
 );
 CREATE TABLE NhanVien (
     NhanVienID   INT IDENTITY(1,1) PRIMARY KEY,
@@ -131,9 +132,7 @@ CREATE TABLE PhongKham (
 CREATE TABLE ThietBi (
     ThietBiID INT IDENTITY(1,1) PRIMARY KEY,
     TenTB NVARCHAR(200) NOT NULL,
-    LoaiTB NVARCHAR(100),
-
-    NgayNhap DATETIME NOT NULL DEFAULT GETDATE()
+    LoaiTB NVARCHAR(100)
 );
 CREATE TABLE PhongChucNang_ThietBi (
     PCN_TB_ID INT IDENTITY(1,1) PRIMARY KEY,
@@ -141,16 +140,12 @@ CREATE TABLE PhongChucNang_ThietBi (
     ThietBiID INT NOT NULL,
 
     SoLuong INT NOT NULL DEFAULT 1,
-
+    NgayNhap DATETIME NOT NULL CONSTRAINT DF_PCN_TB_NgayNhap DEFAULT GETDATE(),
     TinhTrang NVARCHAR(50) NOT NULL
         CONSTRAINT CK_PCN_TB_TinhTrang
         CHECK (TinhTrang IN (N'Hoạt động', N'Hỏng', N'Bảo trì'))
         DEFAULT N'Hoạt động',
-
-    GhiChu NVARCHAR(MAX),
-
-    CONSTRAINT UQ_Phong_TB UNIQUE (PhongChucNangID, ThietBiID),
-
+    
     FOREIGN KEY (PhongChucNangID)
         REFERENCES PhongChucNang(PhongChucNangID)
         ON DELETE CASCADE,
