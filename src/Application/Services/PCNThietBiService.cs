@@ -1,75 +1,116 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
-using Application.ReadModels;
 using Domain.Entities;
-
-namespace Application.Services;
+using Domain.Enums;
+using static Application.Interfaces.IPCNThietBiRepository;
 
 public class PCNThietBiService
 {
-	private readonly IPCNThietBiRepository _repo;
+	private readonly IPCNThietBiRepository _repository;
+	private readonly IThietBiRepository _tbRepository;
 
-	public PCNThietBiService(IPCNThietBiRepository repo)
+	public PCNThietBiService(
+		IPCNThietBiRepository repository,
+		IThietBiRepository tbRepository)
 	{
-		_repo = repo;
+		_repository = repository;
+		_tbRepository = tbRepository;
 	}
 
-
-	public async Task<int> AddAsync(int pcnId, PCNThietBiRequestDTO dto)
+	public async Task<PCNThietBiResponseDTO> CreateAsync(
+		int phongChucNangId,
+		PCNThietBiRequestCreateDTO dto)
 	{
-		var entity = new PCN_TB(
-			pcnId,
-			dto.TB_Id,
-			dto.SoLuong,
-			dto.GhiChu
+		//if (await _repository.ExistsAsync(phongChucNangId, dto.ThietBiID))
+		//	throw new ArgumentException("Thiết bị đã tồn tại trong phòng chức năng");
+
+		var entity = new PCNThietBi(
+			phongChucNangId,
+			dto.ThietBiID,
+			dto.SoLuong
 		);
 
-		return await _repo.AddAsync(entity);
+		var id = await _repository.AddAsync(entity);
+		var saved = await _repository.GetByIdAsync(id)
+			?? throw new Exception("Không thể tạo PCN - Thiết bị");
+
+		return await MapToResponseAsync(saved);
 	}
 
-	public async Task<bool> UpdateAsync(int id, PCNThietBiRequestDTO dto)
+	public async Task<bool> UpdateAsync(int id, PCNThietBiRequestUpdateDTO dto)
 	{
-		// Lấy dữ liệu hiện tại để biết PCN_Id
-		var current = await _repo.GetByIdAsync(id);
-		if (current == null)
+		var entity = await _repository.GetByIdAsync(id);
+		if (entity == null)
 			return false;
 
-		// Rule nghiệp vụ: SoLuong = 0 ⇒ delete
-		if (dto.SoLuong == 0)
+		entity.CapNhatSoLuong(dto.SoLuong);
+
+		if (entity.CanXoa())
 		{
-			await _repo.DeleteAsync(id);
+			await _repository.DeleteAsync(id);
 			return true;
 		}
-
-		var entity = new PCN_TB(
-			id,
-			current.PCN_Id,
-			dto.TB_Id,
-			dto.SoLuong,
-			dto.GhiChu
-		);
-
-		await _repo.UpdateAsync(entity);
+		await _repository.UpdateAsync(entity);
 		return true;
 	}
+	public async Task<bool> ChuyenTrangThaiAsync(int id, TinhTrang TrangThaiMoi)
+	{
+		var entity = await _repository.GetByIdAsync(id);
+		if (entity == null)
+			return false;
+		entity.ChuyenTinhTrang(TrangThaiMoi);
+		await _repository.UpdateAsync(entity);
 
+		return true;
+	}
 	public async Task<bool> DeleteAsync(int id)
 	{
-		var exists = await _repo.GetByIdAsync(id);
-		if (exists == null)
+		var entity = await _repository.GetByIdAsync(id);
+		if (entity == null)
 			return false;
 
-		await _repo.DeleteAsync(id);
+		await _repository.DeleteAsync(id);
 		return true;
 	}
 
-	public async Task<PCNThietBiReadModel?> GetByIdAsync(int id)
+	public async Task<PCNThietBiResponseDTO?> GetByIdAsync(int id)
 	{
-		return await _repo.GetByIdAsync(id);
+		var entity = await _repository.GetByIdAsync(id);
+		return entity == null ? null : await MapToResponseAsync(entity);
 	}
 
-	public async Task<List<PCNThietBiReadModel>> GetByPCNAsync(int pcnId)
+	public async Task<List<PCNThietBiResponseDTO>> GetByPhongChucNangAsync(
+		int phongChucNangId)
 	{
-		return await _repo.GetByPCNAsync(pcnId);
+		var list = await _repository.GetByPCNAsync(phongChucNangId);
+		var tasks = list.Select(MapToResponseAsync);
+		return (await Task.WhenAll(tasks)).ToList();
+	}
+	public Task<TongTheoPhongRaw?> GetTongTheoPhongAsync(int phongId)
+	{
+		return _repository.GetPhongTongAsync(phongId);
+	}
+	public Task<List<ThietBiNhapRaw>> GetThietBiNhapAsync(int phongId)
+	{
+		return _repository.GetChiTietNhapAsync(phongId);
+	}
+
+	private async Task<PCNThietBiResponseDTO> MapToResponseAsync(PCNThietBi entity)
+	{
+		var tenThietBi = await _tbRepository.GetNameByIdAsync(entity.ThietBiID);
+
+		return new PCNThietBiResponseDTO
+		{
+			Id = entity.Id,
+			PhongChucNangID = entity.PhongChucNangID,
+			ThietBi = new NameResponseDTO
+			{
+				Id = entity.ThietBiID,
+				Name = tenThietBi
+			},
+			SoLuong = entity.SoLuong,
+			TinhTrang = entity.TinhTrang.ToDbValue(),
+			NgayNhap = entity.NgayNhap
+		};
 	}
 }

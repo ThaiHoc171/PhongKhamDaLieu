@@ -11,12 +11,15 @@ public class NhanVien
 	public string BangCap { get; private set; }
 	public string KinhNghiem { get; private set; }
 	public string TrangThai { get; private set; }
+	public int PhongChucNangID { get; private set; }
+	public DateTime NgayTao { get; private set; }
+	public DateTime? NgayCapNhat { get; private set; }
 
 	// Navigation / dữ liệu liên kết
 	public ThongTinCaNhan? ThongTinCaNhan { get; private set; }
 	public string? TenChucVu { get; private set; }
 
-	public NhanVien(int thongTinID, int chucVuID, DateTime? ngayVaoLam, string bangCap, string kinhNghiem)
+	public NhanVien(int thongTinID, int chucVuID, int phongChucNangID, DateTime? ngayVaoLam, string bangCap, string kinhNghiem)
 	{
 		if (thongTinID <= 0)
 			throw new ArgumentException("ThongTinID không hợp lệ");
@@ -29,13 +32,14 @@ public class NhanVien
 
 		if (string.IsNullOrWhiteSpace(kinhNghiem))
 			throw new ArgumentException("Kinh nghiệm không hợp lệ");
-
+		if (phongChucNangID <= 0)
+			throw new ArgumentException("Phòng chức năng không hợp lệ");
 		ThongTinID = thongTinID;
 		ChucVuID = chucVuID;
+		PhongChucNangID = phongChucNangID;
 		NgayVaoLam = ngayVaoLam;
 		BangCap = bangCap;
 		KinhNghiem = kinhNghiem;
-		TrangThai = "Đang làm việc";
 	}
 
 
@@ -44,6 +48,35 @@ public class NhanVien
 		int nhanVienID,
 		int thongTinID,
 		int chucVuID,
+		int phongChucNangID,
+		DateTime? ngayVaoLam,
+		string bangCap,
+		string kinhNghiem,
+		string trangThai,
+		DateTime ngayTao,
+		DateTime? ngayCapNhat,
+		string? tenChucVu,
+		ThongTinCaNhan? thongTinCaNhan)
+	{
+		NhanVienID = nhanVienID;
+		ThongTinID = thongTinID;
+		ChucVuID = chucVuID;
+		PhongChucNangID = phongChucNangID;
+		NgayVaoLam = ngayVaoLam;
+		BangCap = bangCap;
+		KinhNghiem = kinhNghiem;
+		TrangThai = trangThai;
+		NgayTao = ngayTao;
+		NgayCapNhat = ngayCapNhat;
+		TenChucVu = tenChucVu;
+		ThongTinCaNhan = thongTinCaNhan;
+	}
+	// CONSTRUCTOR CHO LIST / SEARCH
+	public NhanVien(
+		int nhanVienID,
+		int thongTinID,
+		int chucVuID,
+		int phongChucNangID,
 		DateTime? ngayVaoLam,
 		string bangCap,
 		string kinhNghiem,
@@ -54,6 +87,7 @@ public class NhanVien
 		NhanVienID = nhanVienID;
 		ThongTinID = thongTinID;
 		ChucVuID = chucVuID;
+		PhongChucNangID = phongChucNangID;
 		NgayVaoLam = ngayVaoLam;
 		BangCap = bangCap;
 		KinhNghiem = kinhNghiem;
@@ -64,6 +98,7 @@ public class NhanVien
 
 	public void CapNhatThongTin(
 		int chucVuID,
+		int phongChucNangID,
 		DateTime? ngayVaoLam,
 		string bangCap,
 		string kinhNghiem)
@@ -76,8 +111,10 @@ public class NhanVien
 		
 		if (string.IsNullOrWhiteSpace(kinhNghiem))
 			throw new ArgumentException("Kinh nghiệm không hợp lệ");
-
+		if (phongChucNangID <= 0)
+			throw new ArgumentException("Phòng chức năng không hợp lệ");
 		ChucVuID = chucVuID;
+		PhongChucNangID = phongChucNangID;
 		NgayVaoLam = ngayVaoLam;
 		BangCap = bangCap;
 		KinhNghiem = kinhNghiem;
@@ -85,7 +122,7 @@ public class NhanVien
 
 	public void CapNhatTrangThai(string trangThaiMoi)
 	{
-		if (string.IsNullOrWhiteSpace(trangThaiMoi))
+		if (trangThaiMoi != "Đang làm việc" &&	trangThaiMoi != "Nghỉ việc")
 			throw new ArgumentException("Trạng thái không hợp lệ");
 
 		TrangThai = trangThaiMoi;

@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -66,15 +67,21 @@ public class PhongChucNangController : ControllerBase
 
 	// PUT: api/PhongChucNang/{id}/trangthai
 	[HttpPut("{id}/trangthai")]
-	public async Task<IActionResult> ChuyenTrangThai(int id, [FromBody] string trangThaiMoi)
+	public async Task<IActionResult> ChuyenTrangThai(int id, [FromBody] TinhTrang trangThaiMoi)
 	{
-		if (string.IsNullOrWhiteSpace(trangThaiMoi))
-			return BadRequest(new { message = "Trạng thái mới không hợp lệ." });
+		if (!Enum.IsDefined(typeof(TinhTrang), trangThaiMoi))
+			return BadRequest(new { message = "Trạng thái không hợp lệ." });
 
 		var success = await _service.ChuyenTrangThaiAsync(id, trangThaiMoi);
 		if (!success)
 			return NotFound(new { message = "Phòng chức năng không tồn tại." });
 
 		return Ok(new { message = "Chuyển trạng thái phòng chức năng thành công." });
+	}
+	[HttpGet("combobox")]
+	public async Task<IActionResult> GetIdAndName()
+	{
+		var result = await _service.GetIdAndNameAsync();
+		return Ok(result);
 	}
 }

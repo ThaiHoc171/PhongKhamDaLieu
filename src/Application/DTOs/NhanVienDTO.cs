@@ -1,28 +1,24 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.DTOs;
+﻿namespace Application.DTOs;
 
 public class TaoNhanVienDTO
 {
-	public ThemThongTinCaNhanDTO? ThongTin { get; set; }
+	public ThemThongTinCaNhanDTO ThongTin { get; set; } = default!;
 	public int ChucVuID { get; set; }
+	public int PhongChucNangID { get; set; }
 	public DateTime? NgayVaoLam { get; set; }
-	public string? BangCap { get; set; }
-	public string? KinhNghiem { get; set; }
+	public string BangCap { get; set; } = default!;
+	public string KinhNghiem { get; set; } = default!;
 }
 
 public class CapNhatNhanVienDTO
 {
 	public int ChucVuID { get; set; }
+	public int PhongChucNangID { get; set; }
 	public DateTime? NgayVaoLam { get; set; }
-	public string? BangCap { get; set; }
-	public string? KinhNghiem { get; set; }
+	public string BangCap { get; set; } = default!;
+	public string KinhNghiem { get; set; } = default!;
 }
+
 public class NhanVienResponseDTO
 {
 	public int NhanVienID { get; set; }
@@ -31,4 +27,3 @@ public class NhanVienResponseDTO
 	public string? TenChucVu { get; set; }
 	public string? TrangThai { get; set; }
 }
-
