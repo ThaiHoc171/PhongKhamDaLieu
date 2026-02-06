@@ -1,17 +1,14 @@
-﻿using Domain.Enums;
-
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class PCNThietBi
 {
-	public int Id { get; private set; }
+	public int PCN_TB_ID { get; private set; }
 	public int PhongChucNangID { get; private set; }
 	public int ThietBiID { get; private set; }
-	public int SoLuong { get; private set; }
-	public TinhTrang TinhTrang { get; private set; }
-	public DateTime NgayNhap { get; private set; }
+	public int TongSoLuong { get; private set; }
 
-	public PCNThietBi(int phongChucNangId, int thietBiId, int soLuong)
+	// Tạo mới
+	public PCNThietBi(int phongChucNangId, int thietBiId)
 	{
 		if (phongChucNangId <= 0)
 			throw new ArgumentException("Phòng chức năng không hợp lệ");
@@ -19,59 +16,41 @@ public class PCNThietBi
 		if (thietBiId <= 0)
 			throw new ArgumentException("Thiết bị không hợp lệ");
 
-		if (soLuong <= 0)
-			throw new ArgumentException("Số lượng phải lớn hơn 0");
-
 		PhongChucNangID = phongChucNangId;
 		ThietBiID = thietBiId;
-		SoLuong = soLuong;
-		// domain default
-		TinhTrang = TinhTrang.HoatDong;
-		NgayNhap = DateTime.UtcNow;
+		TongSoLuong = 0; // DB default cũng là 0
 	}
 
-
+	// Map từ DB
 	public PCNThietBi(
-		int id,
+		int pcnTbId,
 		int phongChucNangId,
 		int thietBiId,
-		int soLuong,
-		string tinhTrangDb,
-		DateTime ngayNhap)
+		int tongSoLuong)
 	{
-		if (soLuong < 0)
-			throw new ArgumentException("Số lượng không hợp lệ");
-		if (phongChucNangId <= 0 || thietBiId <= 0)
+		if (pcnTbId <= 0 || phongChucNangId <= 0 || thietBiId <= 0)
 			throw new ArgumentException("Dữ liệu DB không hợp lệ");
 
-		Id = id;
+		if (tongSoLuong < 0)
+			throw new ArgumentException("Tổng số lượng không hợp lệ");
+
+		PCN_TB_ID = pcnTbId;
 		PhongChucNangID = phongChucNangId;
 		ThietBiID = thietBiId;
-		SoLuong = soLuong;
-		TinhTrang = TinhTrangExtensions.FromDb(tinhTrangDb);
-		NgayNhap = ngayNhap;
+		TongSoLuong = tongSoLuong;
 	}
 
-
-	public void CapNhatSoLuong(int soLuong)
+	// Nghiệp vụ
+	public void CapNhatSoLuong(int soLuongMoi)
 	{
-		if (soLuong < 0)
-			throw new ArgumentException("Số lượng không hợp lệ");
+		if (soLuongMoi < 0)
+			throw new ArgumentException("Tổng số lượng không hợp lệ");
 
-		SoLuong = soLuong;
+		TongSoLuong = soLuongMoi;
 	}
 
-	public void ChuyenTinhTrang(TinhTrang tinhTrangMoi)
+	public bool CoTheXoa()
 	{
-		// rule ví dụ: đang hỏng thì không cho hoạt động ngay
-		if (TinhTrang == TinhTrang.Hong && tinhTrangMoi == TinhTrang.HoatDong)
-			throw new InvalidOperationException("Thiết bị hỏng cần bảo trì trước");
-
-		TinhTrang = tinhTrangMoi;
-	}
-
-	public bool CanXoa()
-	{
-		return SoLuong == 0;
+		return TongSoLuong == 0;
 	}
 }
