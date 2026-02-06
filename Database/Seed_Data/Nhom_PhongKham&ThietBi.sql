@@ -49,38 +49,113 @@ VALUES
 
 
 
---- Thiết Bị theo phòng --- 
-INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID, SoLuong) ---Thiếu GhiChu
+-- Phòng khám bệnh (ID = 1)
+INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID)
 VALUES
-(1, 1, 1),
-(1, 2, 1),
-(1, 3, 1);
+(1, 1), -- Dermatoscope
+(1, 2), -- Wood’s lamp
+(1, 3); -- Máy soi da
 
-INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID, SoLuong)
+-- Phòng xét nghiệm (ID = 2)
+INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID)
 VALUES
-(2, 5, 1),
-(2, 6, 1),
-(2, 7, 1),
-(2, 8, 1);
+(2, 5), -- Máy đo đường
+(2, 6), -- Máy CRP
+(2, 7), -- Máy HbA1c
+(2, 8); -- Máy test nhanh
 
-INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID, SoLuong)
+-- Phòng chẩn đoán da liễu (ID = 3)
+INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID)
 VALUES
-(3, 1, 1),
-(3, 2, 1),
-(3, 3, 1),
-(3, 4, 1),
-(3, 17, 1);
+(3, 1),  -- Dermatoscope
+(3, 2),  -- Wood’s lamp
+(3, 3),  -- Máy soi da
+(3, 4),  -- Kính hiển vi soi nấm
+(3, 17); -- Camera phân cực
 
-INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID, SoLuong)
+-- Phòng thủ thuật (ID = 4)
+INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID)
 VALUES
-(4, 11, 1),
-(4, 12, 1),
-(4, 13, 1),
-(4, 14, 1),
-(4, 15, 1);
+(4, 11), -- RF Microneedling
+(4, 12), -- HIFU
+(4, 13), -- Máy đốt điện
+(4, 14), -- Máy đông lạnh nitơ
+(4, 15); -- Lăn kim / Phi kim
 
-INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID, SoLuong)
+-- Phòng laser (ID = 5)
+INSERT INTO PhongChucNang_ThietBi (PhongChucNangID, ThietBiID)
 VALUES
-(5, 9, 1),
-(5, 10, 1),
-(5, 11, 1);
+(5, 9),  -- Laser CO2
+(5, 10), -- Laser YAG
+(5, 11); -- IPL
+
+
+-- Dermatoscope (PCN_TB_ID = 1)
+INSERT INTO ChiTiet_PCNTB (PCN_TB_ID, MaTaiSan, GhiChu)
+VALUES
+(1, N'DERM-001', N'Dermatoscope chính'),
+(1, N'DERM-002', N'Dermatoscope dự phòng');
+
+-- Wood’s lamp (PCN_TB_ID = 2)
+INSERT INTO ChiTiet_PCNTB (PCN_TB_ID, MaTaiSan, GhiChu)
+VALUES
+(2, N'WOOD-001', NULL);
+
+-- Máy soi da (PCN_TB_ID = 3)
+INSERT INTO ChiTiet_PCNTB (PCN_TB_ID, MaTaiSan, GhiChu)
+VALUES
+(3, N'SOI-DA-001', N'Máy soi da phòng khám');
+INSERT INTO ChiTiet_PCNTB (PCN_TB_ID, MaTaiSan, GhiChu)
+VALUES
+(4, N'DUONG-001', N'Máy đo đường chính'),
+(4, N'DUONG-002', N'Máy đo đường dự phòng'),
+
+(5, N'CRP-001', NULL),
+
+(6, N'HBA1C-001', NULL),
+
+(7, N'TEST-001', N'Máy test nhanh tổng hợp'),
+(7, N'TEST-002', N'Máy test nhanh backup');
+INSERT INTO ChiTiet_PCNTB (PCN_TB_ID, MaTaiSan, TinhTrang, GhiChu)
+VALUES
+(8,  N'DERM-CHD-001', N'Hoạt động', NULL),
+(8,  N'DERM-CHD-002', N'Bảo trì', N'Đang gửi bảo dưỡng'),
+
+(9,  N'WOOD-CHD-001', N'Hoạt động', NULL),
+
+(10, N'SOI-DA-CHD-001', N'Hoạt động', NULL),
+
+(11, N'KOH-001', N'Hoạt động', N'Kính hiển vi soi nấm'),
+
+(12, N'CAM-001', N'Hoạt động', N'Camera phân cực');
+INSERT INTO ChiTiet_PCNTB (PCN_TB_ID, MaTaiSan, GhiChu)
+VALUES
+(13, N'RF-001', NULL),
+(13, N'RF-002', NULL),
+
+(14, N'HIFU-001', N'Máy HIFU chính'),
+
+(15, N'DOTDIEN-001', NULL),
+
+(16, N'NITO-001', N'Máy đông lạnh nitơ'),
+
+(17, N'LAN-KIM-001', NULL),
+(17, N'LAN-KIM-002', NULL);
+INSERT INTO ChiTiet_PCNTB (PCN_TB_ID, MaTaiSan, TinhTrang, GhiChu)
+VALUES
+(18, N'CO2-001', N'Hoạt động', N'Laser CO2 chính'),
+(18, N'CO2-002', N'Bảo trì', N'Đang bảo trì định kỳ'),
+
+(19, N'YAG-001', N'Hoạt động', NULL),
+
+(20, N'IPL-001', N'Hoạt động', NULL),
+(20, N'IPL-002', N'Hỏng', N'Chờ sửa chữa');
+
+
+UPDATE p
+SET TongSoLuong = (
+    SELECT COUNT(*)
+    FROM ChiTiet_PCNTB c
+    WHERE c.PCN_TB_ID = p.PCN_TB_ID
+)
+FROM PhongChucNang_ThietBi p;

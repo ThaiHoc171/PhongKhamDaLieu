@@ -139,19 +139,34 @@ CREATE TABLE PhongChucNang_ThietBi (
     PhongChucNangID INT NOT NULL,
     ThietBiID INT NOT NULL,
 
-    SoLuong INT NOT NULL DEFAULT 1,
-    NgayNhap DATETIME NOT NULL CONSTRAINT DF_PCN_TB_NgayNhap DEFAULT GETDATE(),
-    TinhTrang NVARCHAR(50) NOT NULL
-        CONSTRAINT CK_PCN_TB_TinhTrang
-        CHECK (TinhTrang IN (N'Hoạt động', N'Hỏng', N'Bảo trì'))
-        DEFAULT N'Hoạt động',
-    
+    TongSoLuong INT NOT NULL DEFAULT 0
+        CHECK (TongSoLuong >= 0),
+
+    CONSTRAINT UQ_PCN_TB UNIQUE (PhongChucNangID, ThietBiID),
+
     FOREIGN KEY (PhongChucNangID)
         REFERENCES PhongChucNang(PhongChucNangID)
         ON DELETE CASCADE,
 
     FOREIGN KEY (ThietBiID)
         REFERENCES ThietBi(ThietBiID)
+);
+CREATE TABLE ChiTiet_PCNTB (
+    ChiTietID INT IDENTITY(1,1) PRIMARY KEY,
+    PCN_TB_ID INT NOT NULL,
+
+    MaTaiSan NVARCHAR(100) NOT NULL UNIQUE, -- SERIAL / MÃ QL
+    NgayNhap DATETIME NOT NULL DEFAULT GETDATE(),
+
+    TinhTrang NVARCHAR(50) NOT NULL
+        CHECK (TinhTrang IN (N'Hoạt động', N'Hỏng', N'Bảo trì'))
+        DEFAULT N'Hoạt động',
+
+    GhiChu NVARCHAR(MAX),
+
+    FOREIGN KEY (PCN_TB_ID)
+        REFERENCES PhongChucNang_ThietBi(PCN_TB_ID)
+        ON DELETE CASCADE
 );
 --- LỊCH LÀM VIỆC VÀ THỜI GIAN ---
 CREATE TABLE LichLamViecNhanVien (
@@ -271,11 +286,15 @@ CREATE TABLE PhienKham (
 CREATE TABLE PhienKham_ThietBi (
     PhienKham_ThietBiID INT IDENTITY(1,1) PRIMARY KEY,
     PhienKhamID INT NOT NULL,
-    ThietBiID INT NOT NULL,
-    SoLuong INT DEFAULT 1,
+    ChiTietID INT NOT NULL, -- THIẾT BỊ CỤ THỂ
     GhiChu NVARCHAR(MAX),
-    FOREIGN KEY (PhienKhamID) REFERENCES PhienKham(PhienKhamID) ON DELETE CASCADE,
-    FOREIGN KEY (ThietBiID) REFERENCES ThietBi(ThietBiID)
+
+    FOREIGN KEY (PhienKhamID)
+        REFERENCES PhienKham(PhienKhamID)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (ChiTietID)
+        REFERENCES ChiTiet_PCNTB(ChiTietID)
 );
 GO
 CREATE TABLE CanLamSang (

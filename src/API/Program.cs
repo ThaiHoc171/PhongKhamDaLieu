@@ -36,6 +36,10 @@ builder.Services.AddScoped<IPhongChucNangRepository, PhongChucNangRepository>();
 builder.Services.AddScoped<PhongChucNangService>();
 builder.Services.AddScoped<IThietBiRepository, ThietBiRepository>();
 builder.Services.AddScoped<ThietBiService>();
+builder.Services.AddScoped<IPCNThietBiRepository, PCNThietBiRepository>();
+builder.Services.AddScoped<PCNThietBiService>();
+builder.Services.AddScoped<IChiTietPCNThietBiRepository, ChiTietPCNThietBiRepository>();
+builder.Services.AddScoped<ChiTietPCNThietBiService>();
 builder.Services.AddScoped<IKhungGioKhamRepository, KhungGioKhamRepository>();
 builder.Services.AddScoped<KhungGioKhamService>();
 builder.Services.AddScoped<ICanLamSangRepository, CanLamSangRepository>();
@@ -63,8 +67,7 @@ builder.Services.AddScoped<IPhienKhamThietBiRepository, PhienKhamThietBiReposito
 builder.Services.AddScoped<PhienKhamThietBiService>();
 builder.Services.AddScoped<IHoSoBenhAnRepository, HoSoBenhAnRepository>();
 builder.Services.AddScoped<HoSoBenhAnService>();
-builder.Services.AddScoped<IPCNThietBiRepository, PCNThietBiRepository>();
-builder.Services.AddScoped<PCNThietBiService>();
+
 builder.Services.AddScoped<ITaiKhamRepository, TaiKhamRepository>();
 builder.Services.AddScoped<TaiKhamService>();
 
