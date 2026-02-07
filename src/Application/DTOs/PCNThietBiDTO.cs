@@ -4,7 +4,7 @@ public class PCNThietBiResponseDTO
 {
 	public int PCN_TB_ID { get; set; }
 	public int PhongChucNangID { get; set; }
-	public int ThietBiID { get; set; }
+	public NameResponseDTO ThietBi { get; init; } = null!;
 	public int TongSoLuong { get; set; }
 }
 
