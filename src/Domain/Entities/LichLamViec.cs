@@ -1,45 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class LichLamViec
 {
-	public int LichLamViecID { get; set; }
-	public int NhanVienID { get; set; }
-	public DateTime Ngay { get; set; }
-	public int CaLamViec { get; set; }
-	public string? GhiChu { get; set; }
+	public int LichLamViecID { get; private set; }
+	public int NhanVienID { get; private set; }
+	public DateTime Ngay { get; private set; }
+	public int CaLamViec { get; private set; }
+	public string? GhiChu { get; private set; }
 
-	//Constructor Tạo
-	public LichLamViec(int nhanVienID, DateTime ngay, int caLamViec, string? ghiChu, bool IsNgayNghi)
+	// Constructor tạo mới
+	public LichLamViec(int nhanVienID, DateTime ngay, int caLamViec, string? ghiChu)
 	{
-		if (ngay.Date < DateTime.Now.Date)
-		{
+		if (ngay.Date < DateTime.Today)
 			throw new ArgumentException("Ngày làm việc không được là ngày trong quá khứ.");
-		}
-		if (IsNgayNghi)
-		{
-			throw new ArgumentException("Ngày làm việc không được trùng với ngày nghỉ đã được thiết lập.");
-		}
+
 		if (caLamViec < 1 || caLamViec > 2)
-		{
 			throw new ArgumentException("Ca làm việc không hợp lệ.");
-		}
+
 		NhanVienID = nhanVienID;
-		Ngay = ngay;
+		Ngay = ngay.Date;
 		CaLamViec = caLamViec;
 		GhiChu = ghiChu;
 	}
-	// Constructor Map dữ liệu từ DB
-	public LichLamViec(int lichLamViecID, int nhanVienID,  DateTime ngay, int caLamViec, string? ghiChu)
+
+	// Constructor map DB
+	public LichLamViec(
+		int lichLamViecID,
+		int nhanVienID,
+		DateTime ngay,
+		int caLamViec,
+		string? ghiChu)
 	{
 		LichLamViecID = lichLamViecID;
 		NhanVienID = nhanVienID;
-		Ngay = ngay;
+		Ngay = ngay.Date;
 		CaLamViec = caLamViec;
 		GhiChu = ghiChu;
 	}

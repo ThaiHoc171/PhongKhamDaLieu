@@ -7,18 +7,22 @@ namespace Application.Services;
 public class PCNThietBiService
 {
 	private readonly IPCNThietBiRepository _repo;
+	private readonly IThietBiRepository _tbRepository;
 
-	public PCNThietBiService(IPCNThietBiRepository repo)
+	public PCNThietBiService(IPCNThietBiRepository repo, IThietBiRepository tbRepository)
 	{
 		_repo = repo;
+		_tbRepository = tbRepository;
 	}
-
 	public async Task<List<PCNThietBiResponseDTO>> DanhSachAsync()
 	{
 		var list = await _repo.GetAllAsync();
-		return list.Select(Map).ToList();
-	}
 
+		var tasks = list.Select(MapAsync);
+		var result = await Task.WhenAll(tasks);
+
+		return result.ToList();
+	}
 	public async Task ThemAsync(PCNThietBiCreateDTO dto)
 	{
 		var existed = await _repo.GetByPhongAndThietBiAsync(dto.PhongChucNangID, dto.ThietBiID);
@@ -41,13 +45,19 @@ public class PCNThietBiService
 		return true;
 	}
 
-	private static PCNThietBiResponseDTO Map(PCNThietBi e)
+	private async Task<PCNThietBiResponseDTO> MapAsync(PCNThietBi e)
 	{
+		var tenThietBi = await _tbRepository.GetNameByIdAsync(e.ThietBiID);
+
 		return new PCNThietBiResponseDTO
 		{
 			PCN_TB_ID = e.PCN_TB_ID,
 			PhongChucNangID = e.PhongChucNangID,
-			ThietBiID = e.ThietBiID,
+			ThietBi = new NameResponseDTO
+			{
+				Id = e.ThietBiID,
+				Name = tenThietBi
+			},
 			TongSoLuong = e.TongSoLuong
 		};
 	}

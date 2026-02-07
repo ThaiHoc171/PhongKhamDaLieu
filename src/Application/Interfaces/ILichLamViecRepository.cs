@@ -4,10 +4,9 @@ namespace Application.Interfaces;
 
 public interface ILichLamViecRepository
 {
-	Task<bool> IsNgayNghiAsync(DateTime ngay, int nhanVienID);
 	Task <bool> IsExitsAsync(int nhanVienID, DateTime ngay, int caLamViec);
-	Task<bool> IsChucVuExitsAsync(int ChucVuID, DateTime ngay, int caLamViec);
-    Task<int?> GetChucVuIdByLichLamViecIdAsync(int lichLamViecId);
+	Task<int> CountNhanVienTheoChucVuAsync(int chucVuId, DateTime ngay, int caLamViec);
+	Task<int?> GetChucVuIdByLichLamViecIdAsync(int lichLamViecId);
     Task<List<LichLamViec>> GetByNgayAsync(DateTime ngay);
     Task<LichLamViec?> GetByIdAsync(int ID);
 	Task<List<LichLamViec>> GetAllAsync();
