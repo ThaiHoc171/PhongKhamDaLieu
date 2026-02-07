@@ -5,9 +5,11 @@ namespace Application.Interfaces;
 public interface ITaiKhamRepository
 {
     Task<TaiKham?> GetByIdAsync(int taiKhamID);
+    Task<TaiKham?> GetByBenhNhanIdAsync(int benhNhanID);
+    Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID);
     Task<List<TaiKham>> GetAllAsync();
     Task<List<TaiKham>> LocAsync(DateTime ngayDuKien, string trangThai);
-    Task<List<TaiKham>> GetByBenhNhanAsync(int benhNhanID);
+    Task<List<TaiKham>> GetListByBenhNhanAsync(int benhNhanID);
     Task<int> AddAsync(TaiKham taiKham);
     Task UpdateAsync(TaiKham taiKham);
 }

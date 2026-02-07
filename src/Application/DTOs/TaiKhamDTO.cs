@@ -9,15 +9,12 @@ namespace Application.DTOs;
 public class TaoTaiKhamDTO
 {
     public int PhienKhamID { get; set; }
-    public int BenhNhanID { get; set; }
     public DateTime NgayDuKien { get; set; }
     public string? LyDo { get; set; }
 }
 
 public class CapNhatTaiKhamDTO
 {
-    public DateTime NgayDuKien { get; set; }
-    public string? LyDo { get; set; }
     public string? TrangThai { get; set; }
     public int? CaKhamID { get; set; }
 }

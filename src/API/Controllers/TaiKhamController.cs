@@ -37,7 +37,7 @@ public class TaiKhamController : ControllerBase
     [HttpGet("benhnhan/{benhNhanId:int}")]
     public async Task<IActionResult> LayTheoBenhNhanId(int benhNhanId)
     {
-        var result = await _service.GetByBenhNhanAsync(benhNhanId);
+        var result = await _service.GetListByBenhNhanAsync(benhNhanId);
         if (result == null)
             return NotFound(new { message = "Bệnh không tồn tại hoặc chưa có lịch tái khám." });
 
@@ -68,8 +68,6 @@ public class TaiKhamController : ControllerBase
     {
         var result = await _service.CapNhatAsync(
             taiKhamID: id,
-            ngayDuKien: dto.NgayDuKien,
-            lyDo: dto.LyDo,
             trangThai: dto.TrangThai,
             caKhamID: dto.CaKhamID
         );
