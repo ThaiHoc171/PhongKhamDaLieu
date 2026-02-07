@@ -2,8 +2,6 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 
 
 namespace Application.Services;
@@ -11,10 +9,12 @@ namespace Application.Services;
 public class LichLamViecService
 {
 	private readonly ILichLamViecRepository _repo;
+	private readonly INgayNghiNhanVienRepository _nghiRepo;
 
-	public LichLamViecService(ILichLamViecRepository repo)
+	public LichLamViecService(ILichLamViecRepository repo, INgayNghiNhanVienRepository nghiRepo)
 	{
 		_repo = repo;
+		_nghiRepo = nghiRepo;
 	}
 	public async Task ThemLichLamViecAsync(LichLamViecBatchDTO dto)
 	{
@@ -24,24 +24,54 @@ public class LichLamViecService
 		{
 			foreach (var lich in dto.LichLamViecs)
 			{
-				if (lich.Ngay < DateTime.Today)
+				// 1️⃣ Check ngày hợp lệ
+				if (lich.Ngay.Date < DateTime.Today)
 					throw new Exception("Ngày làm việc không hợp lệ.");
 
 				if (lich.Ngay.Month != dto.Thang || lich.Ngay.Year != dto.Nam)
 					throw new Exception("Ngày làm việc không thuộc tháng.");
 
-				if (await _repo.IsExitsAsync(lich.NhanVienID, lich.Ngay, lich.CaLamViec))
-					throw new Exception("Trùng lịch");
-				if (await _repo.IsChucVuExitsAsync(lich.ChucVuID, lich.Ngay, lich.CaLamViec))
-					throw new Exception("Trùng chức vụ");
-				bool isNgayNghi = await _repo.IsNgayNghiAsync(lich.Ngay, lich.NhanVienID);
+				// 2️⃣ Trùng lịch cá nhân
+				if (await _repo.IsExitsAsync(
+					lich.NhanVienID,
+					lich.Ngay,
+					lich.CaLamViec))
+				{
+					throw new Exception("Nhân viên đã có lịch trong ca này.");
+				}
 
+				// 3️⃣ Check ngày nghỉ ❗ ĐÚNG MODULE
+				if (await _nghiRepo.IsNgayNghiAsync(
+					lich.NhanVienID,
+					lich.Ngay))
+				{
+					throw new Exception("Nhân viên đang nghỉ ngày này.");
+				}
+
+				// 4️⃣ Check rule chức vụ
+				var soLuongCungChucVu =
+					await _repo.CountNhanVienTheoChucVuAsync(
+						lich.ChucVuID,
+						lich.Ngay,
+						lich.CaLamViec);
+
+				if (lich.ChucVuID == 3) // hardcode
+				{
+					if (soLuongCungChucVu >= 2)
+						throw new Exception("Ca làm việc đã đủ 2 y tá.");
+				}
+				else
+				{
+					if (soLuongCungChucVu >= 1)
+						throw new Exception("Ca làm việc đã có nhân viên cùng chức vụ.");
+				}
+
+				// 5️⃣ Tạo entity THUẦN
 				var entity = new LichLamViec(
 					lich.NhanVienID,
 					lich.Ngay,
 					lich.CaLamViec,
-					lich.GhiChu,
-					isNgayNghi
+					lich.GhiChu
 				);
 
 				await _repo.AddAsync(entity);
