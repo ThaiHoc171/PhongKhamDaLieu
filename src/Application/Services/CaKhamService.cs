@@ -10,17 +10,20 @@ public class CaKhamService
 	private readonly ILichLamViecRepository _lichLamViecRepo;
 	private readonly IKhungGioKhamRepository _khungGioKhamRepo;
 	private readonly INhanVienRepository _nhanVienRepo;
+	private readonly ITaiKhamRepository _taiKhamRepo;
 
 	public CaKhamService(
 		ICaKhamRepository caKhamRepo,
 		ILichLamViecRepository lichLamViecRepo, 
 		IKhungGioKhamRepository khungGioKhamRepo,
-		INhanVienRepository nhanVienRepo)
+		INhanVienRepository nhanVienRepo,
+        ITaiKhamRepository taiKhamRepo)
 	{
 		_caKhamRepo = caKhamRepo;
 		_lichLamViecRepo = lichLamViecRepo;
         _khungGioKhamRepo = khungGioKhamRepo;
         _nhanVienRepo = nhanVienRepo;
+        _taiKhamRepo = taiKhamRepo;
     }
 	public async Task<int> TaoCaKhamAsync(TaoCaKhamDTO dto)
 	{
@@ -86,16 +89,33 @@ public class CaKhamService
 
 		return tongCaDaTao;
 	}
-	public async Task<bool> DangKyKhamAsync(int caKhamID, int benhNhanID, string lyDoKham, DateTime ngayDat, string? ghiChu)
-	{
-		var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
-		if (caKham == null) return false;
+    public async Task<bool> DangKyKhamAsync(
+    int caKhamID,
+    int benhNhanID,
+    string lyDoKham,
+    DateTime ngayDat,
+    string? ghiChu)
+    {
+        var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
+        if (caKham == null) return false;
 
-		caKham.DangKyKham(benhNhanID, lyDoKham, ngayDat, ghiChu);
-		await _caKhamRepo.UpdateAsync(caKham);
-		return true;
-	}
-	public async Task<bool> UpdateTrangThaiAsync(int caKhamID, string trangThai)
+        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanID);
+
+        if (caKham.LoaiCaKham == "Khám"
+            && taiKham != null
+            && taiKham.TrangThai == "Chờ xử lý")
+        {
+            taiKham.CapNhat("Đang xử lý", caKhamID);
+            await _taiKhamRepo.UpdateAsync(taiKham);
+        }
+
+        caKham.DangKyKham(benhNhanID, lyDoKham, ngayDat, ghiChu);
+        await _caKhamRepo.UpdateAsync(caKham);
+
+        return true;
+    }
+
+    public async Task<bool> UpdateTrangThaiAsync(int caKhamID, string trangThai)
 	{
 		var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
 		if (caKham == null) return false;

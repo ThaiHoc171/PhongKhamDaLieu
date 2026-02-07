@@ -7,36 +7,40 @@ namespace Application.Services;
 public class TaiKhamService
 {
     private readonly ITaiKhamRepository _taiKhamRepo;
+    private readonly IPhienKhamRepository _phienKhamRepo;
 
-    public TaiKhamService(ITaiKhamRepository taiKhamRepo)
+    public TaiKhamService(ITaiKhamRepository taiKhamRepo, IPhienKhamRepository phienKhamRepo)
     {
         _taiKhamRepo = taiKhamRepo;
+        _phienKhamRepo = phienKhamRepo;
     }
 
     public async Task TaoTaiKhamAsync(TaoTaiKhamDTO dto)
     {
+        int? id = await _phienKhamRepo.GetBenhNhanIdByPhienKhamIdAsync(dto.PhienKhamID);
+        int BenhNhanID = id.Value;
         var tk = new TaiKham(
             dto.PhienKhamID,
-            dto.BenhNhanID,
+            BenhNhanID,
             dto.NgayDuKien,
             dto.LyDo
         );
 
         await _taiKhamRepo.AddAsync(tk);
     }
-    public async Task<bool> CapNhatAsync(int taiKhamID, DateTime ngayDuKien, string? lyDo, string? trangThai, int? caKhamID)
+    public async Task<bool> CapNhatAsync(int taiKhamID, string? trangThai, int? caKhamID)
     {
-        var caKham = await _taiKhamRepo.GetByIdAsync(taiKhamID);
-        if (caKham == null) return false;
+        var taiKham = await _taiKhamRepo.GetByIdAsync(taiKhamID);
+        if (taiKham == null) return false;
 
-        caKham.CapNhat(ngayDuKien, lyDo, trangThai, caKhamID);
-        await _taiKhamRepo.UpdateAsync(caKham);
+        taiKham.CapNhat(trangThai, caKhamID);
+        await _taiKhamRepo.UpdateAsync(taiKham);
         return true;
     }
 
-    public async Task<List<TaiKham>> GetByBenhNhanAsync(int benhNhanID)
+    public async Task<List<TaiKham>> GetListByBenhNhanAsync(int benhNhanID)
     {
-        return await _taiKhamRepo.GetByBenhNhanAsync(benhNhanID);
+        return await _taiKhamRepo.GetListByBenhNhanAsync(benhNhanID);
     }
     public async Task<List<TaiKham>> LocAsync(DateTime ngayDuKien, string trangThai)
     {
@@ -49,5 +53,13 @@ public class TaiKhamService
     public async Task<TaiKham?> GetByIdAsync(int taiKhamID)
     {
         return await _taiKhamRepo.GetByIdAsync(taiKhamID);
+    }
+    public async Task<TaiKham?> GetByBenhNhanID(int benhNhanID)
+    {
+        return await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanID);
+    }
+    public async Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID)
+    {
+        return await _taiKhamRepo.GetIdByBenhNhanIdAsync(benhNhanID);
     }
 }

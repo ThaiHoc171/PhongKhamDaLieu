@@ -43,7 +43,24 @@ public class PhienKhamRepository : IPhienKhamRepository
 		}
 		return null;
 	}
-	public async Task<int> AddAsync(PhienKham phienKham)
+    public async Task<int?> GetBenhNhanIdByPhienKhamIdAsync(int phienKhamID)
+    {
+        const string sql = @"
+		SELECT BenhNhanID
+		FROM PhienKham
+		WHERE PhienKhamID = @phienKhamID
+	";
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@phienKhamID", phienKhamID);
+
+        await conn.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+
+        return result == null ? null : (int)result;
+    }
+    public async Task<int> AddAsync(PhienKham phienKham)
 	{
 		const string sql = @" INSERT INTO PhienKham (CaKhamID, BenhNhanID, NhanVienID, PhongChucNangID, TrieuChung, GhiChu, HinhAnhJSON, TrangThai)
 							  OUTPUT INSERTED.PhienKhamID
