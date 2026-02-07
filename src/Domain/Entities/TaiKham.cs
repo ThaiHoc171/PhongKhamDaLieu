@@ -37,12 +37,8 @@ public class TaiKham
         NgayTao = ngayTao;
     }
 
-    public void CapNhat(DateTime ngayDuKien, string? lyDo, string? trangThai, int? caKhamID)
+    public void CapNhat(string? trangThai, int? caKhamID)
     {
-        if (ngayDuKien.Date <= DateTime.Now.Date)
-            throw new ArgumentException("Ngày dự kiến tái khám không hợp lệ");
-        NgayDuKien = ngayDuKien;
-        LyDo = lyDo;
         TrangThai = trangThai;
         CaKhamID = caKhamID;
     }

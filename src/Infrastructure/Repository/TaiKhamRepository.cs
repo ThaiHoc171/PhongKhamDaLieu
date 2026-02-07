@@ -27,7 +27,32 @@ public class TaiKhamRepository : ITaiKhamRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         return await reader.ReadAsync() ? MapToEntity(reader) : null;
     }
-
+    public async Task<TaiKham?> GetByBenhNhanIdAsync(int benhNhanID)
+    {
+        const string sql = @"SELECT TOP 1 TaiKhamID, PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai, CaKhamID, NgayTao
+                                FROM TaiKham
+                                WHERE BenhNhanID = @benhNhanID
+                                ORDER BY NgayDuKien DESC;";
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@benhNhanID", benhNhanID);
+        await conn.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+        return await reader.ReadAsync() ? MapToEntity(reader) : null;
+    }
+    public async Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID)
+    {
+        const string sql = @"SELECT TaiKhamID
+                                FROM TaiKham
+                                WHERE BenhNhanID = @benhNhanID
+                                ORDER BY NgayDuKien DESC;";
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@benhNhanID", benhNhanID);
+        await conn.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+        return result == null ? null : (int)result;
+    }
     public async Task<List<TaiKham>> GetAllAsync()
     {
         const string sql = @"SELECT TaiKhamID, PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai, CaKhamID, NgayTao 
@@ -43,7 +68,6 @@ public class TaiKhamRepository : ITaiKhamRepository
         }
         return list;
     }
-
     public async Task<List<TaiKham>> LocAsync(DateTime ngayDuKien, string trangThai)
     {
         const string sql = @"SELECT TaiKhamID, PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai, CaKhamID, NgayTao 
@@ -61,7 +85,7 @@ public class TaiKhamRepository : ITaiKhamRepository
         }
         return list;
     }
-    public async Task<List<TaiKham>> GetByBenhNhanAsync(int benhNhanID)
+    public async Task<List<TaiKham>> GetListByBenhNhanAsync(int benhNhanID)
     {
         const string sql = @"SELECT TaiKhamID, PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai, CaKhamID, NgayTao 
                              FROM TaiKham WHERE BenhNhanID = @benhNhanID";
@@ -98,15 +122,18 @@ public class TaiKhamRepository : ITaiKhamRepository
     public async Task UpdateAsync(TaiKham taiKham)
     {
         const string sql = @"
-			UPDATE TaiKham 
-			SET NgayDuKien = @NgayDuKien, LyDo = @LyDo, TrangThai = @TrangThai, CaKhamID = @CaKhamID
-            WHERE TaiKhamID = @Id";
+        UPDATE TaiKham 
+        SET TrangThai = @TrangThai,
+            CaKhamID = @CaKhamID
+        WHERE TaiKhamID = @Id";
+
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@NgayDuKien", taiKham.NgayDuKien);
-        cmd.Parameters.AddWithValue("@LyDo", taiKham.LyDo ?? "");
+
         cmd.Parameters.AddWithValue("@TrangThai", taiKham.TrangThai ?? "");
-        cmd.Parameters.AddWithValue("@CaKhamID", taiKham.CaKhamID );
+        cmd.Parameters.AddWithValue("@CaKhamID", (object?)taiKham.CaKhamID ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@Id", taiKham.TaiKhamID); 
+
         await conn.OpenAsync();
         await cmd.ExecuteNonQueryAsync();
     }

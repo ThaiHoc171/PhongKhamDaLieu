@@ -9,11 +9,14 @@ namespace Presentation.Controllers;
 public class CaKhamController : ControllerBase
 {
 	private readonly CaKhamService _caKhamService;
+	private readonly TaiKhamService _taiKhamService;
 
-	public CaKhamController(CaKhamService caKhamService)
+	public CaKhamController(CaKhamService caKhamService, TaiKhamService taiKhamService)
 	{
 		_caKhamService = caKhamService;
-	}
+        _taiKhamService = taiKhamService;
+
+    }
 
 	// POST: api/CaKham
 	[HttpPost]
@@ -51,6 +54,13 @@ public class CaKhamController : ControllerBase
 			ngayDat: dto.NgayDat,
             ghiChu: dto.GhiChu
 		);
+
+		int? tk = await _taiKhamService.GetIdByBenhNhanIdAsync(dto.BenhNhanID);
+		int taiKhamId = tk.Value;
+		var result2 = await _taiKhamService.CapNhatAsync(
+			taiKhamID: taiKhamId,
+			trangThai: "Đang xử lý",
+			caKhamID: id);
 
 		if (!result)
 			return NotFound(new { Message = "Ca khám không tồn tại" });
