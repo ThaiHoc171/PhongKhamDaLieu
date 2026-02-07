@@ -155,37 +155,23 @@ public class LichLamViecRepository : ILichLamViecRepository
 		var result = await cmd.ExecuteScalarAsync();
 		return result != null;
 	}
-	public async Task<bool> IsChucVuExitsAsync(int ChucVuID, DateTime ngay, int caLamViec)
+	public async Task<int> CountNhanVienTheoChucVuAsync(int chucVuId,DateTime ngay,	int caLamViec)
 	{
 		const string sql = @"
-			SELECT COUNT(*) 
-			FROM LichLamViecNhanVien llv
-			JOIN NhanVien nv ON llv.NhanVienID = nv.NhanVienID
-			WHERE nv.ChucVuID = @ChucVuID
-			AND CONVERT(date, llv.Ngay) = @Ngay
-			AND llv.CaLamViec = @CaLamViec
-			";
-		await using var cmd = new SqlCommand( sql, _conn!, _tran);
-		cmd.Parameters.AddWithValue("@ChucVuID", ChucVuID);
-		cmd.Parameters.AddWithValue("@Ngay", ngay.Date);
-		cmd.Parameters.AddWithValue("@CaLamViec", caLamViec);
-		var result = (int) (await cmd.ExecuteScalarAsync() ?? 0);
-		return result > 0;
-	}
-	public async Task<bool> IsNgayNghiAsync(DateTime ngay, int nhanVienID)
-	{
-		const string sql = @"
-		SELECT 1 
-		FROM NgayNghiNhanVien
-		WHERE Ngay = @Ngay
-		  AND NhanVienID = @NhanVienID";
+		SELECT COUNT(*)
+		FROM LichLamViecNhanVien llv
+		JOIN NhanVien nv ON llv.NhanVienID = nv.NhanVienID
+		WHERE nv.ChucVuID = @ChucVuID
+		  AND llv.Ngay = @Ngay
+		  AND llv.CaLamViec = @CaLamViec
+	";
 
 		await using var cmd = new SqlCommand(sql, _conn!, _tran);
+		cmd.Parameters.AddWithValue("@ChucVuID", chucVuId);
 		cmd.Parameters.AddWithValue("@Ngay", ngay.Date);
-		cmd.Parameters.AddWithValue("@NhanVienID", nhanVienID);
+		cmd.Parameters.AddWithValue("@CaLamViec", caLamViec);
 
-		var result = await cmd.ExecuteScalarAsync();
-		return result != null;
+		return (int)(await cmd.ExecuteScalarAsync() ?? 0);
 	}
 
 	public async Task BeginTransactionAsync()
