@@ -16,16 +16,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-	c.SwaggerDoc("v1", new OpenApiInfo
-	{
-		Title = "Clinic Management API",
-		Version = "v1"
-	});
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Clinic Management API",
+        Version = "v1"
+    });
 });
 builder.Services.AddScoped<ITaiKhoanRepository, TaiKhoanRepository>();
 builder.Services.AddScoped<TaiKhoanService>();
 builder.Services.AddScoped<IChucVuRepository, ChucVuRepository>();
-builder.Services.AddScoped<ChucVuService>(); 
+builder.Services.AddScoped<ChucVuService>();
 builder.Services.AddScoped<IThongTinCaNhanRepository, ThongTinCaNhanRepository>();
 builder.Services.AddScoped<ThongTinCaNhanService>();
 builder.Services.AddScoped<INhanVienRepository, NhanVienRepository>();
@@ -79,10 +79,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-	app.UseSwaggerUI(c =>
-	{
-		c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clinic API v1");
-	});
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clinic API v1");
+    });
 }
 
 app.UseHttpsRedirection();

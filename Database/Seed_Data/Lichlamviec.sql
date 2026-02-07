@@ -140,6 +140,17 @@ INSERT INTO LichLamViecNhanVien (NhanVienID, Ngay, CaLamViec, GhiChu) VALUES
 (8,'2026-01-23',2,N'Ca chiều'),
 (9,'2026-01-23',1,N'Ca sáng');
 
+INSERT INTO LichLamViecNhanVien (NhanVienID, Ngay, CaLamViec, GhiChu) VALUES
+(1,'2026-02-10',1,N'Ca sáng'),
+(2,'2026-02-10',2,N'Ca chiều'),
+(3,'2026-02-10',1,N'Ca sáng'),
+(4,'2026-02-10',2,N'Ca chiều'),
+(5,'2026-02-10',1,N'Ca sáng'),
+(6,'2026-02-10',2,N'Ca chiều'),
+(7,'2026-02-10',1,N'Ca sáng'),
+(8,'2026-02-10',2,N'Ca chiều'),
+(9,'2026-02-10',1,N'Ca sáng');
+
 -- ===============================
 -- CA KHÁM ĐẦY ĐỦ HƠN
 -- ===============================
