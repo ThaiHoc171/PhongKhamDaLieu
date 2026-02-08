@@ -55,14 +55,17 @@ public class CaKhamController : ControllerBase
             ghiChu: dto.GhiChu
 		);
 
-		int? tk = await _taiKhamService.GetIdByBenhNhanIdAsync(dto.BenhNhanID);
-		int taiKhamId = tk.Value;
-		var result2 = await _taiKhamService.CapNhatAsync(
-			taiKhamID: taiKhamId,
-			trangThai: "Đang xử lý",
-			caKhamID: id);
+        var tk = await _taiKhamService.GetIdByBenhNhanIdAsync(dto.BenhNhanID);
+        if (tk.HasValue)
+        {
+            await _taiKhamService.CapNhatAsync(
+                taiKhamID: tk.Value,
+                trangThai: "Đang xử lý",
+                caKhamID: id
+            );
+        }
 
-		if (!result)
+        if (!result)
 			return NotFound(new { Message = "Ca khám không tồn tại" });
 
 		return Ok(new { Message = "Đăng ký ca khám thành công" });
