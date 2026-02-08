@@ -29,7 +29,7 @@ public class TaiKhamController : ControllerBase
     {
         var result = await _service.GetByIdAsync(id);
         if (result == null)
-            return NotFound(new { message = "Phòng chức năng không tồn tại." });
+            return NotFound(new { message = "Lịch tái khám không tồn tại." });
 
         return Ok(result);
     }
@@ -39,7 +39,7 @@ public class TaiKhamController : ControllerBase
     {
         var result = await _service.GetListByBenhNhanAsync(benhNhanId);
         if (result == null)
-            return NotFound(new { message = "Bệnh không tồn tại hoặc chưa có lịch tái khám." });
+            return NotFound(new { message = "Bệnh nhân không tồn tại hoặc chưa có lịch tái khám." });
 
         return Ok(result);
     }
