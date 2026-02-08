@@ -18,7 +18,19 @@ public class TaiKhamService
     public async Task TaoTaiKhamAsync(TaoTaiKhamDTO dto)
     {
         int? id = await _phienKhamRepo.GetBenhNhanIdByPhienKhamIdAsync(dto.PhienKhamID);
-        int BenhNhanID = id.Value;
+        
+        if (id == null)
+            throw new Exception("Phiên khám không tồn tại, không thể tạo");
+        var tt = await _taiKhamRepo.GetByBenhNhanIdAsync(id.Value);
+        if (tt != null && tt.TrangThai == "Chờ xử lý")
+            throw new Exception("Bệnh nhân còn lịch tái khám chưa xử lý xong, không thể tạo thêm.");
+        var daCoTaiKham = await _taiKhamRepo
+            .ExistsByPhienKhamAsync(dto.PhienKhamID);
+        if (daCoTaiKham)
+            throw new Exception("Phiên khám này đã được tạo tái khám");
+        if (dto.NgayDuKien.Date < DateTime.Today)
+            throw new Exception("Ngày tái khám không hợp lệ, không thể tạo");
+        int BenhNhanID = id.Value;  
         var tk = new TaiKham(
             dto.PhienKhamID,
             BenhNhanID,
@@ -32,7 +44,12 @@ public class TaiKhamService
     {
         var taiKham = await _taiKhamRepo.GetByIdAsync(taiKhamID);
         if (taiKham == null) return false;
-
+        if (taiKham.TrangThai == "Hoàn thành")
+            throw new Exception("Tái khám đã hoàn thành, không thể chỉnh sửa.");
+        if (taiKham.CaKhamID != null && caKhamID != taiKham.CaKhamID)
+            throw new Exception("Tái khám đã được gán ca khám, không thể chỉnh sửa.");
+        if (taiKham.CaKhamID != null && caKhamID == null)
+            throw new Exception("Không thể hủy gán ca khám");
         taiKham.CapNhat(trangThai, caKhamID);
         await _taiKhamRepo.UpdateAsync(taiKham);
         return true;

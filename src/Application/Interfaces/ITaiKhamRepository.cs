@@ -10,6 +10,7 @@ public interface ITaiKhamRepository
     Task<List<TaiKham>> GetAllAsync();
     Task<List<TaiKham>> LocAsync(DateTime ngayDuKien, string trangThai);
     Task<List<TaiKham>> GetListByBenhNhanAsync(int benhNhanID);
+    Task<bool> ExistsByPhienKhamAsync(int phienKhamID);
     Task<int> AddAsync(TaiKham taiKham);
     Task UpdateAsync(TaiKham taiKham);
 }
