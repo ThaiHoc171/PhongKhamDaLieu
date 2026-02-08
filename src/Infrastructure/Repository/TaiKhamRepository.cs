@@ -101,7 +101,22 @@ public class TaiKhamRepository : ITaiKhamRepository
         }
         return list;
     }
+    public async Task<bool> ExistsByPhienKhamAsync(int phienKhamID)
+    {
+        const string sql = @"
+        SELECT 1
+        FROM TaiKham
+        WHERE PhienKhamID = @phienKhamID";
 
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@phienKhamID", phienKhamID);
+
+        await conn.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+
+        return result != null;
+    }
     public async Task<int> AddAsync(TaiKham taiKham)
     {
         const string sql = @"

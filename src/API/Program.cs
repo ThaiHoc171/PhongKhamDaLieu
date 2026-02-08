@@ -71,7 +71,10 @@ builder.Services.AddScoped<INgayNghiNhanVienRepository, NgayNghiNhanVienReposito
 builder.Services.AddScoped<NgayNghiNhanVienService>();
 builder.Services.AddScoped<ITaiKhamRepository, TaiKhamRepository>();
 builder.Services.AddScoped<TaiKhamService>();
-
+builder.Services.AddScoped<ILieuTrinhDieuTriRepository, LieuTrinhDieuTriRepository>();
+builder.Services.AddScoped<LieuTrinhDieuTriService>();
+builder.Services.AddScoped<ILieuTrinh_BuoiDieuTriRepository, LieuTrinh_BuoiDieuTriRepository>();
+builder.Services.AddScoped<LieuTrinh_BuoiDieuTriService>();
 
 var app = builder.Build();
 
