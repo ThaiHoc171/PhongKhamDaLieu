@@ -2,6 +2,7 @@
 using Microsoft.Data.SqlClient;
 using Domain.Entities;
 using Application.Interfaces;
+using System.Data;
 
 namespace Infrastructure.Repository;
 
@@ -99,16 +100,27 @@ public class LichLamViecRepository : ILichLamViecRepository
         await conn.OpenAsync();
         return (int?)await cmd.ExecuteScalarAsync();
     }
-	public async Task<List<LichLamViec>> GetByNgayAsync(DateTime ngay)
-	{
-		const string sql = @"SELECT LichLamViecID, NhanVienID, Ngay, CaLamViec, GhiChu
-					FROM LichLamViecNhanVien
-					WHERE Ngay = @ngay";
+    public async Task<List<LichLamViec>> GetByKhoangNgayAsync(DateTime tuNgay, DateTime denNgay)
+    {
+        const string sql = @"
+        SELECT LichLamViecID, NhanVienID, Ngay, CaLamViec, GhiChu
+        FROM LichLamViecNhanVien
+        WHERE Ngay >= @tuNgay AND Ngay < @denNgay";
+
         var list = new List<LichLamViec>();
+
+        // Chuẩn hóa ngày
+        tuNgay = tuNgay.Date;
+        denNgay = denNgay.Date.AddDays(1);
+
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@ngay", ngay);
+
+        cmd.Parameters.Add("@tuNgay", SqlDbType.DateTime).Value = tuNgay;
+        cmd.Parameters.Add("@denNgay", SqlDbType.DateTime).Value = denNgay;
+
         await conn.OpenAsync();
+
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
@@ -120,8 +132,10 @@ public class LichLamViecRepository : ILichLamViecRepository
                 ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
             ));
         }
+
         return list;
     }
+
     public async Task AddAsync(LichLamViec entity)
 	{
 		const string sql = @"

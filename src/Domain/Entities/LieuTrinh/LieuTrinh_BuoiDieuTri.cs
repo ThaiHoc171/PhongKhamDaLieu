@@ -14,17 +14,28 @@ public class LieuTrinh_BuoiDieuTri
     public string? HinhAnhJSON { get; private set; }
 
     // Tạo mới
-    public LieuTrinh_BuoiDieuTri(int lieuTrinhID, int caKhamID, int soBuoi, DateTime? ngayDuKien, DateTime? ngayThucHien)
+    public LieuTrinh_BuoiDieuTri(int lieuTrinhID, int caKhamID, int soBuoi, DateTime? ngayDuKien, DateTime? ngayThucHien, int? nhanVienID)
     {
         if (lieuTrinhID <= 0) throw new ArgumentException("LieuTrinhID không hợp lệ");
         if (caKhamID <= 0) throw new ArgumentException("CaKhamID không hợp lệ");
         if (soBuoi <= 0) throw new ArgumentException("Số buổi không hợp lệ");
+
+
+        var ngayThuc = ngayThucHien
+        ?? throw new Exception("Chưa có ngày thực hiện");
+
+        var ngayDuKienThuc = ngayDuKien
+            ?? throw new Exception("Chưa có ngày dự kiến");
+
+        if (ngayThuc < ngayDuKienThuc.AddDays(7))
+            throw new Exception("Khoảng cách giữa các buổi điều trị phải tối thiểu 7 ngày");
 
         LieuTrinhID = lieuTrinhID;
         CaKhamID = caKhamID;
         SoBuoi = soBuoi;
         NgayDuKien = ngayDuKien;
         NgayThucHien = ngayThucHien;
+        NhanVienID = nhanVienID;
         TrangThai = "Chờ xử lý";
     }
 
@@ -58,5 +69,14 @@ public class LieuTrinh_BuoiDieuTri
         NhanVienID = nhanVienID;
         NgayThucHien = ngayThucHien;
         GhiChu = ghiChu;
+    }
+    public void CapNhatNgayThucHien(DateTime ngayThucHien)
+    {
+        if (ngayThucHien < NgayDuKien)
+            throw new Exception(
+                $"Không thể thực hiện điều trị trước ngày dự kiến ({NgayDuKien:dd/MM/yyyy})"
+            );
+
+        NgayThucHien = ngayThucHien;
     }
 }
