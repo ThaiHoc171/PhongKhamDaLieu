@@ -36,64 +36,72 @@ public class CaKhamService
 		if (dto.NgayKham.Date < DateTime.Today)
 			throw new Exception("Ngày khám không hợp lệ");
 
-		var danhSachLich = await _lichLamViecRepo.GetByNgayAsync(dto.NgayKham);
+		var danhSachLich = await _lichLamViecRepo.GetByKhoangNgayAsync(dto.NgayKham,dto.NgayKetThuc);
 
 		if (!danhSachLich.Any())
 			throw new Exception("Không có lịch làm việc trong ngày này");
 
 		int tongCaDaTao = 0;
 
-		foreach (var lich in danhSachLich)
-		{
-			var chucVuId = await _lichLamViecRepo
-				.GetChucVuIdByLichLamViecIdAsync(lich.LichLamViecID);
+        foreach (var lich in danhSachLich)
+        {
+            var ngayHienTai = lich.Ngay.Date;
+
+            var chucVuId = await _lichLamViecRepo
+                .GetChucVuIdByLichLamViecIdAsync(lich.LichLamViecID);
 
             if (chucVuId != 1 && chucVuId != 2) continue;
-            var LoaiCaKham = "";
-			int? ID = await _nhanVienRepo.GetPhongChucNangIdByNhanVienIdAsync(lich.NhanVienID);
-			if (ID == null)
-				throw new Exception("Nhân viên không tồn tại!");
-			int PhongChucNangID = ID.Value;
 
-			if (PhongChucNangID == 1)
-                LoaiCaKham = "Khám";
-			else if (PhongChucNangID == 2)
-                LoaiCaKham = "Điều trị";
-			else
-				continue;
-			int MaxCa = LoaiCaKham == "Điều trị" ? 1 : 5;
-            var khungGioIds = await _khungGioKhamRepo.GetKhungGioIdsByCaLamViecAsync(lich.CaLamViec);
+            int? ID = await _nhanVienRepo
+                .GetPhongChucNangIdByNhanVienIdAsync(lich.NhanVienID);
+
+            if (ID == null)
+                throw new Exception("Nhân viên không tồn tại!");
+
+            int phongChucNangID = ID.Value;
+
+            string loaiCaKham =
+                phongChucNangID == 1 ? "Khám" :
+                phongChucNangID == 2 ? "Điều trị" : null;
+
+            if (loaiCaKham == null) continue;
+
+            int maxCa = loaiCaKham == "Điều trị" ? 1 : 5;
+
+            var khungGioIds =
+                await _khungGioKhamRepo.GetKhungGioIdsByCaLamViecAsync(lich.CaLamViec);
 
             foreach (var khungGioId in khungGioIds)
             {
-				if (await _caKhamRepo.ExistsAsync(dto.NgayKham, khungGioId, LoaiCaKham))
-					continue;
+                if (await _caKhamRepo.ExistsAsync(ngayHienTai, khungGioId, loaiCaKham))
+                    continue;
 
-				var soCaHienTai = await _caKhamRepo
-					.CountByNgayAndKhungGioAsync(dto.NgayKham, khungGioId, LoaiCaKham);
+                var soCaHienTai =
+                    await _caKhamRepo.CountByNgayAndKhungGioAsync(
+                        ngayHienTai, khungGioId, loaiCaKham);
 
-				if (soCaHienTai >= MaxCa) continue;
+                if (soCaHienTai >= maxCa) continue;
 
-				int soCanTao = MaxCa - soCaHienTai;
+                int soCanTao = maxCa - soCaHienTai;
 
-				for (int i = 0; i < soCanTao; i++)
-				{
-					var ca = new CaKham(
-						loaiCaKham: LoaiCaKham,
-						lichLamViecID: lich.LichLamViecID,
-						phongChucNangID: PhongChucNangID,
-						ngayKham: dto.NgayKham,
-						khungGioID: khungGioId,
-						trangThai: "Trống"
-					);
+                for (int i = 0; i < soCanTao; i++)
+                {
+                    await _caKhamRepo.AddAsync(new CaKham(
+                        loaiCaKham: loaiCaKham,
+                        lichLamViecID: lich.LichLamViecID,
+                        phongChucNangID: phongChucNangID,
+                        ngayKham: ngayHienTai,
+                        khungGioID: khungGioId,
+                        trangThai: "Trống"
+                    ));
 
-					await _caKhamRepo.AddAsync(ca);
-					tongCaDaTao++;
-				}
-			}
-		}
+                    tongCaDaTao++;
+                }
+            }
+        }
 
-		return tongCaDaTao;
+
+        return tongCaDaTao;
 	}
     public async Task<bool> DangKyKhamAsync(
     int caKhamID,
@@ -105,11 +113,11 @@ public class CaKhamService
         var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
         if (caKham == null)
             throw new Exception("Ca khám không tồn tại");
-
+       
         if (caKham.BenhNhanID != null || caKham.TrangThai != "Trống")
             throw new Exception("Ca khám không khả dụng để đăng ký");
 
-        // ===== KHÁM / TÁI KHÁM =====
+        var lich = await _lichLamViecRepo.GetByIdAsync(caKham.LichLamViecID);
         var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanID);
 
         if (caKham.LoaiCaKham == "Khám")
@@ -121,7 +129,6 @@ public class CaKhamService
             }
         }
 
-        // ===== ĐIỀU TRỊ THEO LIỆU TRÌNH =====
         if (caKham.LoaiCaKham == "Điều trị")
         {
             var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
@@ -131,9 +138,13 @@ public class CaKhamService
             if (lieuTrinh.TrangThai != "Đang điều trị")
                 throw new Exception("Liệu trình không ở trạng thái điều trị");
 
-            int soBuoi =
-                await _lieuTrinh_BuoiDieuTriRepo
-                    .CountBySoBuoiAsync(lieuTrinh.LieuTrinhID) + 1;
+            var buoidieutri = await _lieuTrinh_BuoiDieuTriRepo.GetByLieuTrinhAsync(lieuTrinh.LieuTrinhID);
+            foreach (var dt in buoidieutri)
+            {
+                if(dt.TrangThai=="Chờ xử lý")
+                    throw new Exception("Bệnh nhân còn ca điều trị chưa xử lý xong, không thể đăng ký!");
+            }
+            int soBuoi = await _lieuTrinh_BuoiDieuTriRepo.CountBySoBuoiAsync(lieuTrinh.LieuTrinhID) + 1;
 
             if (soBuoi > lieuTrinh.TongSoBuoi)
                 throw new Exception("Liệu trình đã đủ số buổi");
@@ -141,24 +152,22 @@ public class CaKhamService
             DateTime ngayDuKien =
                 lieuTrinh.NgayBatDau.AddDays((soBuoi - 1) * 7);
 
-            // 1️ Gán bệnh nhân cho ca khám
             caKham.DangKyKham(benhNhanID, lyDoKham, ngayDat, ghiChu);
             await _caKhamRepo.UpdateAsync(caKham);
 
-            // 2️ Tạo buổi điều trị
             var buoi = new LieuTrinh_BuoiDieuTri(
-                lieuTrinh.LieuTrinhID,
-                caKhamID,
-                soBuoi,
-                ngayDuKien,
-                caKham.NgayKham
+                lieuTrinhID: lieuTrinh.LieuTrinhID,
+                caKhamID: caKhamID,
+                soBuoi: soBuoi,
+                ngayDuKien: ngayDuKien,
+                ngayThucHien: caKham.NgayKham,
+                nhanVienID: lich.NhanVienID
             );
 
             await _lieuTrinh_BuoiDieuTriRepo.AddAsync(buoi);
             return true;
         }
 
-        // ===== MẶC ĐỊNH =====
         caKham.DangKyKham(benhNhanID, lyDoKham, ngayDat, ghiChu);
         await _caKhamRepo.UpdateAsync(caKham);
         return true;

@@ -140,4 +140,9 @@ public class LichLamViecService
 			}).ToList()
 		};
 	}
+
+	public async Task<List<LichLamViec>> GetByKhoangNgayAsync(DateTime tuNgay, DateTime denNgay)
+	{
+		return await _repo.GetByKhoangNgayAsync(tuNgay, denNgay);
+	}
 }

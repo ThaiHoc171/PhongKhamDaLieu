@@ -124,7 +124,7 @@ public class LieuTrinh_BuoiDieuTriRepository : ILieuTrinh_BuoiDieuTriRepository
     }
     public async Task<int> CountBySoBuoiAsync(int lieuTrinhID)
     {
-        const string sql = @"SELECT COUNT(SoBuoi) FROM LieuTrinh_BuoiDieuTri WHERE LieuTrinhID = @id";
+        const string sql = @"SELECT COUNT(SoBuoi) FROM LieuTrinh_BuoiDieuTri WHERE LieuTrinhID = @id AND TrangThai = N'Hoàn thành'";
         var list = new List<CaKham>();
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
@@ -136,9 +136,9 @@ public class LieuTrinh_BuoiDieuTriRepository : ILieuTrinh_BuoiDieuTriRepository
     {
         const string sql = @"
             INSERT INTO LieuTrinh_BuoiDieuTri
-            (LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien)
+            (LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID)
             OUTPUT INSERTED.BuoiDieuTriID
-            VALUES (@LieuTrinhID, @CaKhamID, @SoBuoi, @NgayDuKien)";
+            VALUES (@LieuTrinhID, @CaKhamID, @SoBuoi, @NgayDuKien, @NgayThucHien, @NhanVienID)";
 
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
@@ -147,7 +147,8 @@ public class LieuTrinh_BuoiDieuTriRepository : ILieuTrinh_BuoiDieuTriRepository
         cmd.Parameters.AddWithValue("@CaKhamID", buoi.CaKhamID);
         cmd.Parameters.AddWithValue("@SoBuoi", buoi.SoBuoi);
         cmd.Parameters.AddWithValue("@NgayDuKien", (object?)buoi.NgayDuKien ?? DBNull.Value);
-
+        cmd.Parameters.AddWithValue("@NgayThucHien", (object?)buoi.NgayThucHien ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@NhanVienID", (object?)buoi.NhanVienID ?? DBNull.Value);
         await conn.OpenAsync();
         return (int)await cmd.ExecuteScalarAsync();
     }
