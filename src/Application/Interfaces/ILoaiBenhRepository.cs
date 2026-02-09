@@ -9,4 +9,5 @@ public interface ILoaiBenhRepository
 	Task<List<LoaiBenh>> SearchByTenAsync(string keyword);
 	Task AddAsync(LoaiBenh loaiBenh);
 	Task UpdateAsync(LoaiBenh loaiBenh);
+	Task<string?> GetNameByIdAsync(int id);
 }

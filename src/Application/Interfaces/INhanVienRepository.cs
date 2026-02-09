@@ -10,5 +10,6 @@ namespace Application.Interfaces
         Task<NhanVien?> GetByIdAsync(int nhanVienID);
 		Task<List<NhanVien>> GetAllAsync();
 		Task<List<NhanVien>> SearchAsync(string keyword);
+		Task<string?> GetNameByIdAsync(int id);
 	}
 }

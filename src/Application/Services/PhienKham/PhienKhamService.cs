@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Application.ReadModels;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.Services;
 
@@ -11,12 +12,18 @@ public class PhienKhamService
 	private readonly ICaKhamRepository _caKhamRepo;
 	private readonly IPhienKhamBenhRepository _pkBenhrepo;
 	private readonly IPhienKhamCLSRepository _pkClsRepo;
+	private readonly IBenhNhanRepository _benhNhanRepo;
+	private readonly INhanVienRepository _nhanVienRepo;
 
-	public PhienKhamService(IPhienKhamRepository repo, IPhienKhamBenhRepository pkBenhrepo, IPhienKhamCLSRepository pkClsRepo)
+	public PhienKhamService(IPhienKhamRepository repo, IPhienKhamBenhRepository pkBenhrepo, IPhienKhamCLSRepository pkClsRepo,
+		IBenhNhanRepository benhNhanRepo, INhanVienRepository nhanVienRepo, ICaKhamRepository caKhamRepo)
 	{
 		_repo = repo;
 		_pkBenhrepo = pkBenhrepo;
 		_pkClsRepo = pkClsRepo;
+		_benhNhanRepo = benhNhanRepo;
+		_nhanVienRepo = nhanVienRepo;
+		_caKhamRepo = caKhamRepo;
 	}
 
 	public async Task<int> TaoMoiAsync(PhienKhamCreateDTO dto)
@@ -27,7 +34,7 @@ public class PhienKhamService
 		{
 			throw new Exception("Ca khám không tồn tại!");
 		}
-		if (caKham.TrangThai != "Đang khám")
+		if (caKham.TrangThai != "Đã xác nhận")
 		{
 			throw new Exception("Ca khám chưa được xác nhận hoặc đã kết thúc!");
 		}
@@ -40,7 +47,6 @@ public class PhienKhamService
 			dto.TrieuChung,
 			dto.GhiChu,
 			dto.HinhAnhJSON);
-
 		return await _repo.AddAsync(entity);
 	}
 
@@ -57,12 +63,12 @@ public class PhienKhamService
 
 		await _repo.UpdateAsync(pk);
 	}
-	public async Task KetThucAsync(int phienKhamId, string chuanDoanCuoi)
+	public async Task KetThucAsync(int phienKhamId, string chanDoanCuoi)
 	{
 		var pk = await _repo.GetByIdAsync(phienKhamId)
 			?? throw new Exception("Phiên khám không tồn tại");
 		// Kiểm tra đã có chẩn đoán chính chưa
-		if (!string.IsNullOrEmpty(pk.ChuanDoanCuoi))
+		if (!string.IsNullOrEmpty(pk.ChanDoanCuoi))
 		{
 			throw new Exception("Phiên khám đã được kết thúc trước đó");
 		}
@@ -81,23 +87,95 @@ public class PhienKhamService
 
 
 		// Nghiệp vụ nằm trong Entity
-		pk.KetThuc(chuanDoanCuoi);
+		pk.KetThuc(chanDoanCuoi);
 
 		// Lưu trạng thái mới
 		await _repo.KetThucAsync(pk);
 	}
-	public async Task<PhienKhamReadModel?> LayTheoIdAsync(int id)
+	public async Task<PhienKhamResponseDTO> LayTheoIdAsync(int id)
 	{
-		return await _repo.GetReadModelByIdAsync(id);
+		var pk = await _repo.GetByIdAsync(id)
+			?? throw new Exception("Phiên khám không tồn tại");
+		var benhNhan = await _benhNhanRepo.GetNameByIdAsync(pk.BenhNhanID);
+		var nhanVien = await _nhanVienRepo.GetNameByIdAsync(pk.NhanVienID);
+		return new PhienKhamResponseDTO
+		{
+			PhienKhamID = pk.PhienKhamID,
+			CaKhamID = pk.CaKhamID,
+			BenhNhan = new NameResponseDTO
+			{
+				Id = pk.BenhNhanID,
+				Name = benhNhan
+			},
+			NhanVien = new NameResponseDTO
+			{
+				Id = pk.NhanVienID,
+				Name = nhanVien
+			},
+			PhongChucNangID = pk.PhongChucNangID,
+			TrieuChung = pk.TrieuChung,
+			GhiChu = pk.GhiChu,
+			HinhAnhJSON = pk.HinhAnhJSON,
+			ChanDoanCuoi = pk.ChanDoanCuoi,
+			NgayKham = pk.NgayKham,
+			TrangThai = pk.TrangThai.ToString()
+		};
 	}
 
-	public async Task<List<PhienKhamReadModel>> LayTatCaAsync()
+	public async Task<List<PhienKhamResponseLiteDTO>> LayTatCaAsync()
 	{
-		return await _repo.GetAllAsync();
+		var list = await _repo.GetAllAsync();
+
+		var result = new List<PhienKhamResponseLiteDTO>();
+
+		foreach (var pk in list)
+		{
+			result.Add(await MapToLiteDtoAsync(pk));
+		}
+
+		return result;
 	}
 
-	public async Task<List<PhienKhamReadModel>> LocAsync(DateTime? tuNgay,DateTime? denNgay,string? trangThai,int? nhanVienID)
+	public async Task<List<PhienKhamResponseLiteDTO>> LocAsync(
+		DateTime? tuNgay,
+		DateTime? denNgay,
+		string? trangThai,
+		int? nhanVienID)
 	{
-		return await _repo.FilterAsync(tuNgay, denNgay, trangThai, nhanVienID);
+		var list = await _repo.FilterAsync(tuNgay, denNgay, trangThai, nhanVienID);
+
+		var result = new List<PhienKhamResponseLiteDTO>();
+		foreach (var pk in list)
+		{
+			result.Add(await MapToLiteDtoAsync(pk));
+		}
+
+		return result;
 	}
+
+	private async Task<PhienKhamResponseLiteDTO> MapToLiteDtoAsync(PhienKham pk)
+	{
+		var benhNhan = await _benhNhanRepo.GetNameByIdAsync(pk.BenhNhanID);
+		var nhanVien = await _nhanVienRepo.GetNameByIdAsync(pk.NhanVienID);
+
+		return new PhienKhamResponseLiteDTO
+		{
+			PhienKhamID = pk.PhienKhamID,
+			CaKhamID = pk.CaKhamID,
+
+			BenhNhan = new NameResponseDTO{
+				Id = pk.BenhNhanID,
+				Name = benhNhan
+			},
+			NhanVien = new NameResponseDTO{
+				Id = pk.NhanVienID,
+				Name = nhanVien
+			},
+
+			NgayKham = pk.NgayKham,
+			TrangThai = pk.TrangThai.ToString(),
+			ChanDoanCuoi = pk.ChanDoanCuoi
+		};
+	}
+
 }

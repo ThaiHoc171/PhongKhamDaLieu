@@ -30,14 +30,19 @@ namespace Application.Services
 		public async Task ThemKhungGioAsync(KhungGioKhamRequestDTO dto)
 		{
 			var khungGio = new KhungGioKham(
+				dto.CaLamViec,
 				dto.GioBatDau,
 				dto.GioKetThuc,
 				dto.TenKhung
 			);
+
 			var danhSachKhungGio = await _repo.GetAllAsync();
-			if(danhSachKhungGio.Any(kg => kg.KiemTraTrung(khungGio)))
+
+			if (danhSachKhungGio.Any(kg => kg.KiemTraTrung(khungGio)))
 			{
-				throw new InvalidOperationException("Khung giờ khám bị trùng với khung giờ đã tồn tại.");
+				throw new InvalidOperationException(
+					"Khung giờ khám bị trùng trong cùng ca làm việc."
+				);
 			}
 
 			await _repo.AddAsync(khungGio);
@@ -48,16 +53,24 @@ namespace Application.Services
 			var kg = await _repo.GetByIdAsync(id);
 			if (kg == null) return false;
 
-			kg.CapNhat(dto.GioBatDau, dto.GioKetThuc, dto.TenKhung);
+			kg.CapNhat(
+				dto.CaLamViec,
+				dto.GioBatDau,
+				dto.GioKetThuc,
+				dto.TenKhung
+			);
 
 			var danhSachKhungGio = await _repo.GetAllAsync();
-			if(danhSachKhungGio.Any(otherKg => otherKg.KhungGioID != id && otherKg.KiemTraTrung(kg)))
+
+			if (danhSachKhungGio.Any(
+				other => other.KhungGioID != id && other.KiemTraTrung(kg)))
 			{
-				throw new InvalidOperationException("Khung giờ khám bị trùng với khung giờ đã tồn tại.");
+				throw new InvalidOperationException(
+					"Khung giờ khám bị trùng trong cùng ca làm việc."
+				);
 			}
 
 			await _repo.UpdateAsync(kg);
-
 			return true;
 		}
 
@@ -66,10 +79,10 @@ namespace Application.Services
 			return new KhungGioKhamResponseDTO
 			{
 				KhungGioID = kg.KhungGioID,
+				CaLamViec = kg.CaLamViec,
 				GioBatDau = kg.GioBatDau,
 				GioKetThuc = kg.GioKetThuc,
-				TenKhung = kg.TenKhung,
-				MaxSlot = kg.MaxSlot
+				TenKhung = kg.TenKhung
 			};
 		}
 	}
