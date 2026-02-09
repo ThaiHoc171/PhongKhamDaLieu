@@ -17,8 +17,10 @@ namespace Infrastructure.Repository
 
 		public async Task<List<KhungGioKham>> GetAllAsync()
 		{
-			const string sql = @"SELECT KhungGioID, GioBatDau, GioKetThuc, TenKhung, MaxSlot
-								FROM KhungGioKham";
+			const string sql = @"
+				SELECT KhungGioID, CaLamViec, GioBatDau, GioKetThuc, TenKhung
+				FROM KhungGioKham
+				ORDER BY CaLamViec, GioBatDau";
 
 			var list = new List<KhungGioKham>();
 
@@ -35,36 +37,36 @@ namespace Infrastructure.Repository
 
 			return list;
 		}
-        public async Task<List<int>> GetKhungGioIdsByCaLamViecAsync(int caLamViec)
-        {
-            const string sql = @"
-		SELECT KhungGioID
-		FROM KhungGioKham
-		WHERE CaLamViec = @CaLamViec
-		ORDER BY KhungGioID";
-
-            var list = new List<int>();
-
-            await using var conn = new SqlConnection(_connectionString);
-            await using var cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@CaLamViec", caLamViec);
-
-            await conn.OpenAsync();
-            await using var reader = await cmd.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                list.Add(reader.GetInt32(0)); // KhungGioID
-            }
-
-            return list;
-
-        }
-        public async Task<KhungGioKham?> GetByIdAsync(int id)
+		public async Task<List<int>> GetKhungGioIdsByCaLamViecAsync(int caLamViec)
 		{
-			const string sql = @"SELECT KhungGioID, GioBatDau, GioKetThuc, TenKhung, MaxSlot
-								FROM KhungGioKham
-								WHERE KhungGioID = @KhungGioID";
+			const string sql = @"
+				SELECT KhungGioID
+				FROM KhungGioKham
+				WHERE CaLamViec = @CaLamViec
+				ORDER BY GioBatDau";
+
+			var list = new List<int>();
+
+			await using var conn = new SqlConnection(_connectionString);
+			await using var cmd = new SqlCommand(sql, conn);
+			cmd.Parameters.AddWithValue("@CaLamViec", caLamViec);
+
+			await conn.OpenAsync();
+			await using var reader = await cmd.ExecuteReaderAsync();
+
+			while (await reader.ReadAsync())
+			{
+				list.Add(reader.GetInt32(0));
+			}
+
+			return list;
+		}
+		public async Task<KhungGioKham?> GetByIdAsync(int id)
+		{
+			const string sql = @"
+				SELECT KhungGioID, CaLamViec, GioBatDau, GioKetThuc, TenKhung
+				FROM KhungGioKham
+				WHERE KhungGioID = @KhungGioID";
 
 			await using var conn = new SqlConnection(_connectionString);
 			await using var cmd = new SqlCommand(sql, conn);
@@ -75,24 +77,26 @@ namespace Infrastructure.Repository
 
 			return await reader.ReadAsync() ? MapToEntity(reader) : null;
 		}
-        public async Task<int> CountKhungGioKhamAsync()
-        {
-            const string sql = @"SELECT COUNT(KhungGioID) FROM KhungGioKham";
-            var list = new List<CaKham>();
-            await using var conn = new SqlConnection(_connectionString);
-            await using var cmd = new SqlCommand(sql, conn);
-            await conn.OpenAsync();
-            return (int)await cmd.ExecuteScalarAsync();
-        }
-        public async Task AddAsync(KhungGioKham kg)
+		public async Task<int> CountKhungGioKhamAsync()
 		{
-			// MaxSlot KHÔNG truyền → DB dùng DEFAULT 5
-			const string sql = @"INSERT INTO KhungGioKham (GioBatDau, GioKetThuc, TenKhung)
-								VALUES (@GioBatDau, @GioKetThuc, @TenKhung)";
+			const string sql = @"SELECT COUNT(*) FROM KhungGioKham";
 
 			await using var conn = new SqlConnection(_connectionString);
 			await using var cmd = new SqlCommand(sql, conn);
 
+			await conn.OpenAsync();
+			return (int)await cmd.ExecuteScalarAsync();
+		}
+		public async Task AddAsync(KhungGioKham kg)
+		{
+			const string sql = @"
+				INSERT INTO KhungGioKham (CaLamViec, GioBatDau, GioKetThuc, TenKhung)
+				VALUES (@CaLamViec, @GioBatDau, @GioKetThuc, @TenKhung)";
+
+			await using var conn = new SqlConnection(_connectionString);
+			await using var cmd = new SqlCommand(sql, conn);
+
+			cmd.Parameters.AddWithValue("@CaLamViec", kg.CaLamViec);
 			cmd.Parameters.AddWithValue("@GioBatDau", kg.GioBatDau);
 			cmd.Parameters.AddWithValue("@GioKetThuc", kg.GioKetThuc);
 			cmd.Parameters.AddWithValue("@TenKhung", (object?)kg.TenKhung ?? DBNull.Value);
@@ -103,17 +107,22 @@ namespace Infrastructure.Repository
 
 		public async Task UpdateAsync(KhungGioKham kg)
 		{
-			const string sql = @"UPDATE KhungGioKham
-								SET GioBatDau = @GioBatDau, GioKetThuc = @GioKetThuc, TenKhung = @TenKhung
-								WHERE KhungGioID = @KhungGioID";
+			const string sql = @"
+				UPDATE KhungGioKham
+				SET CaLamViec = @CaLamViec,
+					GioBatDau = @GioBatDau,
+					GioKetThuc = @GioKetThuc,
+					TenKhung = @TenKhung
+				WHERE KhungGioID = @KhungGioID";
 
 			await using var conn = new SqlConnection(_connectionString);
 			await using var cmd = new SqlCommand(sql, conn);
 
 			cmd.Parameters.AddWithValue("@KhungGioID", kg.KhungGioID);
+			cmd.Parameters.AddWithValue("@CaLamViec", kg.CaLamViec);
 			cmd.Parameters.AddWithValue("@GioBatDau", kg.GioBatDau);
 			cmd.Parameters.AddWithValue("@GioKetThuc", kg.GioKetThuc);
-	
+			cmd.Parameters.AddWithValue("@TenKhung", (object?)kg.TenKhung ?? DBNull.Value);
 
 			await conn.OpenAsync();
 			await cmd.ExecuteNonQueryAsync();
@@ -123,10 +132,10 @@ namespace Infrastructure.Repository
 		{
 			return new KhungGioKham(
 				khungGioID: reader.GetInt32(0),
-				gioBatDau: reader.GetTimeSpan(1),
-				gioKetThuc: reader.GetTimeSpan(2),
-				tenKhung: reader.IsDBNull(3) ? null : reader.GetString(3),
-				maxSlot: reader.GetInt32(4)
+				caLamViec: reader.GetInt32(1),
+				gioBatDau: reader.GetTimeSpan(2),
+				gioKetThuc: reader.GetTimeSpan(3),
+				tenKhung: reader.IsDBNull(4) ? null : reader.GetString(4)
 			);
 		}
 	}

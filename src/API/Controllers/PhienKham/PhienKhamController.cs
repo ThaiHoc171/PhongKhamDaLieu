@@ -62,11 +62,11 @@ public class PhienKhamController : ControllerBase
 
 	// PUT: api/PhienKham/{id}/ket-thuc
 	[HttpPut("{id}/ket-thuc")]
-	public async Task<IActionResult> KetThuc(int id, [FromBody] string chuanDoanCuoi)
+	public async Task<IActionResult> KetThuc(int id, [FromBody] string chanDoanCuoi)
 	{
 		try
 		{
-			await _service.KetThucAsync(id, chuanDoanCuoi);
+			await _service.KetThucAsync(id, chanDoanCuoi);
 
 			return Ok(new
 			{
