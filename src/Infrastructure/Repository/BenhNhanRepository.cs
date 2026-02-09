@@ -63,7 +63,21 @@ public class BenhNhanRepository : IBenhNhanRepository
 		}
 		return list;
 	}
+	public async Task<string?> GetNameByIdAsync(int id)
+	{
+		const string sql = @"
+			SELECT tt.HoTen as TenBenhNhan
+			FROM BenhNhan bn
+			INNER JOIN ThongTinCaNhan tt ON bn.ThongTinID = tt.ThongTinID
+			WHERE bn.BenhNhanID = @Id";
 
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@Id", id);
+
+		await conn.OpenAsync();
+		return await cmd.ExecuteScalarAsync() as string;
+	}
 	public async Task<int> AddAsync(BenhNhan benhNhan)
 	{
 		const string sql = @"

@@ -204,7 +204,6 @@ CREATE TABLE KhungGioKham (
     GioBatDau TIME NOT NULL,
     GioKetThuc TIME NOT NULL,
     TenKhung NVARCHAR(50),
-    MaxSlot INT NOT NULL DEFAULT 5,
     CONSTRAINT CK_KhungGio_Time
         CHECK (GioBatDau < GioKetThuc),
 
@@ -273,7 +272,7 @@ CREATE TABLE PhienKham (
     TrieuChung NVARCHAR(MAX),
     GhiChu NVARCHAR(MAX),
     HinhAnhJSON NVARCHAR(MAX),
-    ChuanDoanCuoi NVARCHAR(300),
+    ChanDoanCuoi NVARCHAR(300),
     NgayKham DATETIME DEFAULT GETDATE(),
     TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Đang khám', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Đang khám',
     FOREIGN KEY (CaKhamID) REFERENCES CaKham(CaKhamID),

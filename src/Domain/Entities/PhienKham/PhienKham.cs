@@ -1,5 +1,6 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Enums;
 
+namespace Domain.Entities;
 public class PhienKham
 {
 	public int PhienKhamID { get; private set; }
@@ -10,9 +11,9 @@ public class PhienKham
 	public string? TrieuChung { get; private set; }
 	public string? GhiChu { get; private set; }
 	public string? HinhAnhJSON { get; private set; }
-	public string? ChuanDoanCuoi { get; private set; }
+	public string? ChanDoanCuoi { get; private set; }
 	public DateTime NgayKham { get; private set; }
-	public string TrangThai { get; private set; } = default!;
+	public TrangThaiKhamEnum TrangThai { get; private set; } = default!;
 
 	// Tạo mới
 	public PhienKham(
@@ -31,7 +32,6 @@ public class PhienKham
 		TrieuChung = trieuChung;
 		GhiChu = ghiChu;
 		HinhAnhJSON = hinhAnhJSON;
-		TrangThai = "Đang khám";
 	}
 
 	// Map DB
@@ -44,7 +44,7 @@ public class PhienKham
 		string? trieuChung,
 		string? ghiChu,
 		string? hinhAnhJSON,
-		string? chuanDoanCuoi,
+		string? chanDoanCuoi,
 		DateTime ngayKham,
 		string trangThai)
 	{
@@ -56,9 +56,27 @@ public class PhienKham
 		TrieuChung = trieuChung;
 		GhiChu = ghiChu;
 		HinhAnhJSON = hinhAnhJSON;
-		ChuanDoanCuoi = chuanDoanCuoi;
+		ChanDoanCuoi = chanDoanCuoi;
 		NgayKham = ngayKham;
-		TrangThai = trangThai;
+		TrangThai = TrangThaiKhamExtensions.FromDb(trangThai);
+	}
+	// Map Lite
+	public PhienKham(
+		int phienKhamID,
+		int caKhamID,
+		int benhNhanID,
+		int nhanVienID,
+		DateTime ngayKham,
+		string trangThai,
+		string chanDoanCuoi)
+	{
+		PhienKhamID = phienKhamID;
+		CaKhamID = caKhamID;
+		BenhNhanID = benhNhanID;
+		NhanVienID = nhanVienID;
+		NgayKham = ngayKham;
+		TrangThai = TrangThaiKhamExtensions.FromDb(trangThai);
+		ChanDoanCuoi = chanDoanCuoi;
 	}
 	// Nghiệp vụ
 	public void CapNhat(
@@ -67,7 +85,7 @@ public class PhienKham
 		int? phongChucNangID,
 		string? hinhAnhJSON)
 	{
-		if (TrangThai != "Đang khám")
+		if (TrangThai != TrangThaiKhamEnum.DangKham)
 			throw new InvalidOperationException("Phiên khám đã kết thúc");
 
 		TrieuChung = trieuChung;
@@ -76,20 +94,20 @@ public class PhienKham
 		HinhAnhJSON = hinhAnhJSON;
 	}
 
-	public void KetThuc(string chuanDoanCuoi)
+	public void KetThuc(string chanDoanCuoi)
 	{
-		if (TrangThai != "Đang khám")
+		if (TrangThai != TrangThaiKhamEnum.DangKham)
 			throw new InvalidOperationException("Không thể kết thúc");
 
-		ChuanDoanCuoi = chuanDoanCuoi;
-		TrangThai = "Hoàn thành";
+		ChanDoanCuoi = chanDoanCuoi;
+		TrangThai = TrangThaiKhamEnum.HoanThanh;
 	}
 
 	public void Huy()
 	{
-		if (TrangThai == "Hoàn thành")
+		if (TrangThai == TrangThaiKhamEnum.HoanThanh)
 			throw new InvalidOperationException("Không thể huỷ");
 
-		TrangThai = "Đã hủy";
+		TrangThai = TrangThaiKhamEnum.HuyKham;
 	}
 }

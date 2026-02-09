@@ -10,11 +10,13 @@ public class LichLamViecService
 {
 	private readonly ILichLamViecRepository _repo;
 	private readonly INgayNghiNhanVienRepository _nghiRepo;
+	private readonly INhanVienRepository _nvRepo;
 
-	public LichLamViecService(ILichLamViecRepository repo, INgayNghiNhanVienRepository nghiRepo)
+	public LichLamViecService(ILichLamViecRepository repo, INgayNghiNhanVienRepository nghiRepo, INhanVienRepository nvRepo)
 	{
 		_repo = repo;
 		_nghiRepo = nghiRepo;
+		_nvRepo = nvRepo;
 	}
 	public async Task ThemLichLamViecAsync(LichLamViecBatchDTO dto)
 	{
@@ -24,14 +26,14 @@ public class LichLamViecService
 		{
 			foreach (var lich in dto.LichLamViecs)
 			{
-				// 1️⃣ Check ngày hợp lệ
+				// Check ngày hợp lệ
 				if (lich.Ngay.Date < DateTime.Today)
 					throw new Exception("Ngày làm việc không hợp lệ.");
 
 				if (lich.Ngay.Month != dto.Thang || lich.Ngay.Year != dto.Nam)
 					throw new Exception("Ngày làm việc không thuộc tháng.");
 
-				// 2️⃣ Trùng lịch cá nhân
+				// Trùng lịch cá nhân
 				if (await _repo.IsExitsAsync(
 					lich.NhanVienID,
 					lich.Ngay,
@@ -40,7 +42,7 @@ public class LichLamViecService
 					throw new Exception("Nhân viên đã có lịch trong ca này.");
 				}
 
-				// 3️⃣ Check ngày nghỉ ❗ ĐÚNG MODULE
+				// Check ngày nghỉ ❗ ĐÚNG MODULE
 				if (await _nghiRepo.IsNgayNghiAsync(
 					lich.NhanVienID,
 					lich.Ngay))
@@ -48,7 +50,7 @@ public class LichLamViecService
 					throw new Exception("Nhân viên đang nghỉ ngày này.");
 				}
 
-				// 4️⃣ Check rule chức vụ
+				// Check rule chức vụ
 				var soLuongCungChucVu =
 					await _repo.CountNhanVienTheoChucVuAsync(
 						lich.ChucVuID,
@@ -66,7 +68,7 @@ public class LichLamViecService
 						throw new Exception("Ca làm việc đã có nhân viên cùng chức vụ.");
 				}
 
-				// 5️⃣ Tạo entity THUẦN
+				// Tạo entity THUẦN
 				var entity = new LichLamViec(
 					lich.NhanVienID,
 					lich.Ngay,
@@ -90,11 +92,15 @@ public class LichLamViecService
 		var entity = await _repo.GetByIdAsync(id);
 		if (entity == null)
 			return null;
-
+		var nv = await _nvRepo.GetNameByIdAsync(entity.NhanVienID);
 		return new LichLamViecRespondDTO
 		{
 			LichLamViecID = entity.LichLamViecID,
-			NhanVienID = entity.NhanVienID,
+			NhanVien = new NameResponseDTO
+			{
+				Id = entity.NhanVienID,
+				Name = nv
+			},
 			Ngay = entity.Ngay,
 			CaLamViec = entity.CaLamViec,
 			GhiChu = entity.GhiChu
@@ -106,10 +112,15 @@ public class LichLamViecService
 		var result = new List<LichLamViecRespondDTO>();
 		foreach (var entity in entities)
 		{
+			var nv = await _nvRepo.GetNameByIdAsync(entity.NhanVienID);
 			result.Add(new LichLamViecRespondDTO
 			{
 				LichLamViecID = entity.LichLamViecID,
-				NhanVienID = entity.NhanVienID,
+				NhanVien = new NameResponseDTO
+				{
+					Id = entity.NhanVienID,
+					Name = nv
+				},
 				Ngay = entity.Ngay,
 				CaLamViec = entity.CaLamViec,
 				GhiChu = entity.GhiChu
@@ -125,15 +136,22 @@ public class LichLamViecService
 		var (start, end) = DateTimeHelper.GetWeekByPage(page);
 
 		var entities = await _repo.GetByNhanVienIdTheoTuanAsync(nhanVienID,start,end);
+		var nv = await _nvRepo.GetNameByIdAsync(nhanVienID);
 		return new WeekLichLamViecDTO
 		{
+			
 			Page = page,
 			TuanBatDau = start,
 			TuanKetThuc = end,
 			LichLamViecs = entities.Select(e => new LichLamViecRespondDTO
 			{
+				
 				LichLamViecID = e.LichLamViecID,
-				NhanVienID = e.NhanVienID,
+				NhanVien = new NameResponseDTO
+				{
+					Id = nhanVienID,
+					Name = nv
+				},
 				Ngay = e.Ngay,
 				CaLamViec = e.CaLamViec,
 				GhiChu = e.GhiChu

@@ -11,8 +11,7 @@ public interface IPhienKhamRepository
     Task<int> AddAsync(PhienKham phienKham);
 	Task UpdateAsync(PhienKham phienKham);
 	Task KetThucAsync(PhienKham phienKham);
-	Task<PhienKhamReadModel?> GetReadModelByIdAsync(int phienKhamID);
-	Task<List<PhienKhamReadModel>> GetAllAsync();
-	Task<List<PhienKhamReadModel>> FilterAsync(DateTime? tuNgay,DateTime? denNgay,string? trangThai,int? nhanVienID);
+	Task<List<PhienKham>> GetAllAsync();
+	Task<List<PhienKham>> FilterAsync(DateTime? tuNgay,DateTime? denNgay,string? trangThai,int? nhanVienID);
 }
 

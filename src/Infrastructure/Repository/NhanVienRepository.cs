@@ -165,7 +165,21 @@ public class NhanVienRepository : INhanVienRepository
 
 		return list;
 	}
+	public async Task<string?> GetNameByIdAsync(int id)
+	{
+		const string sql = @"
+			SELECT tt.HoTen as TenNhanVien
+			FROM NhanVien nv
+			INNER JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+			WHERE nv.NhanVienID = @Id";
 
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@Id", id);
+
+		await conn.OpenAsync();
+		return await cmd.ExecuteScalarAsync() as string;
+	}
 	private static NhanVien MapToEntity(SqlDataReader r)
 	{
 		var thongTin = new ThongTinCaNhan(
