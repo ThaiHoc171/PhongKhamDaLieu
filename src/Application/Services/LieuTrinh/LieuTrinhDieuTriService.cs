@@ -8,13 +8,16 @@ public class LieuTrinhDieuTriService
 {
     private readonly ILieuTrinhDieuTriRepository _lieuTrinhRepo;
     private readonly IPhienKhamRepository _phienKhamRepo;
-    private readonly ILieuTrinh_BuoiDieuTriRepository _repo;
+    private readonly ILieuTrinh_BuoiDieuTriRepository _lieuTrinh_BuoiDieuTriRepo;
+    private readonly ITaiKhamRepository _taiKhamRepo;
 
-    public LieuTrinhDieuTriService(ILieuTrinhDieuTriRepository lieuTrinhRepo, IPhienKhamRepository phienKhamRepo, ILieuTrinh_BuoiDieuTriRepository repo)
+
+    public LieuTrinhDieuTriService(ILieuTrinhDieuTriRepository lieuTrinhRepo, IPhienKhamRepository phienKhamRepo, ILieuTrinh_BuoiDieuTriRepository lieuTrinh_BuoiDieuTriRepo, ITaiKhamRepository taiKhamRepo)
     {
         _lieuTrinhRepo = lieuTrinhRepo;
         _phienKhamRepo = phienKhamRepo;
-        _repo = repo;
+        _lieuTrinh_BuoiDieuTriRepo = lieuTrinh_BuoiDieuTriRepo;
+        _taiKhamRepo = taiKhamRepo;
     }
 
     public async Task TaoLieuTrinhAsync(TaoLieuTrinhDieuTriDTO dto)
@@ -24,9 +27,13 @@ public class LieuTrinhDieuTriService
             throw new Exception("Phiên khám không tồn tại hoặc không hợp lệ");
         int benhNhanID = benhNhanId.Value;
 
+        var tontai = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanID);
+        if (tontai != null && tontai.TrangThai == "Chờ xử lý")
+            throw new Exception("Bệnh nhân đang có lịch tái khám, không thể tạo liệu trình.");
+
         var dangDieuTri = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
         if (dangDieuTri != null && dangDieuTri.TrangThai == "Đang điều trị")
-            throw new Exception("Bệnh nhân đang có liệu trình điều trị, không thể tạo mới");
+            throw new Exception("Bệnh nhân đang có liệu trình điều trị, không thể tạo mới.");
 
         if (dto.TongSoBuoi <= 0)
             throw new Exception("Tổng số buổi phải lớn hơn 0");
@@ -48,7 +55,7 @@ public class LieuTrinhDieuTriService
         await _lieuTrinhRepo.AddAsync(lt);
     }
 
-    public async Task<bool> CapNhatAsync(int lieuTrinhID, string tenLieuTrinh, int tongSoBuoi, DateTime ngayBatDau, DateTime ngayKetThuc)
+    public async Task<bool> CapNhatAsync(int lieuTrinhID, string tenLieuTrinh, int tongSoBuoi, DateTime ngayKetThuc)
     {
         var lieuTrinh = await _lieuTrinhRepo.GetByIdAsync(lieuTrinhID);
 
@@ -57,7 +64,7 @@ public class LieuTrinhDieuTriService
         if (lieuTrinh.TrangThai == "Hoàn thành")
             throw new Exception("Không thể cập nhật liệu trình đã hoàn thành");
 
-        lieuTrinh.CapNhat(tenLieuTrinh, tongSoBuoi, ngayBatDau, ngayKetThuc);
+        lieuTrinh.CapNhat(tenLieuTrinh, tongSoBuoi, ngayKetThuc);
         await _lieuTrinhRepo.UpdateAsync(lieuTrinh);
         return true;
     }
@@ -78,7 +85,13 @@ public class LieuTrinhDieuTriService
             throw new Exception("Trạng thái không hợp lệ");
 
         if (trangThai == "Hoàn thành")
-            throw new Exception("Không thể tự kết thúc liệu trình");
+        {
+            var soBuoiDaDieuTri =
+                await _lieuTrinh_BuoiDieuTriRepo.CountBySoBuoiAsync(lieuTrinhID);
+
+            if (soBuoiDaDieuTri < lieuTrinh.TongSoBuoi)
+                throw new Exception("Chưa đủ số buổi để hoàn thành liệu trình");
+        }
 
         lieuTrinh.CapNhatTrangThai(trangThai, ghiChu);
         await _lieuTrinhRepo.UpdateTrangThaiAsync(lieuTrinh);

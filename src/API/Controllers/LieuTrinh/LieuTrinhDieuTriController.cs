@@ -88,7 +88,6 @@ public class LieuTrinhDieuTriController : ControllerBase
             lieuTrinhID: id,
             tenLieuTrinh: dto.TenLieuTrinh,
             tongSoBuoi: dto.TongSoBuoi,
-            ngayBatDau: dto.NgayBatDau,
             ngayKetThuc: dto.NgayKetThuc
         );
 

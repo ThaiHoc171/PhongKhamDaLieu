@@ -9,24 +9,26 @@ public class LieuTrinh_BuoiDieuTriService
     private readonly ILieuTrinh_BuoiDieuTriRepository _repo;
     private readonly ICaKhamRepository _caKhamRepo;
     private readonly ILieuTrinhDieuTriRepository _lieuTrinhRepo;
+    private readonly ILichLamViecRepository _lichLamViecRepo;
 
-    public LieuTrinh_BuoiDieuTriService(ILieuTrinh_BuoiDieuTriRepository repo, ICaKhamRepository caKhamRepo, ILieuTrinhDieuTriRepository lieuTrinhRepo)
+    public LieuTrinh_BuoiDieuTriService(ILieuTrinh_BuoiDieuTriRepository repo, ICaKhamRepository caKhamRepo, ILieuTrinhDieuTriRepository lieuTrinhRepo, ILichLamViecRepository lichLamViecRepo)
     {
         _repo = repo;
         _caKhamRepo = caKhamRepo;
         _lieuTrinhRepo = lieuTrinhRepo;
+        _lichLamViecRepo = lichLamViecRepo;
     }
 
     public async Task TaoBuoiDieuTriAsync(TaoBuoiDieuTriDTO dto)
     {
-        // 1. Lấy ca khám
         var caKham = await _caKhamRepo.GetByIdAsync(dto.CaKhamID);
         if (caKham == null || caKham.BenhNhanID == null)
             throw new Exception("Ca khám không hợp lệ");
 
+        var lich = await _lichLamViecRepo.GetByIdAsync(dto.CaKhamID);
+
         int benhNhanID = caKham.BenhNhanID.Value;
 
-        // 2. Lấy liệu trình đang điều trị của bệnh nhân
         var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
 
         if (lieuTrinh == null)
@@ -35,22 +37,21 @@ public class LieuTrinh_BuoiDieuTriService
         if (lieuTrinh.TrangThai != "Đang điều trị")
             throw new Exception("Liệu trình không ở trạng thái đang điều trị");
 
-        // 3. Đếm số buổi đã điều trị
         int soBuoi = await _repo.CountBySoBuoiAsync(lieuTrinh.LieuTrinhID) + 1;
         if (soBuoi > lieuTrinh.TongSoBuoi)
             throw new Exception("Liệu trình điều trị đã đủ số buổi");
 
-        // 4. Tính ngày dự kiến
         DateTime ngayDuKien =
             lieuTrinh.NgayBatDau.AddDays((soBuoi - 1) * 7);
 
-        // 5. Tạo buổi điều trị
+        
         var buoi = new LieuTrinh_BuoiDieuTri(
-            lieuTrinh.LieuTrinhID,
-            dto.CaKhamID,
-            soBuoi,
-            ngayDuKien,
-            caKham.NgayKham
+            lieuTrinhID: lieuTrinh.LieuTrinhID,
+                caKhamID: dto.CaKhamID,
+                soBuoi: soBuoi,
+                ngayDuKien: ngayDuKien,
+                ngayThucHien: caKham.NgayKham,
+                nhanVienID: lich.NhanVienID
         );
 
         await _repo.AddAsync(buoi);
