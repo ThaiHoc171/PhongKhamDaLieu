@@ -199,7 +199,6 @@ public class LieuTrinhDieuTriRepository : ILieuTrinhDieuTriRepository
             UPDATE LieuTrinhDieuTri
             SET TenLieuTrinh = @TenLieuTrinh,
                 TongSoBuoi = @TongSoBuoi,
-                NgayBatDau = @NgayBatDau,
                 NgayKetThuc = @NgayKetThuc
             WHERE LieuTrinhID = @Id";
 
@@ -207,7 +206,6 @@ public class LieuTrinhDieuTriRepository : ILieuTrinhDieuTriRepository
         await using var cmd = new SqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("@TenLieuTrinh", lieuTrinh.TenLieuTrinh);
         cmd.Parameters.AddWithValue("@TongSoBuoi", lieuTrinh.TongSoBuoi);
-        cmd.Parameters.AddWithValue("@NgayBatDau", lieuTrinh.NgayBatDau);
         cmd.Parameters.AddWithValue("@NgayKetThuc", lieuTrinh.NgayKetThuc);
         cmd.Parameters.AddWithValue("@Id", lieuTrinh.LieuTrinhID);
 

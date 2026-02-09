@@ -48,7 +48,26 @@ public class LichLamViecController: ControllerBase
 			});
 		}
 	}
-	[HttpGet("GetAll")]
+    [HttpGet("GetKhoangCach")]
+    public async Task<IActionResult> GetByKhoangCach(DateTime tuNgay, DateTime denNgay)
+    {
+        try
+        {
+            var result = await _service.GetByKhoangNgayAsync(tuNgay, denNgay);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new
+            {
+                message = "Lỗi: " + ex.Message
+            });
+        }
+    }
+    [HttpGet("GetAll")]
 	public async Task<IActionResult> GetAll()
 	{
 		try

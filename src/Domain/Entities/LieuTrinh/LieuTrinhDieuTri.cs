@@ -40,11 +40,10 @@ public class LieuTrinhDieuTri
         NgayBatDau = ngayBatDau;
         NgayKetThuc = ngayKetThuc;
     }
-    public void CapNhat(string tenLieuTrinh, int tongSoBuoi, DateTime ngayBatDau, DateTime ngayKetThuc)
+    public void CapNhat(string tenLieuTrinh, int tongSoBuoi, DateTime ngayKetThuc)
     {
         TenLieuTrinh = tenLieuTrinh;
         TongSoBuoi = tongSoBuoi;
-        NgayBatDau = ngayBatDau;
         NgayKetThuc = ngayKetThuc;
     }
     public void CapNhatTrangThai(string? trangThai, string? ghiChu)

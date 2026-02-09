@@ -46,8 +46,8 @@ public class TaiKhamService
         if (taiKham == null) return false;
         if (taiKham.TrangThai == "Hoàn thành")
             throw new Exception("Tái khám đã hoàn thành, không thể chỉnh sửa.");
-        if (taiKham.CaKhamID != null && caKhamID != taiKham.CaKhamID)
-            throw new Exception("Tái khám đã được gán ca khám, không thể chỉnh sửa.");
+        if (taiKham.CaKhamID != null && caKhamID != taiKham.CaKhamID && taiKham.TrangThai == "Chờ xử lý")
+            throw new Exception("Bệnh nhân đang có lịch tái khám, không thể chỉnh sửa.");
         if (taiKham.CaKhamID != null && caKhamID == null)
             throw new Exception("Không thể hủy gán ca khám");
         taiKham.CapNhat(trangThai, caKhamID);

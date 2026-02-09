@@ -12,7 +12,6 @@ public class CapNhatLieuTrinhDieuTriDTO
 {
     public string TenLieuTrinh { get; set; }
     public int TongSoBuoi { get; set; }
-    public DateTime NgayBatDau { get; set; }
     public DateTime NgayKetThuc { get; set; }
 }
 public class CapNhatTrangThaiLieuTrinhDieuTriDTO

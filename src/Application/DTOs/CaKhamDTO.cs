@@ -9,6 +9,7 @@ namespace Application.DTOs;
 public class TaoCaKhamDTO
 {
     public DateTime NgayKham { get; set; }
+    public DateTime NgayKetThuc {  get; set; }
 }
 public class DangKyCaKhamDTO
 {

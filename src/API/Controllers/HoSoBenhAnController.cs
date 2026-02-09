@@ -47,11 +47,11 @@ public class HoSoBenhAnController : ControllerBase
     }
 
     // GET: api/HoSoBenhAn/benhnhan/{benhNhanID}
-    [HttpGet("benhnhan/{benhNhanID}")]
-    public async Task<IActionResult> LocTheoBenhNhan(int benhNhanId)
+    [HttpGet("benhnhan/{benhNhanID:int}")]
+    public async Task<IActionResult> GetByBenhNhan(int benhNhanID)
     {
-        var list = await _hoSoBenhAnService.GetByBenhNhanIdAsync(benhNhanId);
-        return Ok(list);
+        var hs = await _hoSoBenhAnService.GetByBenhNhanIdAsync(benhNhanID);
+        return hs == null ? NotFound() : Ok(hs);
     }
 
     // GET: api/HoSoBenhAn/{hoSoBenhAnID}

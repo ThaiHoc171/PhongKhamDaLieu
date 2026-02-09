@@ -63,7 +63,8 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
     }
     public async Task<int> AddAsync(HoSoBenhAn hs)
     {
-        const string sql = @"INSERT INTO HoSoBenhAn(BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac, NgayTao, NgayCapNhat)
+        const string sql = @"INSERT INTO HoSoBenhAn(BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac, NgayTao, NgayCapNhat) 
+                            OUTPUT INSERTED.HoSoBenhAnID
                             VALUES (@benhNhanID, @benhNen, @diUng, @tienSuBenh, @tienSuGiaDinh, @thoiQuenSong, @thongTinKhac, @ngayTao, @ngayCapNhat)";
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
@@ -84,7 +85,7 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
     public async Task UpdateAsync(HoSoBenhAn hs)
     {
         const string sql = @"UPDATE HoSoBenhAn
-                            SET BenhNen = @benhNen, DiUng = @diUng TienSuBenh = @tienSuBenh, TienSuGiaDinh = @tienSuGiaDinh, ThoiQuenSong = @thoiQuenSong, ThongTinKhac = @thongTinKhac, NgayTao = @ngayTao, NgayCapNhat = @ngayCapNhat)
+                            SET BenhNen = @benhNen, DiUng = @diUng, TienSuBenh = @tienSuBenh, TienSuGiaDinh = @tienSuGiaDinh, ThoiQuenSong = @thoiQuenSong, ThongTinKhac = @thongTinKhac, NgayTao = @ngayTao, NgayCapNhat = @ngayCapNhat)
                             WHERE HoSoBenhAnID =  @hoSoBenhAnID";
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
