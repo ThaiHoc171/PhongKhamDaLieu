@@ -17,7 +17,7 @@ public class LichLamViecDTO
 public class LichLamViecRespondDTO
 {
 	public int LichLamViecID { get; set; }
-	public int NhanVienID { get; set; }
+	public NameResponseDTO NhanVien { get; init; } = null!;
 	public DateTime Ngay { get; set; }
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
