@@ -364,3 +364,57 @@ VALUES
 (11,11,N'Tăng',N'Hoàn thành'),
 (12,12,N'Âm tính',N'Hoàn thành'),
 (13,13,N'Bình thường',N'Hoàn thành');
+
+INSERT INTO BaiViet
+(TieuDe, TomTat, NoiDung, HinhAnh, TacGiaID, LoaiBenhID, LuotXem, NgayDang, NgayCapNhat)
+VALUES
+(N'Chăm sóc da mụn đúng cách',
+ N'Hướng dẫn chăm sóc da mụn an toàn và hiệu quả.',
+ N'Bài viết chia sẻ các bước chăm sóc da mụn đúng cách, tránh viêm nhiễm và thâm sẹo.',
+ N'mun1.jpg', 1, 1, 120, GETDATE()-15, GETDATE()-10),
+
+(N'Nguyên nhân gây nám da',
+ N'Tìm hiểu nguyên nhân phổ biến gây nám da.',
+ N'Nám da có thể do nội tiết, ánh nắng và thói quen sinh hoạt không phù hợp.',
+ N'namda.jpg', 1, 2, 85, GETDATE()-20, GETDATE()-12),
+
+(N'Điều trị tàn nhang hiệu quả',
+ N'Các phương pháp điều trị tàn nhang hiện nay.',
+ N'Tàn nhang có thể cải thiện bằng laser, peel da hoặc chăm sóc tại nhà.',
+ N'tannhang.jpg', 2, 2, 60, GETDATE()-18, GETDATE()-9),
+
+(N'Da dầu nên dùng mỹ phẩm gì?',
+ N'Lựa chọn mỹ phẩm phù hợp cho da dầu.',
+ N'Da dầu cần sản phẩm không gây bít tắc lỗ chân lông và kiểm soát nhờn.',
+ N'dadau.jpg', 2, 3, 140, GETDATE()-7, GETDATE()-5),
+
+(N'Các bước skincare buổi tối',
+ N'Routine chăm sóc da buổi tối chuẩn khoa học.',
+ N'Tẩy trang, rửa mặt, toner, serum và kem dưỡng là các bước cơ bản.',
+ N'skincare-toi.jpg', 3, 4, 200, GETDATE()-5, GETDATE()-2),
+
+(N'Da nhạy cảm cần lưu ý gì?',
+ N'Những điều cần tránh khi chăm sóc da nhạy cảm.',
+ N'Da nhạy cảm cần hạn chế mỹ phẩm có hương liệu và cồn.',
+ N'danhaycam.jpg', 3, 3, 45, GETDATE()-12, GETDATE()-6),
+
+(N'Trẻ hóa da bằng công nghệ cao',
+ N'Giới thiệu các công nghệ trẻ hóa da hiện đại.',
+ N'RF, HIFU và laser là các phương pháp trẻ hóa da phổ biến.',
+ N'trehoada.jpg', 4, 5, 90, GETDATE()-30, GETDATE()-20),
+
+(N'Ngăn ngừa lão hóa sớm',
+ N'Cách phòng tránh lão hóa da từ sớm.',
+ N'Sử dụng kem chống nắng và chế độ sinh hoạt hợp lý giúp làm chậm lão hóa.',
+ N'laohoa.jpg', 4, 5, 160, GETDATE()-25, GETDATE()-15),
+
+(N'Peel da có an toàn không?',
+ N'Giải đáp thắc mắc về peel da.',
+ N'Peel da cần được thực hiện bởi chuyên gia để tránh biến chứng.',
+ N'peelda.jpg', 5, 4, 70, GETDATE()-10, GETDATE()-3),
+
+(N'Chống nắng đúng cách mỗi ngày',
+ N'Hướng dẫn sử dụng kem chống nắng hiệu quả.',
+ N'Nên thoa lại kem chống nắng sau mỗi 2–3 giờ khi ra ngoài.',
+ N'chongnang.jpg', 5, 1, 300, GETDATE()-3, GETDATE()-1);
+
