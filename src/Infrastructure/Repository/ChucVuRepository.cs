@@ -79,7 +79,20 @@ public class ChucVuRepository : IChucVuRepository
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
+	public async Task<string?> GetNameByIdAsync(int id)
+	{
+		const string sql = @"
+			SELECT TenChucVu
+			FROM ChucVu
+			WHERE ChucVuID = @Id";
 
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@Id", id);
+
+		await conn.OpenAsync();
+		return await cmd.ExecuteScalarAsync() as string;
+	}
 	private static ChucVu MapToEntity(SqlDataReader reader)
 	{
 		return new ChucVu(

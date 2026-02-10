@@ -5,6 +5,17 @@ public class LoginRequestDTO
 	public string Email { get; set; } = default!;
 	public string MatKhau { get; set; } = default!;
 }
+public class LoginResponseDTO
+{
+	public int Id { get; set; }
+	public string Email { get; set; } = default!;
+	public string VaiTro { get; set; } = default!;
+	public string Token { get; set; } = default!;
+
+	public int? NhanVienId { get; set; }
+	public int? BenhNhanId { get; set; }
+	public string? ChucVu { get; set; }
+}
 
 public class ThemTaiKhoanDTO
 {
