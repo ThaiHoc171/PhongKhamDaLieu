@@ -80,7 +80,7 @@ public class PhienKhamService
 		}
 		// Kiểm tra CLS đã hoàn thành chưa
 		var pkCls = await _pkClsRepo.GetByPhienKhamAsync(phienKhamId);
-		if (pkCls != null && pkCls.Any(c => c.TrangThai != "Hoàn thành"))
+		if (pkCls != null && pkCls.Any(c => c.TrangThai != TrangThaiCLSEnum.HoanThanh))
 		{
 			throw new Exception("Tất cả các chỉ định cận lâm sàng phải được hoàn thành trước khi kết thúc phiên khám");
 		}

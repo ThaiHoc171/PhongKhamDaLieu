@@ -1,6 +1,5 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
-using Application.ReadModels;
 using Domain.Entities;
 
 namespace Application.Services;
@@ -10,78 +9,70 @@ public class PhienKhamThietBiService
 	private readonly IPhienKhamThietBiRepository _repo;
 	private readonly IPhienKhamRepository _phienKhamRepo;
 
-	public PhienKhamThietBiService(IPhienKhamThietBiRepository repo, IPhienKhamRepository phienKhamRepo)
+	public PhienKhamThietBiService(
+		IPhienKhamThietBiRepository repo,
+		IPhienKhamRepository phienKhamRepo)
 	{
 		_repo = repo;
 		_phienKhamRepo = phienKhamRepo;
 	}
 
-	// Danh sách thiết bị theo phiên khám 
-	public async Task<List<PhienKhamThietBiReadModel>> DanhSachTheoPhienKhamAsync(int phienKhamID)
+	// DANH SÁCH THEO PHIÊN KHÁM
+	public async Task<List<PhienKhamThietBiResponseDTO>> DanhSachTheoPhienKhamAsync(int phienKhamID)
 	{
-		return await _repo.GetByPhienKhamAsync(phienKhamID);
+		var entities = await _repo.GetByPhienKhamAsync(phienKhamID);
+		return entities.Select(MapToResponse).ToList();
 	}
-
-	// Lấy chi tiết 
+	// LẤY THEO ID
 	public async Task<PhienKhamThietBiResponseDTO?> LayTheoIdAsync(int id)
 	{
 		var entity = await _repo.GetByIdAsync(id);
 		if (entity == null) return null;
 
-		return new PhienKhamThietBiResponseDTO
-		{
-			PhienKhamThietBiID = entity.PhienKhamThietBiID,
-			PhienKhamID = entity.PhienKhamID,
-			ThietBiID = entity.ThietBiID,
-			SoLuong = entity.SoLuong,
-			GhiChu = entity.GhiChu
-		};
+		return MapToResponse(entity);
 	}
-
-	// Thêm thiết bị vào phiên khám
+	// THÊM THIẾT BỊ VÀO PHIÊN
 	public async Task ThemMoiAsync(PhienKhamThietBiRequestDTO dto)
 	{
-		// 1. Kiểm tra đã tồn tại thiết bị trong phiên khám chưa
-		var existed = await _repo.GetByPhienKhamAndThietBiAsync(dto.PhienKhamID, dto.ThietBiID);
+		// Rule: 1 ChiTietID chỉ xuất hiện 1 lần trong 1 phiên khám
+		var existed = await _repo.GetByPhienKhamAndChiTietAsync(
+			dto.PhienKhamID,
+			dto.ChiTietID
+		);
 
 		if (existed != null)
-		{
-			// 2. Nếu đã tồn tại → cộng dồn số lượng
-			var soLuongMoi = existed.SoLuong + dto.SoLuong;
-			existed.CapNhat(soLuongMoi, dto.GhiChu);
-			await _repo.UpdateAsync(existed);
-			return;
-		}
+			throw new InvalidOperationException("Thiết bị này đã được sử dụng trong phiên khám.");
 
-		// 3. Nếu chưa tồn tại → thêm mới
 		var entity = new PhienKhamThietBi(
 			dto.PhienKhamID,
-			dto.ThietBiID,
-			dto.SoLuong,
+			dto.ChiTietID,
 			dto.GhiChu
 		);
 
 		await _repo.AddAsync(entity);
 	}
 
-
-	// Cập nhật số lượng / ghi chú
-	public async Task<bool> CapNhatAsync(int id, PhienKhamThietBiRequestDTO dto)
+	// CẬP NHẬT GHI CHÚ
+	public async Task<bool> CapNhatAsync(int id, string? ghiChu)
 	{
-		var existed = await _repo.GetByPhienKhamAndThietBiAsync(dto.PhienKhamID, dto.ThietBiID);
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null) return false;
 
-		if (existed != null)
-		{
-			var entity = await _repo.GetByIdAsync(id);
-			if (entity == null) return false;
+		entity.CapNhatGhiChu(ghiChu);
+		await _repo.UpdateAsync(entity);
 
-			entity.CapNhat(dto.SoLuong, dto.GhiChu);
-			await _repo.UpdateAsync(entity);
-
-			return true;
-		}
-		return false;
-
+		return true;
 	}
 
+	// MAP ENTITY → RESPONSE DTO
+	private static PhienKhamThietBiResponseDTO MapToResponse(PhienKhamThietBi entity)
+	{
+		return new PhienKhamThietBiResponseDTO
+		{
+			PhienKhamThietBiID = entity.PhienKhamThietBiID,
+			PhienKhamID = entity.PhienKhamID,
+			ChiTietID = entity.ChiTietID,
+			GhiChu = entity.GhiChu
+		};
+	}
 }
