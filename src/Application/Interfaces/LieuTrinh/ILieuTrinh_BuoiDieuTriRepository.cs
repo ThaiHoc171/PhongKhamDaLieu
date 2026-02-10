@@ -7,6 +7,7 @@ public interface ILieuTrinh_BuoiDieuTriRepository
     Task<List<LieuTrinh_BuoiDieuTri>> GetByLieuTrinhAsync(int lieuTrinhID);
     Task<List<LieuTrinh_BuoiDieuTri>> LocDuKienAsync(DateTime ngay, string trangThai);
     Task<List<LieuTrinh_BuoiDieuTri>> LocBatDauAsync(DateTime ngay, string trangThai);
+    Task<LieuTrinh_BuoiDieuTri?> GetBuoiGanNhatAsync(int lieuTrinhID);
     Task<bool> ExistsByCaKhamAsync(int caKhamID);
     Task<int> CountBySoBuoiAsync(int lieuTrinhID);
     Task<int> AddAsync(LieuTrinh_BuoiDieuTri buoiDieuTri);
