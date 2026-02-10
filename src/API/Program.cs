@@ -82,6 +82,8 @@ builder.Services.AddScoped<ILieuTrinhDieuTriRepository, LieuTrinhDieuTriReposito
 builder.Services.AddScoped<LieuTrinhDieuTriService>();
 builder.Services.AddScoped<ILieuTrinh_BuoiDieuTriRepository, LieuTrinh_BuoiDieuTriRepository>();
 builder.Services.AddScoped<LieuTrinh_BuoiDieuTriService>();
+builder.Services.AddScoped<IBaiVietRepository, BaiVietRepository>();
+builder.Services.AddScoped<BaiVietService>();
 
 var app = builder.Build();
 
