@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Application.DTOs;
 using Application.ReadModels;
+using System.Collections.Generic;
 
 namespace Application.Services;
 public class LieuTrinhDieuTriService
@@ -55,7 +56,7 @@ public class LieuTrinhDieuTriService
         await _lieuTrinhRepo.AddAsync(lt);
     }
 
-    public async Task<bool> CapNhatAsync(int lieuTrinhID, string tenLieuTrinh, int tongSoBuoi, DateTime ngayKetThuc)
+    public async Task<bool> CapNhatAsync(int lieuTrinhID, CapNhatLieuTrinhDieuTriDTO dto)
     {
         var lieuTrinh = await _lieuTrinhRepo.GetByIdAsync(lieuTrinhID);
 
@@ -64,15 +65,12 @@ public class LieuTrinhDieuTriService
         if (lieuTrinh.TrangThai == "Hoàn thành")
             throw new Exception("Không thể cập nhật liệu trình đã hoàn thành");
 
-        lieuTrinh.CapNhat(tenLieuTrinh, tongSoBuoi, ngayKetThuc);
+        lieuTrinh.CapNhat(dto.TenLieuTrinh, dto.TongSoBuoi, dto.NgayKetThuc);
         await _lieuTrinhRepo.UpdateAsync(lieuTrinh);
         return true;
     }
 
-    public async Task<bool> CapNhatTrangThaiAsync(
-        int lieuTrinhID,
-        string trangThai,
-        string? ghiChu)
+    public async Task<bool> CapNhatTrangThaiAsync(int lieuTrinhID, CapNhatTrangThaiLieuTrinhDieuTriDTO dto)
     {
         var lieuTrinh = await _lieuTrinhRepo.GetByIdAsync(lieuTrinhID);
         if (lieuTrinh == null) return false;
@@ -81,10 +79,10 @@ public class LieuTrinhDieuTriService
             throw new Exception("Không thể cập nhật liệu trình đã hoàn thành");
 
         var trangThaiHopLe = new[] { "Đang điều trị", "Đã hủy", "Hoàn thành" };
-        if (!trangThaiHopLe.Contains(trangThai))
+        if (!trangThaiHopLe.Contains(dto.TrangThai))
             throw new Exception("Trạng thái không hợp lệ");
 
-        if (trangThai == "Hoàn thành")
+        if (dto.TrangThai == "Hoàn thành")
         {
             var soBuoiDaDieuTri =
                 await _lieuTrinh_BuoiDieuTriRepo.CountBySoBuoiAsync(lieuTrinhID);
@@ -93,20 +91,26 @@ public class LieuTrinhDieuTriService
                 throw new Exception("Chưa đủ số buổi để hoàn thành liệu trình");
         }
 
-        lieuTrinh.CapNhatTrangThai(trangThai, ghiChu);
+        lieuTrinh.CapNhatTrangThai(dto.TrangThai, dto.GhiChu);
         await _lieuTrinhRepo.UpdateTrangThaiAsync(lieuTrinh);
 
         return true;
     }
 
-    public async Task<LieuTrinhDieuTri?> LayTheoIdAsync(int lieuTrinhID)
+    public async Task<LieuTrinhDieuTriResponeDTO?> LayTheoIdAsync(int lieuTrinhID)
     {
-        return await _lieuTrinhRepo.GetByIdAsync(lieuTrinhID);
+        var lt = await _lieuTrinhRepo.GetByIdAsync(lieuTrinhID);
+        if (lt == null) return null;
+
+        return MapToDto(lt);
     }
 
-    public async Task<LieuTrinhDieuTri?> LayTheoBenhNhanAsync(int benhNhanID)
+    public async Task<LieuTrinhDieuTriResponeDTO?> LayTheoBenhNhanAsync(int benhNhanID)
     {
-        return await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
+        var lt = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
+        if (lt == null) return null;
+
+        return MapToDto(lt);
     }
 
     public async Task<int?> LayIdTheoBenhNhanAsync(int benhNhanID)
@@ -114,22 +118,44 @@ public class LieuTrinhDieuTriService
         return await _lieuTrinhRepo.GetIdByBenhNhanIdAsync(benhNhanID);
     }
 
-    public async Task<List<LieuTrinhDieuTri>> DanhSachAsync()
+    public async Task<List<LieuTrinhDieuTriResponeDTO>> DanhSachAsync()
     {
-        return await _lieuTrinhRepo.GetAllAsync();
+        var list = await _lieuTrinhRepo.GetAllAsync();
+
+        return list.Select(MapToDto).ToList();
     }
 
-    public async Task<List<LieuTrinhDieuTri>> LocBatDauAsync(DateTime ngay, string trangThai)
+    public async Task<List<LieuTrinhDieuTriResponeDTO>> LocBatDauAsync(DateTime ngay, string trangThai)
     {
-        return await _lieuTrinhRepo.LocBatDauAsync(ngay, trangThai);
+        var list = await _lieuTrinhRepo.LocBatDauAsync(ngay, trangThai);
+
+        return list.Select(MapToDto).ToList();
     }
-    public async Task<List<LieuTrinhDieuTri>> LocKetThucAsync(DateTime ngay, string trangThai)
+    public async Task<List<LieuTrinhDieuTriResponeDTO>> LocKetThucAsync(DateTime ngay, string trangThai)
     {
-        return await _lieuTrinhRepo.LocKetThucAsync(ngay, trangThai);
+        var list = await _lieuTrinhRepo.LocKetThucAsync(ngay, trangThai);
+        return list.Select(MapToDto).ToList();
     }
-    public async Task<List<LieuTrinhDieuTri>> DanhSachTheoBenhNhanAsync(int benhNhanID)
+    public async Task<List<LieuTrinhDieuTriResponeDTO>> DanhSachTheoBenhNhanAsync(int benhNhanID)
     {
-        return await _lieuTrinhRepo.GetListByBenhNhanAsync(benhNhanID);
+        var list = await _lieuTrinhRepo.GetListByBenhNhanAsync(benhNhanID);
+        return list.Select(MapToDto).ToList();
+    }
+
+    private static LieuTrinhDieuTriResponeDTO MapToDto(LieuTrinhDieuTri lt)
+    {
+        return new LieuTrinhDieuTriResponeDTO
+        {
+            LieuTrinhID = lt.LieuTrinhID,
+            BenhNhanID = lt.BenhNhanID,
+            PhienKhamID = lt.PhienKhamID,
+            TenLieuTrinh = lt.TenLieuTrinh,
+            TongSoBuoi = lt.TongSoBuoi,
+            TrangThai = lt.TrangThai,
+            GhiChu = lt.GhiChu,
+            NgayBatDau = lt.NgayBatDau,
+            NgayKetThuc = lt.NgayKetThuc
+        };
     }
 }
 

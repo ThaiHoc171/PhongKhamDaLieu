@@ -100,20 +100,42 @@ public class LieuTrinh_BuoiDieuTriService
     }
 
 
-    public async Task<List<LieuTrinh_BuoiDieuTri>> LayTheoLieuTrinhAsync(int lieuTrinhID)
+    public async Task<List<BuoiDieuTriResponeDTO>> LayTheoLieuTrinhAsync(int lieuTrinhID)
     {
-        return await _repo.GetByLieuTrinhAsync(lieuTrinhID);
+        var list = await _repo.GetByLieuTrinhAsync(lieuTrinhID);
+
+        return list.Select(MapToDto).ToList();
     }
-    public async Task<List<LieuTrinh_BuoiDieuTri>> LocDuKienAsync(DateTime ngay, string trangThai)
+    public async Task<List<BuoiDieuTriResponeDTO>> LocDuKienAsync(DateTime ngay, string trangThai)
     {
-        return await _repo.LocDuKienAsync(ngay, trangThai);
+        var list = await _repo.LocDuKienAsync(ngay, trangThai);
+        return list.Select(MapToDto).ToList();
     }
-    public async Task<List<LieuTrinh_BuoiDieuTri>> LocBatDauAsync(DateTime ngay, string trangThai)
+    public async Task<List<BuoiDieuTriResponeDTO>> LocBatDauAsync(DateTime ngay, string trangThai)
     {
-        return await _repo.LocBatDauAsync(ngay, trangThai);
+        var list = await _repo.LocBatDauAsync(ngay, trangThai);
+        return list.Select(MapToDto).ToList();
     }
-    public async Task<List<LieuTrinh_BuoiDieuTri>> GetAllAsync()
+    public async Task<List<BuoiDieuTriResponeDTO>> GetAllAsync()
     {
-        return await _repo.GetAllAsync();
+        var list = await _repo.GetAllAsync();
+        return list.Select(MapToDto).ToList();
+    }
+
+    private static BuoiDieuTriResponeDTO MapToDto(LieuTrinh_BuoiDieuTri buoi)
+    {
+        return new BuoiDieuTriResponeDTO
+        {
+            BuoiDieuTriID = buoi.BuoiDieuTriID,
+            LieuTrinhID = buoi.LieuTrinhID,
+            CaKhamID = buoi.CaKhamID,
+            SoBuoi = buoi.SoBuoi,
+            NgayDuKien = buoi.NgayDuKien,
+            NgayThucHien = buoi.NgayThucHien,
+            NhanVienID = buoi.NhanVienID,
+            TrangThai = buoi.TrangThai,
+            GhiChu = buoi.GhiChu,
+            HinhAnhJSON = buoi.HinhAnhJSON
+        };
     }
 }

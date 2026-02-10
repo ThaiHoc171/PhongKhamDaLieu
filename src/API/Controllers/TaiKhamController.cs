@@ -66,11 +66,7 @@ public class TaiKhamController : ControllerBase
         int id,
         [FromBody] CapNhatTaiKhamDTO dto)
     {
-        var result = await _service.CapNhatAsync(
-            taiKhamID: id,
-            trangThai: dto.TrangThai,
-            caKhamID: dto.CaKhamID
-        );
+        var result = await _service.CapNhatAsync(id, dto);
 
         if (!result)
             return NotFound(new { Message = "Lịch tái khám không tồn tại" });

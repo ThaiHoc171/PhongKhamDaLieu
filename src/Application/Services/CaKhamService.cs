@@ -104,11 +104,7 @@ public class CaKhamService
         return tongCaDaTao;
 	}
     public async Task<bool> DangKyKhamAsync(
-    int caKhamID,
-    int benhNhanID,
-    string lyDoKham,
-    DateTime ngayDat,
-    string? ghiChu)
+    int caKhamID, DangKyCaKhamDTO dto)
     {
         var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
         if (caKham == null)
@@ -118,7 +114,7 @@ public class CaKhamService
             throw new Exception("Ca khám không khả dụng để đăng ký");
 
         var lich = await _lichLamViecRepo.GetByIdAsync(caKham.LichLamViecID);
-        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanID);
+        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(dto.BenhNhanID);
 
         if (caKham.LoaiCaKham == "Khám")
         {
@@ -131,12 +127,24 @@ public class CaKhamService
 
         if (caKham.LoaiCaKham == "Điều trị")
         {
-            var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
+            var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(dto.BenhNhanID);
             if (lieuTrinh == null)
                 throw new Exception("Bệnh nhân không có liệu trình điều trị");
 
             if (lieuTrinh.TrangThai != "Đang điều trị")
                 throw new Exception("Liệu trình không ở trạng thái điều trị");
+            var buoiGanNhat = await _lieuTrinh_BuoiDieuTriRepo.GetBuoiGanNhatAsync(lieuTrinh.LieuTrinhID);
+
+            if (buoiGanNhat != null)
+            {
+                if (!buoiGanNhat.NgayThucHien.HasValue)
+                    throw new Exception("Buổi điều trị trước chưa hoàn thành");
+
+                if (caKham.NgayKham < buoiGanNhat.NgayThucHien.Value.AddDays(7))
+                    throw new Exception(
+                        "Khoảng cách giữa các buổi điều trị phải tối thiểu 7 ngày"
+                    );
+            }
 
             var buoidieutri = await _lieuTrinh_BuoiDieuTriRepo.GetByLieuTrinhAsync(lieuTrinh.LieuTrinhID);
             foreach (var dt in buoidieutri)
@@ -152,7 +160,7 @@ public class CaKhamService
             DateTime ngayDuKien =
                 lieuTrinh.NgayBatDau.AddDays((soBuoi - 1) * 7);
 
-            caKham.DangKyKham(benhNhanID, lyDoKham, ngayDat, ghiChu);
+            caKham.DangKyKham(dto.BenhNhanID, dto.LyDoKham, dto.NgayDat, dto.GhiChu);
             await _caKhamRepo.UpdateAsync(caKham);
 
             var buoi = new LieuTrinh_BuoiDieuTri(
@@ -168,7 +176,7 @@ public class CaKhamService
             return true;
         }
 
-        caKham.DangKyKham(benhNhanID, lyDoKham, ngayDat, ghiChu);
+        caKham.DangKyKham(dto.BenhNhanID, dto.LyDoKham, dto.NgayDat, dto.GhiChu);
         await _caKhamRepo.UpdateAsync(caKham);
         return true;
     }
@@ -184,21 +192,46 @@ public class CaKhamService
 		await _caKhamRepo.UpdateAsync(caKham);
 		return true;
 	}
-	public async Task<CaKham?> LayCaKhamTheoIdAsync(int caKhamId)
+	public async Task<CaKhamResponseDTO?> LayCaKhamTheoIdAsync(int caKhamId)
 	{
-		return await _caKhamRepo.GetByIdAsync(caKhamId);
-	}
-	public async Task<List<CaKham>> DanhSachCaKhamTheoNgayAsync(DateTime ngay, string trangThai)
-	{
-		return await _caKhamRepo.LocAsync(ngay, trangThai);
-	}
-	public async Task<List<CaKham>> GetByBenhNhanAsync(int benhNhanID)
-	{
-		return await _caKhamRepo.GetByBenhNhanAsync(benhNhanID);
-	}
-	public async Task<List<CaKham>> GetAllAsync()
-	{
-		return await _caKhamRepo.GetAllAsync();
-	}
+        var ca = await _caKhamRepo.GetByIdAsync(caKhamId);
+        if (ca == null) return null;
 
+        return MapToDto(ca);
+	}
+	public async Task<List<CaKhamResponseDTO>> DanhSachCaKhamTheoNgayAsync(DateTime ngay, string trangThai)
+	{
+		var list = await _caKhamRepo.LocAsync(ngay, trangThai);
+
+        return list.Select(MapToDto).ToList();
+	}
+	public async Task<List<CaKhamResponseDTO>> GetByBenhNhanAsync(int benhNhanID)
+	{
+        var list = await _caKhamRepo.GetByBenhNhanAsync(benhNhanID);
+
+        return list.Select(MapToDto).ToList();
+    }
+	public async Task<List<CaKhamResponseDTO>> GetAllAsync()
+	{
+        var list = await _caKhamRepo.GetAllAsync();
+
+        return list.Select(MapToDto).ToList();
+    }
+    private static CaKhamResponseDTO MapToDto(CaKham ca)
+    {
+        return new CaKhamResponseDTO
+        {
+            CaKhamID = ca.CaKhamID,
+            LoaiCaKham = ca.LoaiCaKham,
+            LichLamViecID = ca.LichLamViecID,
+            KhungGioID = ca.KhungGioID,
+            PhongChucNangID = ca.PhongChucNangID,
+            BenhNhanID = ca.BenhNhanID,
+            LyDoKham = ca.LyDoKham,
+            TrangThai = ca.TrangThai,
+            NgayDat = ca.NgayDat,
+            NgayKham = ca.NgayKham,
+            GhiChu = ca.GhiChu
+        };
+    }
 }
