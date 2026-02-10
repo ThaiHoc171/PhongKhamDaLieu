@@ -89,11 +89,11 @@ public class PhienKhamThietBiController : ControllerBase
 
 	// PUT: api/PhienKhamThietBi/{id}
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id, [FromBody] PhienKhamThietBiRequestDTO dto)
+	public async Task<IActionResult> CapNhat(int id, [FromBody] string ghiChu)
 	{
 		try
 		{
-			var result = await _service.CapNhatAsync(id, dto);
+			var result = await _service.CapNhatAsync(id, ghiChu);
 
 			if (!result)
 				return NotFound(new { message = "Thiết bị không tồn tại trong phiên khám." });

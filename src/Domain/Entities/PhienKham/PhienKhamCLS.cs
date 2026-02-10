@@ -1,4 +1,5 @@
-﻿
+﻿using Domain.Enums;
+
 namespace Domain.Entities;
 
 public class PhienKhamCLS
@@ -6,22 +7,23 @@ public class PhienKhamCLS
 	public int PhienKhamCLSID { get; private set; }
 	public int PhienKhamID { get; private set; }
 	public int CLSID { get; private set; }
-	public string TrangThai { get; private set; } = default!;
+	public TrangThaiCLSEnum TrangThai { get; private set; }
 	public string? KetQua { get; private set; }
 	public string? FileDinhKem { get; private set; }
-	public DateTime NgayThucHien { get; private set; }
+	public DateTime? NgayThucHien { get; private set; }
 	public int NhanVienChiDinhID { get; private set; }
-	public int NhanVienThucHienID { get; private set; }
+	public int? NhanVienThucHienID { get; private set; }
 	public string? GhiChu { get; private set; }
 
-	//Constructor map từ db
-	public PhienKhamCLS(int phienKhamCLSID, int phienKhamID, int cLSID, string trangThai, string? ketQua, string? fileDinhKem, 
-						DateTime ngayThucHien, int nhanVienChiDinhID, int nhanVienThucHienID,  string? ghiChu)
+	// Constructor MAP từ DB
+	public PhienKhamCLS(int phienKhamCLSID,int phienKhamID,int clsID,string trangThai,
+		string? ketQua,string? fileDinhKem,DateTime? ngayThucHien,int nhanVienChiDinhID,
+		int? nhanVienThucHienID,string? ghiChu)
 	{
 		PhienKhamCLSID = phienKhamCLSID;
 		PhienKhamID = phienKhamID;
-		CLSID = cLSID;
-		TrangThai = trangThai;
+		CLSID = clsID;
+		TrangThai = TrangThaiCLSExtensions.ToEnum(trangThai);
 		KetQua = ketQua;
 		FileDinhKem = fileDinhKem;
 		NgayThucHien = ngayThucHien;
@@ -29,33 +31,45 @@ public class PhienKhamCLS
 		NhanVienThucHienID = nhanVienThucHienID;
 		GhiChu = ghiChu;
 	}
-	//Constructor tạo mới
-	public PhienKhamCLS( int phienKhamID, int cLSID, int nhanVienChiDinhID, string? ghiChu)
+
+	// Constructor TẠO MỚI
+	public PhienKhamCLS(int phienKhamID,int clsID,int nhanVienChiDinhID,string? ghiChu)
 	{
 		PhienKhamID = phienKhamID;
-		CLSID = cLSID;
+		CLSID = clsID;
 		NhanVienChiDinhID = nhanVienChiDinhID;
 		GhiChu = ghiChu;
+
+		TrangThai = TrangThaiCLSEnum.DangCho;
 	}
+
+	// Nghiệp vụ
 	public void NhanPhienKhamCLS(int nhanVienThucHienID)
 	{
-		if (TrangThai != "Đang chờ")
+		if (TrangThai != TrangThaiCLSEnum.DangCho)
 			throw new InvalidOperationException("Chỉ được nhận CLS khi đang chờ xử lý");
 
-		TrangThai = "Đang thực hiện";
+		TrangThai = TrangThaiCLSEnum.DangThucHien;
 		NhanVienThucHienID = nhanVienThucHienID;
+		NgayThucHien = DateTime.Now;
 	}
-	public void CapNhatKetQua(string? ketQua, string? fileDinhKem,string? ghiChu)
+
+	public void CapNhatKetQua(string? ketQua, string? fileDinhKem, string? ghiChu)
 	{
-		if (TrangThai != "Đang thực hiện")
+		if (TrangThai != TrangThaiCLSEnum.DangThucHien)
 			throw new InvalidOperationException("CLS chưa được xử lý");
-		TrangThai = "Hoàn thành";
+
+		TrangThai = TrangThaiCLSEnum.HoanThanh;
 		KetQua = ketQua;
 		FileDinhKem = fileDinhKem;
 		GhiChu = ghiChu;
 	}
+
 	public void HuyPhienKhamCLS()
 	{
-		TrangThai = "Đã hủy";
+		if (TrangThai == TrangThaiCLSEnum.HoanThanh)
+			throw new InvalidOperationException("CLS đã hoàn thành, không thể hủy");
+
+		TrangThai = TrangThaiCLSEnum.DaHuy;
 	}
 }
