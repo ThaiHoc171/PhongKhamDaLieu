@@ -1,23 +1,17 @@
-﻿
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class PhienKhamThietBi
 {
 	public int PhienKhamThietBiID { get; private set; }
 	public int PhienKhamID { get; private set; }
-	public int ThietBiID { get; private set; }
-	public int SoLuong { get; private set; }
+	public int ChiTietID { get; private set; }
 	public string? GhiChu { get; private set; }
 
 	// Tạo mới
-	public PhienKhamThietBi(int phienKhamID, int thietBiID, int soLuong, string? ghiChu)
+	public PhienKhamThietBi(int phienKhamID, int chiTietID, string? ghiChu)
 	{
-		if (soLuong <= 0)
-			throw new ArgumentException("Số lượng thiết bị phải lớn hơn 0");
-
 		PhienKhamID = phienKhamID;
-		ThietBiID = thietBiID;
-		SoLuong = soLuong;
+		ChiTietID = chiTietID;
 		GhiChu = ghiChu;
 	}
 
@@ -25,23 +19,17 @@ public class PhienKhamThietBi
 	public PhienKhamThietBi(
 		int phienKhamThietBiID,
 		int phienKhamID,
-		int thietBiID,
-		int soLuong,
+		int chiTietID,
 		string? ghiChu)
 	{
 		PhienKhamThietBiID = phienKhamThietBiID;
 		PhienKhamID = phienKhamID;
-		ThietBiID = thietBiID;
-		SoLuong = soLuong;
+		ChiTietID = chiTietID;
 		GhiChu = ghiChu;
 	}
 
-	public void CapNhat(int soLuong, string? ghiChu)
+	public void CapNhatGhiChu(string? ghiChu)
 	{
-		if (soLuong <= 0)
-			throw new ArgumentException("Số lượng thiết bị phải lớn hơn 0");
-
-		SoLuong = soLuong;
 		GhiChu = ghiChu;
 	}
 }

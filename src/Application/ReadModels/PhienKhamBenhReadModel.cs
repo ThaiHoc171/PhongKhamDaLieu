@@ -4,9 +4,9 @@ public class PhienKhamReadModel
 	public int PhienKhamID { get; set; } 
 	public int CaKhamID { get; set; } 
 	public int BenhNhanID { get; set; } 
-	public string TenBenhNhan { get; set; } 
+	public string TenBenhNhan { get; set; } = default!;
 	public int NhanVienID { get; set; } 
-	public string TenNhanVien { get; set; } 
+	public string TenNhanVien { get; set; } = default!;
 	public DateTime NgayKham { get; set; } 
 	public string TrangThai { get; set; } = default!; 
 	public string? ChuanDoanCuoi { get; set; } 
