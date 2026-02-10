@@ -95,7 +95,12 @@ public class NhanVien
 		TenChucVu = tenChucVu;
 		ThongTinCaNhan = thongTinCaNhan;
 	}
-
+	// Dbcontext cho auth
+	public NhanVien(int nhanVienID, int chucVuID)
+	{
+		NhanVienID = nhanVienID;
+		ChucVuID = chucVuID;
+	}
 	public void CapNhatThongTin(
 		int chucVuID,
 		int phongChucNangID,
