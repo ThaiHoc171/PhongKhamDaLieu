@@ -66,16 +66,7 @@ public class HoSoBenhAnController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> CapNhatHoSo(int id,[FromBody] HoSoBenhAnUdateDTO dto)
     {
-        var result = await _hoSoBenhAnService.CapNhatThongTinAsync(
-            hoSoBenhAnID: id,
-            benhNen: dto.BenhNen,
-            diUng: dto.DiUng,
-            tienSuBenh:dto.TienSuBenh,
-            tienSuGiaDinh:dto.TienSuGiaDinh,
-            thoiQuenSong:dto.ThoiQuenSong,
-            thongTinKhac: dto.ThongTinKhac,
-            ngayCapNhat: dto.NgayCapNhat
-        );
+        var result = await _hoSoBenhAnService.CapNhatThongTinAsync(id, dto);
 
         if (!result)
             return NotFound(new { Message = "Hồ sơ không tồn tại" });

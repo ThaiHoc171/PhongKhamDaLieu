@@ -1,4 +1,5 @@
-﻿using Application.DTOs;
+﻿using System.Collections.Generic;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
@@ -39,32 +40,55 @@ public class HoSoBenhAnService
         var HoSo = await _hoSoRepo.AddAsync(hs);
         return HoSo;
     }
-    public async Task<bool> CapNhatThongTinAsync(int hoSoBenhAnID, string? benhNen, string? diUng, string? tienSuBenh, string? tienSuGiaDinh, string? thoiQuenSong, string? thongTinKhac, DateTime ngayCapNhat)
+    public async Task<bool> CapNhatThongTinAsync(int hoSoBenhAnID, HoSoBenhAnUdateDTO dto)
     {
-        if (benhNen == null && diUng == null && tienSuBenh == null && tienSuGiaDinh == null && thoiQuenSong == null && thongTinKhac == null)
+        if (dto.BenhNen == null && dto.DiUng == null && dto.TienSuBenh == null && dto.TienSuGiaDinh == null && dto.ThoiQuenSong == null && dto.ThongTinKhac == null)
         {
             throw new Exception("Không có thông tin nào để cập nhật");
         }
         var hoSo = await _hoSoRepo.GetByIdAsync(hoSoBenhAnID);
         if (hoSo == null) return false;
-        if (ngayCapNhat < hoSo.NgayTao)
+        if (dto.NgayCapNhat < hoSo.NgayTao)
             throw new Exception("Ngày cập nhật không hợp lệ");
-        hoSo.CapNhatThongTin(benhNen, diUng, tienSuBenh, tienSuGiaDinh, thoiQuenSong, thongTinKhac, ngayCapNhat);
+        hoSo.CapNhatThongTin(dto.BenhNen,dto.DiUng, dto.TienSuBenh, dto.TienSuGiaDinh, dto.ThoiQuenSong, dto.ThongTinKhac, dto.NgayCapNhat);
         await _hoSoRepo.UpdateAsync(hoSo);
         return true;
     }
 
-    public async Task<HoSoBenhAn?> GetByIdAsync(int hoSoBenhAnID)
+    public async Task<HoSoBenhAnResponeDTO?> GetByIdAsync(int hoSoBenhAnID)
     {
-        return await _hoSoRepo.GetByIdAsync(hoSoBenhAnID);
+        var hs = await _hoSoRepo.GetByIdAsync(hoSoBenhAnID);
+        if(hs == null) return null;
+        return MapToDto(hs);
     }
-    public async Task<HoSoBenhAn?> GetByBenhNhanIdAsync(int benhNhanID)
+    public async Task<HoSoBenhAnResponeDTO?> GetByBenhNhanIdAsync(int benhNhanID)
     {
-        return await _hoSoRepo.GetByBenhNhanIdAsync(benhNhanID);
+        var hs = await _hoSoRepo.GetByBenhNhanIdAsync(benhNhanID);
+        if (hs == null) return null;
+        return MapToDto(hs);
     }
-    public async Task<List<HoSoBenhAn>> GetAllAsync()
+    public async Task<List<HoSoBenhAnResponeDTO>> GetAllAsync()
     {
-        return await _hoSoRepo.GetAllAsync();
+        var list = await _hoSoRepo.GetAllAsync();
+
+        return list.Select(MapToDto).ToList();
+    }
+
+    private static HoSoBenhAnResponeDTO MapToDto(HoSoBenhAn hs)
+    {
+        return new HoSoBenhAnResponeDTO
+        {
+            HoSoBenhAnID = hs.HoSoBenhAnID,
+            BenhNhanID = hs.BenhNhanID,
+            BenhNen = hs.BenhNen,
+            DiUng = hs.DiUng,
+            TienSuBenh = hs.TienSuBenh,
+            TienSuGiaDinh = hs.TienSuGiaDinh,
+            ThoiQuenSong = hs.ThoiQuenSong,
+            ThongTinKhac = hs.ThongTinKhac,
+            NgayTao = hs.NgayTao,
+            NgayCapNhat = hs.NgayCapNhat
+        };
     }
 }
 

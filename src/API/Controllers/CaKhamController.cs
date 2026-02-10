@@ -47,23 +47,7 @@ public class CaKhamController : ControllerBase
 		int id,
 		[FromBody] DangKyCaKhamDTO dto)
 	{
-		var result = await _caKhamService.DangKyKhamAsync(
-			caKhamID: id,
-			benhNhanID: dto.BenhNhanID,
-			lyDoKham: dto.LyDoKham,
-			ngayDat: dto.NgayDat,
-            ghiChu: dto.GhiChu
-		);
-
-        var tk = await _taiKhamService.GetIdByBenhNhanIdAsync(dto.BenhNhanID);
-        if (tk.HasValue)
-        {
-            await _taiKhamService.CapNhatAsync(
-                taiKhamID: tk.Value,
-                trangThai: "Đang xử lý",
-                caKhamID: id
-            );
-        }
+		var result = await _caKhamService.DangKyKhamAsync(id,dto);
 
         if (!result)
 			return NotFound(new { Message = "Ca khám không tồn tại" });

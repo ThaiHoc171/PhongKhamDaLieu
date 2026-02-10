@@ -84,12 +84,7 @@ public class LieuTrinhDieuTriController : ControllerBase
         int id,
         [FromBody] CapNhatLieuTrinhDieuTriDTO dto)
     {
-        var result = await _service.CapNhatAsync(
-            lieuTrinhID: id,
-            tenLieuTrinh: dto.TenLieuTrinh,
-            tongSoBuoi: dto.TongSoBuoi,
-            ngayKetThuc: dto.NgayKetThuc
-        );
+        var result = await _service.CapNhatAsync(id, dto);
 
         if (!result)
             return NotFound(new { Message = "Liệu trình không tồn tại" });
@@ -102,11 +97,7 @@ public class LieuTrinhDieuTriController : ControllerBase
     int id,
     [FromBody] CapNhatTrangThaiLieuTrinhDieuTriDTO dto)
     {
-        var result = await _service.CapNhatTrangThaiAsync(
-            lieuTrinhID: id,
-            trangThai: dto.TrangThai,
-            ghiChu: dto.GhiChu
-        );
+        var result = await _service.CapNhatTrangThaiAsync(id, dto);
 
         if (!result)
             return NotFound(new { Message = "Liệu trình không tồn tại" });

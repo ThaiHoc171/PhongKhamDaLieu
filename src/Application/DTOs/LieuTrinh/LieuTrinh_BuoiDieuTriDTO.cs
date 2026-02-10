@@ -16,15 +16,15 @@ public class CapNhatTrangThaiBuoiDieuTriDTO
 
 public class BuoiDieuTriResponeDTO
 {
-    public int BuoiDieuTriID { get; private set; }
-    public int LieuTrinhID { get; private set; }
-    public int CaKhamID { get; private set; }
-    public int SoBuoi { get; private set; }
-    public DateTime? NgayDuKien { get; private set; }
-    public DateTime? NgayThucHien { get; private set; }
-    public int? NhanVienID { get; private set; }
-    public string TrangThai { get; private set; }
-    public string? GhiChu { get; private set; }
-    public string? HinhAnhJSON { get; private set; }
+    public int BuoiDieuTriID { get; set; }
+    public int LieuTrinhID { get; set; }
+    public int CaKhamID { get; set; }
+    public int SoBuoi { get; set; }
+    public DateTime? NgayDuKien { get; set; }
+    public DateTime? NgayThucHien { get; set; }
+    public int? NhanVienID { get; set; }
+    public string TrangThai { get; set; } = "";
+    public string? GhiChu { get; set; }
+    public string? HinhAnhJSON { get; set; }
 }
 
