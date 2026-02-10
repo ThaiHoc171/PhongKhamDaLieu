@@ -112,6 +112,24 @@ public class LieuTrinh_BuoiDieuTriRepository : ILieuTrinh_BuoiDieuTriRepository
 
         return list;
     }
+
+    public async Task<LieuTrinh_BuoiDieuTri?> GetBuoiGanNhatAsync(int lieuTrinhID)
+    {
+        const string sql = @"SELECT TOP 1 BuoiDieuTriID, LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID, TrangThai, GhiChu, HinhAnhJSON
+            FROM LieuTrinh_BuoiDieuTri
+            WHERE LieuTrinhID = @LieuTrinhID
+              AND NgayThucHien IS NOT NULL
+            ORDER BY NgayThucHien DESC";
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@LieuTrinhID", lieuTrinhID);
+
+        await conn.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+        return await reader.ReadAsync() ? Map(reader) : null;
+    }
+
     public async Task<bool> ExistsByCaKhamAsync(int caKhamID)
     {
         const string sql = @"SELECT 1 FROM LieuTrinh_BuoiDieuTri WHERE CaKhamID = @id";
