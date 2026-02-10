@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Application.ReadModels;
 
 namespace Application.Interfaces;
 public interface IPhienKhamCLSRepository

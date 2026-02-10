@@ -14,7 +14,7 @@ public class LichLamViecDTO
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
 }
-public class LichLamViecRespondDTO
+public class LichLamViecResponseDTO
 {
 	public int LichLamViecID { get; set; }
 	public NameResponseDTO NhanVien { get; init; } = null!;
@@ -34,5 +34,5 @@ public class WeekLichLamViecDTO
 	public int Page { get; set; }
 	public DateTime TuanBatDau { get; set; }
 	public DateTime TuanKetThuc { get; set; }
-	public List<LichLamViecRespondDTO> LichLamViecs { get; set; } = new();
+	public List<LichLamViecResponseDTO> LichLamViecs { get; set; } = new();
 }

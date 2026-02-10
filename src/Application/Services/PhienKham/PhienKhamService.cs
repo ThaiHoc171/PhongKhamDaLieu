@@ -1,6 +1,5 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
-using Application.ReadModels;
 using Domain.Entities;
 using Domain.Enums;
 
