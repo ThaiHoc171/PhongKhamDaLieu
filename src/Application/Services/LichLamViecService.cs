@@ -87,13 +87,13 @@ public class LichLamViecService
 			throw;
 		}
 	}
-	public async Task<LichLamViecRespondDTO?> GetByIdAsync(int id)
+	public async Task<LichLamViecResponseDTO?> GetByIdAsync(int id)
 	{
 		var entity = await _repo.GetByIdAsync(id);
 		if (entity == null)
 			return null;
 		var nv = await _nvRepo.GetNameByIdAsync(entity.NhanVienID);
-		return new LichLamViecRespondDTO
+		return new LichLamViecResponseDTO
 		{
 			LichLamViecID = entity.LichLamViecID,
 			NhanVien = new NameResponseDTO
@@ -106,14 +106,14 @@ public class LichLamViecService
 			GhiChu = entity.GhiChu
 		};
 	}
-	public async Task<List<LichLamViecRespondDTO>> GetAllAsync()
+	public async Task<List<LichLamViecResponseDTO>> GetAllAsync()
 	{
 		var entities =  await _repo.GetAllAsync();
-		var result = new List<LichLamViecRespondDTO>();
+		var result = new List<LichLamViecResponseDTO>();
 		foreach (var entity in entities)
 		{
 			var nv = await _nvRepo.GetNameByIdAsync(entity.NhanVienID);
-			result.Add(new LichLamViecRespondDTO
+			result.Add(new LichLamViecResponseDTO
 			{
 				LichLamViecID = entity.LichLamViecID,
 				NhanVien = new NameResponseDTO
@@ -143,7 +143,7 @@ public class LichLamViecService
 			Page = page,
 			TuanBatDau = start,
 			TuanKetThuc = end,
-			LichLamViecs = entities.Select(e => new LichLamViecRespondDTO
+			LichLamViecs = entities.Select(e => new LichLamViecResponseDTO
 			{
 				
 				LichLamViecID = e.LichLamViecID,
@@ -159,8 +159,32 @@ public class LichLamViecService
 		};
 	}
 
-	public async Task<List<LichLamViec>> GetByKhoangNgayAsync(DateTime tuNgay, DateTime denNgay)
+	public async Task<List<LichLamViecResponseDTO>> GetByKhoangNgayAsync(
+	DateTime tuNgay,
+	DateTime denNgay)
 	{
-		return await _repo.GetByKhoangNgayAsync(tuNgay, denNgay);
+		var entities = await _repo.GetByKhoangNgayAsync(tuNgay, denNgay);
+
+		var result = new List<LichLamViecResponseDTO>();
+
+		foreach (var e in entities)
+		{
+			var tenNhanVien = await _nvRepo.GetNameByIdAsync(e.NhanVienID);
+
+			result.Add(new LichLamViecResponseDTO
+			{
+				LichLamViecID = e.LichLamViecID,
+				NhanVien = new NameResponseDTO
+				{
+					Id = e.NhanVienID,
+					Name = tenNhanVien
+				},
+				Ngay = e.Ngay,
+				CaLamViec = e.CaLamViec,
+				GhiChu = e.GhiChu
+			});
+		}
+
+		return result;
 	}
 }
