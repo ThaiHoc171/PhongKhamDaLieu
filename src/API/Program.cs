@@ -1,4 +1,4 @@
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.Repository;
 using Application.Services;
 using Infrastructure.Repositories;
@@ -6,6 +6,9 @@ using Infrastructure.Repository;
 using Microsoft.OpenApi.Models;
 using Services;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +31,37 @@ builder.Services.AddControllers()
 	{
 		opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 	});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+	.AddJwtBearer(options =>
+	{
+		options.TokenValidationParameters = new TokenValidationParameters
+		{
+			ValidateIssuer = false,
+			ValidateAudience = false,
+			ValidateLifetime = true,
+			ValidateIssuerSigningKey = true,
+			IssuerSigningKey = new SymmetricSecurityKey(
+				Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+			)
+		};
+	});
+
+builder.Services.AddAuthorization(options =>
+{
+	options.AddPolicy("BacSiOnly", p =>
+	{
+		p.RequireRole("Nhân viên");
+		p.RequireClaim("ChucVu", "Bác sĩ");
+	});
+
+	options.AddPolicy("LeTanOnly", p =>
+	{
+		p.RequireRole("Nhân viên");
+		p.RequireClaim("ChucVu", "Lễ tân");
+	});
+});
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<ITaiKhoanRepository, TaiKhoanRepository>();
 builder.Services.AddScoped<TaiKhoanService>();
@@ -94,6 +128,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clinic API v1");
     });
 }
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 

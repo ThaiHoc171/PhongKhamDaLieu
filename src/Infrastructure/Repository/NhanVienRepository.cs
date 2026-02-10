@@ -180,6 +180,27 @@ public class NhanVienRepository : INhanVienRepository
 		await conn.OpenAsync();
 		return await cmd.ExecuteScalarAsync() as string;
 	}
+	public async Task<NhanVien> GetForAuthAsync(int TaiKhoanId)
+	{
+		const string sql = @"
+			SELECT 
+				nv.NhanVienID, nv.ChucVuID
+			FROM NhanVien nv
+			JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+			WHERE tt.TaiKhoanID = @TaiKhoanID
+		";
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@TaiKhoanID", TaiKhoanId);
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+		if (!await reader.ReadAsync())
+			return null;
+		return new NhanVien(
+			nhanVienID: (int)reader["NhanVienID"],
+			chucVuID: (int)reader["ChucVuID"]
+			);
+	}
 	private static NhanVien MapToEntity(SqlDataReader r)
 	{
 		var thongTin = new ThongTinCaNhan(

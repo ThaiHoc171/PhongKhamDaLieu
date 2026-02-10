@@ -11,5 +11,6 @@ namespace Application.Interfaces
 		Task<List<NhanVien>> GetAllAsync();
 		Task<List<NhanVien>> SearchAsync(string keyword);
 		Task<string?> GetNameByIdAsync(int id);
+		Task<NhanVien> GetForAuthAsync(int TaiKhoanId);
 	}
 }

@@ -78,6 +78,24 @@ public class BenhNhanRepository : IBenhNhanRepository
 		await conn.OpenAsync();
 		return await cmd.ExecuteScalarAsync() as string;
 	}
+	public async Task<int> GetForAuthAsync(int taiKhoanID)
+	{
+		const string sql = @"
+			SELECT bn.BenhNhanID
+			FROM BenhNhan bn
+			INNER JOIN ThongTinCaNhan tt ON bn.ThongTinID = tt.ThongTinID
+			WHERE tt.TaiKhoanID = @TaiKhoanID";
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@TaiKhoanID", taiKhoanID);
+		await conn.OpenAsync();
+		var result = await cmd.ExecuteScalarAsync();
+		if (result == null)
+		{
+			throw new Exception("Bệnh nhân không tồn tại");
+		}
+		return (int)result;
+	}
 	public async Task<int> AddAsync(BenhNhan benhNhan)
 	{
 		const string sql = @"
