@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.ReadModels;
+using Domain.Entities;
 
 namespace Application.Interfaces;
 

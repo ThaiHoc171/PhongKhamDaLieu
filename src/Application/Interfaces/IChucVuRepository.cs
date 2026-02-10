@@ -6,6 +6,7 @@ namespace Application.Interfaces
 	{
 		Task<List<ChucVu>> GetAllAsync();
 		Task<ChucVu?> GetByIdAsync(int id);
+		Task<string?> GetNameByIdAsync(int id);
 		Task AddAsync(ChucVu chucVu);
 		Task UpdateAsync(ChucVu chucVu);
 	}
