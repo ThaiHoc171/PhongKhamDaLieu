@@ -1,22 +1,33 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 
 public class ToaThuocService
 {
 	private readonly IToaThuocRepository _toaThuocRepo;
 	private readonly IChiTietToaThuocRepository _chiTietRepo;
+	private readonly IPhienKhamRepository _phienKhamRepo;
 
 	public ToaThuocService(
 		IToaThuocRepository toaThuocRepo,
-		IChiTietToaThuocRepository chiTietRepo)
+		IChiTietToaThuocRepository chiTietRepo,
+		IPhienKhamRepository phienKhamRepo)
 	{
 		_toaThuocRepo = toaThuocRepo;
 		_chiTietRepo = chiTietRepo;
+		_phienKhamRepo = phienKhamRepo;
 	}
 
 	public async Task<int> TaoToaThuocAsync(TaoToaThuocDTO dto)
 	{
+		var phienKham = await _phienKhamRepo.GetByIdAsync(dto.PhienKhamID)
+			?? throw new Exception("Phiên khám không tồn tại");
+
+		if (phienKham.TrangThai != TrangThaiKhamEnum.DangKham)
+			throw new Exception("Không thể thêm toa thuốc khi phiên khám đã kết thúc");
+
+
 		var toaThuoc = new ToaThuoc(
 			dto.PhienKhamID,
 			dto.NhanVienKeDonID,

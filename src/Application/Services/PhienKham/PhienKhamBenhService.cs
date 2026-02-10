@@ -1,7 +1,6 @@
 ﻿using Domain.Entities;
 using Application.Interfaces;
 using Application.DTOs;
-using Application.ReadModels;
 using Domain.Enums;
 using System.Threading.Tasks;
 
