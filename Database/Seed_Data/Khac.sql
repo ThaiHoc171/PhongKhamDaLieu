@@ -74,12 +74,6 @@ VALUES
 (12, 3, 1, NULL),
 (13, 1, 1, NULL);
 
-
-<<<<<<< HEAD
-=======
-
-
->>>>>>> d4d8c8708a5009f37d5e1475d791376a70469453
 INSERT INTO CanLamSang (TenCLS, MoTa, Gia, LoaiXetNghiem) ---Thiếu GhiChu, NgayTao
 VALUES
 (N'Xét nghiệm máu', N'Đánh giá tế bào máu', 200000, N'Huyết học'),
@@ -104,13 +98,8 @@ VALUES
 (N'Xét nghiệm dị ứng', N'Test dị ứng', 200000, N'Dị ứng');
 
 
-<<<<<<< HEAD
+
 INSERT INTO PhienKham_CanLamSang (PhienKhamID, CanLamSangID, KetQua, NhanVienChiDinhID, NhanVienThucHienID) ---Thiếu FileDinhKem, NgayChiDinh, NgayThucHien, GhiChu
-=======
-INSERT INTO PhienKham_CanLamSang
-(PhienKhamID, CanLamSangID, TrangThai, KetQua, FileDinhKem,
- NgayChiDinh, NgayThucHien, NhanVienChiDinhID, NhanVienThucHienID, GhiChu)
->>>>>>> d4d8c8708a5009f37d5e1475d791376a70469453
 VALUES
 (1, 1, N'Hoàn thành', N'Bình thường', N'/files/cls/1.pdf', '2025-01-01', '2025-01-01', 2, 3, NULL),
 (2, 2, N'Hoàn thành', N'Tăng nhẹ', N'/files/cls/2.pdf', '2025-01-01', '2025-01-01', 3, 2, NULL),
@@ -129,12 +118,7 @@ VALUES
 
 
 -- ToaThuoc
-<<<<<<< HEAD
 INSERT INTO ToaThuoc (PhienKhamID, NhanVienKeDonID, TongTien) ---Thiếu NgayLap, GhiChu, bỏ TongTien
-=======
-INSERT INTO ToaThuoc
-(PhienKhamID, NhanVienKeDonID, NgayLap, GhiChu)
->>>>>>> d4d8c8708a5009f37d5e1475d791376a70469453
 VALUES
 (1,2,'2025-01-01',N'Điều trị mụn trứng cá'),
 (2,3,'2025-01-01',N'Điều trị dị ứng da'),
@@ -147,7 +131,6 @@ VALUES
 (9,2,'2025-01-05',N'Điều trị dị ứng mỹ phẩm'),
 (10,3,'2025-01-05',N'Điều trị nám da'),
 
-<<<<<<< HEAD
 -- ChiTietToaThuoc
 INSERT INTO ChiTietToaThuoc (ToaThuocID, ThuocID, LieuDung, SoLuong) ---Bỏ DonGia, ThanhTien
 VALUES
@@ -164,31 +147,6 @@ VALUES
 (11,11,N'Sáng 1 viên',8),
 (12,12,N'Tối',9),
 (13,13,N'Sáng-Tối',7);
-=======
-(11,2,'2025-01-06',N'Điều trị mụn trứng cá'),
-(12,3,'2025-01-06',N'Điều trị da dầu'),
-(13,2,'2025-01-07',N'Điều trị vảy nến');
-
-
-INSERT INTO ChiTietToaThuoc
-(ToaThuocID, ThuocID, LieuDung, SoLuong)
-VALUES
-(1,1,N'Sáng 1 viên',10),
-(2,2,N'Sáng - Tối',8),
-(3,3,N'Tối 1 viên',9),
-(4,4,N'Sáng 1 viên',7),
-(5,5,N'Sáng - Tối',6),
-(6,6,N'Tối 1 viên',8),
-(7,7,N'Sáng 1 viên',10),
-(8,8,N'Sáng - Tối',9),
-(9,9,N'Sáng 1 viên',10),
-(10,10,N'Tối 1 viên',6),
-
-(11,11,N'Sáng 1 viên',8),
-(12,12,N'Tối 1 viên',9),
-(13,13,N'Sáng - Tối',7);
->>>>>>> d4d8c8708a5009f37d5e1475d791376a70469453
-
 
 INSERT INTO PhienKham_Benh
 (PhienKhamID, LoaiBenhID, GhiChu)
@@ -209,12 +167,8 @@ VALUES
 (13,3,N'Vảy nến mức trung bình');
 
 
-<<<<<<< HEAD
+
 INSERT INTO TaiKham (PhienKhamID, BenhNhanID, NgayDuKien, LyDo) ---Thiếu CaKhamID, NgayTao
-=======
-INSERT INTO TaiKham
-(PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai, CaKhamID)
->>>>>>> d4d8c8708a5009f37d5e1475d791376a70469453
 VALUES
 (1,1,'2025-12-19',N'Tái khám mụn',N'Hoàn thành',1),
 (2,2,'2025-12-20',N'Tái khám dị ứng',N'Hoàn thành',2),
@@ -231,13 +185,7 @@ VALUES
 (12,12,'2025-12-30',N'Tái khám da dầu',N'Hoàn thành',12),
 (13,13,'2025-12-31',N'Tái khám vảy nến',N'Hoàn thành',13);
 
-
-<<<<<<< HEAD
 INSERT INTO LieuTrinhDieuTri (BenhNhanID, PhienKhamID, TenLieuTrinh, TongSoBuoi) ---Thiếu GhiChu, NgayBatDau, NgayKetThuc
-=======
-INSERT INTO LieuTrinhDieuTri
-(BenhNhanID, PhienKhamID, TenLieuTrinh, TongSoBuoi, TrangThai, GhiChu, NgayBatDau, NgayKetThuc)
->>>>>>> d4d8c8708a5009f37d5e1475d791376a70469453
 VALUES
 (1,1,N'Liệu trình mụn',4,N'Đang điều trị',N'Điều trị mụn mức độ trung bình','2025-12-01',NULL),
 (2,2,N'Liệu trình dị ứng',3,N'Đang điều trị',N'Giảm triệu chứng dị ứng','2025-12-02',NULL),
@@ -255,7 +203,6 @@ VALUES
 (13,13,N'Liệu trình vảy nến',5,N'Đang điều trị',N'Kiểm soát tái phát','2025-12-13',NULL);
 
 
-<<<<<<< HEAD
 INSERT INTO LieuTrinh_BuoiDieuTri (LieuTrinhID, SoBuoi, NgayDuKien, NhanVienID)  ---Thiếu NgayThucHien, GhiChu, HinhAnhJSON
 VALUES 
 (1,1,'2025-12-20',1),(1,2,'2025-12-22',1),(1,3,'2025-12-24',1),(1,4,'2025-12-26',1),
@@ -264,106 +211,6 @@ VALUES
 (4,1,'2025-12-23',1),(4,2,'2025-12-25',1),(4,3,'2025-12-27',1),(4,4,'2025-12-29',1),
 (5,1,'2025-12-24',2),(5,2,'2025-12-26',2),(5,3,'2025-12-28',2),
 (6,1,'2025-12-25',3);
-
-
-INSERT INTO BuoiDieuTri_CanLamSang (BuoiDieuTriID, CanLamSangID, KetQua) ---Sửa tên ID của BuoiDieuTri_CanLamSang 
-=======
-
-INSERT INTO LieuTrinh_BuoiDieuTri
-(LieuTrinhID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID, TrangThai, GhiChu, HinhAnhJSON)
-VALUES
--- Liệu trình 1 (4 buổi)
-(1,1,'2025-12-20','2025-12-20',1,N'Hoàn thành',N'Buổi đầu điều trị',NULL),
-(1,2,'2025-12-22','2025-12-22',1,N'Hoàn thành',N'Giảm viêm',NULL),
-(1,3,'2025-12-24',NULL,1,N'Chờ xử lý',N'Tiếp tục liệu trình',NULL),
-(1,4,'2025-12-26',NULL,1,N'Chờ xử lý',N'Buổi cuối',NULL),
-
--- Liệu trình 2 (3 buổi)
-(2,1,'2025-12-21','2025-12-21',2,N'Hoàn thành',N'Ổn định da',NULL),
-(2,2,'2025-12-23','2025-12-23',2,N'Hoàn thành',N'Giảm ngứa',NULL),
-(2,3,'2025-12-25',NULL,2,N'Chờ xử lý',N'Theo dõi dị ứng',NULL),
-
--- Liệu trình 3 (5 buổi)
-(3,1,'2025-12-22','2025-12-22',3,N'Hoàn thành',N'Điều trị nền',NULL),
-(3,2,'2025-12-24','2025-12-24',3,N'Hoàn thành',N'Giảm bong tróc',NULL),
-(3,3,'2025-12-26',NULL,3,N'Chờ xử lý',N'Tiếp tục theo dõi',NULL),
-(3,4,'2025-12-28',NULL,3,N'Chờ xử lý',N'Ổn định triệu chứng',NULL),
-(3,5,'2025-12-30',NULL,3,N'Chờ xử lý',N'Đánh giá kết quả',NULL),
-
--- Liệu trình 4 (4 buổi)
-(4,1,'2025-12-23','2025-12-23',1,N'Hoàn thành',N'Làm sạch da',NULL),
-(4,2,'2025-12-25','2025-12-25',1,N'Hoàn thành',N'Giảm mụn viêm',NULL),
-(4,3,'2025-12-27',NULL,1,N'Chờ xử lý',N'Tiếp tục điều trị',NULL),
-(4,4,'2025-12-29',NULL,1,N'Chờ xử lý',N'Hoàn tất liệu trình',NULL),
-
--- Liệu trình 5 (3 buổi)
-(5,1,'2025-12-24','2025-12-24',2,N'Hoàn thành',N'Cấp ẩm da',NULL),
-(5,2,'2025-12-26','2025-12-26',2,N'Hoàn thành',N'Phục hồi hàng rào da',NULL),
-(5,3,'2025-12-28',NULL,2,N'Chờ xử lý',N'Duy trì kết quả',NULL),
-
--- Liệu trình 6 (4 buổi)
-(6,1,'2025-12-25','2025-12-25',3,N'Hoàn thành',N'Kích thích mọc tóc',NULL),
-(6,2,'2025-12-27','2025-12-27',3,N'Hoàn thành',N'Giảm rụng tóc',NULL),
-(6,3,'2025-12-29',NULL,3,N'Chờ xử lý',N'Tiếp tục điều trị',NULL),
-(6,4,'2025-12-31',NULL,3,N'Chờ xử lý',N'Đánh giá tiến triển',NULL),
-
--- Liệu trình 7 (4 buổi)
-(7,1,'2026-01-01','2026-01-01',1,N'Hoàn thành',N'Điều trị mụn',NULL),
-(7,2,'2026-01-03','2026-01-03',1,N'Hoàn thành',N'Giảm sưng viêm',NULL),
-(7,3,'2026-01-05',NULL,1,N'Chờ xử lý',N'Tiếp tục liệu trình',NULL),
-(7,4,'2026-01-07',NULL,1,N'Chờ xử lý',N'Buổi cuối',NULL),
-
--- Liệu trình 8 (3 buổi) → đủ 39 dòng
-(8,1,'2026-01-02','2026-01-02',2,N'Hoàn thành',N'Giảm viêm da',NULL),
-(8,2,'2026-01-04','2026-01-04',2,N'Hoàn thành',N'Ổn định da',NULL),
-(8,3,'2026-01-06',NULL,2,N'Chờ xử lý',N'Theo dõi phản ứng',NULL),
-
--- LieuTrinh 9 (3 buổi)
-(9,1,'2026-01-07','2026-01-07',3,N'Hoàn thành',N'Buổi đầu điều trị',NULL),
-(9,2,'2026-01-09','2026-01-09',3,N'Hoàn thành',N'Tiếp tục liệu trình',NULL),
-(9,3,'2026-01-11',NULL,3,N'Chờ xử lý',N'Buổi cuối',NULL),
-
--- LieuTrinh 10 (4 buổi)
-(10,1,'2026-01-08','2026-01-08',1,N'Hoàn thành',N'Buổi 1',NULL),
-(10,2,'2026-01-10','2026-01-10',1,N'Hoàn thành',N'Buổi 2',NULL),
-(10,3,'2026-01-12',NULL,1,N'Chờ xử lý',N'Buổi 3',NULL),
-(10,4,'2026-01-14',NULL,1,N'Chờ xử lý',N'Buổi 4',NULL),
-
--- LieuTrinh 11 (3 buổi)
-(11,1,'2026-01-09','2026-01-09',2,N'Hoàn thành',N'Buổi 1',NULL),
-(11,2,'2026-01-11','2026-01-11',2,N'Hoàn thành',N'Buổi 2',NULL),
-(11,3,'2026-01-13',NULL,2,N'Chờ xử lý',N'Buổi 3',NULL),
-
--- LieuTrinh 12 (2 buổi)
-(12,1,'2026-01-10','2026-01-10',3,N'Hoàn thành',N'Buổi 1',NULL),
-(12,2,'2026-01-12',NULL,3,N'Chờ xử lý',N'Buổi 2',NULL),
-
--- LieuTrinh 13 (5 buổi)
-(13,1,'2026-01-11','2026-01-11',1,N'Hoàn thành',N'Buổi 1',NULL),
-(13,2,'2026-01-13','2026-01-13',1,N'Hoàn thành',N'Buổi 2',NULL),
-(13,3,'2026-01-15',NULL,1,N'Chờ xử lý',N'Buổi 3',NULL),
-(13,4,'2026-01-17',NULL,1,N'Chờ xử lý',N'Buổi 4',NULL),
-(13,5,'2026-01-19',NULL,1,N'Chờ xử lý',N'Buổi 5',NULL);
-
-
-INSERT INTO BuoiDieuTri_CanLamSang
-(BuoiDieuTriID, CanLamSangID, KetQua, TrangThai)
->>>>>>> d4d8c8708a5009f37d5e1475d791376a70469453
-VALUES
--- 1-20 (đã có)
-(1,1,N'Bình thường',N'Hoàn thành'),
-(2,2,N'Tăng nhẹ',N'Hoàn thành'),
-(3,3,N'Bình thường',N'Hoàn thành'),
-(4,4,N'Tăng',N'Hoàn thành'),
-(5,5,N'Âm tính',N'Hoàn thành'),
-(6,6,N'Bình thường',N'Hoàn thành'),
-(7,7,N'Bình thường',N'Hoàn thành'),
-(8,8,N'Tăng nhẹ',N'Hoàn thành'),
-(9,9,N'Bình thường',N'Hoàn thành'),
-(10,10,N'Bình thường',N'Hoàn thành'),
-(11,11,N'Tăng',N'Hoàn thành'),
-(12,12,N'Âm tính',N'Hoàn thành'),
-(13,13,N'Bình thường',N'Hoàn thành');
 
 INSERT INTO BaiViet
 (TieuDe, TomTat, NoiDung, HinhAnh, TacGiaID, LoaiBenhID, LuotXem, NgayDang, NgayCapNhat)
