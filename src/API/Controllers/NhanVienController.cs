@@ -1,10 +1,12 @@
 ﻿using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
 	[ApiController]
+	[Authorize]
 	[Route("api/[controller]")]
 	public class NhanVienController : ControllerBase
 	{
@@ -16,6 +18,7 @@ namespace API.Controllers
 		}
 
 		// POST: api/NhanVien
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> TaoNhanVien([FromBody] TaoNhanVienDTO dto)
 		{
@@ -30,6 +33,7 @@ namespace API.Controllers
 		}
 
 		// PUT: api/NhanVien/{id}
+		[Authorize(Roles = "Admin")]
 		[HttpPut("{id}")]
 		public async Task<IActionResult> CapNhatNhanVien(
 			int id,
@@ -44,6 +48,7 @@ namespace API.Controllers
 		}
 
 		// PUT: api/NhanVien/{id}/trangthai
+		[Authorize(Roles = "Admin")]
 		[HttpPut("{id}/trangthai")]
 		public async Task<IActionResult> CapNhatTrangThai(
 			int id,
@@ -58,18 +63,23 @@ namespace API.Controllers
 		}
 
 		// GET: api/NhanVien
+		[Authorize(Roles = "Admin,Nhân viên")]
 		[HttpGet]
 		public async Task<IActionResult> LayDanhSach()
 		{
 			var list = await _service.LayDanhSachAsync();
 			return Ok(list);
 		}
+
+		[Authorize(Roles = "Admin,Nhân viên")]
 		[HttpGet("search")]
 		public async Task<IActionResult> TimKiemNhanVien([FromQuery] string keyword)
 		{
 			var list = await _service.SearchAsync(keyword);
 			return Ok(list);
 		}
+
+		[Authorize(Roles = "Admin,Nhân viên")]
 		[HttpGet("{id}")]
 		public async Task<IActionResult> LayNhanVienById(int id)
 		{

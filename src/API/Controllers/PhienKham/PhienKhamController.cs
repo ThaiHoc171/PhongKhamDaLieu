@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Application.Services;
 
@@ -6,6 +7,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] 
 public class PhienKhamController : ControllerBase
 {
 	private readonly PhienKhamService _service;
@@ -15,111 +17,38 @@ public class PhienKhamController : ControllerBase
 		_service = service;
 	}
 
-	// POST: api/PhienKham
+	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpPost]
 	public async Task<IActionResult> TaoMoi([FromBody] PhienKhamCreateDTO dto)
 	{
-		try
-		{
-			var phienKhamId = await _service.TaoMoiAsync(dto);
-
-			return Ok(new
-			{
-				message = "Tạo phiên khám thành công.",
-				phienKhamId
-			});
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = ex.Message
-			});
-		}
+		var phienKhamId = await _service.TaoMoiAsync(dto);
+		return Ok(new { message = "Tạo phiên khám thành công.", phienKhamId });
 	}
 
-	// PUT: api/PhienKham/{id}
+	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhat(int id, [FromBody] PhienKhamUpdateDTO dto)
 	{
-		try
-		{
-			await _service.CapNhatAsync(id, dto);
-
-			return Ok(new
-			{
-				message = "Cập nhật phiên khám thành công."
-			});
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = ex.Message
-			});
-		}
+		await _service.CapNhatAsync(id, dto);
+		return Ok(new { message = "Cập nhật phiên khám thành công." });
 	}
 
-	// PUT: api/PhienKham/{id}/ket-thuc
+	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}/ket-thuc")]
 	public async Task<IActionResult> KetThuc(int id, [FromBody] string chanDoanCuoi)
 	{
-		try
-		{
-			await _service.KetThucAsync(id, chanDoanCuoi);
-
-			return Ok(new
-			{
-				message = "Kết thúc phiên khám thành công."
-			});
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = ex.Message
-			});
-		}
+		await _service.KetThucAsync(id, chanDoanCuoi);
+		return Ok(new { message = "Kết thúc phiên khám thành công." });
 	}
-	// GET: api/PhienKham
+
+	[Authorize(Roles = "Admin")]
 	[HttpGet]
 	public async Task<IActionResult> GetAll()
 	{
-		try
-		{
-			return Ok(await _service.LayTatCaAsync());
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = ex.Message
-			});
-		}
+		return Ok(await _service.LayTatCaAsync());
 	}
 
-	// GET: api/PhienKham/{id}
-	[HttpGet("{id}")]
-	public async Task<IActionResult> GetById(int id)
-	{
-		try
-		{
-			var result = await _service.LayTheoIdAsync(id);
-			if (result == null)
-				return NotFound("Phiên khám không tồn tại");
-
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = ex.Message
-			});
-		}
-	}
-
-	// GET: api/PhienKham/filter
+	[Authorize(Roles = "Admin")]
 	[HttpGet("filter")]
 	public async Task<IActionResult> Filter(
 		[FromQuery] DateTime? tuNgay,
@@ -127,18 +56,16 @@ public class PhienKhamController : ControllerBase
 		[FromQuery] string? trangThai,
 		[FromQuery] int? nhanVienID)
 	{
-		try
-		{
-			var result = await _service.LocAsync(tuNgay, denNgay, trangThai, nhanVienID);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = ex.Message
-			});
-		}
+		return Ok(await _service.LocAsync(tuNgay, denNgay, trangThai, nhanVienID));
 	}
 
+	[Authorize(Policy = "BacSiOnly")]
+	[HttpGet("{id}")]
+	public async Task<IActionResult> GetById(int id)
+	{
+		var result = await _service.LayTheoIdAsync(id);
+		return result == null
+			? NotFound("Phiên khám không tồn tại")
+			: Ok(result);
+	}
 }

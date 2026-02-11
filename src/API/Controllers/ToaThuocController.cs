@@ -1,12 +1,14 @@
 ﻿using Application.DTO;
 using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
+	[Authorize]
 	public class ToaThuocController : ControllerBase
 	{
 		private readonly ToaThuocService _toaThuocService;
@@ -15,10 +17,7 @@ namespace API.Controllers
 		{
 			_toaThuocService = toaThuocService;
 		}
-
-		/// <summary>
-		/// Tạo toa thuốc mới cho phiên khám
-		/// </summary>
+		[Authorize(Policy = "BacSiOnly")]
 		[HttpPost]
 		public async Task<IActionResult> TaoToaThuoc([FromBody] TaoToaThuocDTO dto)
 		{
@@ -53,9 +52,6 @@ namespace API.Controllers
 			}
 		}
 
-		/// <summary>
-		/// Xem chi tiết toa thuốc theo phiên khám
-		/// </summary>
 		[HttpGet("phien-kham/{phienKhamID}")]
 		public async Task<IActionResult> XemTheoPhienKham(int phienKhamID)
 		{

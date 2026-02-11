@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Application.DTOs;
+﻿using Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Services;
 
 namespace API.Controllers
 {
 	[ApiController]
+	[Authorize]
 	[Route("api/[controller]")]
 	public class ChucVuController : ControllerBase
 	{
@@ -16,6 +18,7 @@ namespace API.Controllers
 		}
 
 		// GET: api/ChucVu
+		[Authorize(Roles = "Admin,Nhân viên")]
 		[HttpGet]
 		public async Task<IActionResult> LayDanhSachChucVu()
 		{
@@ -24,6 +27,7 @@ namespace API.Controllers
 		}
 
 		// GET: api/ChucVu/{id}
+		[Authorize(Roles = "Admin,Nhân viên")]
 		[HttpGet("{id}")]
 		public async Task<IActionResult> LayChucVuTheoID(int id)
 		{
@@ -36,6 +40,7 @@ namespace API.Controllers
 		}
 
 		// POST: api/ChucVu
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> ThemChucVu([FromBody] ChucVuRequestDTO dto)
 		{
@@ -48,6 +53,7 @@ namespace API.Controllers
 		}
 
 		// PUT: api/ChucVu/{id}
+		[Authorize(Roles = "Admin")]
 		[HttpPut("{id}")]
 		public async Task<IActionResult> CapNhatChucVu(int id, [FromBody] ChucVuRequestDTO dto)
 		{
@@ -63,6 +69,7 @@ namespace API.Controllers
 		}
 
 		// PUT: api/ChucVu/{id}/trangthai
+		[Authorize(Roles = "Admin")]
 		[HttpPut("{id}/trangthai")]
 		public async Task<IActionResult> CapNhatTrangThai(int id, [FromBody] string trangThaiMoi)
 		{

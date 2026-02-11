@@ -1,82 +1,55 @@
-﻿using Application.DTOs;
-using Application.Services;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.DTOs;
+using Application.Services;
 
 namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] 
 public class LieuTrinh_BuoiDieuTriController : ControllerBase
 {
-    private readonly LieuTrinh_BuoiDieuTriService _service;
+	private readonly LieuTrinh_BuoiDieuTriService _service;
 
-    public LieuTrinh_BuoiDieuTriController(LieuTrinh_BuoiDieuTriService service)
-    {
-        _service = service;
-    }
+	public LieuTrinh_BuoiDieuTriController(LieuTrinh_BuoiDieuTriService service)
+	{
+		_service = service;
+	}
 
-    [HttpPost]
-    public async Task<IActionResult> TaoBuoiDieuTri([FromBody] TaoBuoiDieuTriDTO dto)
-    {
-        try
-        {
-            await _service.TaoBuoiDieuTriAsync(dto);
-            return Ok(new { message = "Tạo buổi điều trị thành công" });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
+	[Authorize(Policy = "BacSiOnly")]
+	[HttpPost]
+	public async Task<IActionResult> TaoBuoiDieuTri(
+		[FromBody] TaoBuoiDieuTriDTO dto)
+	{
+		await _service.TaoBuoiDieuTriAsync(dto);
+		return Ok(new { message = "Tạo buổi điều trị thành công" });
+	}
 
-    [HttpPut("{buoiDieuTriID:int}/trang-thai")]
-    public async Task<IActionResult> CapNhatTrangThai(
-        int buoiDieuTriID,
-        [FromBody] CapNhatTrangThaiBuoiDieuTriDTO dto)
-    {
-        try
-        {
-            var result = await _service.CapNhatTrangThaiAsync(buoiDieuTriID, dto);
-            if (!result)
-                return NotFound(new { message = "Buổi điều trị không tồn tại" });
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
+	[HttpPut("{buoiDieuTriID:int}/trang-thai")]
+	public async Task<IActionResult> CapNhatTrangThai(
+		int buoiDieuTriID,
+		[FromBody] CapNhatTrangThaiBuoiDieuTriDTO dto)
+	{
+		var result = await _service.CapNhatTrangThaiAsync(buoiDieuTriID, dto);
 
-            return Ok(new { message = "Cập nhật trạng thái thành công" });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
+		return result
+			? Ok(new { message = "Cập nhật trạng thái thành công" })
+			: NotFound(new { message = "Buổi điều trị không tồn tại" });
+	}
 
-    [HttpGet("lieutrinh/{lieuTrinhID:int}")]
-    public async Task<IActionResult> LayTheoLieuTrinh(int lieuTrinhID)
-    {
-        var result = await _service.LayTheoLieuTrinhAsync(lieuTrinhID);
-        return Ok(result);
-    }
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
+	[HttpGet("lieutrinh/{lieuTrinhID:int}")]
+	public async Task<IActionResult> LayTheoLieuTrinh(int lieuTrinhID)
+	{
+		return Ok(await _service.LayTheoLieuTrinhAsync(lieuTrinhID));
+	}
 
-    [HttpGet("loc/ngay-du-kien")]
-    public async Task<IActionResult> LocTheoNgayDuKien(
-        [FromQuery] DateTime ngay,
-        [FromQuery] string trangThai)
-    {
-        var result = await _service.LocDuKienAsync(ngay, trangThai);
-        return Ok(result);
-    }
-
-    [HttpGet("loc/ngay-thuc-hien")]
-    public async Task<IActionResult> LocTheoNgayThucHien(
-        [FromQuery] DateTime ngay,
-        [FromQuery] string trangThai)
-    {
-        var result = await _service.LocBatDauAsync(ngay, trangThai);
-        return Ok(result);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var result = await _service.GetAllAsync();
-        return Ok(result);
-    }
+	[Authorize(Roles = "Admin")]
+	[HttpGet]
+	public async Task<IActionResult> GetAll()
+	{
+		return Ok(await _service.GetAllAsync());
+	}
 }

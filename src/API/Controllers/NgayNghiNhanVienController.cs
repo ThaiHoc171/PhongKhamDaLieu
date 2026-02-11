@@ -1,10 +1,12 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/ngay-nghi")]
 public class NgayNghiNhanVienController : ControllerBase
 {
@@ -14,7 +16,7 @@ public class NgayNghiNhanVienController : ControllerBase
 	{
 		_service = service;
 	}
-
+	[Authorize(Roles = "Admin")]
 	[HttpPost]
 	public async Task<IActionResult> TaoNgayNghi([FromBody] NgayNghiRequestDTO dto)
 	{
@@ -22,12 +24,15 @@ public class NgayNghiNhanVienController : ControllerBase
 		return Ok(new { message = "Tạo ngày nghỉ thành công." });
 	}
 
+	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("nhan-vien/{nhanVienID}")]
 	public async Task<IActionResult> LayTheoNhanVien(int nhanVienID)
 	{
 		var result = await _service.GetByNhanVienAsync(nhanVienID);
 		return Ok(result);
 	}
+
+	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhatLyDo(int id, [FromBody] string? lyDo)
 	{
