@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -7,6 +8,7 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 
 public class TaiKhamController : ControllerBase
 {
@@ -17,14 +19,16 @@ public class TaiKhamController : ControllerBase
         _service = service;
     }
 
-    [HttpGet]
+	[Authorize(Policy = "LeTanOnly")]
+	[HttpGet]
     public async Task<IActionResult> LayDanhSach()
     {
         var result = await _service.GetAllAsync();
         return Ok(result);
     }
 
-    [HttpGet("{id:int}")]
+	[Authorize(Policy = "BacSiOrLeTan")]
+	[HttpGet("{id:int}")]
     public async Task<IActionResult> LayTheoId(int id)
     {
         var result = await _service.GetByIdAsync(id);
@@ -34,7 +38,8 @@ public class TaiKhamController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("benhnhan/{benhNhanId:int}")]
+	[Authorize(Roles = "Admin,Nhân viên")]
+	[HttpGet("benhnhan/{benhNhanId:int}")]
     public async Task<IActionResult> LayTheoBenhNhanId(int benhNhanId)
     {
         var result = await _service.GetListByBenhNhanAsync(benhNhanId);
@@ -44,7 +49,8 @@ public class TaiKhamController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("filter")]
+	[Authorize(Policy = "LeTanOnly")]
+	[HttpGet("filter")]
     public async Task<IActionResult> Loc(DateTime ngayDuKien, string trangThai)
     {
         var result = await _service.LocAsync(ngayDuKien, trangThai);
@@ -54,14 +60,16 @@ public class TaiKhamController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
+	[Authorize(Policy = "BacSiOnly")]
+	[HttpPost]
     public async Task<IActionResult> Them([FromBody] TaoTaiKhamDTO dto)
     {
         await _service.TaoTaiKhamAsync(dto);
         return Ok(new { message = "Thêm lịch tái khám thành công." });
     }
 
-    [HttpPut("{id}")]
+	[Authorize(Policy = "BacSiOnly")]
+	[HttpPut("{id}")]
     public async Task<IActionResult> CapNhat(
         int id,
         [FromBody] CapNhatTaiKhamDTO dto)

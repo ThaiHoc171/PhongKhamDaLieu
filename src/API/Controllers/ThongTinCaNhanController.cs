@@ -1,11 +1,13 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ThongTinCaNhanController : ControllerBase
 {
 	private readonly ThongTinCaNhanService _service;
@@ -14,7 +16,7 @@ public class ThongTinCaNhanController : ControllerBase
 	{
 		_service = service;
 	}
-
+	[Authorize(Roles = "Admin")]
 	[HttpPost("NhanVien")]
 	public async Task<IActionResult> TaoNhanVien(
 		[FromBody] ThemThongTinCaNhanDTO dto)
@@ -42,7 +44,7 @@ public class ThongTinCaNhanController : ControllerBase
 		}
 	}
 
-
+	[Authorize(Policy = "LeTanOnly")]
 	[HttpPost("BenhNhan")]
 	public async Task<IActionResult> TaoBenhNhan(
 		[FromBody] ThemThongTinCaNhanDTO dto)
@@ -69,7 +71,7 @@ public class ThongTinCaNhanController : ControllerBase
 			return StatusCode(500, new { message = ex.Message });
 		}
 	}
-
+	[Authorize(Roles = "Admin")]
 	[HttpGet("NhanVien")]
 	public async Task<IActionResult> DanhSachNhanVien()
 	{
@@ -81,6 +83,7 @@ public class ThongTinCaNhanController : ControllerBase
 		});
 	}
 
+	[Authorize(Policy = "LeTanOnly")]
 	[HttpGet("BenhNhan")]
 	public async Task<IActionResult> DanhSachBenhNhan()
 	{

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Services;
 
@@ -6,6 +7,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CanLamSangController : ControllerBase
 {
 	private readonly CanLamSangService _service;
@@ -15,94 +17,62 @@ public class CanLamSangController : ControllerBase
 		_service = service;
 	}
 
-	// GET: api/CanLamSang
+
+
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpGet]
 	public async Task<IActionResult> LayDanhSach()
-	{
-		var result = await _service.DanhSachCanLamSangAsync();
-		return Ok(result);
-	}
+		=> Ok(await _service.DanhSachCanLamSangAsync());
 
-	// GET: api/CanLamSang/{id}
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> LayTheoId(int id)
 	{
 		var result = await _service.LayCanLamSangTheoIdAsync(id);
-
-		if (result == null)
-			return NotFound(new { message = "Cận lâm sàng không tồn tại." });
-
-		return Ok(result);
+		return result == null
+			? NotFound(new { message = "Cận lâm sàng không tồn tại." })
+			: Ok(result);
 	}
 
-	// POST: api/CanLamSang
+
+	[Authorize(Roles = "Admin")]
 	[HttpPost]
 	public async Task<IActionResult> Them([FromBody] CanLamSangRequestDTO dto)
 	{
-		try
-		{
-			await _service.ThemCanLamSangAsync(dto);
-
-			return Ok(new
-			{
-				message = "Thêm cận lâm sàng thành công."
-			});
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
+		await _service.ThemCanLamSangAsync(dto);
+		return Ok(new { message = "Thêm cận lâm sàng thành công." });
 	}
 
-	// PUT: api/CanLamSang/{id}
+	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhat(int id, [FromBody] CanLamSangRequestDTO dto)
 	{
-		try
-		{
-			var result = await _service.CapNhatCanLamSangAsync(id, dto);
+		var result = await _service.CapNhatCanLamSangAsync(id, dto);
 
-			if (!result)
-				return NotFound(new { message = "Cận lâm sàng không tồn tại." });
-
-			return Ok(new
-			{
-				message = "Cập nhật cận lâm sàng thành công."
-			});
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
+		return result
+			? Ok(new { message = "Cập nhật thành công." })
+			: NotFound(new { message = "Cận lâm sàng không tồn tại." });
 	}
 
-	// PUT: api/CanLamSang/{id}/ngungsudung
+	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}/ngungsudung")]
 	public async Task<IActionResult> NgungSuDung(int id)
 	{
 		var result = await _service.CapNhatTrangThaiAsync(id, "Ngưng sử dụng");
 
-		if (!result)
-			return NotFound(new { message = "Cận lâm sàng không tồn tại." });
-
-		return Ok(new
-		{
-			message = "Ngưng sử dụng cận lâm sàng thành công."
-		});
+		return result
+			? Ok(new { message = "Ngưng sử dụng thành công." })
+			: NotFound(new { message = "Cận lâm sàng không tồn tại." });
 	}
 
-	// PUT: api/CanLamSang/{id}/kichhoat
+	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}/kichhoat")]
 	public async Task<IActionResult> KichHoat(int id)
 	{
 		var result = await _service.CapNhatTrangThaiAsync(id, "Hoạt động");
 
-		if (!result)
-			return NotFound(new { message = "Cận lâm sàng không tồn tại." });
-
-		return Ok(new
-		{
-			message = "Kích hoạt cận lâm sàng thành công."
-		});
+		return result
+			? Ok(new { message = "Kích hoạt thành công." })
+			: NotFound(new { message = "Cận lâm sàng không tồn tại." });
 	}
 }

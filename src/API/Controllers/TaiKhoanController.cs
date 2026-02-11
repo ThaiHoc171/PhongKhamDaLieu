@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -16,6 +17,7 @@ namespace API.Controllers
 		}
 
 		// POST: api/TaiKhoan/dangnhap
+		[AllowAnonymous]
 		[HttpPost("dangnhap")]
 		public async Task<IActionResult> DangNhap([FromBody] LoginRequestDTO login)
 		{
@@ -28,13 +30,14 @@ namespace API.Controllers
 		}
 
 		// POST: api/TaiKhoan/dangky
+		[AllowAnonymous]
 		[HttpPost("dangky")]
 		public async Task<IActionResult> DangKy([FromBody] ThemTaiKhoanDTO dto)
 		{
 			await _taiKhoanService.DangKyAsync(dto);
 			return Ok(new { message = "Đăng ký thành công." });
 		}
-
+		[Authorize]
 		// PUT: api/TaiKhoan/{id}/doimatkhau
 		[HttpPut("{id}/doimatkhau")]
 		public async Task<IActionResult> DoiMatKhau(int id, [FromBody] DoiMatKhauDTO dto)
@@ -49,7 +52,7 @@ namespace API.Controllers
 
 			return Ok(new { message = "Đổi mật khẩu thành công." });
 		}
-
+		[Authorize(Roles = "Admin")]
 		// PUT: api/TaiKhoan/{id}/resetmatkhau
 		[HttpPut("{id}/resetmatkhau")]
 		public async Task<IActionResult> ResetMatKhau(int id)
@@ -65,6 +68,7 @@ namespace API.Controllers
 			});
 		}
 		// GET: api/TaiKhoan
+		[Authorize(Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> LayTatCaTaiKhoan()
 		{
@@ -73,6 +77,7 @@ namespace API.Controllers
 		}
 
 		// GET: api/TaiKhoan/{id}
+		[Authorize]
 		[HttpGet("{id}")]
 		public async Task<IActionResult> LayTaiKhoanTheoId(int id)
 		{
@@ -84,6 +89,7 @@ namespace API.Controllers
 			return Ok(result);
 		}
 		// PUT: api/TaiKhoan/{id}/capnhattrangthai
+		[Authorize(Roles = "Admin")]
 		[HttpPut("{id}/capnhattrangthai")]
 		public async Task<IActionResult> CapNhatTrangThai(int id, [FromBody] string trangThaiMoi)
 		{

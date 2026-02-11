@@ -1,10 +1,12 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class LoaiBenhController : ControllerBase
 {
@@ -15,10 +17,12 @@ public class LoaiBenhController : ControllerBase
 		_service = service;
 	}
 
+	[Authorize]
 	[HttpGet]
 	public async Task<IActionResult> DanhSach()
 		=> Ok(await _service.DanhSachAsync());
 
+	[Authorize]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> LayTheoId(int id)
 	{
@@ -29,10 +33,13 @@ public class LoaiBenhController : ControllerBase
 		return Ok(result);
 	}
 
+	[Authorize]
 	[HttpGet("timkiem")]
 	public async Task<IActionResult> TimTheoTen([FromQuery] string ten)
 		=> Ok(await _service.TimTheoTenAsync(ten));
 
+
+	[Authorize(Roles = "Admin")]
 	[HttpPost]
 	public async Task<IActionResult> Them([FromBody] LoaiBenhRequestDTO dto)
 	{
@@ -47,6 +54,7 @@ public class LoaiBenhController : ControllerBase
 		}
 	}
 
+	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhat(int id, [FromBody] LoaiBenhRequestDTO dto)
 	{
@@ -63,7 +71,9 @@ public class LoaiBenhController : ControllerBase
 			return BadRequest(new { message = ex.Message });
 		}
 	}
+
 	// GET: api/LoaiBenh/combo?kw=viem
+	[Authorize]
 	[HttpGet("combo")]
 	public async Task<IActionResult> Combo([FromQuery] string? kw)
 	{

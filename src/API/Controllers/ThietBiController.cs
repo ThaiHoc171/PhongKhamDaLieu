@@ -1,9 +1,10 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
-
+[Authorize(Roles = "Admin,Nhân viên")]
 [ApiController]
 [Route("api/[controller]")]
 public class ThietBiController : ControllerBase
@@ -46,6 +47,7 @@ public class ThietBiController : ControllerBase
 	}
 
 	// POST: api/ThietBi
+	[Authorize(Roles = "Admin")]
 	[HttpPost]
 	public async Task<IActionResult> Them([FromBody] ThietBiRequestDTO dto)
 	{
@@ -54,6 +56,7 @@ public class ThietBiController : ControllerBase
 	}
 
 	// PUT: api/ThietBi/{id}
+	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhat(int id, [FromBody] ThietBiRequestDTO dto)
 	{

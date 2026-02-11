@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
-using Microsoft.AspNetCore.Mvc;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 [ApiController]
@@ -13,6 +14,7 @@ public class LichLamViecController: ControllerBase
 		_service = service;
 	}
 
+	[Authorize(Policy = "LeTanOnly")]
 	[HttpPost("TaoLich")]
 	public async Task<IActionResult> TaoLichMulti(LichLamViecBatchDTO dto)
 	{
@@ -29,6 +31,8 @@ public class LichLamViecController: ControllerBase
 			});
 		}
 	}
+
+	[Authorize(Policy = "LeTanOnly")]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> GetById(int id)
 	{
@@ -48,7 +52,9 @@ public class LichLamViecController: ControllerBase
 			});
 		}
 	}
-    [HttpGet("GetKhoangCach")]
+
+	[Authorize(Roles = "Admin,Nhân viên")]
+	[HttpGet("GetKhoangCach")]
     public async Task<IActionResult> GetByKhoangCach(DateTime tuNgay, DateTime denNgay)
     {
         try
@@ -67,7 +73,9 @@ public class LichLamViecController: ControllerBase
             });
         }
     }
-    [HttpGet("GetAll")]
+
+	[Authorize(Roles = "Admin,Nhân viên")]
+	[HttpGet("GetAll")]
 	public async Task<IActionResult> GetAll()
 	{
 		try
@@ -83,6 +91,8 @@ public class LichLamViecController: ControllerBase
 			});
 		}
 	}
+
+	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("GetByNhanVien/{nhanVienID}")]
 	public async Task<IActionResult> GetByNhanVien(int nhanVienID, [FromQuery] int page = 0)
 	{
