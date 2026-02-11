@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Application.DTOs;
-using Services;
+﻿using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Services;
 
 namespace API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class HoSoBenhAnController : ControllerBase
 {
@@ -16,8 +18,9 @@ public class HoSoBenhAnController : ControllerBase
         _hoSoBenhAnService = hoSoBenhAnService;
     }
 
-    // POST: api/HoSoBenhAn
-    [HttpPost]
+	// POST: api/HoSoBenhAn
+	[Authorize(Policy = "BacSiOnly")]
+	[HttpPost]
     public async Task<IActionResult> TaoHoSoBenhAn([FromBody] TaoHoSoBenhAnDTO dto)
     {
         try
@@ -38,16 +41,18 @@ public class HoSoBenhAnController : ControllerBase
             });
         }
     }
-    // GET: api/HoSoBenhAn
-    [HttpGet]
+	// GET: api/HoSoBenhAn
+	[Authorize(Policy = "BacSiOnly")]
+	[HttpGet]
     public async Task<IActionResult> TatCa()
     {
         var list = await _hoSoBenhAnService.GetAllAsync();
         return Ok(list);
     }
 
-    // GET: api/HoSoBenhAn/benhnhan/{benhNhanID}
-    [HttpGet("benhnhan/{benhNhanID:int}")]
+	// GET: api/HoSoBenhAn/benhnhan/{benhNhanID}
+	[Authorize(Roles = "Admin,Nhân viên,Bệnh nhân")]
+	[HttpGet("benhnhan/{benhNhanID:int}")]
     public async Task<IActionResult> GetByBenhNhan(int benhNhanID)
     {
         var hs = await _hoSoBenhAnService.GetByBenhNhanIdAsync(benhNhanID);
@@ -62,8 +67,9 @@ public class HoSoBenhAnController : ControllerBase
         return Ok(list);
     }
 
-    // PUT: api/HoSoBenhAn/{id}
-    [HttpPut("{id}")]
+	// PUT: api/HoSoBenhAn/{id}
+	[Authorize(Policy = "BacSiOnly")]
+	[HttpPut("{id}")]
     public async Task<IActionResult> CapNhatHoSo(int id,[FromBody] HoSoBenhAnUdateDTO dto)
     {
         var result = await _hoSoBenhAnService.CapNhatThongTinAsync(id, dto);

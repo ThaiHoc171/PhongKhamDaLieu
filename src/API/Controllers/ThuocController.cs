@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Application.DTOs;
+﻿using Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Services;
 
 namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ThuocController : ControllerBase
 {
 	private readonly ThuocService _service;
@@ -15,18 +17,21 @@ public class ThuocController : ControllerBase
 		_service = service;
 	}
 
+	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet]
 	public async Task<IActionResult> DanhSach()
 	{
 		return Ok(await _service.DanhSachAsync());
 	}
 
+	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("timkiem")]
 	public async Task<IActionResult> TimKiem([FromQuery] string kw)
 	{
 		return Ok(await _service.TimKiemAsync(kw));
 	}
 
+	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> LayTheoId(int id)
 	{
@@ -37,6 +42,7 @@ public class ThuocController : ControllerBase
 		return Ok(result);
 	}
 
+	[Authorize(Roles = "Admin")]
 	[HttpPost]
 	public async Task<IActionResult> Them([FromBody] ThuocRequestDTO dto)
 	{
@@ -51,6 +57,7 @@ public class ThuocController : ControllerBase
 		}
 	}
 
+	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhat(int id, [FromBody] ThuocRequestDTO dto)
 	{

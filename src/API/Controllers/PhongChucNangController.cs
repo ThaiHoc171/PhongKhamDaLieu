@@ -1,10 +1,11 @@
 ﻿using Application.DTOs;
 using Application.Services;
 using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class PhongChucNangController : ControllerBase
@@ -17,6 +18,7 @@ public class PhongChucNangController : ControllerBase
 	}
 
 	// GET: api/PhongChucNang
+	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet]
 	public async Task<IActionResult> LayDanhSach()
 	{
@@ -25,6 +27,7 @@ public class PhongChucNangController : ControllerBase
 	}
 
 	// GET: api/PhongChucNang/{id}
+	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> LayTheoId(int id)
 	{
@@ -36,6 +39,7 @@ public class PhongChucNangController : ControllerBase
 	}
 
 	// GET: api/PhongChucNang/timkiem?keyword=...
+	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("timkiem")]
 	public async Task<IActionResult> TimKiem([FromQuery] string keyword)
 	{
@@ -47,6 +51,7 @@ public class PhongChucNangController : ControllerBase
 	}
 
 	// POST: api/PhongChucNang
+	[Authorize(Roles = "Admin")]
 	[HttpPost]
 	public async Task<IActionResult> Them([FromBody] PhongChucNangRequestDTO dto)
 	{
@@ -55,6 +60,7 @@ public class PhongChucNangController : ControllerBase
 	}
 
 	// PUT: api/PhongChucNang/{id}
+	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhat(int id, [FromBody] PhongChucNangRequestDTO dto)
 	{
@@ -66,6 +72,7 @@ public class PhongChucNangController : ControllerBase
 	}
 
 	// PUT: api/PhongChucNang/{id}/trangthai
+	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}/trangthai")]
 	public async Task<IActionResult> ChuyenTrangThai(int id, [FromBody] TinhTrang trangThaiMoi)
 	{
@@ -78,6 +85,7 @@ public class PhongChucNangController : ControllerBase
 
 		return Ok(new { message = "Chuyển trạng thái phòng chức năng thành công." });
 	}
+	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("combobox")]
 	public async Task<IActionResult> GetIdAndName()
 	{

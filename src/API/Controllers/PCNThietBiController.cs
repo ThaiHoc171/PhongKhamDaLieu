@@ -1,10 +1,12 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/pcn-thietbi")]
 public class PCNThietBiController : ControllerBase
 {
@@ -14,13 +16,15 @@ public class PCNThietBiController : ControllerBase
 	{
 		_service = service;
 	}
-
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpGet]
 	public async Task<IActionResult> DanhSach()
 	{
 		return Ok(await _service.DanhSachAsync());
 	}
 
+
+	[Authorize(Roles = "Admin")]
 	[HttpPost]
 	public async Task<IActionResult> Them([FromBody] PCNThietBiCreateDTO dto)
 	{
@@ -28,6 +32,8 @@ public class PCNThietBiController : ControllerBase
 		return Ok(new { message = "Thêm thiết bị vào phòng chức năng thành công." });
 	}
 
+
+	[Authorize(Roles = "Admin")]
 	[HttpDelete("{id}")]
 	public async Task<IActionResult> Xoa(int id)
 	{

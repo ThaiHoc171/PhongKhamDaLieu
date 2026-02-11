@@ -1,85 +1,76 @@
-﻿using Application.DTOs;
-using Application.Services;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.DTOs;
+using Application.Services;
 
 namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CaKhamController : ControllerBase
 {
 	private readonly CaKhamService _caKhamService;
 	private readonly TaiKhamService _taiKhamService;
 
-	public CaKhamController(CaKhamService caKhamService, TaiKhamService taiKhamService)
+	public CaKhamController(
+		CaKhamService caKhamService,
+		TaiKhamService taiKhamService)
 	{
 		_caKhamService = caKhamService;
-        _taiKhamService = taiKhamService;
+		_taiKhamService = taiKhamService;
+	}
 
-    }
 
-	// POST: api/CaKham
+	[Authorize(Policy = "LeTanOnly")]
 	[HttpPost]
 	public async Task<IActionResult> TaoCaKham([FromBody] TaoCaKhamDTO dto)
 	{
-		try
+		var caKhamId = await _caKhamService.TaoCaKhamAsync(dto);
+		return Ok(new
 		{
-			var caKhamId = await _caKhamService.TaoCaKhamAsync(dto);
-			return Ok(new
-			{
-				Message = "Tạo ca khám thành công",
-				CaKhamID = caKhamId
-			});
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				Message = "Tạo ca khám thất bại",
-				Error = ex.Message
-			});
-		}
+			Message = "Tạo ca khám thành công",
+			CaKhamID = caKhamId
+		});
 	}
 
-	// PUT: api/CaKham/{id}/dangky
+	[Authorize(Policy = "LeTanOnly")]
 	[HttpPut("{id}/dangky")]
-	public async Task<IActionResult> DangKyKham(
-		int id,
-		[FromBody] DangKyCaKhamDTO dto)
+	public async Task<IActionResult> DangKyKham(int id, [FromBody] DangKyCaKhamDTO dto)
 	{
-		var result = await _caKhamService.DangKyKhamAsync(id,dto);
+		var result = await _caKhamService.DangKyKhamAsync(id, dto);
 
-        if (!result)
-			return NotFound(new { Message = "Ca khám không tồn tại" });
-
-		return Ok(new { Message = "Đăng ký ca khám thành công" });
+		return result
+			? Ok(new { Message = "Đăng ký ca khám thành công" })
+			: NotFound(new { Message = "Ca khám không tồn tại" });
 	}
 
-	// PUT: api/CaKham/{id}/trangthai
+
+
+	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}/trangthai")]
-	public async Task<IActionResult> CapNhatTrangThai(
-		int id,
-		[FromBody] string trangThai)
+	public async Task<IActionResult> CapNhatTrangThai(int id, [FromBody] string trangThai)
 	{
 		var result = await _caKhamService.UpdateTrangThaiAsync(id, trangThai);
-		if (!result)
-			return NotFound(new { Message = "Ca khám không tồn tại" });
 
-		return Ok(new { Message = "Cập nhật trạng thái thành công" });
+		return result
+			? Ok(new { Message = "Cập nhật trạng thái thành công" })
+			: NotFound(new { Message = "Ca khám không tồn tại" });
 	}
 
-	// GET: api/CaKham/{id}
+
+	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> LayTheoId(int id)
 	{
 		var caKham = await _caKhamService.LayCaKhamTheoIdAsync(id);
-		if (caKham == null)
-			return NotFound(new { Message = "Ca khám không tồn tại" });
 
-		return Ok(caKham);
+		return caKham == null
+			? NotFound(new { Message = "Ca khám không tồn tại" })
+			: Ok(caKham);
 	}
 
-	// GET: api/CaKham/ngay?ngay=2026-01-20
+	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpGet("ngay")]
 	public async Task<IActionResult> TheoNgay([FromQuery] DateTime ngay, string trangThai)
 	{
@@ -87,20 +78,18 @@ public class CaKhamController : ControllerBase
 		return Ok(list);
 	}
 
-	// GET: api/CaKham/benhnhan/{benhNhanId}
+	[Authorize(Policy = "BacSiOrLeTan")]
+	[HttpGet]
+	public async Task<IActionResult> TatCa()
+		=> Ok(await _caKhamService.GetAllAsync());
+
+
+
+	[Authorize(Roles = "Bệnh nhân")]
 	[HttpGet("benhnhan/{benhNhanId}")]
 	public async Task<IActionResult> TheoBenhNhan(int benhNhanId)
 	{
 		var list = await _caKhamService.GetByBenhNhanAsync(benhNhanId);
-		return Ok(list);
-	}
-
-
-	// GET: api/CaKham
-	[HttpGet]
-	public async Task<IActionResult> TatCa()
-	{
-		var list = await _caKhamService.GetAllAsync();
 		return Ok(list);
 	}
 }

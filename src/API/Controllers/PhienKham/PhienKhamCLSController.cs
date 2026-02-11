@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.DTOs;
 using Application.Services;
-using Application.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/phienkham-cls")]
 public class PhienKhamCLSController : ControllerBase
 {
@@ -15,9 +17,7 @@ public class PhienKhamCLSController : ControllerBase
 		_service = service;
 	}
 
-	// =========================
-	// GET: lấy CLS theo phiên khám
-	// =========================
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpGet("phienkham/{phienKhamID}")]
 	public async Task<IActionResult> LayTheoPhienKham(int phienKhamID)
 	{
@@ -36,9 +36,7 @@ public class PhienKhamCLSController : ControllerBase
 		}
 	}
 
-	// =========================
-	// POST: tạo mới CLS
-	// =========================
+	[Authorize(Policy = "BacSiOnly")]
 	[HttpPost]
 	public async Task<IActionResult> ThemMoi([FromBody] TaoPhienKhamCLSDTO dto)
 	{
@@ -65,9 +63,7 @@ public class PhienKhamCLSController : ControllerBase
 		}
 	}
 
-	// =========================
-	// PUT: nhận thực hiện CLS
-	// =========================
+	[Authorize(Policy = "KyThuatVienOnly")]
 	[HttpPut("{id}/nhan")]
 	public async Task<IActionResult> NhanThucHien(int id, [FromBody] NhanThucHienCLSDTO dto)
 	{
@@ -96,9 +92,7 @@ public class PhienKhamCLSController : ControllerBase
 		}
 	}
 
-	// =========================
-	// PUT: cập nhật kết quả CLS
-	// =========================
+	[Authorize(Policy = "KyThuatVienOnly")]
 	[HttpPut("{id}/ketqua")]
 	public async Task<IActionResult> CapNhatKetQua(int id, [FromBody] CapNhatKetQuaCLSDTO dto)
 	{
@@ -127,9 +121,7 @@ public class PhienKhamCLSController : ControllerBase
 		}
 	}
 
-	// =========================
-	// PUT: hủy CLS
-	// =========================
+	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}/huy")]
 	public async Task<IActionResult> Huy(int id)
 	{
