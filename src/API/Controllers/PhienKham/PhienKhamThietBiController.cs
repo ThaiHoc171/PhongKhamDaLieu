@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Application.DTOs;
+﻿using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
+[Authorize(Policy = "BacSiOnly")]
 [Route("api/[controller]")]
 public class PhienKhamThietBiController : ControllerBase
 {

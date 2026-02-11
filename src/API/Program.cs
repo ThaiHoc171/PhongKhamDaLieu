@@ -3,12 +3,13 @@ using Application.Repository;
 using Application.Services;
 using Infrastructure.Repositories;
 using Infrastructure.Repository;
-using Microsoft.OpenApi.Models;
-using Services;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Services;
+using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,22 +43,92 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			ValidateIssuerSigningKey = true,
 			IssuerSigningKey = new SymmetricSecurityKey(
 				Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
-			)
+			),
+			RoleClaimType = ClaimTypes.Role
 		};
 	});
+builder.Services.AddSwaggerGen(c =>
+{
+	c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+	{
+		Name = "Authorization",
+		Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+		Scheme = "bearer",
+		BearerFormat = "JWT",
+		In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+		Description = "Nhập: Bearer {token}"
+	});
+
+	c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+	{
+		{
+			new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+			{
+				Reference = new Microsoft.OpenApi.Models.OpenApiReference
+				{
+					Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+					Id = "Bearer"
+				}
+			},
+			new string[] {}
+		}
+	});
+});
 
 builder.Services.AddAuthorization(options =>
 {
 	options.AddPolicy("BacSiOnly", p =>
 	{
-		p.RequireRole("Nhân viên");
-		p.RequireClaim("ChucVu", "Bác sĩ");
+		p.RequireAssertion(context =>
+			context.User.IsInRole("Admin") ||
+			(
+				context.User.IsInRole("Nhân viên") && 
+				(context.User.HasClaim("ChucVu", "Bác sĩ khám bệnh") ||
+				 context.User.HasClaim("ChucVu", "Bác sĩ điều trị"))
+			)
+		);
 	});
 
 	options.AddPolicy("LeTanOnly", p =>
 	{
-		p.RequireRole("Nhân viên");
-		p.RequireClaim("ChucVu", "Lễ tân");
+		p.RequireAssertion(context =>
+			context.User.IsInRole("Admin") ||
+			(
+				context.User.IsInRole("Nhân viên") &&
+				context.User.HasClaim("ChucVu", "Lễ tân")
+			)
+		);
+	});
+
+	options.AddPolicy("KyThuatVienOnly", p =>
+	{
+		p.RequireAssertion(context =>
+			context.User.IsInRole("Admin") ||
+			(
+				context.User.IsInRole("Nhân viên") &&
+				context.User.HasClaim("ChucVu", "Kỹ thuật viên")
+			)
+		);
+	});
+	options.AddPolicy("BacSiOrKyThuatVien", policy =>
+	{
+		policy.RequireAssertion(context =>
+			context.User.IsInRole("Admin") ||
+			(context.User.IsInRole("Nhân viên") &&
+				(context.User.HasClaim("ChucVu", "Bác sĩ khám bệnh") ||
+				 context.User.HasClaim("ChucVu", "Bác sĩ điều trị") ||
+				 context.User.HasClaim("ChucVu", "Kỹ thuật viên")))
+		);
+	});
+	options.AddPolicy("BacSiOrLeTan", policy =>
+	{
+		policy.RequireAssertion(context =>
+			context.User.IsInRole("Admin") ||
+			(context.User.IsInRole("Nhân viên") &&
+				(context.User.HasClaim("ChucVu", "Bác sĩ khám bệnh") ||
+				 context.User.HasClaim("ChucVu", "Bác sĩ điều trị") ||
+				 context.User.HasClaim("ChucVu", "Lễ tân")))
+		);
 	});
 });
 

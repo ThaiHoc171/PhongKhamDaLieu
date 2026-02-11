@@ -1,6 +1,8 @@
-﻿using Application.DTO;
-using Application.Services;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.DTO;
+using Application.Services;
+using System.Security.Claims;
 
 namespace API.Controllers;
 
@@ -15,20 +17,22 @@ public class BacSiProfileController : ControllerBase
 		_service = service;
 	}
 
+	[AllowAnonymous]
 	[HttpGet("{nhanVienID}")]
 	public async Task<IActionResult> Get(int nhanVienID)
 	{
 		var result = await _service.GetByNhanVienAsync(nhanVienID);
-		if (result == null)
-			return NotFound();
-
-		return Ok(result);
+		return result == null ? NotFound() : Ok(result);
 	}
 
-	// 🔹 CREATE
+
+	[Authorize(Policy = "BacSiOnly")]
 	[HttpPost("{nhanVienID}")]
-	public async Task<IActionResult> Create(int nhanVienID,	BacSiProfileRequestDTO dto)
+	public async Task<IActionResult> Create(int nhanVienID, BacSiProfileRequestDTO dto)
 	{
+		if (!CoQuyenChinhChu(nhanVienID))
+			return Forbid();
+
 		try
 		{
 			await _service.TaoMoiAsync(nhanVienID, dto);
@@ -40,10 +44,13 @@ public class BacSiProfileController : ControllerBase
 		}
 	}
 
-	// 🔹 UPDATE
+	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{nhanVienID}")]
 	public async Task<IActionResult> Update(int nhanVienID, BacSiProfileRequestDTO dto)
 	{
+		if (!CoQuyenChinhChu(nhanVienID))
+			return Forbid();
+
 		try
 		{
 			await _service.CapNhatAsync(nhanVienID, dto);
@@ -53,5 +60,18 @@ public class BacSiProfileController : ControllerBase
 		{
 			return BadRequest(ex.Message);
 		}
+	}
+
+	private bool CoQuyenChinhChu(int nhanVienID)
+	{
+		// Admin full quyền
+		if (User.IsInRole("Admin"))
+			return true;
+
+		var claim = User.FindFirst("NhanVienID");
+		if (claim == null)
+			return false;
+
+		return int.Parse(claim.Value) == nhanVienID;
 	}
 }

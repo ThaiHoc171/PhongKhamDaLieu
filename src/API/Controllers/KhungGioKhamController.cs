@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Application.DTOs;
+﻿using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
 {
 	[ApiController]
+	[Authorize]
 	[Route("api/[controller]")]
 	public class KhungGioKhamController : ControllerBase
 	{
@@ -36,6 +38,7 @@ namespace Presentation.Controllers
 		}
 
 		// POST: api/KhungGioKham
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> ThemKhungGio([FromBody] KhungGioKhamRequestDTO dto)
 		{
@@ -54,6 +57,7 @@ namespace Presentation.Controllers
 		}
 
 		// PUT: api/KhungGioKham/{id}
+		[Authorize(Roles = "Admin")]
 		[HttpPut("{id}")]
 		public async Task<IActionResult> CapNhatKhungGio(int id, [FromBody] KhungGioKhamRequestDTO dto)
 		{

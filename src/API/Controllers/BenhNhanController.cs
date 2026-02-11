@@ -1,11 +1,13 @@
-﻿using Application.DTOs;
-using Application.Services;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.DTOs;
+using Application.Services;
 
 namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] 
 public class BenhNhanController : ControllerBase
 {
 	private readonly BenhNhanService _benhNhanService;
@@ -15,59 +17,66 @@ public class BenhNhanController : ControllerBase
 		_benhNhanService = benhNhanService;
 	}
 
-	// POST: api/BenhNhan
+
+	[Authorize(Policy = "LeTanOnly")]
 	[HttpPost]
 	public async Task<IActionResult> TaoBenhNhan([FromBody] ThemBenhNhanDTO dto)
 	{
-		try
+		var benhNhanID = await _benhNhanService.ThemBenhNhanAsync(dto);
+
+		return Ok(new
 		{
-			var benhNhanID = await _benhNhanService.ThemBenhNhanAsync(dto);
-			return Ok(new { message = "Tạo bênh nhân thành công.", BenhNhanID = benhNhanID });
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new { message = "Tạo bênh nhân thất bại.", Message = ex.Message });
-		}
+			message = "Tạo bệnh nhân thành công.",
+			BenhNhanID = benhNhanID
+		});
 	}
 
-	// PUT: api/BenhNhan/{id}
+	[Authorize(Policy = "LeTanOnly")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhatBenhNhan(
 		int id,
 		[FromBody] CapNhatBenhNhanDTO dto)
 	{
-		var result = await _benhNhanService.CapNhatBenhNhanAsync(
-			id,
-			dto.GhiChu
-		);
+		var result = await _benhNhanService.CapNhatBenhNhanAsync(id, dto.GhiChu);
 
-		if (result) return Ok(new { message = "Cập nhật bệnh nhân thành công." });
-		return NotFound(new { Message = "Bệnh nhân không tồn tại" });
+		return result
+			? Ok(new { message = "Cập nhật bệnh nhân thành công." })
+			: NotFound(new { message = "Bệnh nhân không tồn tại" });
 	}
 
-	// GET: api/BenhNhan
+	[Authorize(Policy = "LeTanOnly")]
 	[HttpGet]
 	public async Task<IActionResult> DanhSach()
-	{
-		var list = await _benhNhanService.DanhSachBenhNhanAsync();
-		return Ok(list);
-	}
+		=> Ok(await _benhNhanService.DanhSachBenhNhanAsync());
 
-	// GET: api/BenhNhan/{id}
+	[Authorize(Policy = "LeTanOnly")]
+	[HttpGet("Search")]
+	public async Task<IActionResult> Search([FromQuery] string keyword)
+		=> Ok(await _benhNhanService.SearchdAsync(keyword));
+
+
+	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> LayTheoId(int id)
 	{
 		var bn = await _benhNhanService.LayBenhNhanTheoIdAsync(id);
-		if (bn == null) return NotFound(new { Success = false, Message = "Bệnh nhân không tồn tại" });
-		return Ok(bn);
+
+		return bn == null
+			? NotFound(new { message = "Bệnh nhân không tồn tại" })
+			: Ok(bn);
 	}
 
-	// GET: api/BenhNhan/Search?keyword=...
-	[HttpGet("Search")]
-	public async Task<IActionResult> Search([FromQuery] string keyword)
+
+	[Authorize(Roles = "Bệnh nhân")]
+	[HttpGet("me")]
+	public async Task<IActionResult> XemThongTinCuaToi()
 	{
-		var list = await _benhNhanService.SearchdAsync(keyword);
-		return Ok(list);
+		var benhNhanId = int.Parse(User.FindFirst("BenhNhanID")!.Value);
+
+		var bn = await _benhNhanService.LayBenhNhanTheoIdAsync(benhNhanId);
+
+		return bn == null
+			? NotFound()
+			: Ok(bn);
 	}
 }
-
