@@ -25,7 +25,7 @@ jobs:
 
       - name: Build with dotnet
         working-directory: src/API
-        run: dotnet build PhongKhamDaLieu.sln --configuration Release
+        run: dotnet build API.sln --configuration Release
       
       - name: Publish
         working-directory: src/API
@@ -66,3 +66,4 @@ jobs:
           package: .
 
           
+
