@@ -31,11 +31,11 @@ jobs:
         working-directory: src/API
         run: dotnet publish API.csproj -c Release -o ../../publish
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: dotnet-app
+          path: ./publish/myapp
 
   deploy:
     runs-on: windows-latest
@@ -66,4 +66,5 @@ jobs:
           package: .
 
           
+
 
