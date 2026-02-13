@@ -9,5 +9,6 @@ public interface ITaiKhoanRepository
 	Task<List<TaiKhoan>> GetAllAsync();
 	Task AddAsync(TaiKhoan taiKhoan);
 	Task UpdateAsync(TaiKhoan taiKhoan);
+
 }
 

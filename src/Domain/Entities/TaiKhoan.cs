@@ -26,8 +26,6 @@ namespace Domain.Entities
 			TrangThai = "Hoạt động";
 			NgayTao = DateTime.UtcNow;
 		}
-
-		// Constructor dùng khi map từ DB
 		public TaiKhoan(
 			int id,
 			string email,

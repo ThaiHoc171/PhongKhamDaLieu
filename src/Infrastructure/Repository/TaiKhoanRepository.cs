@@ -95,8 +95,8 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-
-	private static TaiKhoan MapToEntity(SqlDataReader reader)
+    
+    private static TaiKhoan MapToEntity(SqlDataReader reader)
 	{
 		return new TaiKhoan(
 			id: reader.GetInt32(0),

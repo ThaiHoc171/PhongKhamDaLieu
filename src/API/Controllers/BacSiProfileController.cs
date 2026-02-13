@@ -17,8 +17,8 @@ public class BacSiProfileController : ControllerBase
 		_service = service;
 	}
 
-	[AllowAnonymous]
-	[HttpGet("{nhanVienID}")]
+    [Authorize(Roles = "Admin")]
+    [HttpGet("{nhanVienID}")]
 	public async Task<IActionResult> Get(int nhanVienID)
 	{
 		var result = await _service.GetByNhanVienAsync(nhanVienID);
