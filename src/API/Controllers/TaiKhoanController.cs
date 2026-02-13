@@ -15,9 +15,18 @@ namespace API.Controllers
 		{
 			_taiKhoanService = taiKhoanService;
 		}
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDTO dto)
+        {
+            var result = await _taiKhoanService.RefreshTokenAsync(dto.RefreshToken);
 
-		// POST: api/TaiKhoan/dangnhap
-		[AllowAnonymous]
+            if (result == null)
+                return Unauthorized();
+
+            return Ok(result);
+        }
+        // POST: api/TaiKhoan/dangnhap
+        [AllowAnonymous]
 		[HttpPost("dangnhap")]
 		public async Task<IActionResult> DangNhap([FromBody] LoginRequestDTO login)
 		{
