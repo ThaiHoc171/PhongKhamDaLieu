@@ -10,9 +10,9 @@ public class LoginResponseDTO
 	public int Id { get; set; }
 	public string Email { get; set; } = default!;
 	public string VaiTro { get; set; } = default!;
-	public string Token { get; set; } = default!;
-
-	public int? NhanVienId { get; set; }
+    public string AccessToken { get; set; } = null!;
+    public string RefreshToken { get; set; } = null!;
+    public int? NhanVienId { get; set; }
 	public int? BenhNhanId { get; set; }
 	public string? ChucVu { get; set; }
 }
@@ -36,4 +36,8 @@ public class TaiKhoanResponseDTO
 	public string Email { get; set; } = default!;
 	public string VaiTro { get; set; } = default!;
 	public string TrangThai { get; set; } = default!;
+}
+public class RefreshTokenRequestDTO
+{
+    public string RefreshToken { get; set; } = null!;
 }

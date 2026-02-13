@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Azure.Core;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Extensions.Configuration;
@@ -17,15 +18,18 @@ public class TaiKhoanService
 	private readonly IBenhNhanRepository _benhNhanRepo;
 	private readonly IChucVuRepository _chucVuRepo;
 	private readonly IConfiguration _configuration;
-	public TaiKhoanService(ITaiKhoanRepository repo, IConfiguration configuration, INhanVienRepository nhanVienRepo, IBenhNhanRepository benhNhanRepo, IChucVuRepository chucVuRepo)
+    private readonly IRefreshTokenRepository _refreshRepo;
+
+    public TaiKhoanService(ITaiKhoanRepository repo, IConfiguration configuration, INhanVienRepository nhanVienRepo, IBenhNhanRepository benhNhanRepo, IChucVuRepository chucVuRepo, IRefreshTokenRepository refreshRepo)
 	{
 		_repo = repo;
 		_configuration = configuration;
 		_nhanVienRepo = nhanVienRepo;
 		_benhNhanRepo = benhNhanRepo;
 		_chucVuRepo = chucVuRepo;
+		_refreshRepo = refreshRepo;
 	}
-	private string TaoJwt(
+    private string TaoAccessToken(
 	TaiKhoan tk,
 	int? nhanVienId,
 	int? benhNhanId,
@@ -54,16 +58,24 @@ public class TaiKhoanService
 		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
 		var token = new JwtSecurityToken(
-			expires: DateTime.UtcNow.AddHours(2),
+            issuer: _configuration["Jwt:Issuer"],
+            expires: DateTime.UtcNow.AddMinutes(30),
 			claims: claims,
 			signingCredentials: creds
 		);
 
 		return new JwtSecurityTokenHandler().WriteToken(token);
 	}
+    private string GenerateRefreshToken()
+    {
+        var randomBytes = new byte[64];
+        using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
 
+        return Convert.ToBase64String(randomBytes);
+    }
 
-	public async Task<LoginResponseDTO?> DangNhapAsync(LoginRequestDTO dto)
+    public async Task<LoginResponseDTO?> DangNhapAsync(LoginRequestDTO dto)
 	{
 		var tk = await _repo.GetByEmailAsync(dto.Email);
 		if (tk == null) return null;
@@ -89,18 +101,22 @@ public class TaiKhoanService
 			benhNhanId = await _benhNhanRepo.GetForAuthAsync(tk.Id);
 		}
 
-		var token = TaoJwt(tk, nhanVienId, benhNhanId, chucVu);
+        var accessToken = TaoAccessToken(tk, nhanVienId, benhNhanId, chucVu);
+        var refreshToken = GenerateRefreshToken();
+		var token = new RefreshToken(tk.Id, refreshToken, DateTime.UtcNow.AddDays(7));
+        await _refreshRepo.SaveAsync(token);	
 
-		return new LoginResponseDTO
+        return new LoginResponseDTO
 		{
-			Id = tk.Id,
-			Email = tk.Email,
-			VaiTro = tk.VaiTro,
-			Token = token,
-			NhanVienId = nhanVienId,
-			BenhNhanId = benhNhanId,
-			ChucVu = chucVu
-		};
+            Id = tk.Id,
+            Email = tk.Email,
+            VaiTro = tk.VaiTro,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            NhanVienId = nhanVienId,
+            BenhNhanId = benhNhanId,
+            ChucVu = chucVu
+        };
 	}
 
 
@@ -164,7 +180,41 @@ public class TaiKhoanService
 
 		return MapToResponse(tk);
 	}
-	private static TaiKhoanResponseDTO MapToResponse(TaiKhoan tk)
+    public async Task<LoginResponseDTO?> RefreshTokenAsync(string refreshToken)	
+    {
+        var storedToken = await _refreshRepo.GetAsync(refreshToken);
+
+        if (storedToken == null ||
+            storedToken.IsRevoked ||
+            storedToken.ExpiryDate < DateTime.UtcNow)
+            return null;
+
+        var taiKhoan = await _repo.GetByIdAsync(storedToken.TaiKhoanId);
+        if (taiKhoan == null) return null;
+
+        await _refreshRepo.RevokeAsync(refreshToken);
+        
+        var newRefreshToken = GenerateRefreshToken();
+        var token = new RefreshToken(taiKhoan.Id, newRefreshToken, DateTime.UtcNow.AddDays(7));
+        await _refreshRepo.SaveAsync(token);
+       
+        var accessToken = TaoAccessToken(taiKhoan, null, null, null);
+
+        return new LoginResponseDTO
+        {
+            Id = taiKhoan.Id,
+            Email = taiKhoan.Email,
+            VaiTro = taiKhoan.VaiTro,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
+    }
+    public async Task LogoutAsync(string refreshToken)
+    {
+        await _refreshRepo.RevokeAsync(refreshToken);
+    }
+
+    private static TaiKhoanResponseDTO MapToResponse(TaiKhoan tk)
 		=> new()
 		{
 			Id = tk.Id,
