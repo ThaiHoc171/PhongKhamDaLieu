@@ -86,6 +86,7 @@ public class TaiKhoanService
 		int? nhanVienId = null;
 		int? benhNhanId = null;
 		string? chucVu = null;
+		string? hoTen = null;
 
 		if (tk.VaiTro == "Nhân viên")
 		{
@@ -94,14 +95,20 @@ public class TaiKhoanService
 			{
 				nhanVienId = nv.NhanVienID;
 				chucVu = await _chucVuRepo.GetNameByIdAsync(nv.ChucVuID);
+				hoTen = await _nhanVienRepo.GetNameByIdAsync(nv.NhanVienID);
 			}
 		}
 		else if (tk.VaiTro == "Bệnh nhân")
 		{
 			benhNhanId = await _benhNhanRepo.GetForAuthAsync(tk.Id);
+			hoTen = await _benhNhanRepo.GetNameByIdAsync(benhNhanId.Value);
+		}
+		else if (tk.VaiTro == "Admin")
+		{
+			hoTen = "Admin";
 		}
 
-        var accessToken = TaoAccessToken(tk, nhanVienId, benhNhanId, chucVu);
+		var accessToken = TaoAccessToken(tk, nhanVienId, benhNhanId, chucVu);
         var refreshToken = GenerateRefreshToken();
 		var token = new RefreshToken(tk.Id, refreshToken, DateTime.UtcNow.AddDays(7));
         await _refreshRepo.SaveAsync(token);	
@@ -115,8 +122,9 @@ public class TaiKhoanService
             RefreshToken = refreshToken,
             NhanVienId = nhanVienId,
             BenhNhanId = benhNhanId,
-            ChucVu = chucVu
-        };
+            ChucVu = chucVu,
+			HoTen = hoTen
+		};
 	}
 
 
