@@ -15,6 +15,7 @@ public class LoginResponseDTO
     public int? NhanVienId { get; set; }
 	public int? BenhNhanId { get; set; }
 	public string? ChucVu { get; set; }
+	public string? HoTen { get; set; }
 }
 
 public class ThemTaiKhoanDTO
