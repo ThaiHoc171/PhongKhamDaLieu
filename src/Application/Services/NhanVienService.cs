@@ -85,10 +85,22 @@ public class NhanVienService
 
 		return MapToResponse(nv);
 	}
-	public async Task<List<NhanVienResponseDTO>> SearchAsync(string keyword)
+	public async Task<PagedResult<NhanVienResponseDTO>>
+		SearchAsync(string keyword, int pageNumber, int pageSize)
 	{
-		var list = await _repo.SearchAsync(keyword);
-		return list.Select(MapToResponse).ToList();
+		if (pageNumber <= 0) pageNumber = 1;
+		if (pageSize <= 0) pageSize = 10;
+
+		var (data, totalCount) =
+			await _repo.SearchAsync(keyword ?? string.Empty, pageNumber, pageSize);
+
+		return new PagedResult<NhanVienResponseDTO>
+		{
+			Items = data.Select(MapToResponse).ToList(),
+			TotalCount = totalCount,
+			PageNumber = pageNumber,
+			PageSize = pageSize
+		};
 	}
 
 	private static NhanVienResponseDTO MapToResponse(NhanVien nv)

@@ -9,5 +9,6 @@ namespace Application.Interfaces
 		Task<string?> GetNameByIdAsync(int id);
 		Task AddAsync(ChucVu chucVu);
 		Task UpdateAsync(ChucVu chucVu);
+		Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
 	}
 }

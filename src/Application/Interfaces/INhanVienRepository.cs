@@ -9,7 +9,7 @@ namespace Application.Interfaces
         Task<int?> GetPhongChucNangIdByNhanVienIdAsync(int nhanVienId);
         Task<NhanVien?> GetByIdAsync(int nhanVienID);
 		Task<List<NhanVien>> GetAllAsync();
-		Task<List<NhanVien>> SearchAsync(string keyword);
+		Task<(List<NhanVien> Data, int TotalCount)> SearchAsync(string keyword, int pageNumber, int pageSize);
 		Task<string?> GetNameByIdAsync(int id);
 		Task<NhanVien> GetForAuthAsync(int TaiKhoanId);
 		Task<(List<NhanVien> Data, int TotalCount)> GetPageAsync(int pageNumber, int pageSize);
