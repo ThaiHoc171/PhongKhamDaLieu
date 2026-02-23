@@ -12,5 +12,6 @@ namespace Application.Interfaces
 		Task<List<NhanVien>> SearchAsync(string keyword);
 		Task<string?> GetNameByIdAsync(int id);
 		Task<NhanVien> GetForAuthAsync(int TaiKhoanId);
+		Task<(List<NhanVien> Data, int TotalCount)> GetPageAsync(int pageNumber, int pageSize);
 	}
 }

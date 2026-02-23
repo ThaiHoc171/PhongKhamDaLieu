@@ -13,7 +13,54 @@ public class NhanVienRepository : INhanVienRepository
 		_connectionString = config.GetConnectionString("DefaultConnection")
 			?? throw new ArgumentNullException("Connection string not found");
 	}
+	public async Task<(List<NhanVien> Data, int TotalCount)> GetPageAsync(int pageNumber, int pageSize)
+	{
+		const string sql = @"
+			SELECT
+				nv.NhanVienID, nv.ChucVuID, nv.PhongChucNangID, nv.NgayVaoLam, nv.TrangThai,
+				cv.TenChucVu,
+				tt.ThongTinID, tt.HoTen, tt.SDT, tt.EmailLienHe,
+				nv.BangCap, nv.KinhNghiem
+			FROM NhanVien nv
+			JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+			JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID
+			ORDER BY nv.NhanVienID
+			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
 
+			SELECT COUNT(*) FROM NhanVien;
+		";
+
+		var list = new List<NhanVien>();
+		int totalCount = 0;
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		int offset = (pageNumber - 1) * pageSize;
+
+		cmd.Parameters.AddWithValue("@Offset", offset);
+		cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		// Result 1: Data
+		while (await reader.ReadAsync())
+		{
+			list.Add(MapToListEntity(reader));
+		}
+
+		// Result 2: TotalCount
+		if (await reader.NextResultAsync())
+		{
+			if (await reader.ReadAsync())
+			{
+				totalCount = reader.GetInt32(0);
+			}
+		}
+
+		return (list, totalCount);
+	}
 	public async Task AddAsync(NhanVien nv)
 	{
 		const string sql = @"
@@ -117,6 +164,7 @@ public class NhanVienRepository : INhanVienRepository
 		}
 		return list;
 	}
+
 	public async Task<int?> GetPhongChucNangIdByNhanVienIdAsync(int nhanVienId)
 	{
 		const string sql = @"

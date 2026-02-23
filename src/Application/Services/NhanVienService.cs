@@ -66,7 +66,18 @@ public class NhanVienService
 		var list = await _repo.GetAllAsync();
 		return list.Select(MapToResponse).ToList();
 	}
+	public async Task<PagedResult<NhanVienResponseDTO>> DanhSachNhanVienPagedAsync(int pageNumber, int pageSize)
+	{
+		var (data, totalCount) = await _repo.GetPageAsync(pageNumber, pageSize);
 
+		return new PagedResult<NhanVienResponseDTO>
+		{
+			Items = data.Select(MapToResponse).ToList(),
+			TotalCount = totalCount,
+			PageNumber = pageNumber,
+			PageSize = pageSize
+		};
+	}
 	public async Task<NhanVienResponseDTO?> LayTheoIDAsync(int nhanVienID)
 	{
 		var nv = await _repo.GetByIdAsync(nhanVienID);
