@@ -6,6 +6,7 @@ public class ChucVuResponseDTO
 	public string TenChucVu { get; set; } = default!;
 	public string? MoTa { get; set; }
 	public DateTime NgayTao { get; set; }
+	public string TrangThai { get; set; } = default!;
 }
 
 public class ChucVuRequestDTO

@@ -60,7 +60,8 @@ namespace Services
 				ChucVuID = cv.ChucVuID,
 				TenChucVu = cv.TenChucVu,
 				MoTa = cv.MoTa,
-				NgayTao = cv.NgayTao
+				NgayTao = cv.NgayTao,
+				TrangThai = cv.TrangThai
 			};
 		}
 	}
