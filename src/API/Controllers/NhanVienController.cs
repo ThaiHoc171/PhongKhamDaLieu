@@ -70,6 +70,13 @@ namespace API.Controllers
 			var list = await _service.LayDanhSachAsync();
 			return Ok(list);
 		}
+		[Authorize(Roles = "Admin,Nhân viên")]
+		[HttpGet("paged")]
+		public async Task<IActionResult> LayDanhSachNhanVienPaged([FromQuery] int pageNumber = 1,[FromQuery] int pageSize = 10)
+		{
+			var result = await _service.DanhSachNhanVienPagedAsync(pageNumber, pageSize);
+			return Ok(result);
+		}
 
 		[Authorize(Roles = "Admin,Nhân viên")]
 		[HttpGet("search")]
