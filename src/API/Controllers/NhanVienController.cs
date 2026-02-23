@@ -80,10 +80,11 @@ namespace API.Controllers
 
 		[Authorize(Roles = "Admin,Nhân viên")]
 		[HttpGet("search")]
-		public async Task<IActionResult> TimKiemNhanVien([FromQuery] string keyword)
+		public async Task<IActionResult> Search([FromQuery] string? keyword,[FromQuery] int pageNumber = 1,	[FromQuery] int pageSize = 10)
 		{
-			var list = await _service.SearchAsync(keyword);
-			return Ok(list);
+			var result = await _service.SearchAsync(keyword ?? string.Empty, pageNumber, pageSize);
+
+			return Ok(result);
 		}
 
 		[Authorize(Roles = "Admin,Nhân viên")]

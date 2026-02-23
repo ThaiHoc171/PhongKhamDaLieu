@@ -183,35 +183,61 @@ public class NhanVienRepository : INhanVienRepository
 		return result == null ? null : (int)result;
 	}
 
-	public async Task<List<NhanVien>> SearchAsync(string keyword)
+	public async Task<(List<NhanVien> Data, int TotalCount)>
+		SearchAsync(string keyword, int pageNumber, int pageSize)
 	{
 		const string sql = @"
-				SELECT
-					nv.NhanVienID, nv.ChucVuID, nv.PhongChucNangID, nv.NgayVaoLam, nv.TrangThai,
-					cv.TenChucVu,
-					tt.ThongTinID, tt.HoTen, tt.SDT, tt.EmailLienHe,
-					nv.BangCap, nv.KinhNghiem
-				FROM NhanVien nv
-				JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
-				JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID
-				WHERE tt.HoTen LIKE @Keyword OR tt.EmailLienHe LIKE @Keyword
-			";
+        SELECT
+            nv.NhanVienID, nv.ChucVuID, nv.PhongChucNangID, nv.NgayVaoLam, nv.TrangThai,
+            cv.TenChucVu,
+            tt.ThongTinID, tt.HoTen, tt.SDT, tt.EmailLienHe,
+            nv.BangCap, nv.KinhNghiem
+        FROM NhanVien nv
+        JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+        JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID
+        WHERE tt.HoTen LIKE @Keyword 
+              OR tt.EmailLienHe LIKE @Keyword
+        ORDER BY nv.NhanVienID
+        OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+        SELECT COUNT(*)
+        FROM NhanVien nv
+        JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+        WHERE tt.HoTen LIKE @Keyword 
+              OR tt.EmailLienHe LIKE @Keyword;
+    ";
 
 		var list = new List<NhanVien>();
+		int totalCount = 0;
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
+
+		int offset = (pageNumber - 1) * pageSize;
+
 		cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+		cmd.Parameters.AddWithValue("@Offset", offset);
+		cmd.Parameters.AddWithValue("@PageSize", pageSize);
 
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
 
+		// Result 1: Data
 		while (await reader.ReadAsync())
 		{
 			list.Add(MapToListEntity(reader));
 		}
 
-		return list;
+		// Result 2: TotalCount
+		if (await reader.NextResultAsync())
+		{
+			if (await reader.ReadAsync())
+			{
+				totalCount = reader.GetInt32(0);
+			}
+		}
+
+		return (list, totalCount);
 	}
 	public async Task<string?> GetNameByIdAsync(int id)
 	{

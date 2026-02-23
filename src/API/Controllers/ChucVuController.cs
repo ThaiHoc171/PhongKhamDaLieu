@@ -83,5 +83,15 @@ namespace API.Controllers
 				message = "Cập nhật trạng thái chức vụ thành công."
 			});
 		}
+		//Get combobox
+		[Authorize(Roles = "Admin,Nhân viên")]
+		[HttpGet("combobox")]
+		public async Task<IActionResult> GetIdAndName()
+		{
+			var result = await _chucVuService.GetIdAndNameAsync();
+			return Ok(result);
+		}
+
+
 	}
 }

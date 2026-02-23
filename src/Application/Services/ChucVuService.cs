@@ -52,7 +52,16 @@ namespace Services
 
 			return true;
 		}
+		public async Task<List<NameResponseDTO>> GetIdAndNameAsync()
+		{
+			var list = await _repo.GetIdAndNameAsync();
 
+			return list.Select(x => new NameResponseDTO
+			{
+				Id = x.Id,
+				Name = x.Ten
+			}).ToList();
+		}
 		private static ChucVuResponseDTO MapToDto(ChucVu cv)
 		{
 			return new ChucVuResponseDTO

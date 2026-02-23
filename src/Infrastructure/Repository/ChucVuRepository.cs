@@ -93,6 +93,31 @@ public class ChucVuRepository : IChucVuRepository
 		await conn.OpenAsync();
 		return await cmd.ExecuteScalarAsync() as string;
 	}
+	public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
+	{
+		const string sql = @"
+        SELECT ChucVuID, TenChucVu
+        FROM ChucVu
+        ORDER BY TenChucVu";
+
+		var list = new List<(int Id, string Ten)>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add((
+				Id: reader.GetInt32(0),
+				Ten: reader.GetString(1)
+			));
+		}
+
+		return list;
+	}
 	private static ChucVu MapToEntity(SqlDataReader reader)
 	{
 		return new ChucVu(
