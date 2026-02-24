@@ -54,8 +54,8 @@ public class LichLamViecController: ControllerBase
 	}
 
 	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("GetKhoangCach")]
-    public async Task<IActionResult> GetByKhoangCach(int page)
+	[HttpGet("GetByWeek")]
+    public async Task<IActionResult> GetByWeek([FromQuery] int page = 0)
     {
         try
         {
