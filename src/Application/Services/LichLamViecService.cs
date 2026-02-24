@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.DTOs;
 using Application.Interfaces;
+using Azure;
 using Domain.Entities;
 
 
@@ -11,12 +12,14 @@ public class LichLamViecService
 	private readonly ILichLamViecRepository _repo;
 	private readonly INgayNghiNhanVienRepository _nghiRepo;
 	private readonly INhanVienRepository _nvRepo;
+	private readonly IChucVuRepository _chucVuRepo;
 
-	public LichLamViecService(ILichLamViecRepository repo, INgayNghiNhanVienRepository nghiRepo, INhanVienRepository nvRepo)
+	public LichLamViecService(ILichLamViecRepository repo, INgayNghiNhanVienRepository nghiRepo, INhanVienRepository nvRepo, IChucVuRepository chucVuRepo)
 	{
 		_repo = repo;
 		_nghiRepo = nghiRepo;
 		_nvRepo = nvRepo;
+		_chucVuRepo = chucVuRepo;
 	}
 	public async Task ThemLichLamViecAsync(LichLamViecBatchDTO dto)
 	{
@@ -159,25 +162,28 @@ public class LichLamViecService
 		};
 	}
 
-	public async Task<List<LichLamViecResponseDTO>> GetByKhoangNgayAsync(
-	DateTime tuNgay,
-	DateTime denNgay)
+	public async Task<List<LichLamViecChucVuResponseDTO>> GetByWeekAsync(int page)
 	{
-		var entities = await _repo.GetByKhoangNgayAsync(tuNgay, denNgay);
+		var (start, end) = DateTimeHelper.GetWeekByPage(page);
+		var entities = await _repo.GetByWeekAsync(start, end);
 
-		var result = new List<LichLamViecResponseDTO>();
+		var result = new List<LichLamViecChucVuResponseDTO>();
 
 		foreach (var e in entities)
 		{
 			var tenNhanVien = await _nvRepo.GetNameByIdAsync(e.NhanVienID);
+			var tenChucVu = await _chucVuRepo.GetByNhanVienIdAsync(e.NhanVienID);
+			var phongId = await _nvRepo.GetPhongChucNangIdByNhanVienIdAsync(e.NhanVienID);
 
-			result.Add(new LichLamViecResponseDTO
+			result.Add(new LichLamViecChucVuResponseDTO
 			{
 				LichLamViecID = e.LichLamViecID,
+				TenChucVu = tenChucVu ?? "",
+				PhongChucNangID = phongId ?? 0,
 				NhanVien = new NameResponseDTO
 				{
 					Id = e.NhanVienID,
-					Name = tenNhanVien
+					Name = tenNhanVien ?? ""
 				},
 				Ngay = e.Ngay,
 				CaLamViec = e.CaLamViec,

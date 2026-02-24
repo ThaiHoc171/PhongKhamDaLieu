@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace Infrastructure.Repositories;
 
@@ -35,6 +36,30 @@ public class ChucVuRepository : IChucVuRepository
 
 		return list;
 	}
+
+	public async Task<string?> GetByNhanVienIdAsync(int nhanVienId)
+	{
+		const string sql = @"
+        SELECT cv.TenChucVu
+        FROM NhanVien nv
+        INNER JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID
+        WHERE nv.NhanVienID = @NhanVienID";
+
+		using var conn = new SqlConnection(_connectionString);
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId;
+
+		await conn.OpenAsync();
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (!await reader.ReadAsync())
+			return null;
+
+		return reader.GetString(0);
+	}
+
+
 
 	public async Task<ChucVu?> GetByIdAsync(int id)
 	{
