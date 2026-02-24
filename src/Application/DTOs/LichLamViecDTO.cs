@@ -22,6 +22,17 @@ public class LichLamViecResponseDTO
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
 }
+
+public class LichLamViecChucVuResponseDTO
+{
+	public int LichLamViecID { get; set; }
+	public string TenChucVu { get; set; } = null!;
+	public int PhongChucNangID { get; set; }
+	public NameResponseDTO NhanVien { get; init; } = null!;
+	public DateTime Ngay { get; set; }
+	public int CaLamViec { get; set; }
+	public string? GhiChu { get; set; }
+}
 public class LichLamViecBatchDTO
 {
 	public int Thang { get; set; }
@@ -35,4 +46,11 @@ public class WeekLichLamViecDTO
 	public DateTime TuanBatDau { get; set; }
 	public DateTime TuanKetThuc { get; set; }
 	public List<LichLamViecResponseDTO> LichLamViecs { get; set; } = new();
+}
+public class WeekLichLamViecChucVuDTO
+{
+	public int Page { get; set; }
+	public DateTime TuanBatDau { get; set; }
+	public DateTime TuanKetThuc { get; set; }
+	public List<LichLamViecChucVuResponseDTO> LichLamViecs { get; set; } = new();
 }
