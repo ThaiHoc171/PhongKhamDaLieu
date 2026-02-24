@@ -78,12 +78,12 @@ public class NhanVienService
 			PageSize = pageSize
 		};
 	}
-	public async Task<NhanVienResponseDTO?> LayTheoIDAsync(int nhanVienID)
+	public async Task<NhanVienChiTietDTO?> LayTheoIDAsync(int nhanVienID)
 	{
 		var nv = await _repo.GetByIdAsync(nhanVienID);
 		if (nv == null) return null;
 
-		return MapToResponse(nv);
+		return MapChiTiet(nv);
 	}
 	public async Task<PagedResult<NhanVienResponseDTO>>
 		SearchAsync(string keyword, int pageNumber, int pageSize)
@@ -112,6 +112,29 @@ public class NhanVienService
 			Email = nv.ThongTinCaNhan?.EmailLienHe,
 			TenChucVu = nv.TenChucVu,
 			TrangThai = nv.TrangThai
+		};
+	}
+	private static NhanVienChiTietDTO MapChiTiet(NhanVien nv)
+	{
+		return new NhanVienChiTietDTO
+		{
+			NhanVienID = nv.NhanVienID,
+			ThongTinID = nv.ThongTinID,
+			ChucVuID = nv.ChucVuID,
+			PhongChucNangID = nv.PhongChucNangID,
+			HoTen = nv.ThongTinCaNhan?.HoTen,
+			NgaySinh = nv.ThongTinCaNhan?.NgaySinh,
+			GioiTinh = nv.ThongTinCaNhan?.GioiTinh,
+			SDT = nv.ThongTinCaNhan?.SDT,
+			EmailLienHe = nv.ThongTinCaNhan?.EmailLienHe,
+			DiaChi = nv.ThongTinCaNhan?.DiaChi,
+			Avatar = nv.ThongTinCaNhan?.Avatar,
+			NgayVaoLam = nv.NgayVaoLam,
+			BangCap = nv.BangCap,
+			KinhNghiem = nv.KinhNghiem,
+			TrangThai = nv.TrangThai,
+			NgayTao = nv.NgayTao,
+			NgayCapNhat = nv.NgayCapNhat
 		};
 	}
 }
