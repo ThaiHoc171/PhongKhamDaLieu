@@ -36,7 +36,7 @@ public class CaKhamService
         if (dto.NgayKham.Date < DateTime.Today)
             throw new Exception("Ngày khám không hợp lệ");
 
-        var danhSachLich = await _lichLamViecRepo.GetByKhoangNgayAsync(dto.NgayKham, dto.NgayKetThuc);
+        var danhSachLich = await _lichLamViecRepo.GetByWeekAsync(dto.NgayKham, dto.NgayKetThuc);
 
         if (!danhSachLich.Any())
             throw new Exception("Không có lịch làm việc trong ngày này");
