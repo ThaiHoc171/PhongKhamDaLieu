@@ -100,7 +100,7 @@ public class LichLamViecRepository : ILichLamViecRepository
         await conn.OpenAsync();
         return (int?)await cmd.ExecuteScalarAsync();
     }
-    public async Task<List<LichLamViec>> GetByKhoangNgayAsync(DateTime tuNgay, DateTime denNgay)
+    public async Task<List<LichLamViec>> GetByWeekAsync(DateTime tuNgay, DateTime denNgay)
     {
         const string sql = @"
         SELECT LichLamViecID, NhanVienID, Ngay, CaLamViec, GhiChu
@@ -109,14 +109,9 @@ public class LichLamViecRepository : ILichLamViecRepository
 
         var list = new List<LichLamViec>();
 
-        // Chuẩn hóa ngày
-        tuNgay = tuNgay.Date;
-        denNgay = denNgay.Date.AddDays(1);
-
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
-
-        cmd.Parameters.Add("@tuNgay", SqlDbType.DateTime).Value = tuNgay;
+		cmd.Parameters.Add("@tuNgay", SqlDbType.DateTime).Value = tuNgay;
         cmd.Parameters.Add("@denNgay", SqlDbType.DateTime).Value = denNgay;
 
         await conn.OpenAsync();

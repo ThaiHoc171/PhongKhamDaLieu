@@ -55,11 +55,11 @@ public class LichLamViecController: ControllerBase
 
 	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("GetKhoangCach")]
-    public async Task<IActionResult> GetByKhoangCach(DateTime tuNgay, DateTime denNgay)
+    public async Task<IActionResult> GetByKhoangCach(int page)
     {
         try
         {
-            var result = await _service.GetByKhoangNgayAsync(tuNgay, denNgay);
+            var result = await _service.GetByWeekAsync(page);
             if (result == null)
                 return NotFound();
 
