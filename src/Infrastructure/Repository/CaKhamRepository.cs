@@ -57,7 +57,34 @@ public class CaKhamRepository : ICaKhamRepository
 		}
 		return list;
 	}
-	public async Task<List<CaKham>> GetByBenhNhanAsync(int benhNhanID)
+    public async Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham)
+    {
+        const string sql = @"
+		SELECT KhungGioID
+		FROM CaKham 
+		WHERE NgayKham = @ngayKham AND LoaiCaKham = @loaiCaKham AND TrangThai != N'Đã hủy'
+		GROUP BY KhungGioID
+		HAVING COUNT(CaKhamID) < 5";
+
+        var list = new List<int>();
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@ngayKham", ngayKham);
+        cmd.Parameters.AddWithValue("@loaiCaKham", loaiCaKham);
+
+        await conn.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            list.Add(reader.GetInt32(0));
+        }
+
+        return list;
+    }
+    public async Task<List<CaKham>> GetByBenhNhanAsync(int benhNhanID)
 	{
 		const string sql = @"SELECT CaKhamID, LoaiCaKham, LichLamViecID, KhungGioID, PhongChucNangID, BenhNhanID, LyDoKham, TrangThai, NgayDat, NgayKham, GhiChu
                                 FROM CaKham WHERE BenhNhanID = @benhNhanID";

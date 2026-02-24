@@ -205,7 +205,12 @@ public class CaKhamService
 
         return list.Select(MapToDto).ToList();
 	}
-	public async Task<List<CaKhamResponseDTO>> GetByBenhNhanAsync(int benhNhanID)
+    public async Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham)
+    {
+        return await _caKhamRepo.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
+    }
+
+    public async Task<List<CaKhamResponseDTO>> GetByBenhNhanAsync(int benhNhanID)
 	{
         var list = await _caKhamRepo.GetByBenhNhanAsync(benhNhanID);
 
