@@ -118,7 +118,7 @@ public class NhanVienRepository : INhanVienRepository
 				nv.NgayVaoLam, nv.BangCap, nv.KinhNghiem, nv.TrangThai,
 				nv.NgayTao,	nv.NgayCapNhat,
 				cv.TenChucVu,
-				tt.HoTen, tt.SDT, tt.EmailLienHe
+				tt.HoTen,tt.NgaySinh, tt.GioiTinh, tt.SDT, tt.EmailLienHe, tt.DiaChi, tt.Avatar
 			FROM NhanVien nv
 			JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID
 			JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
@@ -279,17 +279,17 @@ public class NhanVienRepository : INhanVienRepository
 	{
 		var thongTin = new ThongTinCaNhan(
 			thongTinID: (int)r["ThongTinID"],
-			taiKhoanID: null,
+			taiKhoanID:  null,
 			hoTen: r["HoTen"].ToString()!,
-			ngaySinh: null,
-			gioiTinh: null,
+			ngaySinh: r["NgaySinh"] as DateTime?,
+			gioiTinh: r["GioiTinh"].ToString(),
 			sdt: r["SDT"].ToString()!,
 			emailLienHe: r["EmailLienHe"].ToString()!,
-			diaChi: null,
-			avatar: null,
+			diaChi: r["DiaChi"].ToString(),
+			avatar: r["Avatar"].ToString(),
 			loai: "Nhân viên",
-			ngayTao: DateTime.Now,
-			ngayCapNhat: null
+			ngayTao: (DateTime)r["NgayTao"],
+			ngayCapNhat: r["NgayCapNhat"] as DateTime?
 		);
 
 		return new NhanVien(
