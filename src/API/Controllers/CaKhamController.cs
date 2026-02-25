@@ -92,13 +92,14 @@ public class CaKhamController : ControllerBase
 		var list = await _caKhamService.GetByBenhNhanAsync(benhNhanId);
 		return Ok(list);
 	}
-
+    [Authorize]
     [HttpGet("khunggio-trong")]
     public async Task<IActionResult> GetKhungGioConTrong(DateTime ngayKham, string loaiCaKham)
     {
         var result = await _caKhamService.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
         return Ok(result);
     }
+    [Authorize]
     [HttpGet("trong")]
     public async Task<IActionResult> GetCaKham(DateTime ngayKham, int khungGioId, string loaiCaKham)
     {
