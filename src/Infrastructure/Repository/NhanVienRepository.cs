@@ -239,7 +239,7 @@ public class NhanVienRepository : INhanVienRepository
 
 		return (list, totalCount);
 	}
-	public async Task<string?> GetNameByIdAsync(int id)
+	public async Task<string?> GetNameByIdAsync	(int id)
 	{
 		const string sql = @"
 			SELECT tt.HoTen as TenNhanVien
@@ -275,6 +275,39 @@ public class NhanVienRepository : INhanVienRepository
 			chucVuID: (int)reader["ChucVuID"]
 			);
 	}
+	public async Task<List<(int Id, string Name)>>	GetDropdownAsync(int chucVuId)
+	{
+		const string sql = @"
+			SELECT nv.NhanVienID, tt.HoTen
+			FROM NhanVien nv
+			JOIN ThongTinCaNhan tt 
+				ON nv.ThongTinID = tt.ThongTinID
+			WHERE nv.ChucVuID = @ChucVuID
+				  AND nv.TrangThai = N'Đang làm việc'
+			ORDER BY tt.HoTen
+		";
+
+		var list = new List<(int, string)>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@ChucVuID", chucVuId);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add((
+				(int)reader["NhanVienID"],
+				reader["HoTen"].ToString()!
+			));
+		}
+
+		return list;
+	}
+
+
 	private static NhanVien MapToEntity(SqlDataReader r)
 	{
 		var thongTin = new ThongTinCaNhan(
@@ -307,8 +340,6 @@ public class NhanVienRepository : INhanVienRepository
 			thongTinCaNhan: thongTin
 		);
 	}
-
-
 
 	private static NhanVien MapToListEntity(SqlDataReader r)
 	{
