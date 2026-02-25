@@ -209,7 +209,10 @@ public class CaKhamService
     {
         return await _caKhamRepo.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
     }
-
+    public async Task<int> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
+    {
+        return await _caKhamRepo.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham);
+    }
     public async Task<List<CaKhamResponseDTO>> GetByBenhNhanAsync(int benhNhanID)
 	{
         var list = await _caKhamRepo.GetByBenhNhanAsync(benhNhanID);
