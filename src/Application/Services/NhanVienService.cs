@@ -103,6 +103,17 @@ public class NhanVienService
 		};
 	}
 
+	public async Task<List<NameResponseDTO>>GetDropdownAsync(int chucVuId)
+	{
+		var data = await _repo.GetDropdownAsync(chucVuId);
+
+		return data.Select(x => new NameResponseDTO
+		{
+			Id = x.Id,
+			Name = x.Name
+		}).ToList();
+	}
+
 	private static NhanVienResponseDTO MapToResponse(NhanVien nv)
 	{
 		return new NhanVienResponseDTO
