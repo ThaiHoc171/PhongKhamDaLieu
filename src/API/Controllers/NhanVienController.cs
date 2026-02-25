@@ -96,5 +96,12 @@ namespace API.Controllers
 				return NotFound(new { message = "Nhân viên không tồn tại." });
 			return Ok(nv);
 		}
+		[Authorize(Roles = "Admin,Nhân viên")]
+		[HttpGet("Combobox")]
+		public async Task<IActionResult> LayCombobox(int chucVuId)
+		{
+			var result = await _service.GetDropdownAsync(chucVuId);
+			return Ok(result);
+		}
 	}
 }
