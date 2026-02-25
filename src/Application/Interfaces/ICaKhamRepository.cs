@@ -14,10 +14,13 @@ public interface ICaKhamRepository
 	//Đếm số ca đã có trong ngày
 	Task<int> CountByNgayAndKhungGioAsync(DateTime ngay, int khungGioId, string loaiCaKham);
     //Kiểm tra ca khám đã tồn tại chưa, tránh tạo trùng
-    Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham);
     Task<bool> ExistsAsync(DateTime ngay, int khungGioId, string loaiCaKham);
-	//Tạo ca khám
-	Task<int> AddAsync(CaKham caKham);
+	//Đếm các khung giờ còn ca khám trống
+    Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham);
+    //Lấy ca khám gần nhất còn trống
+    Task<int> GetCaKhamAsync(DateTime ngay, int khungGioId, string loaiCaKham);
+    //Tạo ca khám
+    Task<int> AddAsync(CaKham caKham);
 	//Update ca khám sau khi bệnh nhân đăng ký lịch
 	Task UpdateAsync(CaKham caKham);
 	//Sửa trạng thái ca khám sau khi khám xong

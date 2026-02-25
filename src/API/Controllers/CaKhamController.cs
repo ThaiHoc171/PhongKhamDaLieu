@@ -99,4 +99,10 @@ public class CaKhamController : ControllerBase
         var result = await _caKhamService.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
         return Ok(result);
     }
+    [HttpGet("trong")]
+    public async Task<IActionResult> GetCaKham(DateTime ngayKham, int khungGioId, string loaiCaKham)
+    {
+        var result = await _caKhamService.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham);
+        return Ok(result);
+    }
 }

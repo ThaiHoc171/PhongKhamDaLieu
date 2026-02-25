@@ -60,11 +60,13 @@ public class CaKhamRepository : ICaKhamRepository
     public async Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham)
     {
         const string sql = @"
-		SELECT KhungGioID
-		FROM CaKham 
-		WHERE NgayKham = @ngayKham AND LoaiCaKham = @loaiCaKham AND TrangThai != N'Đã hủy'
-		GROUP BY KhungGioID
-		HAVING COUNT(CaKhamID) < 5";
+			SELECT KhungGioID
+			FROM CaKham 
+			WHERE CAST(NgayKham AS DATE) = CAST(@ngayKham AS DATE) 
+			  AND LoaiCaKham = @loaiCaKham 
+			  AND TrangThai != N'Đã hủy' 
+			GROUP BY KhungGioID
+			HAVING COUNT(CASE WHEN TrangThai != N'Trống' THEN 1 END) < 5";
 
         var list = new List<int>();
 
@@ -83,6 +85,18 @@ public class CaKhamRepository : ICaKhamRepository
         }
 
         return list;
+    }
+    public async Task<int> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
+	{
+        const string sql = @"SELECT TOP 1 CaKhamID FROM CaKham WHERE NgayKham = @ngayKham AND KhungGioID = @khungGioId AND LoaiCaKham = @loaiCaKham AND TrangThai = N'Trống' ORDER BY CaKhamID ASC";
+        var list = new List<CaKham>();
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@ngayKham", ngayKham);
+        cmd.Parameters.AddWithValue("@KhungGioID", khungGioId);
+        cmd.Parameters.AddWithValue("@loaiCaKham", loaiCaKham);
+        await conn.OpenAsync();
+        return (int)await cmd.ExecuteScalarAsync();
     }
     public async Task<List<CaKham>> GetByBenhNhanAsync(int benhNhanID)
 	{
