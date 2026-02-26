@@ -50,5 +50,21 @@ public class NgayNghiNhanVienService
 
 		return true;
 	}
+	public async Task<List<NgayNghiResponseDTO>> GetByMonthAsync(int thang, int nam)
+	{
+		if (thang < 1 || thang > 12)
+			throw new ArgumentException("Tháng không hợp lệ.");
 
+		if (nam < 2000)
+			throw new ArgumentException("Năm không hợp lệ.");
+		var list = await _repo.GetByMonthAsync(thang, nam);
+
+		return list.Select(e => new NgayNghiResponseDTO
+		{
+			NgayNghiID = e.NgayNghiID,
+			NhanVienID = e.NhanVienID,
+			Ngay = e.Ngay,
+			LyDo = e.LyDo
+		}).ToList();
+	}
 }
