@@ -9,7 +9,7 @@ void main() {
   runApp(MaterialApp(
     home: SafeArea(
       child: Scaffold(
-        body: HomeScreen(token: ''),
+        body: LoginScreen(),
         ),
       ),
     debugShowCheckedModeBanner: false,
@@ -62,7 +62,7 @@ class LoginScreenState extends State<LoginScreen>{
         await prefs.setInt('userId', data['id'] ?? 0);
         await prefs.setString('email', data['email'] ?? '');
         await prefs.setString('vaiTro', data['vaiTro'] ?? '');
-        await prefs.setString('token', data['accessToken'] ?? '');
+        await prefs.setString('accessToken', data['accessToken'] ?? '');
         await prefs.setString('refreshToken', data['refreshToken'] ?? '');
 
         await prefs.setInt(
