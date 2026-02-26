@@ -20,14 +20,14 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 		const string sql = @"
 			SELECT PCN_TB_ID, PhongChucNangID, ThietBiID, TongSoLuong
 			FROM PhongChucNang_ThietBi
-			WHERE PhongChucNangID = PCNId
+			WHERE PhongChucNangID = @pcnId
 		";
 
 		var list = new List<PCNThietBi>();
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("PhongChucNangID", pcnId);
+		cmd.Parameters.AddWithValue("@pcnId", pcnId);
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
 
