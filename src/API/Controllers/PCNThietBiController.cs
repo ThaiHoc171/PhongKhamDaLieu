@@ -17,7 +17,7 @@ public class PCNThietBiController : ControllerBase
 		_service = service;
 	}
 	[Authorize(Policy = "BacSiOrKyThuatVien")]
-	[HttpGet("{id}")]
+	[HttpGet("{pcnId}")]
 	public async Task<IActionResult> DanhSach(int pcnId)
 	{
 		return Ok(await _service.DanhSachAsync(pcnId));
