@@ -15,17 +15,19 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 			?? throw new ArgumentNullException("Connection string not found");
 	}
 
-	public async Task<List<PCNThietBi>> GetAllAsync()
+	public async Task<List<PCNThietBi>> GetByPhongAsync(int pcnId)
 	{
 		const string sql = @"
 			SELECT PCN_TB_ID, PhongChucNangID, ThietBiID, TongSoLuong
-			FROM PhongChucNang_ThietBi";
+			FROM PhongChucNang_ThietBi
+			WHERE PhongChucNangID = PCNId
+		";
 
 		var list = new List<PCNThietBi>();
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
+		cmd.Parameters.AddWithValue("PhongChucNangID", pcnId);
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
 
