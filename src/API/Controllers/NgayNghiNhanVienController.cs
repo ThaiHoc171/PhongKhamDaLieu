@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Authorize]
-[Route("api/ngay-nghi")]
+[Authorize(Policy = "LeTanOnly")]
+[Route("api/ngaynghi")]
 public class NgayNghiNhanVienController : ControllerBase
 {
 	private readonly NgayNghiNhanVienService _service;
@@ -16,31 +16,80 @@ public class NgayNghiNhanVienController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Roles = "Admin")]
 	[HttpPost]
 	public async Task<IActionResult> TaoNgayNghi([FromBody] NgayNghiRequestDTO dto)
 	{
-		await _service.ThemNgayNghiAsync(dto);
-		return Ok(new { message = "Tạo ngày nghỉ thành công." });
+		try
+		{
+			await _service.ThemNgayNghiAsync(dto);
+			return Ok(new { message = "Tạo ngày nghỉ thành công." });
+		}
+		catch (Exception ex)
+        {
+			return BadRequest(new
+			{
+				message = "Lỗi: " + ex.Message
+			});
+		}
 	}
 
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("nhan-vien/{nhanVienID}")]
+	[HttpGet("nhanvien/{nhanVienID}")]
 	public async Task<IActionResult> LayTheoNhanVien(int nhanVienID)
 	{
-		var result = await _service.GetByNhanVienAsync(nhanVienID);
-		return Ok(result);
+		try
+		{
+			var result = await _service.GetByNhanVienAsync(nhanVienID);
+			return Ok(result);
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(new
+			{
+				message = "Lỗi: " + ex.Message
+			});
+		}
+
 	}
 
-	[Authorize(Roles = "Admin")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhatLyDo(int id, [FromBody] string? lyDo)
 	{
-		var success = await _service.CapNhatNgayNghiAsync(id, lyDo);
+		try
+		{
+			var success = await _service.CapNhatNgayNghiAsync(id, lyDo);
 
-		if (!success)
-			return NotFound(new { message = "Ngày nghỉ không tồn tại." });
+			if (!success)
+				return NotFound(new { message = "Ngày nghỉ không tồn tại." });
 
-		return Ok(new { message = "Cập nhật lý do nghỉ thành công." });
+			return Ok(new { message = "Cập nhật lý do nghỉ thành công." });
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(new
+			{
+				message = "Lỗi: " + ex.Message
+			});
+		}
+	}
+	[HttpGet("thang")]
+	public async Task<IActionResult> GetByMonth(int? thang, int? nam)
+	{
+		var now = DateTime.Now;
+
+		int thangValue = thang ?? now.Month;
+		int namValue = nam ?? now.Year;
+
+		try
+		{
+			var result = await _service.GetByMonthAsync(thangValue, namValue);
+			return Ok(result);
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(new
+			{
+				message = "Lỗi: " + ex.Message
+			});
+		}
 	}
 }
