@@ -34,7 +34,7 @@ public class CaKhamController : ControllerBase
 		});
 	}
 
-	[Authorize(Policy = "LeTanOnly")]
+	[Authorize]
 	[HttpPut("{id}/dangky")]
 	public async Task<IActionResult> DangKyKham(int id, [FromBody] DangKyCaKhamDTO dto)
 	{
