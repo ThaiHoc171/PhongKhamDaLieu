@@ -14,9 +14,9 @@ public class PCNThietBiService
 		_repo = repo;
 		_tbRepository = tbRepository;
 	}
-	public async Task<List<PCNThietBiResponseDTO>> DanhSachAsync()
+	public async Task<List<PCNThietBiResponseDTO>> DanhSachAsync(int pcnId)
 	{
-		var list = await _repo.GetAllAsync();
+		var list = await _repo.GetByPhongAsync(pcnId);
 
 		var tasks = list.Select(MapAsync);
 		var result = await Task.WhenAll(tasks);

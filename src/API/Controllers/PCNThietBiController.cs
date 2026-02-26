@@ -7,7 +7,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/pcn-thietbi")]
+[Route("api/pcnThietBi")]
 public class PCNThietBiController : ControllerBase
 {
 	private readonly PCNThietBiService _service;
@@ -17,10 +17,10 @@ public class PCNThietBiController : ControllerBase
 		_service = service;
 	}
 	[Authorize(Policy = "BacSiOrKyThuatVien")]
-	[HttpGet]
-	public async Task<IActionResult> DanhSach()
+	[HttpGet("{id}")]
+	public async Task<IActionResult> DanhSach(int pcnId)
 	{
-		return Ok(await _service.DanhSachAsync());
+		return Ok(await _service.DanhSachAsync(pcnId));
 	}
 
 

@@ -4,7 +4,7 @@ namespace Application.Interfaces;
 
 public interface IPCNThietBiRepository
 {
-	Task<List<PCNThietBi>> GetAllAsync();
+	Task<List<PCNThietBi>> GetByPhongAsync(int pcnId);
 	Task<PCNThietBi?> GetByIdAsync(int pcnTbId);
 	Task<PCNThietBi?> GetByPhongAndThietBiAsync(int phongChucNangId, int thietBiId);
 
