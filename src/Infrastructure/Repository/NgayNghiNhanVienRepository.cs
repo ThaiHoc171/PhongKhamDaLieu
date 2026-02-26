@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace Infrastructure.Repositories;
 
@@ -73,6 +74,37 @@ public class NgayNghiNhanVienRepository : INgayNghiNhanVienRepository
 
 		while (await reader.ReadAsync())
 			list.Add(Map(reader));
+
+		return list;
+	}
+	public async Task<List<NgayNghiNhanVien>> GetByMonthAsync(int thang, int nam)
+	{
+		// Tính ngày đầu tháng và đầu tháng sau
+		var tuNgay = new DateTime(nam, thang, 1);
+		var denNgay = tuNgay.AddMonths(1);
+
+		const string sql = @"
+			SELECT NgayNghiID, NhanVienID, Ngay, LyDo
+			FROM NgayNghiNhanVien
+			WHERE Ngay >= @TuNgay AND Ngay < @DenNgay
+			ORDER BY Ngay
+		";
+
+		var list = new List<NgayNghiNhanVien>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@TuNgay", SqlDbType.DateTime).Value = tuNgay;
+		cmd.Parameters.Add("@DenNgay", SqlDbType.DateTime).Value = denNgay;
+
+		await conn.OpenAsync();
+
+		await using var reader = await cmd.ExecuteReaderAsync();
+		while (await reader.ReadAsync())
+		{
+			list.Add(Map(reader));
+		}
 
 		return list;
 	}

@@ -9,4 +9,5 @@ public interface INgayNghiNhanVienRepository
 	Task<NgayNghiNhanVien?> GetByIdAsync(int id);
 	Task<List<NgayNghiNhanVien>> GetByNhanVienIdAsync(int nhanVienID);
 	Task<bool> IsNgayNghiAsync(int nhanVienID, DateTime ngay);
+	Task<List<NgayNghiNhanVien>> GetByMonthAsync(int thang, int nam);
 }
