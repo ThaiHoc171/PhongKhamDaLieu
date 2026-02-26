@@ -50,4 +50,5 @@ public class PCNThietBiController : ControllerBase
 			return BadRequest(new { message = ex.Message });
 		}
 	}
+
 }

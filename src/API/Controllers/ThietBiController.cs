@@ -66,4 +66,10 @@ public class ThietBiController : ControllerBase
 
 		return Ok(new { message = "Cập nhật thiết bị thành công." });
 	}
+	[Authorize(Roles = "Admin")]
+	[HttpGet("combobox")]
+	public async Task<IActionResult> GetComboboxAsync()
+	{
+		return Ok(await _service.GetComboboxAsync());
+	}
 }

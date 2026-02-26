@@ -56,7 +56,15 @@ public class ThietBiService
 
 		return true;
 	}
-
+	public async Task<List<NameResponseDTO>> GetComboboxAsync()
+	{
+		var list = await _repo.GetAllAsync();
+		return list.Select(e => new NameResponseDTO
+		{
+			Id = e.Id,
+			Name = e.TenTB
+		}).ToList();
+	}
 
 	// Map Entity → DTO
 	private static ThietBiResponseDTO MapToResponse(ThietBi tb)

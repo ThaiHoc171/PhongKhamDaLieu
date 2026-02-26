@@ -45,6 +45,7 @@ public class PCNThietBiService
 		return true;
 	}
 
+
 	private async Task<PCNThietBiResponseDTO> MapAsync(PCNThietBi e)
 	{
 		var tenThietBi = await _tbRepository.GetNameByIdAsync(e.ThietBiID);
