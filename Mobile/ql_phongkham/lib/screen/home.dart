@@ -38,6 +38,66 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> checkTaiKham() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+      final benhNhanId = prefs.getInt('benhNhanId');
+
+      if (token == null || benhNhanId == null) {
+        showThongBao(context, 'Thiếu thông tin đăng nhập');
+        return;
+      }
+
+      final url =
+          'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api/TaiKham/benhnhan/$benhNhanId';
+
+      print('URL: $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'accept': '*/*',
+        },
+      );
+
+      print('Status: ${response.statusCode}');
+      print('Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        print("Có lịch tái khám");
+      } else if (response.statusCode == 404) {
+        showThongBao(context, 'Không có lịch tái khám cho bạn');
+      } else if (response.statusCode == 401) {
+        showThongBao(context, 'Phiên đăng nhập hết hạn');
+      } else {
+        showThongBao(context, 'Lỗi: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Exception: $e");
+      showThongBao(context, 'Lỗi kết nối: $e');
+    }
+  }
+
+  void showThongBao(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Thông báo"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -174,9 +234,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           ElevatedButton(
-                              onPressed: (){
-
+                              onPressed:  (){
+                                checkTaiKham();
                               },
+
                               child: const Text('Đặt lịch tái khám', style: TextStyle(fontSize: 15))
                           ),
                           ElevatedButton(

@@ -38,7 +38,7 @@ public class TaiKhamController : ControllerBase
         return Ok(result);
     }
 
-	[Authorize(Roles = "Admin,Nhân viên")]
+	[Authorize]
 	[HttpGet("benhnhan/{benhNhanId:int}")]
     public async Task<IActionResult> LayTheoBenhNhanId(int benhNhanId)
     {
@@ -68,7 +68,7 @@ public class TaiKhamController : ControllerBase
         return Ok(new { message = "Thêm lịch tái khám thành công." });
     }
 
-	[Authorize(Policy = "BacSiOnly")]
+	[Authorize]
 	[HttpPut("{id}")]
     public async Task<IActionResult> CapNhat(
         int id,
