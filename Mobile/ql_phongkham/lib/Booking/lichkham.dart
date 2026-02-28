@@ -241,10 +241,8 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // ✅ Kiểm tra đúng: API trả về string message (đã đăng ký)
-        // hoặc null/false (chưa đăng ký)
         if (data != null && data != false && data.toString().isNotEmpty) {
-          showThongBao(context, data.toString());
+          showThongBao(context, "Bệnh nhân đã đăng ký ca khám trong khung giờ này!");
           return true;
         }
       }
