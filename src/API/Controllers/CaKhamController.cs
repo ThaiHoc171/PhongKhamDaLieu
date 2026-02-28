@@ -70,7 +70,16 @@ public class CaKhamController : ControllerBase
 			: Ok(caKham);
 	}
 
-	[Authorize(Policy = "BacSiOrLeTan")]
+    [Authorize]
+    [HttpGet("Kiemtradadangky")]
+    public async Task<IActionResult> KiemTraDaDangKy(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId)
+    {
+        var result = await _caKhamService.CheckBenhNhanDaDangKyAsync(ngay, khungGioId, loaiCaKham, benhNhanId);
+		return Ok(result);
+        
+    }
+
+    [Authorize(Policy = "BacSiOrLeTan")]
 	[HttpGet("ngay")]
 	public async Task<IActionResult> TheoNgay([FromQuery] DateTime ngay, string trangThai)
 	{
@@ -82,8 +91,6 @@ public class CaKhamController : ControllerBase
 	[HttpGet]
 	public async Task<IActionResult> TatCa()
 		=> Ok(await _caKhamService.GetAllAsync());
-
-
 
 	[Authorize(Roles = "Bệnh nhân")]
 	[HttpGet("benhnhan/{benhNhanId}")]

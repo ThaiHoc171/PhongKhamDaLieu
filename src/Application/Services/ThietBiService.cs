@@ -58,11 +58,11 @@ public class ThietBiService
 	}
 	public async Task<List<NameResponseDTO>> GetComboboxAsync()
 	{
-		var list = await _repo.GetAllAsync();
+		var list = await _repo.GetIdAndNameAsync();
 		return list.Select(e => new NameResponseDTO
 		{
 			Id = e.Id,
-			Name = e.TenTB
+			Name = e.Ten
 		}).ToList();
 	}
 

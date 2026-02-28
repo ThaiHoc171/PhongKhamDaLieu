@@ -181,7 +181,6 @@ public class CaKhamService
         return true;
     }
 
-
     public async Task<bool> UpdateTrangThaiAsync(int caKhamID, string trangThai)
 	{
 		var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
@@ -212,6 +211,10 @@ public class CaKhamService
     public async Task<int> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
     {
         return await _caKhamRepo.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham);
+    }
+    public async Task<bool> CheckBenhNhanDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId)
+    {
+        return await _caKhamRepo.CheckBenhNhanDaDangKyAsync(ngay, khungGioId, loaiCaKham, benhNhanId);
     }
     public async Task<List<CaKhamResponseDTO>> GetByBenhNhanAsync(int benhNhanID)
 	{

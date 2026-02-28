@@ -60,7 +60,32 @@ public class ThuocRepository : IThuocRepository
 		return list;
 	}
 
-	public async Task<Thuoc?> GetByIdAsync(int id)
+    public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
+    {
+        const string sql = @"
+			SELECT ThuocID, TenThuoc
+			FROM Thuoc
+			ORDER BY TenCLS";
+
+        var list = new List<(int, string)>();
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        await conn.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            list.Add((
+                reader.GetInt32(reader.GetOrdinal("ThuocID")),
+                reader.GetString(reader.GetOrdinal("TenThuoc"))
+            ));
+        }
+
+        return list;
+    }
+    public async Task<Thuoc?> GetByIdAsync(int id)
 	{
 		const string sql = @"
 			SELECT ThuocID, TenThuoc, HoatChat

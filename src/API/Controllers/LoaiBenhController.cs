@@ -17,7 +17,13 @@ public class LoaiBenhController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize]
+    [Authorize(Policy = "BacSiOnly")]
+    [HttpGet("combobox")]
+    public async Task<IActionResult> GetComboboxAsync()
+    {
+        return Ok(await _service.GetComboboxAsync());
+    }
+    [Authorize]
 	[HttpGet]
 	public async Task<IActionResult> DanhSach()
 		=> Ok(await _service.DanhSachAsync());
