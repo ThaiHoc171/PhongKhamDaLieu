@@ -103,8 +103,7 @@ public class CaKhamService
 
         return tongCaDaTao;
     }
-    public async Task<bool> DangKyKhamAsync(
-    int caKhamID, DangKyCaKhamDTO dto)
+    public async Task<bool> DangKyKhamAsync(int caKhamID, DangKyCaKhamDTO dto)
     {
         var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
         if (caKham == null)
@@ -212,9 +211,17 @@ public class CaKhamService
     {
         return await _caKhamRepo.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham);
     }
-    public async Task<bool> CheckBenhNhanDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId)
+    public async Task<string?> CheckBenhNhanDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId)
     {
-        return await _caKhamRepo.CheckBenhNhanDaDangKyAsync(ngay, khungGioId, loaiCaKham, benhNhanId);
+        var daDangKy = await _caKhamRepo.CheckBenhNhanDaDangKyAsync(
+        ngay, khungGioId, loaiCaKham, benhNhanId);
+
+        if (daDangKy)
+        {
+            return "Bệnh nhân đã đăng ký ca khám vào khung giờ này";
+        }
+
+        return null;
     }
     public async Task<List<CaKhamResponseDTO>> GetByBenhNhanAsync(int benhNhanID)
 	{

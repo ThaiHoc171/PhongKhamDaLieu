@@ -29,6 +29,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     {"id": 12, "gio": "15:30"},
   ];
 
+  String URL = 'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api';
   List<int> khungGioConTrong = [];
   int? selectedKhungGioId;
   bool loadingSlot = false;
@@ -86,6 +87,8 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
                     onPressed: loadingSlot ? null : () async {
+                      bool daDangKy = await checkDangKy();
+                      if (daDangKy) return;
                       await dangkyKham();
                     },
                     style: ElevatedButton.styleFrom(
@@ -155,7 +158,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       final formattedDate = DateFormat('yyyy-MM-dd').format(_currentDay);
 
       final url =
-          'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api/CaKham/khunggio-trong?ngayKham=$formattedDate&loaiCaKham=Khám';
+          '$URL/CaKham/khunggio-trong?ngayKham=$formattedDate&loaiCaKham=Khám';
 
 
       final response = await http.get(
@@ -185,7 +188,6 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       });
     }
   }
-
   Future<void> loadCaKhamID() async{
     try{
       final prefs = await SharedPreferences.getInstance();
@@ -193,7 +195,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
 
       final formattedDate = DateFormat('yyyy-MM-dd').format(_currentDay);
 
-      final url = 'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api/CaKham/trong?ngayKham=$formattedDate&khungGioId=$selectedKhungGioId&loaiCaKham=Khám';
+      final url = '$URL/CaKham/trong?ngayKham=$formattedDate&khungGioId=$selectedKhungGioId&loaiCaKham=Khám';
 
       final response = await http.get(
         Uri.parse(url),
@@ -216,7 +218,37 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       });
     }
   }
+  Future<bool> checkDangKy() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+      final benhNhanID = prefs.getInt('benhNhanId');
+      final formattedDate = DateFormat('yyyy-MM-dd').format(_currentDay);
 
+      final url =
+          '$URL/CaKham/Kiemtradadangky?ngay=$formattedDate&khungGioId=$selectedKhungGioId&loaiCaKham=Khám&benhNhanId=$benhNhanID';
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'accept': '*/*',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data == true) {
+          showThongBao(context,
+              "Bệnh nhân đã đăng ký ca khám vào khung giờ này!");
+          return true; // ĐÃ đăng ký
+        }
+      }
+    } catch (e) {}
+
+    return false; // CHƯA đăng ký
+  }
   Future<void> dangkyKham() async {
     if (CaKhamId == null) {
       showThongBao(context, "Vui lòng chọn khung giờ khám");
@@ -232,8 +264,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       final token = prefs.getString('accessToken');
       final benhNhanID = prefs.getInt('benhNhanId');
 
-      final url =
-          'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api/CaKham/$CaKhamId/dangky';
+      final url = '$URL/CaKham/$CaKhamId/dangky';
 
       final response = await http.put(
         Uri.parse(url),
@@ -306,7 +337,6 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
         ),
       );
     }
-
 
     return SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
