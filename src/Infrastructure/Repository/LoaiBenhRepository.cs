@@ -75,7 +75,33 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 		return list;
 	}
 
-	public async Task AddAsync(LoaiBenh lb)
+    public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
+    {
+        const string sql = @"
+			SELECT LoaiBenhID, TenBenh
+			FROM LoaiBenh
+			ORDER BY TenBenh";
+
+        var list = new List<(int, string)>();
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        await conn.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            list.Add((
+                reader.GetInt32(reader.GetOrdinal("LoaiBenhID")),
+                reader.GetString(reader.GetOrdinal("TenBenh"))
+            ));
+        }
+
+        return list;
+    }
+
+    public async Task AddAsync(LoaiBenh lb)
 	{
 		const string sql = @"
 			INSERT INTO LoaiBenh

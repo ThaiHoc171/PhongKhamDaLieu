@@ -17,9 +17,14 @@ public class CanLamSangController : ControllerBase
 		_service = service;
 	}
 
+    [Authorize(Policy = "BacSiOrKyThuatVien")]
+    [HttpGet("combobox")]
+    public async Task<IActionResult> GetComboboxAsync()
+    {
+        return Ok(await _service.GetComboboxAsync());
+    }
 
-
-	[Authorize(Policy = "BacSiOrKyThuatVien")]
+    [Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpGet]
 	public async Task<IActionResult> LayDanhSach()
 		=> Ok(await _service.DanhSachCanLamSangAsync());

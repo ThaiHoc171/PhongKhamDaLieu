@@ -30,8 +30,16 @@ public class LoaiBenhService
 		var list = await _repo.SearchByTenAsync(ten);
 		return list.Select(MapToDto).ToList();
 	}
-
-	public async Task ThemAsync(LoaiBenhRequestDTO dto)
+    public async Task<List<NameResponseDTO>> GetComboboxAsync()
+    {
+        var list = await _repo.GetIdAndNameAsync();
+        return list.Select(e => new NameResponseDTO
+        {
+            Id = e.Id,
+            Name = e.Ten
+        }).ToList();
+    }
+    public async Task ThemAsync(LoaiBenhRequestDTO dto)
 	{
 		var lb = new LoaiBenh(
 			dto.TenBenh, dto.TenKhoaHoc, dto.NhomBenh,
