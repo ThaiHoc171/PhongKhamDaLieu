@@ -157,7 +157,7 @@ public class CaKhamRepository : ICaKhamRepository
           AND KhungGioID = @KhungGioID
           AND LoaiCaKham = @loaiCaKham
 		  AND BenhNhanID = @benhNhanId
-		   AND TrangThai IN (N'Đã đặt', N'Đã xác nhận', N'Hoàn thành'";
+		   AND TrangThai IN (N'Đã đặt', N'Đã xác nhận', N'Hoàn thành')";
 
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
