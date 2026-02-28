@@ -28,14 +28,22 @@ public class CanLamSangService
 
 		return MapToDto(cls);
 	}
-
-	// POST
-	public async Task ThemCanLamSangAsync(CanLamSangRequestDTO dto)
+	//
+    public async Task<List<NameResponseDTO>> GetComboboxAsync()
+    {
+        var list = await _repo.GetIdAndNameAsync();
+        return list.Select(e => new NameResponseDTO
+        {
+            Id = e.Id,
+            Name = e.Ten
+        }).ToList();
+    }
+    // POST
+    public async Task ThemCanLamSangAsync(CanLamSangRequestDTO dto)
 	{
 		var cls = new CanLamSang(
 			dto.TenCLS,
 			dto.MoTa,
-			dto.Gia,
 			dto.LoaiXetNghiem
 		);
 
@@ -48,7 +56,7 @@ public class CanLamSangService
 		var cls = await _repo.GetByIdAsync(id);
 		if (cls == null) return false;
 
-		cls.CapNhat(dto.TenCLS, dto.MoTa, dto.Gia, dto.LoaiXetNghiem);
+		cls.CapNhat(dto.TenCLS, dto.MoTa, dto.LoaiXetNghiem);
 		await _repo.UpdateAsync(cls);
 
 		return true;
@@ -74,7 +82,6 @@ public class CanLamSangService
 			CanLamSangID = cls.CanLamSangID,
 			TenCLS = cls.TenCLS,
 			MoTa = cls.MoTa,
-			Gia = cls.Gia,
 			LoaiXetNghiem = cls.LoaiXetNghiem,
 			NgayTao = cls.NgayTao,
 			TrangThai = cls.TrangThai

@@ -16,8 +16,13 @@ public class ThuocController : ControllerBase
 	{
 		_service = service;
 	}
-
-	[Authorize(Roles = "Admin,Nhân viên")]
+    [Authorize(Policy = "BacSiOnly")]
+    [HttpGet("combobox")]
+    public async Task<IActionResult> GetComboboxAsync()
+    {
+        return Ok(await _service.GetComboboxAsync());
+    }
+    [Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet]
 	public async Task<IActionResult> DanhSach()
 	{

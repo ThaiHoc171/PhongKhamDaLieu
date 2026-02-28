@@ -147,7 +147,31 @@ public class CaKhamRepository : ICaKhamRepository
 		var result = await cmd.ExecuteScalarAsync();
 		return result != null;
 	}
-	public async Task<int> AddAsync(CaKham ca)
+
+    public async Task<bool> CheckBenhNhanDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId)
+    {
+        const string sql = @"
+        SELECT 1
+        FROM CaKham
+        WHERE NgayKham = @NgayKham
+          AND KhungGioID = @KhungGioID
+          AND LoaiCaKham = @loaiCaKham
+		  AND BenhNhanID = @benhNhanId
+		   AND TrangThai IN (N'Đã đặt', N'Đã xác nhận', N'Hoàn thành'";
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@NgayKham", ngay.Date);
+        cmd.Parameters.AddWithValue("@KhungGioID", khungGioId);
+        cmd.Parameters.AddWithValue("@loaiCaKham", loaiCaKham);
+        cmd.Parameters.AddWithValue("@benhNhanId", benhNhanId);
+
+        await conn.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+        return result != null;
+    }
+    public async Task<int> AddAsync(CaKham ca)
 	{
 		const string sql = @"
             INSERT INTO CaKham

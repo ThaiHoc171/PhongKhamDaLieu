@@ -71,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
         showThongBao(context, 'Không có lịch tái khám cho bạn');
       } else if (response.statusCode == 401) {
         showThongBao(context, 'Phiên đăng nhập hết hạn');
+
       } else {
         showThongBao(context, 'Lỗi: ${response.statusCode}');
       }
@@ -115,14 +116,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   image: DecorationImage(
                     image: AssetImage('assets/images/user.png'),
                     fit: BoxFit.contain,
-                    alignment: Alignment.topLeft
+                    alignment: Alignment.topLeft,
+
                   ),
                 ),
                 child:
                   Row(
                       children: [
                       SizedBox(width: 50),
-                      Text("Xin chào, $hoTen",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,),),
+                      Text("Xin chào, $hoTen",style: TextStyle(fontSize: 13,fontWeight: FontWeight.bold,),),
                   ]
                   )
               ),
