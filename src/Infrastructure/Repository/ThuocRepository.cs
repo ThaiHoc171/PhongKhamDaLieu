@@ -65,7 +65,7 @@ public class ThuocRepository : IThuocRepository
         const string sql = @"
 			SELECT ThuocID, TenThuoc
 			FROM Thuoc
-			ORDER BY TenCLS";
+			ORDER BY TenThuoc";
 
         var list = new List<(int, string)>();
 

@@ -102,7 +102,7 @@ public class CanLamSangRepository : ICanLamSangRepository
         {
             list.Add((
                 reader.GetInt32(reader.GetOrdinal("CanLamSangID")),
-                reader.GetString(reader.GetOrdinal("TenCanLamSang"))
+                reader.GetString(reader.GetOrdinal("TenCLS"))
             ));
         }
 
