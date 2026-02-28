@@ -99,25 +99,29 @@ class LoginScreenState extends State<LoginScreen>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/bg.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Center(
-          child: Container(
-            width: 300,
-            height: 300,
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              border: Border.all(width: 2),
-              borderRadius: BorderRadius.circular(25),
-              color: Colors.white,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/bg.jpg'),
+              fit: BoxFit.cover,
             ),
-            child: loginForm(),
+          ),
+          child: Center(
+            child: Container(
+              width: 300,
+              height: 300,
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                border: Border.all(width: 2),
+                borderRadius: BorderRadius.circular(25),
+                color: Colors.white,
+              ),
+              child: loginForm(),
+            ),
           ),
         ),
       ),
@@ -216,6 +220,7 @@ class LoginScreenState extends State<LoginScreen>{
                   setState(() {
                     loading = true;
                     errorMessage = null;
+                    FocusScope.of(context).unfocus();
                   });
                   await loginApi();
                 }

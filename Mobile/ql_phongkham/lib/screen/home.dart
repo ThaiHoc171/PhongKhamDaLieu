@@ -50,9 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       final url =
-          'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api/TaiKham/benhnhan/$benhNhanId';
-
-      print('URL: $url');
+          'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api/TaiKham/Benhnhan/$benhNhanId';
 
       final response = await http.get(
         Uri.parse(url),
@@ -62,21 +60,27 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
 
-      print('Status: ${response.statusCode}');
-      print('Body: ${response.body}');
-
       if (response.statusCode == 200) {
-        print("Có lịch tái khám");
+        final data = jsonDecode(response.body);
+
+        if (data is List && data.isEmpty) {
+          showThongBao(context, 'Không có lịch tái khám cho bạn');
+        } else {
+          // Có dữ liệu
+          print("Có lịch tái khám: $data");
+        }
+
       } else if (response.statusCode == 404) {
         showThongBao(context, 'Không có lịch tái khám cho bạn');
+
       } else if (response.statusCode == 401) {
         showThongBao(context, 'Phiên đăng nhập hết hạn');
 
       } else {
         showThongBao(context, 'Lỗi: ${response.statusCode}');
       }
+
     } catch (e) {
-      print("Exception: $e");
       showThongBao(context, 'Lỗi kết nối: $e');
     }
   }
