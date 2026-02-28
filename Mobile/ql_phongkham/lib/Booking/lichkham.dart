@@ -87,6 +87,10 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
                     onPressed: loadingSlot ? null : () async {
+                      if (selectedKhungGioId == null) {
+                        showThongBao(context, "Vui lòng chọn khung giờ khám");
+                        return;
+                      }
                       bool daDangKy = await checkDangKy();
                       if (daDangKy) return;
                       await dangkyKham();
@@ -123,11 +127,6 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
           return isSameDay(_currentDay, day);
         },
 
-        calendarStyle: const CalendarStyle(
-            todayDecoration: BoxDecoration(
-                color: Colors.blueAccent, shape: BoxShape.circle
-            )
-        ),
         availableCalendarFormats: const{
           CalendarFormat.month: 'Month',
         },
@@ -219,6 +218,9 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     }
   }
   Future<bool> checkDangKy() async {
+    // ✅ Guard clause
+    if (selectedKhungGioId == null) return false;
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
@@ -239,15 +241,17 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        if (data == true) {
-          showThongBao(context,
-              "Bệnh nhân đã đăng ký ca khám vào khung giờ này!");
-          return true; // ĐÃ đăng ký
+        // ✅ Kiểm tra đúng: API trả về string message (đã đăng ký)
+        // hoặc null/false (chưa đăng ký)
+        if (data != null && data != false && data.toString().isNotEmpty) {
+          showThongBao(context, data.toString());
+          return true;
         }
       }
-    } catch (e) {}
-
-    return false; // CHƯA đăng ký
+    } catch (e) {
+      debugPrint('checkDangKy error: $e');
+    }
+    return false;
   }
   Future<void> dangkyKham() async {
     if (CaKhamId == null) {

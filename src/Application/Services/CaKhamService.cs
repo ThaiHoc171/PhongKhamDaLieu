@@ -211,17 +211,10 @@ public class CaKhamService
     {
         return await _caKhamRepo.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham);
     }
-    public async Task<string?> CheckBenhNhanDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId)
+    public async Task<bool> CheckBenhNhanDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId)
     {
-        var daDangKy = await _caKhamRepo.CheckBenhNhanDaDangKyAsync(
-        ngay, khungGioId, loaiCaKham, benhNhanId);
-
-        if (daDangKy)
-        {
-            return "Bệnh nhân đã đăng ký ca khám vào khung giờ này";
-        }
-
-        return null;
+        var daDangKy = await _caKhamRepo.CheckBenhNhanDaDangKyAsync(ngay, khungGioId, loaiCaKham, benhNhanId);
+        return daDangKy;
     }
     public async Task<List<CaKhamResponseDTO>> GetByBenhNhanAsync(int benhNhanID)
 	{
