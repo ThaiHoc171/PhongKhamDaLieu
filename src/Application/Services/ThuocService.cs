@@ -25,7 +25,17 @@ public class ThuocService
 		return list.Select(MapToDto).ToList();
 	}
 
-	public async Task<ThuocResponseDTO?> LayTheoIdAsync(int id)
+    public async Task<List<NameResponseDTO>> GetComboboxAsync()
+    {
+        var list = await _repo.GetIdAndNameAsync();
+        return list.Select(e => new NameResponseDTO
+        {
+            Id = e.Id,
+            Name = e.Ten
+        }).ToList();
+    }
+
+    public async Task<ThuocResponseDTO?> LayTheoIdAsync(int id)
 	{
 		var thuoc = await _repo.GetByIdAsync(id);
 		if (thuoc == null) return null;
