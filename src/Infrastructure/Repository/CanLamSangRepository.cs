@@ -14,23 +14,48 @@ public class CanLamSangRepository : ICanLamSangRepository
 		_connectionString = config.GetConnectionString("DefaultConnection")!;
 	}
 
-	public async Task<List<CanLamSang>> GetAllAsync()
+	public async Task<(List<CanLamSang> Data, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize)
 	{
-		const string sql = @"SELECT CanLamSangID, TenCLS, MoTa, LoaiXetNghiem, NgayTao, TrangThai FROM CanLamSang";
+		const string sql = @"
+		SELECT 
+			CanLamSangID, TenCLS, MoTa, LoaiXetNghiem, NgayTao, TrangThai
+		FROM CanLamSang
+		ORDER BY CanLamSangID
+		OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+		SELECT COUNT(*) FROM CanLamSang;
+	";
 
 		var list = new List<CanLamSang>();
+		int totalCount = 0;
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 
+		int offset = (pageNumber - 1) * pageSize;
+
+		cmd.Parameters.AddWithValue("@Offset", offset);
+		cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
 
+		// Result 1: Data
 		while (await reader.ReadAsync())
 		{
 			list.Add(MapToEntity(reader));
 		}
-		return list;
+
+		// Result 2: TotalCount
+		if (await reader.NextResultAsync())
+		{
+			if (await reader.ReadAsync())
+			{
+				totalCount = reader.GetInt32(0);
+			}
+		}
+
+		return (list, totalCount);
 	}
 
 	public async Task<CanLamSang?> GetByIdAsync(int id)
@@ -108,7 +133,28 @@ public class CanLamSangRepository : ICanLamSangRepository
 
         return list;
     }
-    private static CanLamSang MapToEntity(SqlDataReader r)
+	public async Task<List<CanLamSang>> SearchByTenAsync(string tenCLS)
+	{
+		const string sql = @"
+			SELECT CanLamSangID, TenCLS, MoTa, LoaiXetNghiem, NgayTao, TrangThai 
+			FROM CanLamSang
+			WHERE TenCLS LIKE @TenCLS";
+
+		var list = new List<CanLamSang>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@TenCLS", $"%{tenCLS}%");
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+			list.Add(MapToEntity(reader));
+
+		return list;
+	}
+	private static CanLamSang MapToEntity(SqlDataReader r)
 	{
 		return new CanLamSang(
 			id: r.GetInt32(0),

@@ -24,9 +24,12 @@ public class LoaiBenhController : ControllerBase
         return Ok(await _service.GetComboboxAsync());
     }
     [Authorize]
-	[HttpGet]
-	public async Task<IActionResult> DanhSach()
-		=> Ok(await _service.DanhSachAsync());
+	[HttpGet("paged")]
+	public async Task<IActionResult> LayDanhSachPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
+	{
+		var result = await _service.DanhSachPagedAsync(pageNumber, pageSize);
+		return Ok(result);
+	}
 
 	[Authorize]
 	[HttpGet("{id}")]

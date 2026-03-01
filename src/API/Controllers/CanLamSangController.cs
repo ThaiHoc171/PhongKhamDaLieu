@@ -17,17 +17,17 @@ public class CanLamSangController : ControllerBase
 		_service = service;
 	}
 
-    [Authorize(Policy = "BacSiOrKyThuatVien")]
-    [HttpGet("combobox")]
-    public async Task<IActionResult> GetComboboxAsync()
-    {
-        return Ok(await _service.GetComboboxAsync());
-    }
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
+	[HttpGet("combobox")]
+	public async Task<IActionResult> GetComboboxAsync()
+	{
+		return Ok(await _service.GetComboboxAsync());
+	}
 
-    [Authorize(Policy = "BacSiOrKyThuatVien")]
-	[HttpGet]
-	public async Task<IActionResult> LayDanhSach()
-		=> Ok(await _service.DanhSachCanLamSangAsync());
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
+	[HttpGet("paged")]
+	public async Task<IActionResult> LayDanhSach([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
+		=> Ok(await _service.DanhSachCanLamSangAsync(pageNumber,pageSize));
 
 	[Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpGet("{id}")]
@@ -79,5 +79,14 @@ public class CanLamSangController : ControllerBase
 		return result
 			? Ok(new { message = "Kích hoạt thành công." })
 			: NotFound(new { message = "Cận lâm sàng không tồn tại." });
+	}
+	[HttpGet("timkiem")]
+	public async Task<IActionResult> TimTheoTen([FromQuery] string tenCLS)
+	{
+		if (string.IsNullOrWhiteSpace(tenCLS))
+			return BadRequest(new { message = "Tên thiết bị không hợp lệ." });
+
+		var result = await _service.TimTheoTenAsync(tenCLS);
+		return Ok(result);
 	}
 }

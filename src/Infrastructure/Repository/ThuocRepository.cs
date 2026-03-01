@@ -13,27 +13,63 @@ public class ThuocRepository : IThuocRepository
 	{
 		_connectionString = config.GetConnectionString("DefaultConnection")!;
 	}
-
-	public async Task<List<Thuoc>> GetAllAsync()
+	public async Task<List<Thuoc>> GetAllAsync() 
+	{ 
+		const string sql = @"
+			SELECT ThuocID, TenThuoc, HoatChat 
+			FROM Thuoc"; 
+		var list = new List<Thuoc>(); 
+		await using var conn = new SqlConnection(_connectionString); 
+		await using var cmd = new SqlCommand(sql, conn); await conn.OpenAsync(); 
+		await using var reader = await cmd.ExecuteReaderAsync(); 
+		while (await reader.ReadAsync()) 
+		{ 
+			list.Add(MapToEntity(reader)); 
+		} 
+		return list; 
+	}
+	public async Task<(List<Thuoc> Data, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize)
 	{
 		const string sql = @"
-			SELECT ThuocID, TenThuoc, HoatChat
-			FROM Thuoc";
+			SELECT 
+				ThuocID, TenThuoc, HoatChat
+			FROM Thuoc
+			ORDER BY ThuocID
+			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+			SELECT COUNT(*) FROM Thuoc;
+		";
 
 		var list = new List<Thuoc>();
+		int totalCount = 0;
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 
+		int offset = (pageNumber - 1) * pageSize;
+
+		cmd.Parameters.AddWithValue("@Offset", offset);
+		cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
 
+		// Result 1: Data
 		while (await reader.ReadAsync())
 		{
 			list.Add(MapToEntity(reader));
 		}
 
-		return list;
+		// Result 2: TotalCount
+		if (await reader.NextResultAsync())
+		{
+			if (await reader.ReadAsync())
+			{
+				totalCount = reader.GetInt32(0);
+			}
+		}
+
+		return (list, totalCount);
 	}
 
 	public async Task<List<Thuoc>> SearchAsync(string keyword)

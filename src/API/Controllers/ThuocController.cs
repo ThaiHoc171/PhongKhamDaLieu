@@ -24,10 +24,8 @@ public class ThuocController : ControllerBase
     }
     [Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet]
-	public async Task<IActionResult> DanhSach()
-	{
-		return Ok(await _service.DanhSachAsync());
-	}
+	public async Task<IActionResult> LayDanhSach([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
+		=> Ok(await _service.DanhSachPagedAsync(pageNumber, pageSize));
 
 	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("timkiem")]
