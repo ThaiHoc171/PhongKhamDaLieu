@@ -6,7 +6,8 @@ public interface ICaKhamRepository
 	//Xuất ca khám theo CaKhamID
 	Task<CaKham?> GetByIdAsync(int caKhamID);
 	//Xuất danh sách tất cả ca khám
-	Task<List<CaKham>> GetAllAsync();
+	Task<(List<CaKham> Data, int TotalCount)> GetByStatusAndDayAsync(DateTime ngayKham, string trangThai, int pageNumber, int pageSize);
+	Task<List<(int Id, string Ten)>> GetIdAndNameByStatusAsync(string trangThai, DateTime ngayKham);
 	//Xuất danh sách ca khám theo ngày và trạng thái
 	Task<List<CaKham>> LocAsync(DateTime ngayKham, string trangThai);
 	//Xuất danh sách theo BenhNhanID

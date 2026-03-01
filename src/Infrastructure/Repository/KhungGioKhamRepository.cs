@@ -127,7 +127,31 @@ namespace Infrastructure.Repository
 			await conn.OpenAsync();
 			await cmd.ExecuteNonQueryAsync();
 		}
+		public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
+		{
+			const string sql = @"
+			SELECT KhungGioID, TenKhung
+			FROM KhungGioKham
+			ORDER BY TenKhung";
 
+			var list = new List<(int, string)>();
+
+			await using var conn = new SqlConnection(_connectionString);
+			await using var cmd = new SqlCommand(sql, conn);
+
+			await conn.OpenAsync();
+			await using var reader = await cmd.ExecuteReaderAsync();
+
+			while (await reader.ReadAsync())
+			{
+				list.Add((
+					reader.GetInt32(reader.GetOrdinal("KhungGioID")),
+					reader.GetString(reader.GetOrdinal("TenKhung"))
+				));
+			}
+
+			return list;
+		}
 		private static KhungGioKham MapToEntity(SqlDataReader reader)
 		{
 			return new KhungGioKham(

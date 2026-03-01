@@ -89,8 +89,17 @@ public class CaKhamController : ControllerBase
 
 	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpGet]
-	public async Task<IActionResult> TatCa()
-		=> Ok(await _caKhamService.GetAllAsync());
+	public async Task<IActionResult> GetByDay([FromQuery] DateTime ngayKham,[FromQuery] string trangThai,[FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
+		=> Ok(await _caKhamService.GetCaKhamPagedAsync(ngayKham,trangThai,pageNumber,pageSize));
+
+
+	[Authorize(Policy = "BacSiOrLeTan")]
+	[HttpGet("Combobox")]
+	public async Task<IActionResult> LayCombobox([FromQuery] DateTime ngayKham, [FromQuery] string trangThai)
+	{
+		var result = await _caKhamService.GetComboboxAsync(trangThai,ngayKham);
+		return Ok(result);
+	}
 
 	[Authorize(Roles = "Bệnh nhân")]
 	[HttpGet("benhnhan/{benhNhanId}")]

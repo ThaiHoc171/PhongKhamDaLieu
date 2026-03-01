@@ -73,7 +73,15 @@ namespace Application.Services
 			await _repo.UpdateAsync(kg);
 			return true;
 		}
-
+		public async Task<List<NameResponseDTO>> GetComboboxAsync()
+		{
+			var list = await _repo.GetIdAndNameAsync();
+			return list.Select(e => new NameResponseDTO
+			{
+				Id = e.Id,
+				Name = e.Ten
+			}).ToList();
+		}
 		private static KhungGioKhamResponseDTO MapToDto(KhungGioKham kg)
 		{
 			return new KhungGioKhamResponseDTO

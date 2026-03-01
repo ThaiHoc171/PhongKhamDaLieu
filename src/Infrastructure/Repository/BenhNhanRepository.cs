@@ -123,7 +123,34 @@ public class BenhNhanRepository : IBenhNhanRepository
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
+	public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
+	{
+		const string sql = @"
+			SELECT bn.BenhNhanID, tt.HoTen
+			FROM BenhNhan bn
+			JOIN ThongTinCaNhan tt 
+				ON nv.ThongTinID = tt.ThongTinID
+			ORDER BY tt.HoTen
+		";
 
+		var list = new List<(int, string)>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add((
+				(int)reader["BenhNhanID"],
+				reader["HoTen"].ToString()!
+			));
+		}
+
+		return list;
+	}
 	private static BenhNhan MapToEntity(SqlDataReader reader)
 	{
 		return new BenhNhan(

@@ -79,4 +79,12 @@ public class BenhNhanController : ControllerBase
 			? NotFound()
 			: Ok(bn);
 	}
+	//Get combobox
+	[Authorize(Roles = "Admin,Nhân viên")]
+	[HttpGet("combobox")]
+	public async Task<IActionResult> GetIdAndName()
+	{
+		var result = await _benhNhanService.GetComboboxAsync();
+		return Ok(result);
+	}
 }

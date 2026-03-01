@@ -2,6 +2,7 @@
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 
 namespace Presentation.Controllers
 {
@@ -80,6 +81,14 @@ namespace Presentation.Controllers
 					message = ex.Message
 				});
 			}
+		}
+		//Get combobox
+		[Authorize(Roles = "Admin,Nhân viên")]
+		[HttpGet("combobox")]
+		public async Task<IActionResult> GetIdAndName()
+		{
+			var result = await _khungGioService.GetComboboxAsync();
+			return Ok(result);
 		}
 	}
 }
