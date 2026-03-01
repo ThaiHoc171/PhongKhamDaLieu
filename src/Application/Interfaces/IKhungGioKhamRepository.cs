@@ -11,4 +11,5 @@ public interface IKhungGioKhamRepository
     Task<List<int>> GetKhungGioIdsByCaLamViecAsync(int caLamViec);
     Task AddAsync(KhungGioKham khungGio);
 	Task UpdateAsync(KhungGioKham khungGio);
+	Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
 }

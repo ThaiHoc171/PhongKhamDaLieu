@@ -222,13 +222,33 @@ public class CaKhamService
 
         return list.Select(MapToDto).ToList();
     }
-	public async Task<List<CaKhamResponseDTO>> GetAllAsync()
-	{
-        var list = await _caKhamRepo.GetAllAsync();
 
-        return list.Select(MapToDto).ToList();
-    }
-    private static CaKhamResponseDTO MapToDto(CaKham ca)
+	public async Task<PagedResult<CaKhamResponseDTO>> GetCaKhamPagedAsync(DateTime ngayKham, string trangThai, int pageNumber, int pageSize)
+	{
+        var(data, totalCount) = await _caKhamRepo.GetByStatusAndDayAsync(ngayKham, trangThai, pageNumber, pageSize);
+
+		return new PagedResult<CaKhamResponseDTO>
+		{
+			Items = data.Select(MapToDto).ToList(),
+			TotalCount = totalCount,
+			PageNumber = pageNumber,
+			PageSize = pageSize
+		};
+	}
+
+	public async Task<List<NameResponseDTO>>GetComboboxAsync(string trangThai, DateTime ngayKham)
+	{
+		var data = await _caKhamRepo.GetIdAndNameByStatusAsync(trangThai, ngayKham);
+
+		return data.Select(x => new NameResponseDTO
+		{
+			Id = x.Id,
+			Name = x.Ten
+		}).ToList();
+	}
+
+
+	private static CaKhamResponseDTO MapToDto(CaKham ca)
     {
         return new CaKhamResponseDTO
         {
