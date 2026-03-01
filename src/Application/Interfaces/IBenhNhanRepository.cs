@@ -10,5 +10,6 @@ public interface IBenhNhanRepository
 	Task<int> GetForAuthAsync(int taiKhoanID);
 	Task<int> AddAsync(BenhNhan benhNhan);
 	Task UpdateAsync(BenhNhan benhNhan);
+	Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
 }
 
