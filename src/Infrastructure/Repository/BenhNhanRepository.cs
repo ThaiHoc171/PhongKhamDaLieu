@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace Infrastructure.Repositories;
 
@@ -48,20 +49,54 @@ public class BenhNhanRepository : IBenhNhanRepository
 		}
 		return list;
 	}
-	public async Task<List<BenhNhan>> GetAllAsync()
+	public async Task<(List<BenhNhan> Data, int TotalCount)>
+	GetPagedAsync(int pageNumber, int pageSize)
 	{
-		const string sql = @"SELECT BenhNhanID, ThongTinID, GhiChu, NgayTao, NgayCapNhat
-						FROM BenhNhan";
+		const string sql = @"
+			SELECT 
+				bn.BenhNhanID, bn.GhiChu,
+				tt.ThongTinID,tt.HoTen,tt.SDT,tt.EmailLienHe
+
+			FROM BenhNhan bn
+			JOIN ThongTinCaNhan tt
+				ON bn.ThongTinID = tt.ThongTinID
+
+			ORDER BY bn.BenhNhanID
+			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+			SELECT COUNT(*) FROM BenhNhan;
+		";
+
 		var list = new List<BenhNhan>();
+		int totalCount = 0;
+
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
+
+		int offset = (pageNumber - 1) * pageSize;
+
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
+
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
+
+		// Result 1
 		while (await reader.ReadAsync())
 		{
-			list.Add(MapToEntity(reader));
+			list.Add(MapToListEntity(reader));
 		}
-		return list;
+
+		// Result 2
+		if (await reader.NextResultAsync())
+		{
+			if (await reader.ReadAsync())
+			{
+				totalCount = reader.GetInt32(0);
+			}
+		}
+
+		return (list, totalCount);
 	}
 	public async Task<string?> GetNameByIdAsync(int id)
 	{
@@ -129,11 +164,10 @@ public class BenhNhanRepository : IBenhNhanRepository
 			SELECT bn.BenhNhanID, tt.HoTen
 			FROM BenhNhan bn
 			JOIN ThongTinCaNhan tt 
-				ON nv.ThongTinID = tt.ThongTinID
-			ORDER BY tt.HoTen
-		";
+				ON bn.ThongTinID = tt.ThongTinID
+			ORDER BY tt.HoTen";
 
-		var list = new List<(int, string)>();
+		var list = new List<(int Id, string Ten)>();
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
@@ -144,8 +178,8 @@ public class BenhNhanRepository : IBenhNhanRepository
 		while (await reader.ReadAsync())
 		{
 			list.Add((
-				(int)reader["BenhNhanID"],
-				reader["HoTen"].ToString()!
+				Id: reader.GetInt32(0),
+				Ten: reader.GetString(1)
 			));
 		}
 
@@ -159,6 +193,30 @@ public class BenhNhanRepository : IBenhNhanRepository
 			ghiChu: reader.IsDBNull(2) ? "" : reader.GetString(2),
 			ngayTao: reader.GetDateTime(3),
 			ngayCapNhat: reader.IsDBNull(4) ? reader.GetDateTime(3) : reader.GetDateTime(4)
+		);
+	}
+
+	private static BenhNhan MapToListEntity(SqlDataReader reader)
+	{
+		var thongTin = new ThongTinCaNhan(
+			thongTinID: reader.GetInt32(2),
+			taiKhoanID: null,
+			hoTen: reader.GetString(3),
+			ngaySinh: null,
+			gioiTinh: null,
+			sdt: reader.IsDBNull(4) ? "" : reader.GetString(4),
+			emailLienHe: reader.IsDBNull(5) ? "" : reader.GetString(5),
+			diaChi: null,
+			avatar: null,
+			loai: "Bệnh nhân",
+			ngayTao: DateTime.Now,
+			ngayCapNhat: null
+		);
+
+		return new BenhNhan(
+			benhNhanID: reader.GetInt32(0),
+			ghiChu: reader.IsDBNull(1) ? "" : reader.GetString(1),
+			thongTinCaNhan: thongTin
 		);
 	}
 }
