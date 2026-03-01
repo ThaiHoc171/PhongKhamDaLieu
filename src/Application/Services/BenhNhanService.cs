@@ -73,25 +73,34 @@ public class BenhNhanService
 		return true;
 	}
 
-	public async Task<List<BenhNhanResponseDTO>> DanhSachBenhNhanAsync()
+	public async Task<PagedResult<BenhNhanResponseDTO>>	DanhSachBenhNhanAsync(int pageNumber, int pageSize)
 	{
-		var list = await _benhNhanRepo.GetAllAsync();
-		var result = new List<BenhNhanResponseDTO>();
-		foreach (var bn in list)
+		if (pageNumber <= 0) pageNumber = 1;
+		if (pageSize <= 0) pageSize = 10;
+
+		var (data, totalCount) =
+			await _benhNhanRepo.GetPagedAsync(pageNumber, pageSize);
+
+		var result = data.Select(bn => new BenhNhanResponseDTO
 		{
-			var thongTin = await _thongTinRepo.GetByIdAsync(bn.ThongTinID);
-			result.Add(new BenhNhanResponseDTO
-			{
-				BenhNhanID = bn.BenhNhanID,
-				ThongTinID = bn.ThongTinID,
-				HoTen = thongTin?.HoTen ?? "",
-				SDT = thongTin?.SDT ?? "",
-				EmailLienHe = thongTin?.EmailLienHe ?? "",
-				GhiChu = bn.GhiChu
-			});
-		}
-		return result;
+			BenhNhanID = bn.BenhNhanID,
+			ThongTinID = bn.ThongTinCaNhan?.ThongTinID ?? 0,
+			HoTen = bn.ThongTinCaNhan?.HoTen ?? "",
+			SDT = bn.ThongTinCaNhan?.SDT ?? "",
+			EmailLienHe = bn.ThongTinCaNhan?.EmailLienHe ?? "",
+			GhiChu = bn.GhiChu
+		}).ToList();
+
+		return new PagedResult<BenhNhanResponseDTO>
+		{
+			Items = result,
+			TotalCount = totalCount,
+			PageNumber = pageNumber,
+			PageSize = pageSize
+		};
 	}
+
+
 	public async Task<BenhNhanResponseDTO?> LayBenhNhanTheoIdAsync(int benhNhanID)
 	{
 		var bn = await _benhNhanRepo.GetByIdAsync(benhNhanID);
