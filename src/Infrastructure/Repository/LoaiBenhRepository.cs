@@ -33,7 +33,50 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 
 		return list;
 	}
+	public async Task<(List<LoaiBenh> Data, int TotalCount)> GetPageAsync(int pageNumber, int pageSize)
+	{
+		const string sql = @"
+			SELECT 
+				LoaiBenhID, TenBenh, TenKhoaHoc, NhomBenh,
+				MoTa, DoPhoBien, MucDoNghiemTrong, NgayTao
+			FROM LoaiBenh
+			ORDER BY LoaiBenhID
+			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
 
+			SELECT COUNT(*) FROM LoaiBenh;
+		";
+
+		var list = new List<LoaiBenh>();
+		int totalCount = 0;
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		int offset = (pageNumber - 1) * pageSize;
+
+		cmd.Parameters.AddWithValue("@Offset", offset);
+		cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		// Result 1: Data
+		while (await reader.ReadAsync())
+		{
+			list.Add(MapToEntity(reader));
+		}
+
+		// Result 2: TotalCount
+		if (await reader.NextResultAsync())
+		{
+			if (await reader.ReadAsync())
+			{
+				totalCount = reader.GetInt32(0);
+			}
+		}
+
+		return (list, totalCount);
+	}
 	public async Task<LoaiBenh?> GetByIdAsync(int id)
 	{
 		const string sql = @"

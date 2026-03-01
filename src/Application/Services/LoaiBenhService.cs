@@ -12,11 +12,17 @@ public class LoaiBenhService
 	{
 		_repo = repo;
 	}
-
-	public async Task<List<LoaiBenhResponseDTO>> DanhSachAsync()
+	public async Task<PagedResult<LoaiBenhResponseDTO>> DanhSachPagedAsync(int pageNumber, int pageSize)
 	{
-		var list = await _repo.GetAllAsync();
-		return list.Select(MapToDto).ToList();
+		var (data, totalCount) = await _repo.GetPageAsync(pageNumber, pageSize);
+
+		return new PagedResult<LoaiBenhResponseDTO>
+		{
+			Items = data.Select(MapToDto).ToList(),
+			TotalCount = totalCount,
+			PageNumber = pageNumber,
+			PageSize = pageSize
+		};
 	}
 
 	public async Task<LoaiBenhResponseDTO?> LayTheoIdAsync(int id)

@@ -14,10 +14,17 @@ public class CanLamSangService
 	}
 
 	// GET ALL
-	public async Task<List<CanLamSangResponseDTO>> DanhSachCanLamSangAsync()
+	public async Task<PagedResult<CanLamSangResponseDTO>> DanhSachCanLamSangAsync(int pageNumber, int pageSize)
 	{
-		var list = await _repo.GetAllAsync();
-		return list.Select(MapToDto).ToList();
+		var (data, totalCount) = await _repo.GetPagedAsync(pageNumber, pageSize);
+
+		return new PagedResult<CanLamSangResponseDTO>
+		{
+			Items = data.Select(MapToDto).ToList(),
+			TotalCount = totalCount,
+			PageNumber = pageNumber,
+			PageSize = pageSize
+		};
 	}
 
 	// GET BY ID
@@ -73,7 +80,11 @@ public class CanLamSangService
 
 		return true;
 	}
-
+	public async Task<List<CanLamSangResponseDTO>> TimTheoTenAsync(string tenCLS)
+	{
+		var list = await _repo.SearchByTenAsync(tenCLS);
+		return list.Select(MapToDto).ToList();
+	}
 	// MAP ENTITY → DTO
 	private static CanLamSangResponseDTO MapToDto(CanLamSang cls)
 	{

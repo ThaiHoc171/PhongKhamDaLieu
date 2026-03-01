@@ -13,10 +13,17 @@ public class ThuocService
 		_repo = repo;
 	}
 
-	public async Task<List<ThuocResponseDTO>> DanhSachAsync()
+	public async Task<PagedResult<ThuocResponseDTO>> DanhSachPagedAsync(int pageNumber, int pageSize)
 	{
-		var list = await _repo.GetAllAsync();
-		return list.Select(MapToDto).ToList();
+		var (data, totalCount) = await _repo.GetPagedAsync(pageNumber, pageSize);
+
+		return new PagedResult<ThuocResponseDTO>
+		{
+			Items = data.Select(MapToDto).ToList(),
+			TotalCount = totalCount,
+			PageNumber = pageNumber,
+			PageSize = pageSize
+		};
 	}
 
 	public async Task<List<ThuocResponseDTO>> TimKiemAsync(string keyword)
