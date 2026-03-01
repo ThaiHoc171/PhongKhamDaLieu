@@ -131,4 +131,14 @@ public class BenhNhanService
 
 		return result;
 	}
+
+	public async Task<List<NameResponseDTO>> GetComboboxAsync()
+	{
+		var list = await _benhNhanRepo.GetIdAndNameAsync();
+		return list.Select(e => new NameResponseDTO
+		{
+			Id = e.Id,
+			Name = e.Ten
+		}).ToList();
+	}
 }

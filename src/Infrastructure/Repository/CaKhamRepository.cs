@@ -1,8 +1,9 @@
-﻿using System.Reflection.Metadata;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
+using System.Reflection.Metadata;
 
 namespace Infrastructure.Repositories;
 public class CaKhamRepository : ICaKhamRepository
@@ -25,21 +26,92 @@ public class CaKhamRepository : ICaKhamRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<List<CaKham>> GetAllAsync()
+	public async Task<(List<CaKham> Data, int TotalCount)> GetByStatusAndDayAsync(DateTime ngayKham, string trangThai, int pageNumber, int pageSize)
 	{
-		const string sql = @"SELECT CaKhamID, LoaiCaKham, LichLamViecID, KhungGioID, PhongChucNangID, BenhNhanID, LyDoKham, TrangThai, NgayDat, NgayKham, GhiChu
-                                FROM CaKham";
+		const string sql = @"
+			SELECT 
+				CaKhamID, LoaiCaKham, LichLamViecID, KhungGioID, 
+				PhongChucNangID, BenhNhanID, LyDoKham, TrangThai, 
+				NgayDat, NgayKham, GhiChu
+			FROM CaKham
+			WHERE CAST(NgayKham AS DATE) = CAST(@NgayKham AS DATE)
+			  AND TrangThai = @TrangThai
+			ORDER BY CaKhamID
+			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+			SELECT COUNT(*)
+			FROM CaKham
+			WHERE CAST(NgayKham AS DATE) = CAST(@NgayKham AS DATE)
+			  AND TrangThai = @TrangThai;
+		";
+
 		var list = new List<CaKham>();
+		int totalCount = 0;
+
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
+
+		int offset = (pageNumber - 1) * pageSize;
+
+		cmd.Parameters.AddWithValue("@NgayKham", ngayKham.Date);
+		cmd.Parameters.AddWithValue("@TrangThai", trangThai);
+		cmd.Parameters.AddWithValue("@Offset", offset);
+		cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
+
+		// Result 1: Data
 		while (await reader.ReadAsync())
 		{
 			list.Add(MapToEntity(reader));
 		}
+
+		// Result 2: TotalCount
+		if (await reader.NextResultAsync())
+		{
+			if (await reader.ReadAsync())
+			{
+				totalCount = reader.GetInt32(0);
+			}
+		}
+
+		return (list, totalCount);
+	}
+
+	public async Task<List<(int Id, string Ten)>> GetIdAndNameByStatusAsync(string trangThai,DateTime ngayKham)
+	{
+		const string sql = @"
+			SELECT CaKhamID, ISNULL(LyDoKham, N'Chưa xác định!')
+			FROM CaKham
+			WHERE TrangThai = @TrangThai 
+			AND NgayKham >= @NgayKham
+			AND NgayKham < DATEADD(DAY, 1, @NgayKham)
+			ORDER BY NgayKham DESC
+		";
+
+		var list = new List<(int Id, string Ten)>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.AddWithValue("@TrangThai", trangThai);
+		cmd.Parameters.AddWithValue("@NgayKham", ngayKham.Date);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add((
+				Id: reader.GetInt32(0),
+				Ten: reader.GetString(1)
+			));
+		}
+
 		return list;
 	}
+
 	public async Task<List<CaKham>> LocAsync(DateTime ngayKham, string trangThai)
 	{
 		const string sql = @"SELECT CaKhamID, LoaiCaKham, LichLamViecID, KhungGioID, PhongChucNangID, BenhNhanID, LyDoKham, TrangThai, NgayDat, NgayKham, GhiChu
