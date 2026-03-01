@@ -46,8 +46,8 @@ public class BenhNhanController : ControllerBase
 
 	[Authorize(Policy = "LeTanOnly")]
 	[HttpGet]
-	public async Task<IActionResult> DanhSach()
-		=> Ok(await _benhNhanService.DanhSachBenhNhanAsync());
+	public async Task<IActionResult> DanhSach([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+		=> Ok(await _benhNhanService.DanhSachBenhNhanAsync(pageNumber,pageSize));
 
 	[Authorize(Policy = "LeTanOnly")]
 	[HttpGet("Search")]

@@ -9,6 +9,8 @@ public class BenhNhan
 	public DateTime NgayCapNhat { get; private set; }
 	public string GhiChu { get; private set; }
 
+	public ThongTinCaNhan? ThongTinCaNhan { get; private set; }
+
 	// Constructor dùng khi tạo mới từ DTO
 	public BenhNhan(int thongTinID, string ghiChu = "")
 	{
@@ -19,10 +21,16 @@ public class BenhNhan
 	}
 
 	// Constructor dùng khi map từ DB
-	public BenhNhan(int benhNhanID, int thongTinID, string ghiChu, DateTime ngayTao,DateTime ngayCapNhat)
+	public BenhNhan(int benhNhanID, string ghiChu, ThongTinCaNhan? thongTinCaNhan)
 	{
 		BenhNhanID = benhNhanID;
-		ThongTinID = thongTinID;
+		GhiChu = ghiChu;
+		ThongTinCaNhan = thongTinCaNhan;
+	}
+	public BenhNhan(int benhNhanID, int thongTinID, string ghiChu, DateTime ngayTao, DateTime ngayCapNhat)
+	{
+		BenhNhanID = benhNhanID;
+		ThongTinID= thongTinID;
 		GhiChu = ghiChu;
 		NgayTao = ngayTao;
 		NgayCapNhat = ngayCapNhat;
