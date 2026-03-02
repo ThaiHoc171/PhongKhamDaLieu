@@ -1,5 +1,4 @@
 ﻿-- phongkhamdalieu
-
 --- TAI KHOAN VA THONG TIN ---
 CREATE TABLE TaiKhoan(
     TaiKhoanID INT IDENTITY PRIMARY KEY,
@@ -31,7 +30,7 @@ CREATE TABLE ThongTinCaNhan (
     Avatar NVARCHAR(300),
     Loai NVARCHAR(20) NOT NULL
         CONSTRAINT FK_TTCN_Loai
-        CHECK (Loai IN (N'Bệnh nhân', N'Nhân viên')),
+        CHECK (Loai IN (N'Bệnh nhân', N'Nhân viên',N'Admin')),
     NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
     NgayCapNhat DATETIME NULL,
 
@@ -216,7 +215,7 @@ CREATE TABLE CaKham (
 
     LoaiCaKham NVARCHAR(50) NOT NULL
         CONSTRAINT CK_CaKham_Loai
-        CHECK (LoaiCaKham IN (N'Khám', N'Điều trị', N'Tái khám')),
+        CHECK (LoaiCaKham IN (N'Khám', N'Điều trị')),
 
     LichLamViecID INT NOT NULL,
     KhungGioID INT NOT NULL,
@@ -466,18 +465,6 @@ CREATE TABLE LieuTrinh_BuoiDieuTri (
 );
 GO
 
--- Các xét nghiệm đẫ tiến hành trong buổi liệu trình điều trị --
-CREATE TABLE BuoiDieuTri_CanLamSang (
-    ID INT IDENTITY(1,1) PRIMARY KEY,
-    BuoiDieuTriID INT NOT NULL,
-    CanLamSangID INT NOT NULL,
-    KetQua NVARCHAR(MAX),
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
-
-    FOREIGN KEY (BuoiDieuTriID) REFERENCES LieuTrinh_BuoiDieuTri(BuoiDieuTriID) ON DELETE CASCADE,
-    FOREIGN KEY (CanLamSangID) REFERENCES CanLamSang(CanLamSangID)
-);
-GO
 --- KHAC --
 CREATE TABLE AI_TrainingFeedback (
     FeedbackID INT IDENTITY(1,1) PRIMARY KEY,

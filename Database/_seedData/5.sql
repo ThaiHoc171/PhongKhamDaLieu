@@ -1,0 +1,35 @@
+﻿INSERT INTO HoSoBenhAn
+(BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac)
+VALUES
+(1, N'Không', N'Không', N'Mụn trứng cá tuổi trưởng thành', N'Không ghi nhận', N'Ngủ muộn, thường xuyên dùng thiết bị điện tử', N'Da dầu, lỗ chân lông to'),
+(2, N'Thiếu máu nhẹ', N'Dị ứng mỹ phẩm', N'Viêm da dị ứng', N'Mẹ có viêm da cơ địa', N'Hay trang điểm, ít uống nước', N'Da nhạy cảm'),
+(3, N'Tăng huyết áp nhẹ', N'Không', N'Viêm da tiết bã', N'Cha bị tăng huyết áp', N'Hút thuốc lá', N'Da đầu nhiều gàu'),
+(4, N'Không', N'Không', N'Mụn viêm tái phát', N'Không', N'Ngủ muộn, stress công việc', N'Da hỗn hợp'),
+(5, N'Rối loạn nội tiết', N'Dị ứng kháng sinh', N'Nám da sau sinh', N'Mẹ bị nám', N'Ít vận động', N'Da khô'),
+(6, N'Không', N'Không', N'Mụn đầu đen, mụn ẩn', N'Không', N'Ăn nhiều đồ cay nóng', N'Da dầu'),
+(7, N'Không', N'Dị ứng hải sản', N'Viêm da tiếp xúc', N'Không', N'Hay đổi mỹ phẩm', N'Da nhạy cảm'),
+(8, N'Không', N'Không', N'Tăng sắc tố da', N'Không', N'Ít dùng kem chống nắng', N'Da thường'),
+(9, N'Không', N'Không', N'Mụn lưng', N'Anh trai từng bị mụn nặng', N'Chơi thể thao nhiều, ra mồ hôi', N'Da dầu'),
+(10, N'Tiểu đường type 2', N'Không', N'Ngứa da do tiểu đường', N'Cha bị tiểu đường', N'Ăn ngọt nhiều', N'Da khô'),
+(11, N'Không', N'Không', N'Viêm da cơ địa nhẹ', N'Mẹ viêm da cơ địa', N'Nuôi thú cưng', N'Da nhạy cảm'),
+(12, N'Không', N'Dị ứng mỹ phẩm', N'Kích ứng da', N'Không', N'Hay thử sản phẩm mới', N'Da yếu'),
+(13, N'Không', N'Không', N'Mụn tuổi dậy thì kéo dài', N'Không', N'Sinh hoạt thất thường', N'Da dầu'),
+(14, N'Không', N'Không', N'Mụn thiếu niên', N'Không', N'Ăn đồ chiên rán', N'Da dầu'),
+(15, N'Không', N'Không', N'Nám nhẹ', N'Mẹ có nám', N'Ít chống nắng', N'Da hỗn hợp'),
+(16, N'Không', N'Không', N'Mụn viêm', N'Không', N'Stress, thức khuya', N'Da dầu'),
+(17, N'Không', N'Không', N'Viêm nang lông', N'Không', N'Hay cạo râu', N'Da thường'),
+(18, N'Tăng huyết áp', N'Không', N'Ngứa da mãn tính', N'Cha tăng huyết áp', N'Hút thuốc', N'Da khô'),
+(19, N'Không', N'Dị ứng mỹ phẩm', N'Viêm da tiếp xúc', N'Không', N'Dùng nhiều mỹ phẩm', N'Da nhạy cảm'),
+(20, N'Không', N'Không', N'Tàn nhang', N'Mẹ có tàn nhang', N'Ít che chắn khi ra nắng', N'Da thường'),
+(21, N'Không', N'Không', N'Mụn nội tiết', N'Không', N'Ngủ muộn', N'Da dầu'),
+(22, N'Rối loạn nội tiết', N'Không', N'Nám da', N'Mẹ nám', N'Ít vận động', N'Da khô'),
+(23, N'Không', N'Không', N'Mụn viêm', N'Không', N'Ăn cay nóng', N'Da dầu'),
+(24, N'Không', N'Không', N'Mụn tuổi dậy thì', N'Không', N'Ăn nhiều đồ ngọt', N'Da dầu'),
+(25, N'Không', N'Dị ứng phấn hoa', N'Viêm da dị ứng', N'Không', N'Hay tiếp xúc môi trường bụi', N'Da nhạy cảm'),
+(26, N'Không', N'Không', N'Viêm da tiết bã', N'Không', N'Ít gội đầu', N'Da đầu dầu'),
+(27, N'Không', N'Không', N'Mụn viêm nhẹ', N'Không', N'Sinh hoạt không đều', N'Da dầu'),
+(28, N'Không', N'Không', N'Mụn nội tiết', N'Không', N'Stress học tập', N'Da hỗn hợp'),
+(29, N'Không', N'Không', N'Tăng sắc tố sau viêm', N'Không', N'Không dùng chống nắng', N'Da thường'),
+(30, N'Tăng huyết áp', N'Không', N'Ngứa da mãn tính', N'Cha tăng huyết áp', N'Ít vận động', N'Da khô');
+GO
+SELECT * FROM HoSoBenhAn;
