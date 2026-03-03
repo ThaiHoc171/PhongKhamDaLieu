@@ -4,8 +4,9 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
-class LichKhamScreen extends StatefulWidget {
+import 'package:intl/date_symbol_data_local.dart';
 
+class LichKhamScreen extends StatefulWidget {
   const LichKhamScreen({super.key});
 
   @override
@@ -29,7 +30,8 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     {"id": 12, "gio": "15:30"},
   ];
 
-  String URL = 'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api';
+  String URL =
+      'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api';
   List<int> khungGioConTrong = [];
   int? selectedKhungGioId;
   bool loadingSlot = false;
@@ -55,9 +57,11 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-          title: const Text(
-            'Đặt lịch khám', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold,),),
-      ) ,
+        title: const Text(
+          'Đặt lịch khám',
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SafeArea(
         child: CustomScrollView(
           slivers: <Widget>[
@@ -66,17 +70,19 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
                 children: <Widget>[
                   _tableCalendar(),
                   const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 25),
-                      child: Center(
-                        child: Text(
-                            'Chọn khung giờ khám',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20,
-                                ),
-                              ),
-                      )
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+                    child: Center(
+                      child: Text(
+                        'Chọn khung giờ khám',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
-              )
+              ),
             ),
             _buildKhungGioSliver(),
             SliverFillRemaining(
@@ -86,15 +92,20 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
-                    onPressed: loadingSlot ? null : () async {
-                      if (selectedKhungGioId == null) {
-                        showThongBao(context, "Vui lòng chọn khung giờ khám");
-                        return;
-                      }
-                      bool daDangKy = await checkDangKy();
-                      if (daDangKy) return;
-                      await dangkyKham();
-                    },
+                    onPressed: loadingSlot
+                        ? null
+                        : () async {
+                            if (selectedKhungGioId == null) {
+                              showThongBao(
+                                context,
+                                "Vui lòng chọn khung giờ khám",
+                              );
+                              return;
+                            }
+                            bool daDangKy = await checkDangKy();
+                            if (daDangKy) return;
+                            await dangkyKham();
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
                       foregroundColor: Colors.white,
@@ -102,8 +113,9 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
                     child: const Text(
                       'Đăng ký khám',
                       style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -111,30 +123,29 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
             ),
           ],
         ),
-      )
+      ),
     );
   }
 
   Widget _tableCalendar() {
     return TableCalendar(
-        focusedDay: _focusDay,
-        firstDay: DateTime.now(),
-        lastDay: DateTime(2027, 12, 31),
-        calendarFormat: _format,
-        rowHeight: 36,
+      locale: 'vi_VN',
+      focusedDay: _focusDay,
+      firstDay: DateTime.now(),
+      lastDay: DateTime(2027, 12, 31),
+      calendarFormat: _format,
+      rowHeight: 36,
 
-        selectedDayPredicate: (day) {
-          return isSameDay(_currentDay, day);
-        },
+      selectedDayPredicate: (day) {
+        return isSameDay(_currentDay, day);
+      },
 
-        availableCalendarFormats: const{
-          CalendarFormat.month: 'Month',
-        },
-        onFormatChanged: (format) {
-          setState(() {
-            _format = format;
-          });
-        },
+      availableCalendarFormats: const {CalendarFormat.month: 'Tháng'},
+      onFormatChanged: (format) {
+        setState(() {
+          _format = format;
+        });
+      },
       onDaySelected: ((selectedDay, focusDay) async {
         setState(() {
           _currentDay = selectedDay;
@@ -159,13 +170,9 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       final url =
           '$URL/CaKham/khunggio-trong?ngayKham=$formattedDate&loaiCaKham=Khám';
 
-
       final response = await http.get(
         Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'accept': '*/*',
-        },
+        headers: {'Authorization': 'Bearer $token', 'accept': '*/*'},
       );
 
       if (response.statusCode == 200) {
@@ -187,36 +194,36 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       });
     }
   }
-  Future<void> loadCaKhamID() async{
-    try{
+
+  Future<void> loadCaKhamID() async {
+    try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
 
       final formattedDate = DateFormat('yyyy-MM-dd').format(_currentDay);
 
-      final url = '$URL/CaKham/trong?ngayKham=$formattedDate&khungGioId=$selectedKhungGioId&loaiCaKham=Khám';
+      final url =
+          '$URL/CaKham/trong?ngayKham=$formattedDate&khungGioId=$selectedKhungGioId&loaiCaKham=Khám';
 
       final response = await http.get(
         Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'accept': '*/*',
-        },
+        headers: {'Authorization': 'Bearer $token', 'accept': '*/*'},
       );
 
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
         setState(() {
           CaKhamId = data;
         });
       }
-    }catch(e){
+    } catch (e) {
       setState(() {
         loadingSlot = false;
       });
     }
   }
+
   Future<bool> checkDangKy() async {
     // ✅ Guard clause
     if (selectedKhungGioId == null) return false;
@@ -232,17 +239,17 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
 
       final response = await http.get(
         Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'accept': '*/*',
-        },
+        headers: {'Authorization': 'Bearer $token', 'accept': '*/*'},
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
         if (data != null && data != false && data.toString().isNotEmpty) {
-          showThongBao(context, "Bệnh nhân đã đăng ký ca khám trong khung giờ này!");
+          showThongBao(
+            context,
+            "Bệnh nhân đã đăng ký ca khám trong khung giờ này!",
+          );
           return true;
         }
       }
@@ -251,6 +258,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     }
     return false;
   }
+
   Future<void> dangkyKham() async {
     if (CaKhamId == null) {
       showThongBao(context, "Vui lòng chọn khung giờ khám");
@@ -279,7 +287,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
           'benhNhanID': benhNhanID,
           'lyDoKham': 'Khám da liễu',
           'ngayDat': DateTime.now().toIso8601String(),
-          'ghiChu': ''
+          'ghiChu': '',
         }),
       );
 
@@ -291,8 +299,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
         final data = jsonDecode(response.body);
         showThongBao(context, data['message']);
       } else {
-        showThongBao(context,
-            "Đăng ký thất bại (${response.statusCode})");
+        showThongBao(context, "Đăng ký thất bại (${response.statusCode})");
       }
     } catch (e) {
       setState(() {
@@ -302,6 +309,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       showThongBao(context, "Có lỗi xảy ra");
     }
   }
+
   void showThongBao(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -319,6 +327,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       ),
     );
   }
+
   Widget _buildKhungGioSliver() {
     if (!_dateSelected) {
       return const SliverToBoxAdapter(
@@ -341,20 +350,19 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     }
 
     return SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          sliver: SliverGrid(
-            delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                final slot = danhSachKhungGio[index];
-                final int khungGioId = slot["id"];
-                final String gio = slot["gio"];
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      sliver: SliverGrid(
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final slot = danhSachKhungGio[index];
+          final int khungGioId = slot["id"];
+          final String gio = slot["gio"];
 
-                final bool isAvailable = khungGioConTrong.contains(khungGioId);
-                final bool isSelected = selectedKhungGioId == khungGioId;
+          final bool isAvailable = khungGioConTrong.contains(khungGioId);
+          final bool isSelected = selectedKhungGioId == khungGioId;
 
-                return GestureDetector(
-                  onTap: isAvailable
-                      ? () async{
+          return GestureDetector(
+            onTap: isAvailable
+                ? () async {
                     setState(() {
                       selectedKhungGioId = khungGioId;
                       _timeSelected = true;
@@ -362,41 +370,41 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
                     await loadCaKhamID();
                     print(CaKhamId);
                   }
-                      : null,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: !isAvailable
-                          ? Colors.grey.shade300 // full
-                          : isSelected
-                          ? Colors.blue
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected ? Colors.blue : Colors.grey,
-                        width: 1.5,
-                      ),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      gio,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: !isAvailable ? Colors.grey : Colors.black,
-                      ),
-                    ),
-                  ),
-                );
-              },
-              childCount: danhSachKhungGio.length,
+                : null,
+            child: Container(
+              decoration: BoxDecoration(
+                color: !isAvailable
+                    ? Colors
+                          .grey
+                          .shade300 // full
+                    : isSelected
+                    ? Colors.blue
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected ? Colors.blue : Colors.grey,
+                  width: 1.5,
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                gio,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: !isAvailable ? Colors.grey : Colors.black,
+                ),
+              ),
             ),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: 2.5,
-            ),
-          ),
+          );
+        }, childCount: danhSachKhungGio.length),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 2.5,
+        ),
+      ),
     );
   }
 }
