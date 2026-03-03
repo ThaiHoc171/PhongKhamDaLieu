@@ -1,29 +1,30 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:ql_phongkham/screen/home.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:ql_phongkham/screen/home_screen/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MaterialApp(
-    home: SafeArea(
-      child: Scaffold(
-        body: LoginScreen(),
-        ),
-      ),
-    debugShowCheckedModeBanner: false,
-  ));
+  await initializeDateFormatting('vi_VN', null);
+  runApp(
+    MaterialApp(
+      home: SafeArea(child: Scaffold(body: LoginScreen())),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }
 
-class LoginScreen extends StatefulWidget{
+class LoginScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return LoginScreenState();
   }
 }
 
-class LoginScreenState extends State<LoginScreen>{
+class LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController usernameController = TextEditingController();
@@ -43,15 +44,19 @@ class LoginScreenState extends State<LoginScreen>{
     try {
       final response = await http.post(
         url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'email': usernameController.text,
           'matKhau': passwordController.text,
         }),
       );
-
+      if (response.body.isEmpty) {
+        setState(() {
+          loading = false;
+          errorMessage = "Server không trả dữ liệu!";
+        });
+        return;
+      }
       if (response.statusCode == 200) {
         setState(() {
           loading = false;
@@ -78,14 +83,18 @@ class LoginScreenState extends State<LoginScreen>{
         await prefs.setString('chucVu', data['chucVu'] ?? '');
         await prefs.setString('hoTen', data['hoTen'] ?? '');
 
-        Navigator.push(context, MaterialPageRoute(
-            builder: (_) => HomeScreen(token: data['accessToken'],)
-        ));
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomeScreen(token: data['accessToken']),
+          ),
+          (route) => false,
+        );
       } else {
         final data = jsonDecode(response.body);
         setState(() {
           loading = false;
-          errorMessage = data['message'];
+          errorMessage = data['message'] ?? "Đăng nhập thất bại!";
         });
       }
     } catch (e) {
@@ -127,6 +136,7 @@ class LoginScreenState extends State<LoginScreen>{
       ),
     );
   }
+
   @override
   void dispose() {
     usernameController.dispose();
@@ -134,20 +144,21 @@ class LoginScreenState extends State<LoginScreen>{
     super.dispose();
   }
 
-  Widget loginForm(){
+  Widget loginForm() {
     return Form(
       key: _formKey,
       autovalidateMode: _submitted
           ? AutovalidateMode.onUserInteraction
           : AutovalidateMode.disabled,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             'Đăng nhập',
             style: TextStyle(
-                color: Colors.blue,
-                fontSize: 20,
-                fontWeight: FontWeight.bold
+              color: Colors.blue,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 20),
@@ -155,50 +166,57 @@ class LoginScreenState extends State<LoginScreen>{
             width: 175,
             height: 45,
             child: TextFormField(
-                controller: usernameController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(fontSize: 12),
-                ),
-                validator: (value){
-                  if(value == null || value.isEmpty){
-                    return 'Email đang trống!';
-                  }
-                  return null;
+              controller: usernameController,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_) {
+                FocusScope.of(context).nextFocus();
+              },
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                labelStyle: TextStyle(fontSize: 12),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Email đang trống!';
                 }
+                return null;
+              },
             ),
           ),
           const SizedBox(height: 16),
           SizedBox(
-              width: 175,
-              height: 45,
-              child: TextFormField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: 'Mật khẩu',
-                    labelStyle: TextStyle(fontSize: 12),
-                    suffix: GestureDetector(
-                        onTap: (){
-                          setState(() {
-                            _isHidden = !_isHidden;
-                          });
-                        },
-                        child: Icon(Icons.visibility)
-                    ),
-                  ),
-                  obscureText: _isHidden,
-                  validator: (value){
-                    if(value == null || value.isEmpty){
-                      return 'Mật khẩu đang trống!';
-                    }
-                    return null;
-                  }
-              )
-
+            width: 175,
+            height: 45,
+            child: TextFormField(
+              controller: passwordController,
+              textInputAction: TextInputAction.done,
+              onFieldSubmitted: (_) async {
+                submitLogin();
+              },
+              decoration: InputDecoration(
+                labelText: 'Mật khẩu',
+                labelStyle: TextStyle(fontSize: 12),
+                suffix: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isHidden = !_isHidden;
+                    });
+                  },
+                  child: Icon(Icons.visibility),
+                ),
+              ),
+              obscureText: _isHidden,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Mật khẩu đang trống!';
+                }
+                return null;
+              },
+            ),
           ),
           const SizedBox(height: 16),
 
-          if(errorMessage != null)
+          if (errorMessage != null)
             Text(
               errorMessage!,
               style: TextStyle(
@@ -209,31 +227,37 @@ class LoginScreenState extends State<LoginScreen>{
               textAlign: TextAlign.center,
             ),
 
-          loading? Center(child: CircularProgressIndicator()):
-          ElevatedButton(
-              onPressed: () async{
-                setState(() {
-                  _submitted = true;
-                });
-
-                if(_formKey.currentState!.validate()){
-                  setState(() {
-                    loading = true;
-                    errorMessage = null;
-                    FocusScope.of(context).unfocus();
-                  });
-                  await loginApi();
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow,
-                foregroundColor: Colors.blue,
-              ),
-              child: const Text('Đăng nhập', style: TextStyle(fontSize: 15))
-          ),
+          loading
+              ? Center(child: CircularProgressIndicator())
+              : ElevatedButton(
+                  onPressed: submitLogin,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    foregroundColor: Colors.blue,
+                  ),
+                  child: const Text(
+                    'Đăng nhập',
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
         ],
       ),
     );
   }
-}
 
+  Future<void> submitLogin() async {
+    setState(() {
+      _submitted = true;
+    });
+
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        loading = true;
+        errorMessage = null;
+      });
+
+      FocusScope.of(context).unfocus();
+      await loginApi();
+    }
+  }
+}
