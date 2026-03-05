@@ -17,7 +17,7 @@ public class BenhNhanService
 		_thongTinRepo = thongTinRepo;
 	}
 
-	public async Task<int> ThemBenhNhanAsync(ThemBenhNhanDTO dto)
+	public async Task<int> ThemBenhNhanAsync(BenhNhanRequestDTO dto)
 	{
 		int thongTinID;
 
@@ -101,20 +101,27 @@ public class BenhNhanService
 	}
 
 
-	public async Task<BenhNhanResponseDTO?> LayBenhNhanTheoIdAsync(int benhNhanID)
+	public async Task<BenhNhanIdResponseDTO?> LayBenhNhanTheoIdAsync(int benhNhanID)
 	{
 		var bn = await _benhNhanRepo.GetByIdAsync(benhNhanID);
 		if (bn == null) return null;
 
 		var thongTin = await _thongTinRepo.GetByIdAsync(bn.ThongTinID);
-		return new BenhNhanResponseDTO
+		if (bn == null) return null;
+		return new BenhNhanIdResponseDTO
 		{
 			BenhNhanID = bn.BenhNhanID,
 			ThongTinID = bn.ThongTinID,
-			HoTen = thongTin?.HoTen ?? "",
-			SDT = thongTin?.SDT ?? "",
-			EmailLienHe = thongTin?.EmailLienHe ?? "",
-			GhiChu = bn.GhiChu
+			GhiChu = bn.GhiChu,
+			HoTen = thongTin?.HoTen,
+			NgaySinh = thongTin?.NgaySinh,
+			GioiTinh = thongTin?.GioiTinh,
+			SDT = thongTin?.SDT,
+			EmailLienHe = thongTin?.EmailLienHe,
+			DiaChi = thongTin?.DiaChi,
+			Avatar = thongTin?.Avatar,
+			NgayTao = bn.NgayTao,
+			NgayCapNhat = bn.NgayCapNhat,
 		};
 	}
 

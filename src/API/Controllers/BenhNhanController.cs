@@ -20,7 +20,7 @@ public class BenhNhanController : ControllerBase
 
 	[Authorize(Policy = "LeTanOnly")]
 	[HttpPost]
-	public async Task<IActionResult> TaoBenhNhan([FromBody] ThemBenhNhanDTO dto)
+	public async Task<IActionResult> TaoBenhNhan([FromBody] BenhNhanRequestDTO dto)
 	{
 		var benhNhanID = await _benhNhanService.ThemBenhNhanAsync(dto);
 
@@ -66,19 +66,6 @@ public class BenhNhanController : ControllerBase
 			: Ok(bn);
 	}
 
-
-	[Authorize(Roles = "Bệnh nhân")]
-	[HttpGet("me")]
-	public async Task<IActionResult> XemThongTinCuaToi()
-	{
-		var benhNhanId = int.Parse(User.FindFirst("BenhNhanID")!.Value);
-
-		var bn = await _benhNhanService.LayBenhNhanTheoIdAsync(benhNhanId);
-
-		return bn == null
-			? NotFound()
-			: Ok(bn);
-	}
 	//Get combobox
 	[Authorize(Roles = "Admin,Nhân viên")]
 	[HttpGet("combobox")]

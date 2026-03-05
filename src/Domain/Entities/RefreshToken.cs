@@ -12,7 +12,7 @@ public class RefreshToken
     public RefreshToken(
         int taiKhoanId,
         string tokenHash,
-        DateTime expiryDate)
+        DateTime expiryDate)    
     {
         TaiKhoanId = taiKhoanId;
         TokenHash = tokenHash;
