@@ -80,20 +80,37 @@ CREATE TABLE PhongChucNang (
 CREATE TABLE NhanVien (
     NhanVienID   INT IDENTITY(1,1) PRIMARY KEY,
     ThongTinID   INT NOT NULL UNIQUE,
-    ChucVuID	 INT NOT NULL,
-    NgayVaoLam     DATE,
+    ChucVuID     INT NOT NULL,
+    NgayVaoLam   DATE,
     BangCap      NVARCHAR(500),
     KinhNghiem   NVARCHAR(500),
+
     TrangThai NVARCHAR(50) NOT NULL
         CONSTRAINT DF_NhanVien_TrangThai DEFAULT N'Đang làm việc'
         CONSTRAINT CK_NhanVien_TrangThai
         CHECK (TrangThai IN (N'Đang làm việc', N'Nghỉ việc')),
+
     PhongChucNangID INT NOT NULL,
-    CONSTRAINT FK_NhanVien_TTCN FOREIGN KEY (ThongTinID) REFERENCES ThongTinCaNhan(ThongTinID) ON DELETE CASCADE,
-    CONSTRAINT FK_NhanVien_ChucVu FOREIGN KEY (ChucVuID) REFERENCES ChucVu(ChucVuID),
-    CONSTRAINT FK_NhanVien_PCN FOREIGN KEY (PhongChucNangID ) REFERENCES PhongChucNang(PhongChucNangID) 
+
+    NgayTao DATETIME NOT NULL
+        CONSTRAINT DF_NhanVien_NgayTao DEFAULT GETDATE(),
+
+    NgayCapNhat DATETIME NULL,
+
+    CONSTRAINT FK_NhanVien_TTCN 
+        FOREIGN KEY (ThongTinID) 
+        REFERENCES ThongTinCaNhan(ThongTinID) 
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_NhanVien_ChucVu 
+        FOREIGN KEY (ChucVuID) 
+        REFERENCES ChucVu(ChucVuID),
+
+    CONSTRAINT FK_NhanVien_PCN 
+        FOREIGN KEY (PhongChucNangID) 
+        REFERENCES PhongChucNang(PhongChucNangID)
 );
-CREATE TABLE BacSiProfile (
+TABLE BacSiProfile (
     BacSiProfileID INT IDENTITY(1,1) PRIMARY KEY,
     NhanVienID INT NOT NULL UNIQUE,
     GioiThieu NVARCHAR(MAX),
@@ -523,3 +540,27 @@ CREATE TABLE BaiViet (
         REFERENCES LoaiBenh(LoaiBenhID)
 );
 GO
+
+CREATE TABLE RefreshTokens
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+
+    TaiKhoanId INT NOT NULL,
+
+    TokenHash NVARCHAR(MAX) NOT NULL,
+
+    ExpiryDate DATETIME NOT NULL,
+
+    CreatedAt DATETIME NOT NULL
+        CONSTRAINT DF_RefreshTokens_CreatedAt
+        DEFAULT GETUTCDATE(),
+
+    IsRevoked BIT NOT NULL
+        CONSTRAINT DF_RefreshTokens_IsRevoked
+        DEFAULT 0,
+
+    CONSTRAINT FK_RefreshTokens_TaiKhoan
+        FOREIGN KEY (TaiKhoanId)
+        REFERENCES TaiKhoan(TaiKhoanID)
+        ON DELETE CASCADE
+);
