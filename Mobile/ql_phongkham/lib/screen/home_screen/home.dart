@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:ql_phongkham/screen/Booking_screen/lichkham.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination.dart';
 import 'package:ql_phongkham/screen/home_screen/menubar.dart';
 import 'package:ql_phongkham/screen/bottombar_screen/profile.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   final String token;
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final benhNhanId = prefs.getInt('benhNhanId');
 
       if (token == null || benhNhanId == null) {
-        showThongBao(context, 'Thiếu thông tin đăng nhập');
+        DialogHelper.showThongBao(context, 'Thiếu thông tin đăng nhập');
         return;
       }
 
@@ -50,39 +51,21 @@ class _HomeScreenState extends State<HomeScreen> {
         final data = jsonDecode(response.body);
 
         if (data is List && data.isEmpty) {
-          showThongBao(context, 'Không có lịch tái khám cho bạn');
+          DialogHelper.showThongBao(context, 'Không có lịch tái khám cho bạn');
         } else {
           // Có dữ liệu
           print("Có lịch tái khám: $data");
         }
       } else if (response.statusCode == 404) {
-        showThongBao(context, 'Không có lịch tái khám cho bạn');
+        DialogHelper.showThongBao(context, 'Không có lịch tái khám cho bạn');
       } else if (response.statusCode == 401) {
-        showThongBao(context, 'Phiên đăng nhập hết hạn');
+        DialogHelper.showThongBao(context, 'Phiên đăng nhập hết hạn');
       } else {
-        showThongBao(context, 'Lỗi: ${response.statusCode}');
+        DialogHelper.showThongBao(context, 'Lỗi: ${response.statusCode}');
       }
     } catch (e) {
-      showThongBao(context, 'Lỗi kết nối: $e');
+      DialogHelper.showThongBao(context, 'Lỗi kết nối: $e');
     }
-  }
-
-  void showThongBao(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Thông báo"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
