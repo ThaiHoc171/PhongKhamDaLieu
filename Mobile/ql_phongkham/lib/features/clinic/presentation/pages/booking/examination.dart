@@ -35,9 +35,8 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
   List<int> khungGioConTrong = [];
   int? selectedKhungGioId;
   bool loadingSlot = false;
-  int? CaKhamId;
+  int? caKhamId;
   String? errorMessage;
-  bool Dangkykham = false;
   CalendarFormat _format = CalendarFormat.month;
   DateTime _focusDay = DateTime.now();
   DateTime _currentDay = DateTime.now();
@@ -195,7 +194,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     }
   }
 
-  Future<void> loadCaKhamID() async {
+  Future<void> loadcaKhamId() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
@@ -214,7 +213,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
         final data = json.decode(response.body);
 
         setState(() {
-          CaKhamId = data;
+          caKhamId = data;
         });
       }
     } catch (e) {
@@ -260,7 +259,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
   }
 
   Future<void> dangkyKham() async {
-    if (CaKhamId == null) {
+    if (caKhamId == null) {
       showThongBao(context, "Vui lòng chọn khung giờ khám");
       return;
     }
@@ -274,7 +273,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       final token = prefs.getString('accessToken');
       final benhNhanID = prefs.getInt('benhNhanId');
 
-      final url = '$URL/CaKham/$CaKhamId/dangky';
+      final url = '$URL/CaKham/$caKhamId/dangky';
 
       final response = await http.put(
         Uri.parse(url),
@@ -367,8 +366,8 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
                       selectedKhungGioId = khungGioId;
                       _timeSelected = true;
                     });
-                    await loadCaKhamID();
-                    print(CaKhamId);
+                    await loadcaKhamId();
+                    print(caKhamId);
                   }
                 : null,
             child: Container(
