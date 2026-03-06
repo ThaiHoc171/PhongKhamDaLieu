@@ -31,6 +31,7 @@ public class TaiKhoanService
 	}
     private string TaoAccessToken(
 	TaiKhoan tk,
+	int? thongTinId,
 	int? nhanVienId,
 	int? benhNhanId,
 	string? chucVu)
@@ -41,8 +42,10 @@ public class TaiKhoanService
 		new Claim(ClaimTypes.Email, tk.Email),
 		new Claim(ClaimTypes.Role, tk.VaiTro)
 	};
+        if (thongTinId.HasValue)
+            claims.Add(new Claim("ThongTinID", thongTinId.Value.ToString()));
 
-		if (nhanVienId.HasValue)
+        if (nhanVienId.HasValue)
 			claims.Add(new Claim("NhanVienID", nhanVienId.Value.ToString()));
 
 		if (benhNhanId.HasValue)
@@ -82,7 +85,7 @@ public class TaiKhoanService
 
 		if (!Helper.Password.VerifyPassword(dto.MatKhau, tk.MatKhau))
 			return null;
-
+		int? thongTinId = null;
 		int? nhanVienId = null;
 		int? benhNhanId = null;
 		string? chucVu = null;
@@ -94,21 +97,27 @@ public class TaiKhoanService
 			if (nv != null)
 			{
 				nhanVienId = nv.NhanVienID;
+				thongTinId = nv.ThongTinID;
 				chucVu = await _chucVuRepo.GetNameByIdAsync(nv.ChucVuID);
 				hoTen = await _nhanVienRepo.GetNameByIdAsync(nv.NhanVienID);
 			}
 		}
 		else if (tk.VaiTro == "Bệnh nhân")
 		{
-			benhNhanId = await _benhNhanRepo.GetForAuthAsync(tk.Id);
-			hoTen = await _benhNhanRepo.GetNameByIdAsync(benhNhanId.Value);
+			var bn = await _benhNhanRepo.GetForAuthAsync(tk.Id);
+			if(bn != null)
+			{
+				benhNhanId = bn.BenhNhanID;
+				thongTinId = bn.ThongTinID;
+                hoTen = await _benhNhanRepo.GetNameByIdAsync(benhNhanId.Value);
+            }	
 		}
 		else if (tk.VaiTro == "Admin")
 		{
 			hoTen = "Admin";
 		}
 
-		var accessToken = TaoAccessToken(tk, nhanVienId, benhNhanId, chucVu);
+		var accessToken = TaoAccessToken(tk, thongTinId, nhanVienId, benhNhanId, chucVu);
         var refreshToken = GenerateRefreshToken();
 		var token = new RefreshToken(tk.Id, refreshToken, DateTime.UtcNow.AddDays(7));
         await _refreshRepo.SaveAsync(token);	
@@ -120,6 +129,7 @@ public class TaiKhoanService
             VaiTro = tk.VaiTro,
             AccessToken = accessToken,
             RefreshToken = refreshToken,
+			ThongTinID = thongTinId,
             NhanVienId = nhanVienId,
             BenhNhanId = benhNhanId,
             ChucVu = chucVu,
@@ -190,6 +200,7 @@ public class TaiKhoanService
 	}
     public async Task<LoginResponseDTO?> RefreshTokenAsync(string refreshToken)	
     {
+
         var storedToken = await _refreshRepo.GetAsync(refreshToken);
 
         if (storedToken == null ||
@@ -198,6 +209,37 @@ public class TaiKhoanService
             return null;
 
         var taiKhoan = await _repo.GetByIdAsync(storedToken.TaiKhoanId);
+		int? thongTinId = null;
+        int? nhanVienId = null;
+        int? benhNhanId = null;
+        string? chucVu = null;
+        string? hoTen = null;
+
+        if (taiKhoan.VaiTro == "Nhân viên")
+        {
+            var nv = await _nhanVienRepo.GetForAuthAsync(taiKhoan.Id);
+            if (nv != null)
+            {
+                nhanVienId = nv.NhanVienID;
+				thongTinId = nv.ThongTinID;
+                chucVu = await _chucVuRepo.GetNameByIdAsync(nv.ChucVuID);
+                hoTen = await _nhanVienRepo.GetNameByIdAsync(nv.NhanVienID);
+            }
+        }
+        else if (taiKhoan.VaiTro == "Bệnh nhân")
+        {
+            var bn = await _benhNhanRepo.GetForAuthAsync(taiKhoan.Id);
+            if (bn != null)
+            {
+                benhNhanId = bn.BenhNhanID;
+                thongTinId = bn.ThongTinID;
+                hoTen = await _benhNhanRepo.GetNameByIdAsync(benhNhanId.Value);
+            }
+        }
+        else if (taiKhoan.VaiTro == "Admin")
+        {
+            hoTen = "Admin";
+        }
         if (taiKhoan == null) return null;
 
         await _refreshRepo.RevokeAsync(refreshToken);
@@ -206,7 +248,7 @@ public class TaiKhoanService
         var token = new RefreshToken(taiKhoan.Id, newRefreshToken, DateTime.UtcNow.AddDays(7));
         await _refreshRepo.SaveAsync(token);
        
-        var accessToken = TaoAccessToken(taiKhoan, null, null, null);
+        var accessToken = TaoAccessToken(taiKhoan, thongTinId, nhanVienId, benhNhanId, chucVu);
 
         return new LoginResponseDTO
         {
@@ -214,7 +256,11 @@ public class TaiKhoanService
             Email = taiKhoan.Email,
             VaiTro = taiKhoan.VaiTro,
             AccessToken = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken,
+            NhanVienId = nhanVienId,
+            BenhNhanId = benhNhanId,
+            ChucVu = chucVu,
+            HoTen = hoTen
         };
     }
     public async Task LogoutAsync(string refreshToken)

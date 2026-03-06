@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:ql_phongkham/core/utils/dialog_helper.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination.dart';
 import 'package:ql_phongkham/screen/home_screen/menubar.dart';
 import 'package:ql_phongkham/screen/bottombar_screen/profile.dart';
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   final String token;
@@ -31,41 +30,40 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> checkTaiKham() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
-      final benhNhanId = prefs.getInt('benhNhanId');
+      final token = prefs.getString('accessToken')!;
+      final benhNhanId = prefs.getInt('benhNhanId')!;
+      final repo = ReBookingRepository();
+      final check = await repo.checkTaiKham(token, benhNhanId);
 
-      if (token == null || benhNhanId == null) {
-        DialogHelper.showThongBao(context, 'Thiếu thông tin đăng nhập');
-        return;
-      }
-
-      final url =
-          'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api/TaiKham/Benhnhan/$benhNhanId';
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {'Authorization': 'Bearer $token', 'accept': '*/*'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-
-        if (data is List && data.isEmpty) {
-          DialogHelper.showThongBao(context, 'Không có lịch tái khám cho bạn');
-        } else {
-          // Có dữ liệu
-          print("Có lịch tái khám: $data");
-        }
-      } else if (response.statusCode == 404) {
-        DialogHelper.showThongBao(context, 'Không có lịch tái khám cho bạn');
-      } else if (response.statusCode == 401) {
-        DialogHelper.showThongBao(context, 'Phiên đăng nhập hết hạn');
+      if (check) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => LichKhamScreen()),
+        );
       } else {
-        DialogHelper.showThongBao(context, 'Lỗi: ${response.statusCode}');
+        DialogHelper.showThongBao(context, 'Bạn không có lịch tái khám!');
       }
     } catch (e) {
       DialogHelper.showThongBao(context, 'Lỗi kết nối: $e');
     }
+  }
+
+  void showThongBao(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Thông báo"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
