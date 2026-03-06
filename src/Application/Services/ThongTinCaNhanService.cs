@@ -132,9 +132,12 @@ public class ThongTinCaNhanService
 			ThongTinID = e.ThongTinID,
 			TaiKhoanID = e.TaiKhoanID,
 			HoTen = e.HoTen,
-			SDT = e.SDT,
+            NgaySinh = e.NgaySinh,
+            GioiTinh = e.GioiTinh,
+            SDT = e.SDT,
 			EmailLienHe = e.EmailLienHe,
-			Avatar = e.Avatar,
+            DiaChi = e.DiaChi,
+            Avatar = e.Avatar,
 			Loai = e.Loai
 		};
 	}
