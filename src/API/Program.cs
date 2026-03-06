@@ -189,6 +189,8 @@ builder.Services.AddScoped<ILieuTrinh_BuoiDieuTriRepository, LieuTrinh_BuoiDieuT
 builder.Services.AddScoped<LieuTrinh_BuoiDieuTriService>();
 builder.Services.AddScoped<IBaiVietRepository, BaiVietRepository>();
 builder.Services.AddScoped<BaiVietService>();
+builder.Services.AddScoped<IRefreshTokenRepository, IRefreshTokenRepository>();
+builder.Services.AddScoped<RefreshTokenService>();
 
 var app = builder.Build();
 
