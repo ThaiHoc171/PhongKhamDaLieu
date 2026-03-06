@@ -53,6 +53,10 @@ public class BenhNhanService
 
 			thongTinID = await _thongTinRepo.AddAsync(thongTin);
 		}
+		// check trùng
+		var exists = await _benhNhanRepo.ExistsByThongTinIdAsync(thongTinID);
+		if (exists)
+			throw new Exception("Thông tin cá nhân này đã là bệnh nhân");
 
 		// Tạo BenhNhan mới
 		var benhNhan = new BenhNhan(

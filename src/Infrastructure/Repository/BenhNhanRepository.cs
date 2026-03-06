@@ -15,7 +15,24 @@ public class BenhNhanRepository : IBenhNhanRepository
 		_connectionString = config.GetConnectionString("DefaultConnection")
 			?? throw new ArgumentNullException("Connection string not found");
 	}
+	public async Task<bool> ExistsByThongTinIdAsync(int thongTinId)
+	{
+		const string sql = @"
+		SELECT COUNT(1)
+		FROM BenhNhan
+		WHERE ThongTinID = @ThongTinID";
 
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.AddWithValue("@ThongTinID", thongTinId);
+
+		await conn.OpenAsync();
+
+		var result = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+
+		return result > 0;
+	}
 	public async Task<BenhNhan?> GetByIdAsync(int id)
 	{
 		const string sql = @"
@@ -32,10 +49,10 @@ public class BenhNhanRepository : IBenhNhanRepository
 	public async Task<List<BenhNhan>> GetBenhNhans(string keyword)
 	{
 		const string sql = @"
-				SELECT b.BenhNhanID, b.ThongTinID, b.GhiChu
-				FROM BenhNhan b
-				INNER JOIN ThongTinCaNhan t ON b.ThongTinID = t.ThongTinID
-				WHERE t.HoTen LIKE @Keyword
+				SELECT bn.BenhNhanID, bn.GhiChu,tt.ThongTinID,tt.HoTen,tt.SDT,tt.EmailLienHe
+				FROM BenhNhan bn
+				INNER JOIN ThongTinCaNhan tt ON bn.ThongTinID = tt.ThongTinID
+				WHERE tt.HoTen LIKE @Keyword
 				";
 		var list = new List<BenhNhan>();
 		await using var conn = new SqlConnection(_connectionString);
@@ -45,12 +62,11 @@ public class BenhNhanRepository : IBenhNhanRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		while (await reader.ReadAsync())
 		{
-			list.Add(MapToEntity(reader));
+			list.Add(MapToListEntity(reader));
 		}
 		return list;
 	}
-	public async Task<(List<BenhNhan> Data, int TotalCount)>
-	GetPagedAsync(int pageNumber, int pageSize)
+	public async Task<(List<BenhNhan> Data, int TotalCount)>GetPagedAsync(int pageNumber, int pageSize)
 	{
 		const string sql = @"
 			SELECT 
@@ -142,7 +158,7 @@ public class BenhNhanRepository : IBenhNhanRepository
 		cmd.Parameters.AddWithValue("@ThongTinID", benhNhan.ThongTinID);
 		cmd.Parameters.AddWithValue("@GhiChu", benhNhan.GhiChu ?? "");
 		await conn.OpenAsync();
-		return (int)await cmd.ExecuteScalarAsync();
+		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
 	}
 
 	public async Task UpdateAsync(BenhNhan benhNhan)
@@ -209,7 +225,7 @@ public class BenhNhanRepository : IBenhNhanRepository
 			diaChi: null,
 			avatar: null,
 			loai: "Bệnh nhân",
-			ngayTao: DateTime.Now,
+			ngayTao: DateTime.MinValue,
 			ngayCapNhat: null
 		);
 
