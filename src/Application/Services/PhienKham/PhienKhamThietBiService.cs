@@ -18,12 +18,12 @@ public class PhienKhamThietBiService
 	}
 
 	// DANH SÁCH THEO PHIÊN KHÁM
-	public async Task<List<PhienKhamThietBiResponseDTO>> DanhSachTheoPhienKhamAsync(int phienKhamID)
-	{
-		var entities = await _repo.GetByPhienKhamAsync(phienKhamID);
-		return entities.Select(MapToResponse).ToList();
-	}
-	// LẤY THEO ID
+	//public async Task<List<PhienKhamThietBiResponseDTO>> DanhSachTheoPhienKhamAsync(int phienKhamID)
+	//{
+	//	var entities = await _repo.GetByPhienKhamAsync(phienKhamID);
+	//	return entities.Select(MapToResponse).ToList();
+	//}
+	// LẤY THEO ID		
 	public async Task<PhienKhamThietBiResponseDTO?> LayTheoIdAsync(int id)
 	{
 		var entity = await _repo.GetByIdAsync(id);
