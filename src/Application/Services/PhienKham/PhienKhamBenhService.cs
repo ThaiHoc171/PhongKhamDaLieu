@@ -39,8 +39,8 @@ public class PhienKhamBenhService
 		if (phienKham.TrangThai != TrangThaiKhamEnum.DangKham)
 			throw new Exception("Không thể thêm chẩn đoán khi phiên khám đã kết thúc");
 		var daTonTaiChanDoanChinh = await _repo.PrimaryPKBenhExitsAsync(dto.PhienKhamID);
-
-		if (dto.LoaiChanDoan == LoaiChanDoanEnum.ChanDoanChinh)
+		var loaiChanDoanEnum = LoaiChanDoanEnumExtensions.ToEnum(dto.LoaiChanDoan);
+		if (loaiChanDoanEnum == LoaiChanDoanEnum.ChanDoanChinh)
 		{
 			if (daTonTaiChanDoanChinh)
 				throw new Exception("Mỗi phiên khám chỉ được có một chẩn đoán chính");
@@ -53,7 +53,7 @@ public class PhienKhamBenhService
 
 		var phienKhamBenh = new PhienKhamBenh
 		(
-			dto.PhienKhamID,dto.LoaiBenhID, dto.LoaiChanDoan,dto.GhiChu
+			dto.PhienKhamID,dto.LoaiBenhID, loaiChanDoanEnum, dto.GhiChu
 		);
 		await _repo.AddAsync(phienKhamBenh);
 	}
@@ -66,7 +66,8 @@ public class PhienKhamBenhService
 			?? throw new Exception("Phiên khám không tồn tại");
 		if (phienKham.TrangThai != TrangThaiKhamEnum.DangKham)
 			throw new Exception("Không thể cập nhật chẩn đoán khi phiên khám đã kết thúc");
-		if (dto.LoaiChanDoan == LoaiChanDoanEnum.ChanDoanChinh && pkb.LoaiChanDoan != LoaiChanDoanEnum.ChanDoanChinh)
+		var loaiChanDoanEnum = LoaiChanDoanEnumExtensions.ToEnum(dto.LoaiChanDoan);
+		if (loaiChanDoanEnum == LoaiChanDoanEnum.ChanDoanChinh && pkb.LoaiChanDoan != LoaiChanDoanEnum.ChanDoanChinh)
 		{
 			var daTonTai = await _repo.PrimaryPKBenhExitsAsync(dto.PhienKhamID);
 			if (daTonTai)
@@ -76,9 +77,9 @@ public class PhienKhamBenhService
 			PKB_ID,
 			pkb.PhienKhamID,
 			pkb.LoaiBenhID,
-			dto.LoaiChanDoan,
+			loaiChanDoanEnum,
 			dto.GhiChu);
-		pkb.CapNhat(dto.LoaiChanDoan, dto.GhiChu);
+		pkb.CapNhat(loaiChanDoanEnum, dto.GhiChu);
 		await _repo.UpdateAsync(pkb);
 
 	}
@@ -94,7 +95,7 @@ public class PhienKhamBenhService
 				Id = pkb.LoaiBenhID,
 				Name = lb
 			},
-			LoaiChanDoan = pkb.LoaiChanDoan,
+			LoaiChanDoan = pkb.LoaiChanDoan.ToDbValue(),
 			GhiChu = pkb.GhiChu
 		};
 	}
