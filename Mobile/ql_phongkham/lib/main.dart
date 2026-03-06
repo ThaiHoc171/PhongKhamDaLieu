@@ -2,6 +2,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:ql_phongkham/core/theme/theme.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
 import 'package:ql_phongkham/screen/home_screen/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
@@ -9,12 +11,20 @@ import 'package:flutter/services.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('vi_VN', null);
-  runApp(
-    MaterialApp(
-      home: SafeArea(child: Scaffold(body: LoginScreen())),
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-    ),
-  );
+      theme: AppTheme.lightThemeMode,
+      home: const LoginPage(),
+    );
+  }
 }
 
 class LoginScreen extends StatefulWidget {
