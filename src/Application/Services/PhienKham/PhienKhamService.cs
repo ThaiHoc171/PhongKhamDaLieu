@@ -106,7 +106,7 @@ public class PhienKhamService
 			HinhAnhJSON = pk.HinhAnhJSON,
 			ChanDoanCuoi = pk.ChanDoanCuoi,
 			NgayKham = pk.NgayKham,
-			TrangThai = pk.TrangThai.ToString()
+			TrangThai = pk.TrangThai.ToDbValue()
 		};
 	}
 	public async Task<PagedResult<PhienKhamResponseLiteDTO>> GetByBenhNhanAsync(int benhNhanId, int pageNumber, int pageSize)
@@ -174,7 +174,7 @@ public class PhienKhamService
 				Name = nhanVien
 			},
 			NgayKham = pk.NgayKham,
-			TrangThai = pk.TrangThai.ToString(),
+			TrangThai = pk.TrangThai.ToDbValue(),
 			ChanDoanCuoi = pk.ChanDoanCuoi
 		};
 	}
