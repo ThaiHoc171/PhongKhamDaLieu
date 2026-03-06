@@ -26,7 +26,7 @@ public class TaoHoSoBenhAnDTO
     public DateTime NgayCapNhat { get; set; }
 }
 
-public class HoSoBenhAnUdateDTO
+public class HoSoBenhAnUpdateDTO
 {
     public string? BenhNen { get; set; }
     public string? DiUng { get; set; }

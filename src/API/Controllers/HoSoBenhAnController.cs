@@ -63,14 +63,14 @@ public class HoSoBenhAnController : ControllerBase
     [HttpGet("{hoSoBenhAnID}")]
     public async Task<IActionResult> LocTheoID(int hoSoBenhAnID)
     {
-        var list = await _hoSoBenhAnService.GetByBenhNhanIdAsync(hoSoBenhAnID);
+        var list = await _hoSoBenhAnService.GetByIdAsync(hoSoBenhAnID);
         return Ok(list);
     }
 
 	// PUT: api/HoSoBenhAn/{id}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}")]
-    public async Task<IActionResult> CapNhatHoSo(int id,[FromBody] HoSoBenhAnUdateDTO dto)
+    public async Task<IActionResult> CapNhatHoSo(int id,[FromBody] HoSoBenhAnUpdateDTO dto)
     {
         var result = await _hoSoBenhAnService.CapNhatThongTinAsync(id, dto);
 
