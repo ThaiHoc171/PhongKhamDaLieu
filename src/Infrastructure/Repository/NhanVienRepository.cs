@@ -254,7 +254,7 @@ public class NhanVienRepository : INhanVienRepository
 		await conn.OpenAsync();
 		return await cmd.ExecuteScalarAsync() as string;
 	}
-	public async Task<NhanVien> GetForAuthAsync(int TaiKhoanId)
+	public async Task<NhanVien?> GetForAuthAsync(int TaiKhoanId)
 	{
 		const string sql = @"
 			SELECT 

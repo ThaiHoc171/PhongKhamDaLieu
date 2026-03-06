@@ -11,7 +11,7 @@ namespace Application.Interfaces
 		Task<List<NhanVien>> GetAllAsync();
 		Task<(List<NhanVien> Data, int TotalCount)> SearchAsync(string keyword, int pageNumber, int pageSize);
 		Task<string?> GetNameByIdAsync(int id);
-		Task<NhanVien> GetForAuthAsync(int TaiKhoanId);
+		Task<NhanVien?> GetForAuthAsync(int TaiKhoanId);
 		Task<List<(int Id, string Name)>> GetDropdownAsync(int chucVuId);
 		Task<(List<NhanVien> Data, int TotalCount)> GetPageAsync(int pageNumber, int pageSize);
 	}
