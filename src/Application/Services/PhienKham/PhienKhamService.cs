@@ -82,59 +82,17 @@ public class PhienKhamService
 	}
 	public async Task<PhienKhamResponseDTO> GetByIdAsync(int id)
 	{
-		var pk = await _repo.GetByIdAsync(id)
-			?? throw new Exception("Phiên khám không tồn tại");
-		var benhNhan = await _benhNhanRepo.GetNameByIdAsync(pk.BenhNhanID);
-		var nhanVien = await _nhanVienRepo.GetNameByIdAsync(pk.NhanVienID);
-		return new PhienKhamResponseDTO
-		{
-			PhienKhamID = pk.PhienKhamID,
-			CaKhamID = pk.CaKhamID,
-			BenhNhan = new NameResponseDTO
-			{
-				Id = pk.BenhNhanID,
-				Name = benhNhan
-			},
-			NhanVien = new NameResponseDTO
-			{
-				Id = pk.NhanVienID,
-				Name = nhanVien
-			},
-			PhongChucNangID = pk.PhongChucNangID,
-			TrieuChung = pk.TrieuChung,
-			GhiChu = pk.GhiChu,
-			HinhAnhJSON = pk.HinhAnhJSON,
-			ChanDoanCuoi = pk.ChanDoanCuoi,
-			NgayKham = pk.NgayKham,
-			TrangThai = pk.TrangThai.ToDbValue()
-		};
-	}
-	public async Task<PagedResult<PhienKhamResponseLiteDTO>> GetByBenhNhanAsync(int benhNhanId, int pageNumber, int pageSize)
-	{
-		var (data, totalCount) = await _repo.GetByBenhNhanPagedAsync(benhNhanId, pageNumber, pageSize);
-		var result = new List<PhienKhamResponseLiteDTO>();
-		foreach (var pk in data)
-		{
-			result.Add(await MapToLiteDtoAsync(pk));
-		}
-		return new PagedResult<PhienKhamResponseLiteDTO>
-		{
-			Items = result,
-			TotalCount = totalCount,
-			PageNumber = pageNumber,
-			PageSize = pageSize
-		};
-	}
-	public async Task<PagedResult<PhienKhamResponseLiteDTO>> GetPagedAsync(int pageNumber,int pageSize,int? nhanVienID,string? trangThai)
-	{
-		var (data, totalCount) = await _repo.GetPagedAsync(pageNumber, pageSize, nhanVienID, trangThai);
+		var result = await _repo.GetDetailAsync(id);
 
-		var items = new List<PhienKhamResponseLiteDTO>();
+		if (result == null)
+			throw new Exception("Phiên khám không tồn tại");
 
-		foreach (var pk in data)
-		{
-			items.Add(await MapToLiteDtoAsync(pk));
-		}
+		return result;
+	}
+	public async Task<PagedResult<PhienKhamResponseLiteDTO>>GetByBenhNhanAsync(int benhNhanId, int pageNumber, int pageSize)
+	{
+		var (items, totalCount) =
+			await _repo.GetByBenhNhanPagedAsync(benhNhanId, pageNumber, pageSize);
 
 		return new PagedResult<PhienKhamResponseLiteDTO>
 		{
@@ -144,38 +102,21 @@ public class PhienKhamService
 			PageSize = pageSize
 		};
 	}
-	public async Task<List<PhienKhamResponseLiteDTO>> SearchAsync(string keyword, int? nhanVienID)
+	public async Task<PagedResult<PhienKhamResponseLiteDTO>> GetPagedAsync(int pageNumber, int pageSize, int? nhanVienID, string? trangThai)
 	{
-		var list = await _repo.SearchAsync(keyword, nhanVienID);
-
-		var result = new List<PhienKhamResponseLiteDTO>();
-
-		foreach (var pk in list)
 		{
-			result.Add(await MapToLiteDtoAsync(pk));
+			var (items, totalCount) =
+				await _repo.GetPagedAsync(pageNumber, pageSize, nhanVienID, trangThai);
+
+			return new PagedResult<PhienKhamResponseLiteDTO>
+			{
+				Items = items,
+				TotalCount = totalCount,
+				PageNumber = pageNumber,
+				PageSize = pageSize
+			};
 		}
-
-		return result;
 	}
-	private async Task<PhienKhamResponseLiteDTO> MapToLiteDtoAsync(PhienKham pk)
-	{
-		var benhNhan = await _benhNhanRepo.GetNameByIdAsync(pk.BenhNhanID);
-		var nhanVien = await _nhanVienRepo.GetNameByIdAsync(pk.NhanVienID);
-		return new PhienKhamResponseLiteDTO
-		{
-			PhienKhamID = pk.PhienKhamID,
-			CaKhamID = pk.CaKhamID,
-			BenhNhan = new NameResponseDTO{
-				Id = pk.BenhNhanID,
-				Name = benhNhan
-			},
-			NhanVien = new NameResponseDTO{
-				Id = pk.NhanVienID,
-				Name = nhanVien
-			},
-			NgayKham = pk.NgayKham,
-			TrangThai = pk.TrangThai.ToDbValue(),
-			ChanDoanCuoi = pk.ChanDoanCuoi
-		};
-	}
+	public async Task<List<PhienKhamResponseLiteDTO>> SearchAsync(string keyword, int? nhanVienID)
+		=> await _repo.SearchAsync(keyword, nhanVienID);
 }
