@@ -13,6 +13,10 @@ class StorageService {
     await prefs.setString('chucVu', user.chucVu ?? '');
     await prefs.setString('hoTen', user.hoTen);
     await prefs.setInt(
+      'thongTinId',
+      user.thongTinId == null ? 0 : user.thongTinId as int,
+    );
+    await prefs.setInt(
       'nhanVienId',
       user.nhanVienId == null ? 0 : user.nhanVienId as int,
     );

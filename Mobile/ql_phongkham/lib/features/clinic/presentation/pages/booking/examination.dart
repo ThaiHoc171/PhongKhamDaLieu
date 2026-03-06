@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -95,7 +96,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
                         ? null
                         : () async {
                             if (selectedKhungGioId == null) {
-                              showThongBao(
+                              DialogHelper.showSnacFailed(
                                 context,
                                 "Vui lòng chọn khung giờ khám",
                               );
@@ -245,7 +246,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
         final data = json.decode(response.body);
 
         if (data != null && data != false && data.toString().isNotEmpty) {
-          showThongBao(
+          DialogHelper.showSnacFailed(
             context,
             "Bệnh nhân đã đăng ký ca khám trong khung giờ này!",
           );
@@ -260,7 +261,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
 
   Future<void> dangkyKham() async {
     if (caKhamId == null) {
-      showThongBao(context, "Vui lòng chọn khung giờ khám");
+      DialogHelper.showSnacFailed(context, "Vui lòng chọn khung giờ khám");
       return;
     }
 
@@ -296,35 +297,16 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        showThongBao(context, data['message']);
+        DialogHelper.showSnackSuccess(context, data['message']);
       } else {
-        showThongBao(context, "Đăng ký thất bại (${response.statusCode})");
+        DialogHelper.showSnacFailed(context, "Đăng ký thất bại!");
       }
     } catch (e) {
       setState(() {
         loadingSlot = false;
       });
-
-      showThongBao(context, "Có lỗi xảy ra");
+      DialogHelper.showSnacFailed(context, "Có lỗi xảy ra");
     }
-  }
-
-  void showThongBao(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Thông báo"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // đóng dialog
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildKhungGioSliver() {

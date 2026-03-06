@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ql_phongkham/core/theme/app_pallete.dart';
 
 class DialogHelper {
   static void showThongBao(BuildContext context, String message) {
@@ -15,6 +16,24 @@ class DialogHelper {
             child: const Text("OK"),
           ),
         ],
+      ),
+    );
+  }
+
+  static void showSnackSuccess(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppPallete.correctColor,
+      ),
+    );
+  }
+
+  static void showSnacFailed(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message.replaceFirst('Exception: ', '')),
+        backgroundColor: AppPallete.errorColor,
       ),
     );
   }
