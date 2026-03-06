@@ -125,9 +125,12 @@ class _LoginPageState extends State<LoginPage> {
         (route) => false,
       );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: AppPallete.errorColor,
+        ),
+      );
     } finally {
       setState(() {
         isLoading = false;

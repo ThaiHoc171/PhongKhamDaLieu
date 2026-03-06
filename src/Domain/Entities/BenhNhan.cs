@@ -35,8 +35,7 @@ public class BenhNhan
 		NgayTao = ngayTao;
 		NgayCapNhat = ngayCapNhat;
 	}
-
-	public void CapNhat(string ghiChu)
+    public void CapNhat(string ghiChu)
 	{
 		GhiChu = ghiChu;
 	}

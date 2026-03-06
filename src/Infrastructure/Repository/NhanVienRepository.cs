@@ -258,7 +258,7 @@ public class NhanVienRepository : INhanVienRepository
 	{
 		const string sql = @"
 			SELECT 
-				nv.NhanVienID, nv.ChucVuID
+				nv.NhanVienID, nv.ChucVuID, nv.ThongTinID
 			FROM NhanVien nv
 			JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
 			WHERE tt.TaiKhoanID = @TaiKhoanID
@@ -272,7 +272,8 @@ public class NhanVienRepository : INhanVienRepository
 			return null;
 		return new NhanVien(
 			nhanVienID: (int)reader["NhanVienID"],
-			chucVuID: (int)reader["ChucVuID"]
+			chucVuID: (int)reader["ChucVsuID"],
+			thongTinID: (int)reader["ThongTinID"]
 			);
 	}
 	public async Task<List<(int Id, string Name)>>	GetDropdownAsync(int chucVuId)

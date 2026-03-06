@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ql_phongkham/main.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
+import 'package:ql_phongkham/screen/bottombar_screen/profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuBarScreen extends StatefulWidget {
@@ -78,7 +79,12 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
           ListTile(
             leading: Icon(Icons.person),
             title: Text('Cập nhật thông tin', style: TextStyle(fontSize: 14)),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ProfileScreen()),
+              );
+            },
           ),
           Divider(),
           ListTile(
@@ -122,7 +128,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
                     TextButton(
                       onPressed: () => Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (_) => LoginScreen()),
+                        MaterialPageRoute(builder: (_) => LoginPage()),
                         (route) => false,
                       ),
                       child: const Text("Có"),
