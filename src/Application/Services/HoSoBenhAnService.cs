@@ -40,7 +40,7 @@ public class HoSoBenhAnService
         var HoSo = await _hoSoRepo.AddAsync(hs);
         return HoSo;
     }
-    public async Task<bool> CapNhatThongTinAsync(int hoSoBenhAnID, HoSoBenhAnUdateDTO dto)
+    public async Task<bool> CapNhatThongTinAsync(int hoSoBenhAnID, HoSoBenhAnUpdateDTO dto)
     {
         if (dto.BenhNen == null && dto.DiUng == null && dto.TienSuBenh == null && dto.TienSuGiaDinh == null && dto.ThoiQuenSong == null && dto.ThongTinKhac == null)
         {

@@ -3,6 +3,7 @@
 namespace Application.Interfaces;
 public interface IBenhNhanRepository
 {
+	Task<bool> ExistsByThongTinIdAsync(int thongTinId);
 	Task<BenhNhan?> GetByIdAsync(int id);
 	Task<List<BenhNhan>> GetBenhNhans(string keyword);
 	Task<(List<BenhNhan> Data, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize);
