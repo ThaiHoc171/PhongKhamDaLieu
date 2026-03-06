@@ -131,23 +131,16 @@ public class BenhNhanService
 
 	public async Task<List<BenhNhanResponseDTO>> SearchdAsync(string keyword)
 	{
-		var list = await _benhNhanRepo.GetBenhNhans(keyword);
-		var result = new List<BenhNhanResponseDTO>();
-
-		foreach (var bn in list)
+		var data = await _benhNhanRepo.GetBenhNhans(keyword);
+		var result = data.Select(bn => new BenhNhanResponseDTO
 		{
-			var thongTin = await _thongTinRepo.GetByIdAsync(bn.ThongTinID);
-
-			result.Add(new BenhNhanResponseDTO
-			{
-				BenhNhanID = bn.BenhNhanID,
-				ThongTinID = bn.ThongTinID,
-				HoTen = thongTin?.HoTen ?? "",
-				SDT = thongTin?.SDT ?? "",
-				EmailLienHe = thongTin?.EmailLienHe ?? "",
-				GhiChu = bn.GhiChu
-			});
-		}
+			BenhNhanID = bn.BenhNhanID,
+			ThongTinID = bn.ThongTinCaNhan?.ThongTinID ?? 0,
+			HoTen = bn.ThongTinCaNhan?.HoTen ?? "",
+			SDT = bn.ThongTinCaNhan?.SDT ?? "",
+			EmailLienHe = bn.ThongTinCaNhan?.EmailLienHe ?? "",
+			GhiChu = bn.GhiChu
+		}).ToList();
 
 		return result;
 	}
