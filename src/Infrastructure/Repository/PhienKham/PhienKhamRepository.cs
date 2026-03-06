@@ -1,250 +1,338 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+
 namespace Infrastructure.Repository;
+
 public class PhienKhamRepository : IPhienKhamRepository
 {
 	private readonly string _connectionString;
+
 	public PhienKhamRepository(IConfiguration config)
 	{
 		_connectionString = config.GetConnectionString("DefaultConnection")
-			?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+			?? throw new InvalidOperationException("Connection string not found.");
 	}
-	public async Task<PhienKham?> GetByIdAsync(int phienKhamID)
+
+	private SqlConnection CreateConnection() => new(_connectionString);
+
+	public async Task<PhienKham?> GetByIdAsync(int id)
 	{
-		const string sql = @"SELECT PhienKhamID, CaKhamID, BenhNhanID, NhanVienID, PhongChucNangID,
-									TrieuChung, GhiChu, HinhAnhJSON, ChanDoanCuoi, NgayKham, TrangThai
-							 FROM PhienKham
-							 WHERE PhienKhamID = @PhienKhamID";
-		await using var conn = new SqlConnection(_connectionString);
+		const string sql =
+		@"SELECT PhienKhamID, CaKhamID, BenhNhanID, NhanVienID, PhongChucNangID,
+                 TrieuChung, GhiChu, HinhAnhJSON, ChanDoanCuoi, NgayKham, TrangThai
+          FROM PhienKham
+          WHERE PhienKhamID=@Id";
+
+		await using var conn = CreateConnection();
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@PhienKhamID", phienKhamID);
+
+		cmd.Parameters.AddWithValue("@Id", id);
+
 		await conn.OpenAsync();
+
 		await using var reader = await cmd.ExecuteReaderAsync();
+
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<(List<PhienKham> Data, int TotalCount)> GetPagedAsync(int pageNumber,int pageSize,int? nhanVienID,string? trangThai)
+
+	public async Task<(List<PhienKhamResponseLiteDTO>, int)> GetPagedAsync(int page, int size, int? nhanVienID, string? trangThai)
 	{
-		var sql = @"
-			SELECT PhienKhamID, CaKhamID, BenhNhanID,
-				   NhanVienID, NgayKham, TrangThai, ChanDoanCuoi
-			FROM PhienKham
-			WHERE 1=1";
+		var sql =
+		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai, pk.ChanDoanCuoi,
+		   bn.BenhNhanID, bn_ttc.HoTen AS TenBenhNhan,
+		   nv.NhanVienID, nv_ttc.HoTen AS TenNhanVien
+		FROM PhienKham pk
+		JOIN BenhNhan bn ON pk.BenhNhanID = bn.BenhNhanID
+		JOIN ThongTinCaNhan bn_ttc ON bn.ThongTinID = bn_ttc.ThongTinID
+		JOIN NhanVien nv ON pk.NhanVienID = nv.NhanVienID
+		JOIN ThongTinCaNhan nv_ttc ON nv.ThongTinID = nv_ttc.ThongTinID
+		WHERE 1=1";
+
 		var cmd = new SqlCommand();
-		// lọc theo bác sĩ
+
+		ApplyFilter(ref sql, cmd, nhanVienID, trangThai);
+
+		sql +=
+		@" ORDER BY pk.NgayKham DESC
+           OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+           SELECT COUNT(*) FROM PhienKham pk WHERE 1=1 ";
+
 		if (nhanVienID.HasValue)
-		{
-			sql += " AND NhanVienID = @NhanVienID";
-			cmd.Parameters.AddWithValue("@NhanVienID", nhanVienID.Value);
-		}
-		// lọc theo trạng thái
+			sql += " AND pk.NhanVienID=@NhanVienID";
+
 		if (!string.IsNullOrEmpty(trangThai))
-		{
-			sql += " AND TrangThai = @TrangThai";
-			cmd.Parameters.AddWithValue("@TrangThai", trangThai);
-		}
-		sql += @"
-			ORDER BY NgayKham DESC
-			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-			SELECT COUNT(*) FROM PhienKham
-			WHERE 1=1";
-		if (nhanVienID.HasValue)
-		{
-			sql += " AND NhanVienID = @NhanVienID";
-		}
-		if (!string.IsNullOrEmpty(trangThai))
-		{
-			sql += " AND TrangThai = @TrangThai";
-		}
-		var list = new List<PhienKham>();
-		int totalCount = 0;
-		await using var conn = new SqlConnection(_connectionString);
+			sql += " AND pk.TrangThai=@TrangThai";
+
+		cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
+		cmd.Parameters.AddWithValue("@PageSize", size);
+
 		cmd.CommandText = sql;
+
+		var list = new List<PhienKhamResponseLiteDTO>();
+		int total = 0;
+
+		await using var conn = CreateConnection();
 		cmd.Connection = conn;
-		int offset = (pageNumber - 1) * pageSize;
-		cmd.Parameters.AddWithValue("@Offset", offset);
-		cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
 		await conn.OpenAsync();
+
 		await using var reader = await cmd.ExecuteReaderAsync();
-		// Result 1: Data
+
 		while (await reader.ReadAsync())
-		{
-			list.Add(MapToEntityLite(reader));
-		}
-		// Result 2: TotalCount
-		if (await reader.NextResultAsync())
-		{
-			if (await reader.ReadAsync())
-			{
-				totalCount = reader.GetInt32(0);
-			}
-		}
-		return (list, totalCount);
+			list.Add(MapToLiteDTO(reader));
+
+		if (await reader.NextResultAsync() && await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
 	}
-	public async Task<(List<PhienKham> Data, int TotalCount)> GetByBenhNhanPagedAsync(int benhNhanID,int pageNumber,int pageSize)
+
+	public async Task<(List<PhienKhamResponseLiteDTO>, int)> GetByBenhNhanPagedAsync(int benhNhanID, int page, int size)
 	{
-		const string sql = @"
-			SELECT PhienKhamID, CaKhamID, BenhNhanID,
-				   NhanVienID, NgayKham, TrangThai, ChanDoanCuoi
-			FROM PhienKham
-			WHERE BenhNhanID = @BenhNhanID
-			ORDER BY NgayKham DESC
-			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+		const string sql =
+		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai, pk.ChanDoanCuoi,
+			   bn.BenhNhanID, bn_ttc.HoTen AS TenBenhNhan,
+			   nv.NhanVienID, nv_ttc.HoTen AS TenNhanVien
+		FROM PhienKham pk
+		JOIN BenhNhan bn ON pk.BenhNhanID = bn.BenhNhanID
+		JOIN ThongTinCaNhan bn_ttc ON bn.ThongTinID = bn_ttc.ThongTinID
+		JOIN NhanVien nv ON pk.NhanVienID = nv.NhanVienID
+		JOIN ThongTinCaNhan nv_ttc ON nv.ThongTinID = nv_ttc.ThongTinID
+		WHERE pk.BenhNhanID=@BenhNhanID
+		ORDER BY pk.NgayKham DESC
+		OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
 
-			SELECT COUNT(*)
-			FROM PhienKham
-			WHERE BenhNhanID = @BenhNhanID;
-		";
+          SELECT COUNT(*) FROM PhienKham WHERE BenhNhanID=@BenhNhanID";
 
-		var list = new List<PhienKham>();
-		int totalCount = 0;
+		var list = new List<PhienKhamResponseLiteDTO>();
+		int total = 0;
 
-		await using var conn = new SqlConnection(_connectionString);
+		await using var conn = CreateConnection();
 		await using var cmd = new SqlCommand(sql, conn);
-
-		int offset = (pageNumber - 1) * pageSize;
 
 		cmd.Parameters.AddWithValue("@BenhNhanID", benhNhanID);
-		cmd.Parameters.AddWithValue("@Offset", offset);
-		cmd.Parameters.AddWithValue("@PageSize", pageSize);
+		cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
+		cmd.Parameters.AddWithValue("@PageSize", size);
 
 		await conn.OpenAsync();
+
 		await using var reader = await cmd.ExecuteReaderAsync();
-		while (await reader.ReadAsync())
-		{
-			list.Add(MapToEntityLite(reader));
-		}
-		if (await reader.NextResultAsync())
-		{
-			if (await reader.ReadAsync())
-			{
-				totalCount = reader.GetInt32(0);
-			}
-		}
 
-		return (list, totalCount);
+		while (await reader.ReadAsync())
+			list.Add(MapToLiteDTO(reader));
+
+		if (await reader.NextResultAsync() && await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
 	}
-	public async Task<int?> GetBenhNhanIdByPhienKhamIdAsync(int phienKhamID)
+
+	public async Task<int?> GetBenhNhanIdByPhienKhamIdAsync(int id)
 	{
-		const string sql = @"SELECT BenhNhanID
-							 FROM PhienKham
-							 WHERE PhienKhamID = @phienKhamID";
-		await using var conn = new SqlConnection(_connectionString);
+		const string sql = @"SELECT BenhNhanID FROM PhienKham WHERE PhienKhamID=@Id";
+
+		await using var conn = CreateConnection();
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@phienKhamID", phienKhamID);
+
+		cmd.Parameters.AddWithValue("@Id", id);
+
 		await conn.OpenAsync();
+
 		var result = await cmd.ExecuteScalarAsync();
+
 		return result == null ? null : (int)result;
 	}
-	public async Task<List<PhienKham>> SearchAsync(string keyword, int? nhanVienID)
+
+	public async Task<List<PhienKhamResponseLiteDTO>> SearchAsync(string keyword, int? nhanVienID)
 	{
-		var sql = @"
-			SELECT PhienKhamID, CaKhamID, BenhNhanID,
-				   NhanVienID, NgayKham, TrangThai, ChanDoanCuoi
-			FROM PhienKham
-			WHERE 1 = 1";
+		var sql =
+		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai, pk.ChanDoanCuoi,
+			   bn.BenhNhanID, bn_ttc.HoTen AS TenBenhNhan,
+			   nv.NhanVienID, nv_ttc.HoTen AS TenNhanVien
+		FROM PhienKham pk
+		JOIN BenhNhan bn ON pk.BenhNhanID = bn.BenhNhanID
+		JOIN ThongTinCaNhan bn_ttc ON bn.ThongTinID = bn_ttc.ThongTinID
+		JOIN NhanVien nv ON pk.NhanVienID = nv.NhanVienID
+		JOIN ThongTinCaNhan nv_ttc ON nv.ThongTinID = nv_ttc.ThongTinID
+		WHERE (bn_ttc.HoTen LIKE @kw OR pk.TrieuChung LIKE @kw)";
+
 		var cmd = new SqlCommand();
-		// lọc theo bác sĩ
+
 		if (nhanVienID.HasValue)
 		{
-			sql += " AND NhanVienID = @NhanVienID";
+			sql += " AND pk.NhanVienID=@NhanVienID";
 			cmd.Parameters.AddWithValue("@NhanVienID", nhanVienID.Value);
 		}
-		// search
-		sql += @"
-			AND (
-				CAST(BenhNhanID AS NVARCHAR) LIKE @kw
-				OR TrieuChung LIKE @kw
-			)
-			ORDER BY NgayKham DESC";
-		cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");
+
+		sql += " ORDER BY pk.NgayKham DESC";
+
+		cmd.Parameters.AddWithValue("@kw", $"%{keyword}%");
 		cmd.CommandText = sql;
-		var list = new List<PhienKham>();
-		await using var conn = new SqlConnection(_connectionString);
+
+		var list = new List<PhienKhamResponseLiteDTO>();
+
+		await using var conn = CreateConnection();
 		cmd.Connection = conn;
+
 		await conn.OpenAsync();
+
 		await using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
-		{
-			list.Add(MapToEntityLite(reader));
-		}
+			list.Add(MapToLiteDTO(reader));
+
 		return list;
 	}
-	public async Task<int> AddAsync(PhienKham phienKham)
+
+	public async Task<PhienKhamResponseDTO?> GetDetailAsync(int id)
 	{
-		const string sql = @"INSERT INTO PhienKham
-							 (CaKhamID, BenhNhanID, NhanVienID, PhongChucNangID, TrieuChung, GhiChu, HinhAnhJSON)
-							 OUTPUT INSERTED.PhienKhamID
-							 VALUES
-							 (@CaKhamID, @BenhNhanID, @NhanVienID, @PhongChucNangID, @TrieuChung, @GhiChu, @HinhAnhJSON)";
-		await using var conn = new SqlConnection(_connectionString);
+		const string sql =
+		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai,
+			   pk.TrieuChung, pk.GhiChu, pk.HinhAnhJSON, pk.ChanDoanCuoi, pk.PhongChucNangID,
+			   bn.BenhNhanID, bn_ttc.HoTen AS TenBenhNhan,
+			   nv.NhanVienID, nv_ttc.HoTen AS TenNhanVien
+		FROM PhienKham pk
+		JOIN BenhNhan bn ON pk.BenhNhanID = bn.BenhNhanID
+		JOIN ThongTinCaNhan bn_ttc ON bn.ThongTinID = bn_ttc.ThongTinID
+		JOIN NhanVien nv ON pk.NhanVienID = nv.NhanVienID
+		JOIN ThongTinCaNhan nv_ttc ON nv.ThongTinID = nv_ttc.ThongTinID
+		WHERE pk.PhienKhamID=@Id";
+
+		await using var conn = CreateConnection();
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@CaKhamID", phienKham.CaKhamID);
-		cmd.Parameters.AddWithValue("@BenhNhanID", phienKham.BenhNhanID);
-		cmd.Parameters.AddWithValue("@NhanVienID", phienKham.NhanVienID);
-		cmd.Parameters.AddWithValue("@PhongChucNangID", (object?)phienKham.PhongChucNangID ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@TrieuChung", (object?)phienKham.TrieuChung ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@GhiChu", (object?)phienKham.GhiChu ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@HinhAnhJSON", (object?)phienKham.HinhAnhJSON ?? DBNull.Value);
+
+		cmd.Parameters.AddWithValue("@Id", id);
+
 		await conn.OpenAsync();
-		var result = await cmd.ExecuteScalarAsync();
-		return Convert.ToInt32(result);
+
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		return await reader.ReadAsync() ? MapToDetailDTO(reader) : null;
 	}
-	public async Task UpdateAsync(PhienKham phienKham)
+
+	public async Task<int> AddAsync(PhienKham pk)
 	{
-		const string sql = @"UPDATE PhienKham
-							 SET TrieuChung = @TrieuChung,
-								 GhiChu = @GhiChu,
-								 PhongChucNangID = @PhongChucNangID,
-								 HinhAnhJSON = @HinhAnhJSON
-							 WHERE PhienKhamID = @PhienKhamID";
-		await using var conn = new SqlConnection(_connectionString);
+		const string sql =
+		@"INSERT INTO PhienKham
+          (CaKhamID,BenhNhanID,NhanVienID,PhongChucNangID,TrieuChung,GhiChu,HinhAnhJSON)
+          OUTPUT INSERTED.PhienKhamID
+          VALUES (@CaKhamID,@BenhNhanID,@NhanVienID,@PhongChucNangID,@TrieuChung,@GhiChu,@HinhAnhJSON)";
+
+		await using var conn = CreateConnection();
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@TrieuChung", (object?)phienKham.TrieuChung ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@GhiChu", (object?)phienKham.GhiChu ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@PhongChucNangID", (object?)phienKham.PhongChucNangID ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@HinhAnhJSON", (object?)phienKham.HinhAnhJSON ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@PhienKhamID", phienKham.PhienKhamID);
+
+		cmd.Parameters.AddWithValue("@CaKhamID", pk.CaKhamID);
+		cmd.Parameters.AddWithValue("@BenhNhanID", pk.BenhNhanID);
+		cmd.Parameters.AddWithValue("@NhanVienID", pk.NhanVienID);
+		cmd.Parameters.AddWithValue("@PhongChucNangID", (object?)pk.PhongChucNangID ?? DBNull.Value);
+		cmd.Parameters.AddWithValue("@TrieuChung", (object?)pk.TrieuChung ?? DBNull.Value);
+		cmd.Parameters.AddWithValue("@GhiChu", (object?)pk.GhiChu ?? DBNull.Value);
+		cmd.Parameters.AddWithValue("@HinhAnhJSON", (object?)pk.HinhAnhJSON ?? DBNull.Value);
+
+		await conn.OpenAsync();
+
+		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
+	}
+
+	public async Task UpdateAsync(PhienKham pk)
+	{
+		const string sql =
+		@"UPDATE PhienKham
+          SET TrieuChung=@TrieuChung,
+              GhiChu=@GhiChu,
+              PhongChucNangID=@PhongChucNangID,
+              HinhAnhJSON=@HinhAnhJSON
+          WHERE PhienKhamID=@Id";
+
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.AddWithValue("@TrieuChung", (object?)pk.TrieuChung ?? DBNull.Value);
+		cmd.Parameters.AddWithValue("@GhiChu", (object?)pk.GhiChu ?? DBNull.Value);
+		cmd.Parameters.AddWithValue("@PhongChucNangID", (object?)pk.PhongChucNangID ?? DBNull.Value);
+		cmd.Parameters.AddWithValue("@HinhAnhJSON", (object?)pk.HinhAnhJSON ?? DBNull.Value);
+		cmd.Parameters.AddWithValue("@Id", pk.PhienKhamID);
+
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-	public async Task KetThucAsync(PhienKham phienKham)
+
+	public async Task KetThucAsync(PhienKham pk)
 	{
-		const string sql = @"UPDATE PhienKham
-							 SET ChanDoanCuoi = @ChanDoanCuoi,
-								 TrangThai = @TrangThai
-							 WHERE PhienKhamID = @PhienKhamID";
-		await using var conn = new SqlConnection(_connectionString);
+		const string sql =
+		@"UPDATE PhienKham
+          SET ChanDoanCuoi=@ChanDoanCuoi,
+              TrangThai=@TrangThai
+          WHERE PhienKhamID=@Id";
+
+		await using var conn = CreateConnection();
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@ChanDoanCuoi", phienKham.ChanDoanCuoi);
-		cmd.Parameters.AddWithValue("@TrangThai", phienKham.TrangThai.ToDbValue());
-		cmd.Parameters.AddWithValue("@PhienKhamID", phienKham.PhienKhamID);
+
+		cmd.Parameters.AddWithValue("@ChanDoanCuoi", pk.ChanDoanCuoi);
+		cmd.Parameters.AddWithValue("@TrangThai", pk.TrangThai.ToDbValue());
+		cmd.Parameters.AddWithValue("@Id", pk.PhienKhamID);
+
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
+
+	private static void ApplyFilter(ref string sql, SqlCommand cmd, int? nhanVienID, string? trangThai)
+	{
+		if (nhanVienID.HasValue)
+		{
+			sql += " AND pk.NhanVienID=@NhanVienID";
+			cmd.Parameters.AddWithValue("@NhanVienID", nhanVienID.Value);
+		}
+
+		if (!string.IsNullOrEmpty(trangThai))
+		{
+			sql += " AND pk.TrangThai=@TrangThai";
+			cmd.Parameters.AddWithValue("@TrangThai", trangThai);
+		}
+	}
+
 	private static PhienKham MapToEntity(SqlDataReader r) => new(
-		phienKhamID: r.GetInt32("PhienKhamID"),
-		caKhamID: r.GetInt32("CaKhamID"),
-		benhNhanID: r.GetInt32("BenhNhanID"),
-		nhanVienID: r.GetInt32("NhanVienID"),
-		phongChucNangID: r.IsDBNull("PhongChucNangID") ? null : r.GetInt32("PhongChucNangID"),
-		trieuChung: r.IsDBNull("TrieuChung") ? null : r.GetString("TrieuChung"),
-		ghiChu: r.IsDBNull("GhiChu") ? null : r.GetString("GhiChu"),
-		hinhAnhJSON: r.IsDBNull("HinhAnhJSON") ? null : r.GetString("HinhAnhJSON"),
-		chanDoanCuoi: r.IsDBNull("ChanDoanCuoi") ? null : r.GetString("ChanDoanCuoi"),
-		ngayKham: r.GetDateTime("NgayKham"),
-		trangThai: r.GetString("TrangThai")
+		r.GetInt32("PhienKhamID"),
+		r.GetInt32("CaKhamID"),
+		r.GetInt32("BenhNhanID"),
+		r.GetInt32("NhanVienID"),
+		r.IsDBNull("PhongChucNangID") ? null : r.GetInt32("PhongChucNangID"),
+		r.IsDBNull("TrieuChung") ? null : r.GetString("TrieuChung"),
+		r.IsDBNull("GhiChu") ? null : r.GetString("GhiChu"),
+		r.IsDBNull("HinhAnhJSON") ? null : r.GetString("HinhAnhJSON"),
+		r.IsDBNull("ChanDoanCuoi") ? null : r.GetString("ChanDoanCuoi"),
+		r.GetDateTime("NgayKham"),
+		r.GetString("TrangThai")
 	);
-	private static PhienKham MapToEntityLite(SqlDataReader r) => new(
-		phienKhamID: r.GetInt32("PhienKhamID"),
-		caKhamID: r.GetInt32("CaKhamID"),
-		benhNhanID: r.GetInt32("BenhNhanID"),
-		nhanVienID: r.GetInt32("NhanVienID"),
-		ngayKham: r.GetDateTime("NgayKham"),
-		trangThai: r.GetString("TrangThai"),
-		chanDoanCuoi: r.IsDBNull("ChanDoanCuoi") ? null : r.GetString("ChanDoanCuoi")
-	);
+
+	private static PhienKhamResponseLiteDTO MapToLiteDTO(SqlDataReader r) => new()
+	{
+		PhienKhamID = r.GetInt32("PhienKhamID"),
+		CaKhamID = r.GetInt32("CaKhamID"),
+		NgayKham = r.GetDateTime("NgayKham"),
+		TrangThai = r.GetString("TrangThai"),
+		ChanDoanCuoi = r.IsDBNull("ChanDoanCuoi") ? null : r.GetString("ChanDoanCuoi"),
+		BenhNhan = new NameResponseDTO { Id = r.GetInt32("BenhNhanID"), Name = r.GetString("TenBenhNhan") },
+		NhanVien = new NameResponseDTO { Id = r.GetInt32("NhanVienID"), Name = r.GetString("TenNhanVien") }
+	};
+
+	private static PhienKhamResponseDTO MapToDetailDTO(SqlDataReader r) => new()
+	{
+		PhienKhamID = r.GetInt32("PhienKhamID"),
+		CaKhamID = r.GetInt32("CaKhamID"),
+		NgayKham = r.GetDateTime("NgayKham"),
+		TrangThai = r.GetString("TrangThai"),
+		TrieuChung = r.IsDBNull("TrieuChung") ? null : r.GetString("TrieuChung"),
+		GhiChu = r.IsDBNull("GhiChu") ? null : r.GetString("GhiChu"),
+		HinhAnhJSON = r.IsDBNull("HinhAnhJSON") ? null : r.GetString("HinhAnhJSON"),
+		ChanDoanCuoi = r.IsDBNull("ChanDoanCuoi") ? null : r.GetString("ChanDoanCuoi"),
+		PhongChucNangID = r.IsDBNull("PhongChucNangID") ? null : r.GetInt32("PhongChucNangID"),
+		BenhNhan = new NameResponseDTO { Id = r.GetInt32("BenhNhanID"), Name = r.GetString("TenBenhNhan") },
+		NhanVien = new NameResponseDTO { Id = r.GetInt32("NhanVienID"), Name = r.GetString("TenNhanVien") }
+	};
 }
