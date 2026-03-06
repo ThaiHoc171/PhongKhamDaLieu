@@ -47,23 +47,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 const SizedBox(height: 30),
                 ProfileField(
-                  hintText: 'Email',
+                  hintText: 'Họ tên',
                   controller: emailController,
-                  labelText: 'Email',
+                  labelText: 'Họ tên',
                 ),
                 const SizedBox(height: 15),
                 ProfileField(
-                  hintText: 'Mật khẩu',
+                  hintText: 'Ngày sinh',
                   controller: passwordController,
-                  labelText: 'Mật khẩu',
+                  labelText: 'Ngày sinh',
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
+                ProfileField(
+                  hintText: 'Giới tính',
+                  controller: passwordController,
+                  labelText: 'Giới tính',
+                ),
+                ProfileField(
+                  hintText: 'Số điện thoại',
+                  controller: passwordController,
+                  labelText: 'Số điện thoại',
+                ),
+                ProfileField(
+                  hintText: 'Email liên hệ',
+                  controller: passwordController,
+                  labelText: 'Email liên hệ',
+                ),
+                ProfileField(
+                  hintText: 'Địa chỉ',
+                  controller: passwordController,
+                  labelText: 'Địa chỉ',
+                ),
                 isLoading
                     ? const CircularProgressIndicator()
                     : AuthButton(
                         buttonText: 'Lưu',
                         onPressed: () {
-                          print("Button clicked");
                           if (formKey.currentState!.validate()) {
                             //login();
                           }
@@ -79,13 +98,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget imageProfile() {
-    return Stack(
-      children: <Widget>[
-        CircleAvatar(
-          radius: 80,
-          //backgroundColor: ,
-        ),
-      ],
-    );
+    return Stack(children: <Widget>[CircleAvatar(radius: 80)]);
   }
 }
