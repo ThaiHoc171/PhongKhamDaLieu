@@ -1,29 +1,15 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:ql_phongkham/core/network/api_client.dart';
 
 class ReBookingRepository {
   Future<bool> checkTaiKham(String token, int benhNhanId) async {
-    final url =
-        "https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api";
-
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'Authorization': 'Bearer $token', 'accept': '*/*'},
+    final response = await ApiClient.get(
+      '/TaiKham/Benhnhan/$benhNhanId',
+      token: token,
     );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-
-      if (data is List && data.isEmpty) {
-        return false;
-      }
-      return true;
+    if (response is List) {
+      return response.isNotEmpty;
     }
-
-    if (response.statusCode == 404) {
-      return false;
-    }
-
-    throw Exception("Server error ${response.statusCode}");
+    return false;
   }
 }

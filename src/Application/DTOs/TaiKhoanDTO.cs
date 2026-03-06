@@ -12,6 +12,7 @@ public class LoginResponseDTO
 	public string VaiTro { get; set; } = default!;
     public string AccessToken { get; set; } = null!;
     public string RefreshToken { get; set; } = null!;
+	public int? ThongTinID { get; set; }
     public int? NhanVienId { get; set; }
 	public int? BenhNhanId { get; set; }
 	public string? ChucVu { get; set; }
