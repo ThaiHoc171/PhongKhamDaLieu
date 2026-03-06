@@ -110,7 +110,7 @@ public class TaiKhoanService
 				benhNhanId = bn.BenhNhanID;
 				thongTinId = bn.ThongTinID;
                 hoTen = await _benhNhanRepo.GetNameByIdAsync(benhNhanId.Value);
-            }	
+            }
 		}
 		else if (tk.VaiTro == "Admin")
 		{
@@ -199,7 +199,7 @@ public class TaiKhoanService
 		return MapToResponse(tk);
 	}
     public async Task<LoginResponseDTO?> RefreshTokenAsync(string refreshToken)	
-    {
+    {	
 
         var storedToken = await _refreshRepo.GetAsync(refreshToken);
 
@@ -209,7 +209,8 @@ public class TaiKhoanService
             return null;
 
         var taiKhoan = await _repo.GetByIdAsync(storedToken.TaiKhoanId);
-		int? thongTinId = null;
+        if (taiKhoan == null) return null;
+        int? thongTinId = null;
         int? nhanVienId = null;
         int? benhNhanId = null;
         string? chucVu = null;
@@ -240,7 +241,6 @@ public class TaiKhoanService
         {
             hoTen = "Admin";
         }
-        if (taiKhoan == null) return null;
 
         await _refreshRepo.RevokeAsync(refreshToken);
         
@@ -256,7 +256,8 @@ public class TaiKhoanService
             Email = taiKhoan.Email,
             VaiTro = taiKhoan.VaiTro,
             AccessToken = accessToken,
-            RefreshToken = refreshToken,
+            RefreshToken = newRefreshToken,
+			ThongTinID = thongTinId,
             NhanVienId = nhanVienId,
             BenhNhanId = benhNhanId,
             ChucVu = chucVu,

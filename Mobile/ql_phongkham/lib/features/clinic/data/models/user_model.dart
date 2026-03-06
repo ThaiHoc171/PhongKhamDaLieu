@@ -4,6 +4,7 @@ class UserModel {
   final String vaiTro;
   final String accessToken;
   final String refreshToken;
+  final int? thongTinId;
   final int? nhanVienId;
   final int? benhNhanId;
   final String? chucVu;
@@ -15,6 +16,7 @@ class UserModel {
     required this.vaiTro,
     required this.accessToken,
     required this.refreshToken,
+    this.thongTinId,
     this.nhanVienId,
     this.benhNhanId,
     this.chucVu,
@@ -28,6 +30,7 @@ class UserModel {
       vaiTro: json['vaiTro'],
       accessToken: json['accessToken'],
       refreshToken: json['refreshToken'],
+      thongTinId: json['thongTinId'],
       nhanVienId: json['nhanVienId'],
       benhNhanId: json['benhNhanId'],
       chucVu: json['chucVu'],

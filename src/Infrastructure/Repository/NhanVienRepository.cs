@@ -272,7 +272,7 @@ public class NhanVienRepository : INhanVienRepository
 			return null;
 		return new NhanVien(
 			nhanVienID: (int)reader["NhanVienID"],
-			chucVuID: (int)reader["ChucVsuID"],
+			chucVuID: (int)reader["ChucVuID"],
 			thongTinID: (int)reader["ThongTinID"]
 			);
 	}

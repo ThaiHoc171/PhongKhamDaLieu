@@ -129,34 +129,34 @@ public class BenhNhanRepository : IBenhNhanRepository
 		await conn.OpenAsync();
 		return await cmd.ExecuteScalarAsync() as string;
 	}
-	public async Task<BenhNhan> GetForAuthAsync(int taiKhoanID)
-	{
-		const string sql = @"
-			SELECT bn.BenhNhanID, bn.ThongTinID
-			FROM BenhNhan bn
-			INNER JOIN ThongTinCaNhan tt ON bn.ThongTinID = tt.ThongTinID
-			WHERE tt.TaiKhoanID = @TaiKhoanID";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@TaiKhoanID", taiKhoanID);
-		await conn.OpenAsync();
+    public async Task<BenhNhan?> GetForAuthAsync(int taiKhoanID)
+    {
+        const string sql = @"
+        SELECT bn.BenhNhanID, bn.ThongTinID
+        FROM BenhNhan bn
+        INNER JOIN ThongTinCaNhan tt ON bn.ThongTinID = tt.ThongTinID
+        WHERE tt.TaiKhoanID = @TaiKhoanID";
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@TaiKhoanID", taiKhoanID);
+
+        await conn.OpenAsync();
         await using var reader = await cmd.ExecuteReaderAsync();
+
         if (!await reader.ReadAsync())
             return null;
-        var result = await cmd.ExecuteScalarAsync();
-		if (result == null)
-		{
-			throw new Exception("Bệnh nhân không tồn tại");
-		}
-		return new BenhNhan(
-			benhNhanID: (int)reader["BenhNhanID"],
-			thongTinID: (int)reader["ThongTinID"],
+
+        return new BenhNhan(
+            benhNhanID: (int)reader["BenhNhanID"],
+            thongTinID: (int)reader["ThongTinID"],
             ghiChu: null,
             ngayTao: DateTime.Now,
             ngayCapNhat: DateTime.Now
-            );
-	}
-	public async Task<int> AddAsync(BenhNhan benhNhan)
+        );
+    }
+    public async Task<int> AddAsync(BenhNhan benhNhan)
 	{
 		const string sql = @"
 			INSERT INTO BenhNhan (ThongTinID, GhiChu) 
