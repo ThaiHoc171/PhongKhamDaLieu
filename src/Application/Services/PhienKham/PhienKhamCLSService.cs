@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using System.Threading.Tasks;
 
 namespace Application.Services;
@@ -88,7 +89,7 @@ public class PhienKhamCLSService
 		{
 			PhienKhamCLSID = e.PhienKhamCLSID,
 			CLSID = e.CLSID,
-			TrangThai = e.TrangThai.ToString(),
+			TrangThai = e.TrangThai.ToDbValue(),
 			KetQua = e.KetQua,
 			FileDinhKem = e.FileDinhKem,
 			NgayThucHien = e.NgayThucHien,
