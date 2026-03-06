@@ -17,7 +17,7 @@ public class PhienKhamBenhController : ControllerBase
 		_service = service;
 	}
 
-	[HttpGet("phien-kham/{phienKhamID:int}")]
+	[HttpGet("phien-kham/{phienKhamID}")]
 	public async Task<IActionResult> GetByPhienKham(int phienKhamID)
 	{
 		try
@@ -46,7 +46,7 @@ public class PhienKhamBenhController : ControllerBase
 		}
 	}
 
-	[HttpPut("{id:int}")]
+	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhat(int id, [FromBody] PhienKhamBenhRequestDTO dto)
 	{
 		try

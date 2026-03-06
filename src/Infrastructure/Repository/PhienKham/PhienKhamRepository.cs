@@ -87,17 +87,17 @@ public class PhienKhamRepository : IPhienKhamRepository
 	public async Task<(List<PhienKham> Data, int TotalCount)> GetByBenhNhanPagedAsync(int benhNhanID,int pageNumber,int pageSize)
 	{
 		const string sql = @"
-		SELECT PhienKhamID, CaKhamID, BenhNhanID,
-			   NhanVienID, NgayKham, TrangThai, ChanDoanCuoi
-		FROM PhienKham
-		WHERE BenhNhanID = @BenhNhanID
-		ORDER BY NgayKham DESC
-		OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+			SELECT PhienKhamID, CaKhamID, BenhNhanID,
+				   NhanVienID, NgayKham, TrangThai, ChanDoanCuoi
+			FROM PhienKham
+			WHERE BenhNhanID = @BenhNhanID
+			ORDER BY NgayKham DESC
+			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
 
-		SELECT COUNT(*)
-		FROM PhienKham
-		WHERE BenhNhanID = @BenhNhanID;
-	";
+			SELECT COUNT(*)
+			FROM PhienKham
+			WHERE BenhNhanID = @BenhNhanID;
+		";
 
 		var list = new List<PhienKham>();
 		int totalCount = 0;
