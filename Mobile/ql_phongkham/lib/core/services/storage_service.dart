@@ -11,7 +11,7 @@ class StorageService {
     await prefs.setString('accessToken', user.accessToken);
     await prefs.setString('refreshToken', user.refreshToken);
     await prefs.setString('chucVu', user.chucVu ?? '');
-    await prefs.setString('hoTen', user.hoTen);
+    await prefs.setString('hoTen', user.hoTen ?? '');
     await prefs.setInt(
       'thongTinId',
       user.thongTinId == null ? 0 : user.thongTinId as int,

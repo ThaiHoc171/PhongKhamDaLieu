@@ -8,7 +8,7 @@ class UserModel {
   final int? nhanVienId;
   final int? benhNhanId;
   final String? chucVu;
-  final String hoTen;
+  final String? hoTen;
 
   UserModel({
     required this.id,
@@ -20,16 +20,16 @@ class UserModel {
     this.nhanVienId,
     this.benhNhanId,
     this.chucVu,
-    required this.hoTen,
+    this.hoTen,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
-      email: json['email'],
-      vaiTro: json['vaiTro'],
-      accessToken: json['accessToken'],
-      refreshToken: json['refreshToken'],
+      id: json['id'] ?? 0,
+      email: json['email'] ?? '',
+      vaiTro: json['vaiTro'] ?? '',
+      accessToken: json['accessToken'] ?? '',
+      refreshToken: json['refreshToken'] ?? '',
       thongTinId: json['thongTinID'],
       nhanVienId: json['nhanVienId'],
       benhNhanId: json['benhNhanId'],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/theme/app_pallete.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/signup_page.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/profile/profile_Update.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_field.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/auth_repository.dart';
@@ -147,11 +148,21 @@ class _LoginPageState extends State<LoginPage> {
 
       await StorageService.saveUser(user);
 
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => HomeScreen(token: user.accessToken)),
-        (route) => false,
-      );
+      if (user.thongTinId == null || user.thongTinId == 0) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => ProfileUpdateScreen()),
+          (route) => false,
+        );
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HomeScreen(token: user.accessToken),
+          ),
+          (route) => false,
+        );
+      }
     } catch (e) {
       DialogHelper.showSnacFailed(
         context,
