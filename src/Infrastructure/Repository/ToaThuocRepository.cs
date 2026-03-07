@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -33,27 +34,73 @@ public class ToaThuocRepository : IToaThuocRepository
 		return (int)await cmd.ExecuteScalarAsync();
 	}
 
-	public async Task<ToaThuoc?> GetByPhienKhamIdAsync(int phienKhamID)
+	public async Task<ToaThuocReadModel?> GetByPhienKhamAsync(int phienKhamID)
 	{
 		const string sql = @"
-        SELECT ToaThuocID, PhienKhamID, NhanVienKeDonID, NgayLap, GhiChu
-        FROM ToaThuoc
-        WHERE PhienKhamID = @PhienKhamID";
+        SELECT t.ToaThuocID, tt.HoTen, t.NgayLap, t.GhiChu
+        FROM ToaThuoc t
+		JOIN NhanVien nv ON t.NhanVienKeDonID = nv.NhanVienID
+		JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+        WHERE t.PhienKhamID = @PhienKhamID";
 
-		using var conn = new SqlConnection(_connectionString);
-		using var cmd = new SqlCommand(sql, conn);
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
 		cmd.Parameters.AddWithValue("@PhienKhamID", phienKhamID);
 
 		await conn.OpenAsync();
-		using var reader = await cmd.ExecuteReaderAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
 
-		return await reader.ReadAsync()
-			? new ToaThuoc(
-				reader.GetInt32(0),
-				reader.GetInt32(1),
-				reader.GetInt32(2),
-				reader.GetDateTime(3),
-				reader["GhiChu"] as string)
-			: null;
+		if (!await reader.ReadAsync())
+			return null;
+
+		return new ToaThuocReadModel
+		{
+			ToaThuocID = reader.GetInt32(0),
+			NguoiLap = reader.GetString(1),
+			NgayLap = reader.GetDateTime(2),
+			GhiChu = reader["GhiChu"] as string
+		};
+	}
+	public async Task<(List<ToaThuocReadModel>, int)> GetPagedAsync(int page, int size)
+	{
+		var sql =
+		@"SELECT t.ToaThuocID, tt.HoTen, t.NgayLap, t.GhiChu
+		FROM ToaThuoc t
+		JOIN NhanVien nv ON t.NhanVienKeDonID = nv.NhanVienID
+		JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+		ORDER BY t.NgayLap DESC
+		OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+		SELECT COUNT(*) FROM ToaThuoc";
+
+		var list = new List<ToaThuocReadModel>();
+		int total = 0;
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
+		cmd.Parameters.AddWithValue("@PageSize", size);
+
+		await conn.OpenAsync();
+
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add(new ToaThuocReadModel
+			{
+				ToaThuocID = reader.GetInt32(0),
+				NguoiLap = reader.GetString(1),
+				NgayLap = reader.GetDateTime(2),
+				GhiChu = reader["GhiChu"] as string
+			});
+		}
+
+		if (await reader.NextResultAsync() && await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
 	}
 }
