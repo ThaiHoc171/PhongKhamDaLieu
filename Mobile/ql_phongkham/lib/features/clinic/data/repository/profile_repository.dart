@@ -9,4 +9,12 @@ class ProfileRepository {
     );
     return ProfileModel.fromJson(response['data']);
   }
+
+  Future<ProfileModel> addProfile(String token, int thongTinId) async {
+    final response = await ApiClient.get(
+      '/ThongTinCaNhan/$thongTinId',
+      token: token,
+    );
+    return ProfileModel.fromJson(response['data']);
+  }
 }

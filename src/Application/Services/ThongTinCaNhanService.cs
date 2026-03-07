@@ -67,6 +67,7 @@ public class ThongTinCaNhanService
 	public async Task<int> TaoBenhNhanAsync(ThemThongTinCaNhanDTO dto)
 	{
 		var entity = new ThongTinCaNhan(
+			taiKhoanID: dto.TaiKhoanID,
 			hoTen: dto.HoTen,
 			ngaySinh: dto.NgaySinh,
 			gioiTinh: ParseGioiTinh(dto.GioiTinh),

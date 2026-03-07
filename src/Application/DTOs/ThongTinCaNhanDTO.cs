@@ -4,7 +4,8 @@ namespace Application.DTOs;
 
 public class ThemThongTinCaNhanDTO
 {
-	public string HoTen { get; set; } = null!;
+    public int? TaiKhoanID { get; set; }
+    public string HoTen { get; set; } = null!;
 	public DateTime? NgaySinh { get; set; }
 	public string GioiTinh { get; set; } = null!;   // "Nam" | "Nữ" | "Khác"
 	public string SDT { get; set; } = null!;
