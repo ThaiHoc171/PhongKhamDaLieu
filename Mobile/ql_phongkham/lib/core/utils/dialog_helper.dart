@@ -23,7 +23,20 @@ class DialogHelper {
   static void showSnackSuccess(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(
+          message,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                blurRadius: 6,
+                color: const Color.fromARGB(255, 255, 255, 255),
+                offset: Offset(2, 2),
+              ),
+            ],
+          ),
+        ),
         backgroundColor: AppPallete.correctColor,
       ),
     );
@@ -32,7 +45,15 @@ class DialogHelper {
   static void showSnacFailed(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message.replaceFirst('Exception: ', '')),
+        content: Text(
+          message.replaceFirst('Exception: ', ''),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(blurRadius: 6, color: Colors.black, offset: Offset(2, 2)),
+            ],
+          ),
+        ),
         backgroundColor: AppPallete.errorColor,
       ),
     );

@@ -22,8 +22,7 @@ class ProfileRepository {
     String ghichu,
     String token,
   ) async {
-    final response = await ApiClient.post('/BenhNhan', {
-      "thongTinID": 0,
+    final response = await ApiClient.post('BenhNhan', {
       "taiKhoanID": taiKhoanId,
       "hoTen": hoTen,
       "ngaySinh": ngaySinh.toIso8601String(),
@@ -34,6 +33,6 @@ class ProfileRepository {
       "avatar": avatar,
       "ghiChu": ghichu,
     }, token: token);
-    return response;
+    return response['benhNhanID'];
   }
 }

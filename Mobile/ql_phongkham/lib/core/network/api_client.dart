@@ -61,15 +61,21 @@ class ApiClient {
   }
 
   static dynamic _handleResponse(http.Response response) {
-    if (response.body.isEmpty) {
-      throw Exception("Server không trả dữ liệu");
-    }
-
-    final json = jsonDecode(response.body);
+    print("STATUS: ${response.statusCode}");
+    print("BODY: ${response.body}");
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return json;
+      if (response.body.isEmpty) {
+        return {};
+      }
+
+      return jsonDecode(response.body);
     } else {
+      if (response.body.isEmpty) {
+        throw Exception("Lỗi server ${response.statusCode}");
+      }
+
+      final json = jsonDecode(response.body);
       throw Exception(json["message"] ?? "Lỗi server ${response.statusCode}");
     }
   }
