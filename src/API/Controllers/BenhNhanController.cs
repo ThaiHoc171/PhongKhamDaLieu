@@ -18,7 +18,7 @@ public class BenhNhanController : ControllerBase
 	}
 
 
-	[Authorize(Policy = "LeTanOnly")]
+	[Authorize]
 	[HttpPost]
 	public async Task<IActionResult> TaoBenhNhan([FromBody] BenhNhanRequestDTO dto)
 	{
