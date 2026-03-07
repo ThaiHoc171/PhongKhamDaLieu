@@ -10,4 +10,13 @@ class AuthRepository {
 
     return UserModel.fromJson(response);
   }
+
+  Future<void> signup(String email, String password, String vaitro) async {
+    final response = await ApiClient.post('/TaiKhoan/dangky', {
+      "email": email,
+      "matKhau": password,
+      "vaiTro": vaitro,
+    });
+    return response;
+  }
 }

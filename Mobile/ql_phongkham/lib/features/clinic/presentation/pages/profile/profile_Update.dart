@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ql_phongkham/core/utils/dialog_helper.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/profile/profile_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class ProfileUpdateScreen extends StatefulWidget {
+  const ProfileUpdateScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileUpdateScreen> createState() => _ProfileUpdateScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
+  String? gioiTinh;
+  bool isLoading = false;
+  String? linkAvatar;
   final formKey = GlobalKey<FormState>();
 
   final hoTenController = TextEditingController();
@@ -18,10 +24,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final sdtController = TextEditingController();
   final emailController = TextEditingController();
   final diaChiController = TextEditingController();
-
-  String? gioiTinh;
-
-  bool isLoading = false;
 
   @override
   void dispose() {
@@ -31,6 +33,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
     emailController.dispose();
     diaChiController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadProfile();
+  }
+
+  Future<void> loadProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+      final thongTinId = prefs.getInt('thongTinId');
+      print("ThongTinId: $thongTinId");
+      if (token == null || thongTinId == null) return;
+
+      final data = await ProfileRepository().getProfile(token, thongTinId);
+
+      setState(() {
+        hoTenController.text = data.hoTen ?? "";
+        ngaySinhController.text = data.ngaySinh != null
+            ? DateFormat('dd/MM/yyyy').format(data.ngaySinh)
+            : "";
+        gioiTinh = data.gioiTinh;
+        sdtController.text = data.sdt ?? "";
+        emailController.text = data.emailLienHe ?? "";
+        diaChiController.text = data.diaChi ?? "";
+        linkAvatar = data.avatar;
+      });
+    } catch (e) {
+      DialogHelper.showSnacFailed(context, e.toString());
+    }
   }
 
   Future<void> pickDate() async {
@@ -59,12 +93,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             key: formKey,
             child: Column(
               children: [
-                /// Avatar
                 imageProfile(),
 
                 const SizedBox(height: 30),
-
-                /// Họ tên
                 ProfileField(
                   controller: hoTenController,
                   labelText: "Họ tên",
@@ -72,8 +103,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 const SizedBox(height: 20),
-
-                /// Ngày sinh
                 GestureDetector(
                   onTap: pickDate,
                   child: AbsorbPointer(
@@ -86,8 +115,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 const SizedBox(height: 20),
-
-                /// Giới tính
                 DropdownButtonFormField<String>(
                   value: gioiTinh,
                   decoration: const InputDecoration(
@@ -107,8 +134,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 const SizedBox(height: 20),
-
-                /// SĐT
                 ProfileField(
                   controller: sdtController,
                   labelText: "Số điện thoại",
@@ -116,8 +141,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 const SizedBox(height: 20),
-
-                /// Email
                 ProfileField(
                   controller: emailController,
                   labelText: "Email liên hệ",
@@ -125,8 +148,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 const SizedBox(height: 20),
-
-                /// Địa chỉ
                 ProfileField(
                   controller: diaChiController,
                   labelText: "Địa chỉ",
@@ -134,8 +155,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
 
                 const SizedBox(height: 30),
-
-                /// Button lưu
                 isLoading
                     ? const CircularProgressIndicator()
                     : AuthButton(
@@ -150,8 +169,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               "email": emailController.text,
                               "diaChi": diaChiController.text,
                             };
-
-                            print(data);
                           }
                         },
                       ),
@@ -169,11 +186,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Center(
       child: Stack(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 60,
-            backgroundImage: AssetImage(
-              "assets/images/360_F_501018486_SQE0vK8bwMaFAbsHbp5JV2r1rnE1hT9z.jpg",
-            ),
+            backgroundImage: linkAvatar != null && linkAvatar!.isNotEmpty
+                ? AssetImage("assets/images/$linkAvatar")
+                : const AssetImage("assets/images/user.png"),
           ),
 
           Positioned(
@@ -186,9 +203,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: IconButton(
                 icon: const Icon(Icons.camera_alt, color: Colors.white),
-                onPressed: () {
-                  // chọn ảnh
-                },
+                onPressed: () {},
               ),
             ),
           ),
