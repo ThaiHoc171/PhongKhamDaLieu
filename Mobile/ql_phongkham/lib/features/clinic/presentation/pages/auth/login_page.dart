@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/theme/app_pallete.dart';
+import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/signup_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_field.dart';
@@ -16,6 +17,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool _submitted = false;
   bool isLoading = false;
   final formKey = GlobalKey<FormState>();
 
@@ -42,6 +44,9 @@ class _LoginPageState extends State<LoginPage> {
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Form(
+            autovalidateMode: _submitted
+                ? AutovalidateMode.onUserInteraction
+                : AutovalidateMode.disabled,
             key: formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -55,12 +60,33 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                AuthField(hintText: 'Email', controller: emailController),
+                AuthField(
+                  hintText: 'Email',
+                  controller: emailController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Email đang trống!";
+                    }
+                    if (!isValidEmail(value)) {
+                      return "Email không hợp lệ!";
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 15),
                 AuthField(
                   hintText: 'Mật khẩu',
                   controller: passwordController,
                   isObscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Mật khẩu đang trống!";
+                    }
+                    if (value.length < 6) {
+                      return "Mật khẩu ít nhất 6 ký tự!";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 isLoading
@@ -68,7 +94,9 @@ class _LoginPageState extends State<LoginPage> {
                     : AuthButton(
                         buttonText: 'Đăng nhập',
                         onPressed: () {
-                          print("Button clicked");
+                          setState(() {
+                            _submitted = true;
+                          });
                           if (formKey.currentState!.validate()) {
                             login();
                           }
@@ -125,16 +153,19 @@ class _LoginPageState extends State<LoginPage> {
         (route) => false,
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: AppPallete.errorColor,
-        ),
+      DialogHelper.showSnacFailed(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
       );
     } finally {
       setState(() {
         isLoading = false;
       });
     }
+  }
+
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$');
+    return emailRegex.hasMatch(email);
   }
 }

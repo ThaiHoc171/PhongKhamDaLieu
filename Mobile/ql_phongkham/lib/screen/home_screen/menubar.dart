@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ql_phongkham/core/utils/dialog_helper.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
-import 'package:ql_phongkham/screen/bottombar_screen/profile.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/profile/profile_Update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuBarScreen extends StatefulWidget {
@@ -11,42 +13,34 @@ class MenuBarScreen extends StatefulWidget {
 }
 
 class _MenuBarScreenState extends State<MenuBarScreen> {
-  String hoTen = '';
-  String email = '';
-  String chucVu = '';
-
-  Future<void> loadUserData() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    setState(() {
-      hoTen = prefs.getString('hoTen') ?? '';
-      email = prefs.getString('email') ?? '';
-      chucVu = prefs.getString('chucVu') ?? '';
-    });
-  }
+  String? linkAvatar;
+  String hoTen = "";
+  String email = "";
 
   @override
   void initState() {
     super.initState();
-    loadUserData();
+    loadProfile();
   }
 
-  void showThongBao(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Thông báo"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
+  Future<void> loadProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+      final thongTinId = prefs.getInt('thongTinId');
+
+      if (token == null || thongTinId == null) return;
+
+      final data = await ProfileRepository().getProfile(token, thongTinId);
+
+      setState(() {
+        hoTen = data.hoTen ?? "";
+        email = data.emailLienHe ?? "";
+        linkAvatar = data.avatar;
+      });
+    } catch (e) {
+      DialogHelper.showSnacFailed(context, e.toString());
+    }
   }
 
   @override
@@ -56,17 +50,37 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(hoTen),
-            accountEmail: Text(email),
-            currentAccountPicture: CircleAvatar(
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/images/user.png',
-                  width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
-                ),
+            accountName: Text(
+              hoTen,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    blurRadius: 6,
+                    color: Colors.black,
+                    offset: Offset(2, 2),
+                  ),
+                ],
               ),
+            ),
+            accountEmail: Text(
+              email,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    blurRadius: 6,
+                    color: Colors.black,
+                    offset: Offset(2, 2),
+                  ),
+                ],
+              ),
+            ),
+            currentAccountPicture: CircleAvatar(
+              radius: 60,
+              backgroundImage: linkAvatar != null && linkAvatar!.isNotEmpty
+                  ? AssetImage("assets/images/$linkAvatar")
+                  : const AssetImage("assets/images/user.png"),
             ),
             decoration: BoxDecoration(
               color: Colors.blueAccent,
@@ -82,7 +96,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => ProfileScreen()),
+                MaterialPageRoute(builder: (_) => ProfileUpdateScreen()),
               );
             },
           ),

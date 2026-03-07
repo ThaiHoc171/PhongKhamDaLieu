@@ -30,7 +30,7 @@ class UserModel {
       vaiTro: json['vaiTro'],
       accessToken: json['accessToken'],
       refreshToken: json['refreshToken'],
-      thongTinId: json['thongTinId'],
+      thongTinId: json['thongTinID'],
       nhanVienId: json['nhanVienId'],
       benhNhanId: json['benhNhanId'],
       chucVu: json['chucVu'],
