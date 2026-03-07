@@ -21,7 +21,7 @@ public class PhienKhamService
 		_nhanVienRepo = nhanVienRepo;
 		_caKhamRepo = caKhamRepo;
 	}
-	public async Task<int> TaoMoiAsync(PhienKhamCreateDTO dto)
+	public async Task<int> TaoMoiAsync(PhienKhamRequestDTO dto)
 	{
 		// Kiểm tra CaKham tồn tại
 		var caKham = await _caKhamRepo.GetByIdAsync(dto.CaKhamID);
@@ -65,14 +65,14 @@ public class PhienKhamService
 			throw new Exception("Phiên khám đã được kết thúc trước đó");
 		}
 		// Kiểm tra đã có phiếu khám bệnh chưa
-		var pkBenh = await _pkBenhrepo.GetByIdAsync(phienKhamId);
+		var pkBenh = await _pkBenhrepo.GetByPhienKhamAsync(phienKhamId);
 		if (pkBenh == null || !pkBenh.Any())
 		{
 			throw new Exception("Phải có ít nhất một chẩn đoán bệnh trước khi kết thúc phiên khám");
 		}
 		// Kiểm tra CLS đã hoàn thành chưa
 		var pkCls = await _pkClsRepo.GetByPhienKhamAsync(phienKhamId);
-		if (pkCls != null && pkCls.Any(c => c.TrangThai != TrangThaiCLSEnum.HoanThanh))
+		if (pkCls != null && pkCls.Any(c => TrangThaiCLSExtensions.ToEnum(c.TrangThai) != TrangThaiCLSEnum.HoanThanh))
 		{
 			throw new Exception("Tất cả các chỉ định cận lâm sàng phải được hoàn thành trước khi kết thúc phiên khám");
 		}
@@ -80,7 +80,7 @@ public class PhienKhamService
 		// Lưu trạng thái mới
 		await _repo.KetThucAsync(pk);
 	}
-	public async Task<PhienKhamResponseDTO> GetByIdAsync(int id)
+	public async Task<PhienKhamReadModel> GetByIdAsync(int id)
 	{
 		var result = await _repo.GetDetailAsync(id);
 
@@ -89,12 +89,12 @@ public class PhienKhamService
 
 		return result;
 	}
-	public async Task<PagedResult<PhienKhamResponseLiteDTO>>GetByBenhNhanAsync(int benhNhanId, int pageNumber, int pageSize)
+	public async Task<PagedResult<PhienKhamListReadModel>>GetByBenhNhanAsync(int benhNhanId, int pageNumber, int pageSize)
 	{
 		var (items, totalCount) =
 			await _repo.GetByBenhNhanPagedAsync(benhNhanId, pageNumber, pageSize);
 
-		return new PagedResult<PhienKhamResponseLiteDTO>
+		return new PagedResult<PhienKhamListReadModel>
 		{
 			Items = items,
 			TotalCount = totalCount,
@@ -102,13 +102,13 @@ public class PhienKhamService
 			PageSize = pageSize
 		};
 	}
-	public async Task<PagedResult<PhienKhamResponseLiteDTO>> GetPagedAsync(int pageNumber, int pageSize, int? nhanVienID, string? trangThai)
+	public async Task<PagedResult<PhienKhamListReadModel>> GetPagedAsync(int pageNumber, int pageSize, int? nhanVienID, string? trangThai)
 	{
 		{
 			var (items, totalCount) =
 				await _repo.GetPagedAsync(pageNumber, pageSize, nhanVienID, trangThai);
 
-			return new PagedResult<PhienKhamResponseLiteDTO>
+			return new PagedResult<PhienKhamListReadModel>
 			{
 				Items = items,
 				TotalCount = totalCount,
@@ -117,6 +117,6 @@ public class PhienKhamService
 			};
 		}
 	}
-	public async Task<List<PhienKhamResponseLiteDTO>> SearchAsync(string keyword, int? nhanVienID)
+	public async Task<List<PhienKhamListReadModel>> SearchAsync(string keyword, int? nhanVienID)
 		=> await _repo.SearchAsync(keyword, nhanVienID);
 }

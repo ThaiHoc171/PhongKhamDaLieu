@@ -36,7 +36,7 @@ public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 	public async Task<List<PhienKhamThietBiReadModel>> GetByPhienKhamAsync(int phienKhamID)
 	{
 		const string sql = @"
-			SELECT pktb.PhienKham_ThietBiID,ct.ChiTietID,tb.TenTB,pcn.TenPhong
+			SELECT pktb.PhienKham_ThietBiID,ct.ChiTietID,tb.TenTB,pcn.TenPhong,pktb.GhiChu
 			FROM PhienKham_ThietBi pktb
 			JOIN ChiTiet_PCNTB ct ON pktb.ChiTietID = ct.ChiTietID
 			JOIN PhongChucNang_ThietBi pcntb ON ct.PCN_TB_ID = pcntb.PCN_TB_ID
@@ -63,7 +63,8 @@ public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 				PhienKhamThietBiID = reader.GetInt32(0),
 				ChiTietID = reader.GetInt32(1),
 				TenThietBi = reader.GetString(2),
-				TenPhong = reader.GetString(3)
+				TenPhong = reader.GetString(3),
+				GhiChu = reader.GetString(4)
 			});
 		}
 

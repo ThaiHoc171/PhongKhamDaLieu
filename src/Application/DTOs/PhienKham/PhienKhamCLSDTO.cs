@@ -8,10 +8,19 @@ public class TaoPhienKhamCLSDTO
 	public int NhanVienChiDinhID { get; set; }
 	public string? GhiChu { get; set; }
 }
-public class PhienKhamCLSResponseDTO
+public class PhienKhamClsListReadModel
 {
 	public int PhienKhamCLSID { get; set; }
-	public int CLSID { get; set; }
+	public string? TenCLS { get; set; }
+	public string TrangThai { get; set; } = default!;
+	public string? KetQua { get; set; }
+	public DateTime? NgayThucHien { get; set; }
+	public string? GhiChu { get; set; }
+}
+public class PhienKhamClsReadModel
+{
+	public int PhienKhamCLSID { get; set; }
+	public string? TenCLS { get; set; }
 	public string TrangThai { get; set; } = default!;
 	public string? KetQua { get; set; }
 	public string? FileDinhKem { get; set; }

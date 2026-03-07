@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs;
 
-public class PhienKhamCreateDTO
+public class PhienKhamRequestDTO
 {
 	public int CaKhamID { get; set; }
 	public int BenhNhanID { get; set; }
@@ -18,7 +18,7 @@ public class PhienKhamUpdateDTO
 	public int? PhongChucNangID { get; set; }
 	public string? HinhAnhJSON { get; set; }
 }
-public class PhienKhamResponseDTO
+public class PhienKhamReadModel
 {
 	public int PhienKhamID { get; set; }
 	public int CaKhamID { get; set; }
@@ -32,7 +32,7 @@ public class PhienKhamResponseDTO
 	public DateTime NgayKham { get; set; }
 	public string TrangThai { get; set; } = default!;
 }
-public class PhienKhamResponseLiteDTO
+public class PhienKhamListReadModel
 {
 	public int PhienKhamID { get; set; }
 	public int CaKhamID { get; set; }
