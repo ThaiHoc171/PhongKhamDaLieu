@@ -4,8 +4,6 @@ using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using System.Data;
-
 
 namespace Infrastructure.Repository;
 
@@ -68,7 +66,7 @@ public class PhienKhamBenhRepository : IPhienKhamBenhRepository
 	public async Task<List<PhienKhamBenhReadModel>> GetByPhienKhamAsync(int phienKhamID)
 	{
 		const string sql = @"
-		SELECT pk.PhienKham_BenhID, pk.PhienKhamID, pk.LoaiBenhID, lb.TenBenh, pk.LoaiChanDoan, pk.GhiChu
+		SELECT pk.PhienKham_BenhID, pk.PhienKhamID, lb.TenBenh, pk.LoaiChanDoan, pk.GhiChu
 		FROM PhienKham_Benh pk
 		JOIN LoaiBenh lb ON pk.LoaiBenhID = lb.LoaiBenhID
 		WHERE PhienKhamID = @PhienKhamID";
@@ -88,13 +86,9 @@ public class PhienKhamBenhRepository : IPhienKhamBenhRepository
 			{
 				Id = reader.GetInt32(0),
 				PhienKhamID = reader.GetInt32(1),
-				LoaiBenh = new NameResponseDTO
-				{
-					Id = reader.GetInt32(2),
-					Name = reader.GetString(3)
-				},
-				LoaiChanDoan = reader.GetString(4),
-				GhiChu = reader.IsDBNull(5) ? null : reader.GetString(5)
+				LoaiBenh = reader.GetString(2),
+				LoaiChanDoan = reader.GetString(3),
+				GhiChu = reader.IsDBNull(4) ? null : reader.GetString(4)
 			});
 		}
 

@@ -22,8 +22,8 @@ public class PhienKhamReadModel
 {
 	public int PhienKhamID { get; set; }
 	public int CaKhamID { get; set; }
-	public NameResponseDTO BenhNhan { get; set; } = default!;
-	public NameResponseDTO NhanVien { get; set; } = default!;
+	public string? BenhNhan { get; set; }
+	public string? NhanVien { get; set; }
 	public int? PhongChucNangID { get; set; }
 	public string? TrieuChung { get; set; }
 	public string? GhiChu { get; set; }
@@ -36,8 +36,8 @@ public class PhienKhamListReadModel
 {
 	public int PhienKhamID { get; set; }
 	public int CaKhamID { get; set; }
-	public NameResponseDTO BenhNhan { get; set; } = default!;
-	public NameResponseDTO NhanVien { get; set; } = default!;
+	public string? BenhNhan { get; set; }
+	public string? NhanVien { get; set; }
 	public DateTime NgayKham { get; set; }
 	public string TrangThai { get; set; } = default!;
 	public string ChanDoanCuoi { get; set; } = default!;
