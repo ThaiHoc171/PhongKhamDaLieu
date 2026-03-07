@@ -25,8 +25,8 @@ public class PhienKhamClsReadModel
 	public string? KetQua { get; set; }
 	public string? FileDinhKem { get; set; }
 	public DateTime? NgayThucHien { get; set; }
-	public NameResponseDTO NhanVienChiDinh { get; set; } = default!;
-	public NameResponseDTO? NhanVienThucHien { get; set; }
+	public string? NhanVienChiDinh { get; set; }
+	public string? NhanVienThucHien { get; set; }
 	public string? GhiChu { get; set; }
 }
 
