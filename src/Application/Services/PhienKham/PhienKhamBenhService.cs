@@ -18,17 +18,13 @@ public class PhienKhamBenhService
 		_phienKhamRepo = phienKhamRepo;
 		_loaiBenhRepo = loaiBenhRepo;
 	}
-	public async Task<List<PhienKhamBenhResponseDTO>> GetByPhienKhamIdAsync(int phienKhamID)
+	public async Task<List<PhienKhamBenhReadModel>> GetByPhienKhamIdAsync(int phienKhamID)
 	{
 		var phienKham = await _phienKhamRepo.GetByIdAsync(phienKhamID)
 			?? throw new Exception("Phiên khám không tồn tại");
 
-		var list = await _repo.GetByIdAsync(phienKhamID);
-
-		var tasks = list.Select(MapToResponse);
-		var results = await Task.WhenAll(tasks);
-
-		return results.ToList();
+		var list = await _repo.GetByPhienKhamAsync(phienKhamID);
+		return list;
 	}
 
 	public async Task ThemMoiAsync(PhienKhamBenhRequestDTO dto)
@@ -57,46 +53,31 @@ public class PhienKhamBenhService
 		);
 		await _repo.AddAsync(phienKhamBenh);
 	}
-	public async Task CapNhatAsync(int PKB_ID, PhienKhamBenhRequestDTO dto)
+	public async Task CapNhatAsync(int pkbId, PhienKhamBenhRequestDTO dto)
 	{
-		var pkbs = await _repo.GetByIdAsync(dto.PhienKhamID);
-		var pkb = pkbs.FirstOrDefault(p => p.PhienKham_BenhID == PKB_ID)
-			?? throw new Exception("Phiên khám bệnh không tồn tại");
-		var phienKham = await _phienKhamRepo.GetByIdAsync(dto.PhienKhamID)
+		var pkb = await _repo.GetByIdAsync(pkbId)
+			?? throw new Exception("Chẩn đoán không tồn tại");
+
+		var phienKham = await _phienKhamRepo.GetByIdAsync(pkb.PhienKhamID)
 			?? throw new Exception("Phiên khám không tồn tại");
+
 		if (phienKham.TrangThai != TrangThaiKhamEnum.DangKham)
 			throw new Exception("Không thể cập nhật chẩn đoán khi phiên khám đã kết thúc");
-		var loaiChanDoanEnum = LoaiChanDoanEnumExtensions.ToEnum(dto.LoaiChanDoan);
-		if (loaiChanDoanEnum == LoaiChanDoanEnum.ChanDoanChinh && pkb.LoaiChanDoan != LoaiChanDoanEnum.ChanDoanChinh)
-		{
-			var daTonTai = await _repo.PrimaryPKBenhExitsAsync(dto.PhienKhamID);
-			if (daTonTai)
-				throw new Exception("Mỗi phiên khám chỉ được có một chuẩn đoán chính");
-		}
-		var updatedPkb = new PhienKhamBenh(
-			PKB_ID,
-			pkb.PhienKhamID,
-			pkb.LoaiBenhID,
-			loaiChanDoanEnum,
-			dto.GhiChu);
-		pkb.CapNhat(loaiChanDoanEnum, dto.GhiChu);
-		await _repo.UpdateAsync(pkb);
 
-	}
-	private async Task<PhienKhamBenhResponseDTO> MapToResponse(PhienKhamBenh pkb)
-	{
-		var lb = await _loaiBenhRepo.GetNameByIdAsync(pkb.LoaiBenhID);
-		return new PhienKhamBenhResponseDTO
+		var loaiChanDoanEnum = LoaiChanDoanEnumExtensions.ToEnum(dto.LoaiChanDoan);
+
+		// Nếu chuyển thành chẩn đoán chính
+		if (loaiChanDoanEnum == LoaiChanDoanEnum.ChanDoanChinh &&
+			pkb.LoaiChanDoan != LoaiChanDoanEnum.ChanDoanChinh)
 		{
-			Id = pkb.PhienKham_BenhID,
-			PhienKhamID = pkb.PhienKhamID,
-			LoaiBenh = new NameResponseDTO
-			{
-				Id = pkb.LoaiBenhID,
-				Name = lb
-			},
-			LoaiChanDoan = pkb.LoaiChanDoan.ToDbValue(),
-			GhiChu = pkb.GhiChu
-		};
+			var daTonTai = await _repo.PrimaryPKBenhExitsAsync(pkb.PhienKhamID);
+			if (daTonTai)
+				throw new Exception("Mỗi phiên khám chỉ được có một chẩn đoán chính");
+		}
+
+		// cập nhật entity
+		pkb.CapNhat(loaiChanDoanEnum, dto.GhiChu);
+
+		await _repo.UpdateAsync(pkb);
 	}
 }

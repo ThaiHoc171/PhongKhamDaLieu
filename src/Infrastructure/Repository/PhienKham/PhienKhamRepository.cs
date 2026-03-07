@@ -39,7 +39,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
 
-	public async Task<(List<PhienKhamResponseLiteDTO>, int)> GetPagedAsync(int page, int size, int? nhanVienID, string? trangThai)
+	public async Task<(List<PhienKhamListReadModel>, int)> GetPagedAsync(int page, int size, int? nhanVienID, string? trangThai)
 	{
 		var sql =
 		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai, pk.ChanDoanCuoi,
@@ -73,7 +73,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 
 		cmd.CommandText = sql;
 
-		var list = new List<PhienKhamResponseLiteDTO>();
+		var list = new List<PhienKhamListReadModel>();
 		int total = 0;
 
 		await using var conn = CreateConnection();
@@ -92,7 +92,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 		return (list, total);
 	}
 
-	public async Task<(List<PhienKhamResponseLiteDTO>, int)> GetByBenhNhanPagedAsync(int benhNhanID, int page, int size)
+	public async Task<(List<PhienKhamListReadModel>, int)> GetByBenhNhanPagedAsync(int benhNhanID, int page, int size)
 	{
 		const string sql =
 		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai, pk.ChanDoanCuoi,
@@ -109,7 +109,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 
           SELECT COUNT(*) FROM PhienKham WHERE BenhNhanID=@BenhNhanID";
 
-		var list = new List<PhienKhamResponseLiteDTO>();
+		var list = new List<PhienKhamListReadModel>();
 		int total = 0;
 
 		await using var conn = CreateConnection();
@@ -148,7 +148,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 		return result == null ? null : (int)result;
 	}
 
-	public async Task<List<PhienKhamResponseLiteDTO>> SearchAsync(string keyword, int? nhanVienID)
+	public async Task<List<PhienKhamListReadModel>> SearchAsync(string keyword, int? nhanVienID)
 	{
 		var sql =
 		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai, pk.ChanDoanCuoi,
@@ -174,7 +174,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 		cmd.Parameters.AddWithValue("@kw", $"%{keyword}%");
 		cmd.CommandText = sql;
 
-		var list = new List<PhienKhamResponseLiteDTO>();
+		var list = new List<PhienKhamListReadModel>();
 
 		await using var conn = CreateConnection();
 		cmd.Connection = conn;
@@ -189,7 +189,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 		return list;
 	}
 
-	public async Task<PhienKhamResponseDTO?> GetDetailAsync(int id)
+	public async Task<PhienKhamReadModel?> GetDetailAsync(int id)
 	{
 		const string sql =
 		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai,
@@ -310,7 +310,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 		r.GetString("TrangThai")
 	);
 
-	private static PhienKhamResponseLiteDTO MapToLiteDTO(SqlDataReader r) => new()
+	private static PhienKhamListReadModel MapToLiteDTO(SqlDataReader r) => new()
 	{
 		PhienKhamID = r.GetInt32("PhienKhamID"),
 		CaKhamID = r.GetInt32("CaKhamID"),
@@ -321,7 +321,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 		NhanVien = new NameResponseDTO { Id = r.GetInt32("NhanVienID"), Name = r.GetString("TenNhanVien") }
 	};
 
-	private static PhienKhamResponseDTO MapToDetailDTO(SqlDataReader r) => new()
+	private static PhienKhamReadModel MapToDetailDTO(SqlDataReader r) => new()
 	{
 		PhienKhamID = r.GetInt32("PhienKhamID"),
 		CaKhamID = r.GetInt32("CaKhamID"),

@@ -1,10 +1,12 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs;
+using Domain.Entities;
 
 namespace Application.Interfaces;
 public interface IPhienKhamCLSRepository
 {
 	Task<PhienKhamCLS?> GetByIdAsync(int id);
-	Task<List<PhienKhamCLS>> GetByPhienKhamAsync(int phienKhamID);
+	Task<List<PhienKhamClsListReadModel>> GetByPhienKhamAsync(int phienKhamID);
+	Task<PhienKhamClsReadModel?> GetDetailAsync(int id);
 	Task AddAsync(PhienKhamCLS phienKhamCLS);
 	Task UpdateAsync(PhienKhamCLS phienKhamCLS);
 }

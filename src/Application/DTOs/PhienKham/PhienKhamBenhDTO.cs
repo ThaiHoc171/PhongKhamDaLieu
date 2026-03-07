@@ -8,7 +8,7 @@ public class PhienKhamBenhRequestDTO
 	public string LoaiChanDoan { get; set; } = default!;
 	public string? GhiChu { get; set; }
 }
-public class PhienKhamBenhResponseDTO
+public class PhienKhamBenhReadModel
 {
 	public int Id { get; init; }
 	public int PhienKhamID { get; init; }
