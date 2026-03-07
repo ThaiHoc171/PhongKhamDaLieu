@@ -19,7 +19,7 @@ public class ToaThuocService
 		_phienKhamRepo = phienKhamRepo;
 	}
 
-	public async Task<int> TaoToaThuocAsync(TaoToaThuocDTO dto)
+	public async Task<int> TaoToaThuocAsync(ToaThuocRequestDTO dto)
 	{
 		var phienKham = await _phienKhamRepo.GetByIdAsync(dto.PhienKhamID)
 			?? throw new Exception("Phiên khám không tồn tại");
@@ -47,25 +47,30 @@ public class ToaThuocService
 		return toaThuocID;
 	}
 
-	public async Task<ToaThuocChiTietDTO?> XemTheoPhienKhamAsync(int phienKhamID)
+	public async Task<ToaThuocReadModel?> GetByPhienKham(int phienKhamID)
 	{
-		var toaThuoc = await _toaThuocRepo.GetByPhienKhamIdAsync(phienKhamID);
+		var toaThuoc = await _toaThuocRepo.GetByPhienKhamAsync(phienKhamID);
 		if (toaThuoc == null) return null;
-
-		var chiTiet = await _chiTietRepo.GetByToaThuocIdAsync(toaThuoc.ToaThuocID);
-
-		return new ToaThuocChiTietDTO
+		return new ToaThuocReadModel
 		{
 			ToaThuocID = toaThuoc.ToaThuocID,
+			NguoiLap = toaThuoc.NguoiLap,
 			NgayLap = toaThuoc.NgayLap,
-			GhiChu = toaThuoc.GhiChu,
-			Thuoc = chiTiet.Select(x => new ChiTietToaThuocDTO
-			{
-				ThuocID = x.ThuocID,
-				TenThuoc = x.TenThuoc,
-				LieuDung = x.LieuDung,
-				SoLuong = x.SoLuong
-			}).ToList()
+			GhiChu = toaThuoc.GhiChu
+		};
+	}
+	public async Task<List<ChiTietToaThuocReadModel>> GetByToaThuoc(int toaThuocId)
+		=> await _chiTietRepo.GetByToaThuocAsync(toaThuocId);
+	public async Task<PagedResult<ToaThuocReadModel>> GetPagedAsync(int page, int size)
+	{
+		var (items, total) = await _toaThuocRepo.GetPagedAsync(page, size);
+
+		return new PagedResult<ToaThuocReadModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
 		};
 	}
 }

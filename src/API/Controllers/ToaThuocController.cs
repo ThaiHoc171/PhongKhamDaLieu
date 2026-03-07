@@ -1,72 +1,57 @@
-﻿using Application.DTO;
+﻿using Application.Common;
 using Application.DTOs;
-using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize(Policy = "BacSiOnly")]
+public class ToaThuocController : ControllerBase
 {
-	[ApiController]
-	[Route("api/[controller]")]
-	[Authorize]
-	public class ToaThuocController : ControllerBase
+	private readonly ToaThuocService _service;
+
+	public ToaThuocController(ToaThuocService service)
 	{
-		private readonly ToaThuocService _toaThuocService;
+		_service = service;
+	}
 
-		public ToaThuocController(ToaThuocService toaThuocService)
-		{
-			_toaThuocService = toaThuocService;
-		}
-		[Authorize(Policy = "BacSiOnly")]
-		[HttpPost]
-		public async Task<IActionResult> TaoToaThuoc([FromBody] TaoToaThuocDTO dto)
-		{
-			if (dto == null || dto.Thuoc == null || !dto.Thuoc.Any())
-			{
-				return BadRequest(new
-				{
-					message = "Danh sách thuốc không được rỗng."
-				});
-			}
+	[HttpPost]
+	public async Task<ActionResult<ApiResponse<int>>> TaoToaThuoc([FromBody] ToaThuocRequestDTO dto)
+	{
+		var toaThuocId = await _service.TaoToaThuocAsync(dto);
 
-			try
-			{
-				var toaThuocID = await _toaThuocService.TaoToaThuocAsync(dto);
+		return Ok(ApiResponse<int>
+			.SuccessResponse(toaThuocId, "Tạo toa thuốc thành công"));
+	}
 
-				return Ok(new
-				{
-					message = "Tạo toa thuốc thành công.",
-					toaThuocID
-				});
-			}
-			catch (ArgumentException ex)
-			{
-				return BadRequest(new { message = ex.Message });
-			}
-			catch
-			{
-				return StatusCode(500, new
-				{
-					message = "Lỗi hệ thống khi tạo toa thuốc."
-				});
-			}
-		}
+	[HttpGet("phien-kham/{phienKhamID}")]
+	public async Task<ActionResult<ApiResponse<ToaThuocReadModel?>>> GetByPhienKham(int phienKhamID)
+	{
+		var result = await _service.GetByPhienKham(phienKhamID);
 
-		[HttpGet("phien-kham/{phienKhamID}")]
-		public async Task<IActionResult> XemTheoPhienKham(int phienKhamID)
-		{
-			var result =
-				await _toaThuocService.XemTheoPhienKhamAsync(phienKhamID);
+		return Ok(ApiResponse<ToaThuocReadModel?>
+			.SuccessResponse(result));
+	}
 
-			if (result == null)
-			{
-				return NotFound(new
-				{
-					message = "Phiên khám chưa có toa thuốc."
-				});
-			}
+	[HttpGet("chi-tiet/{toaThuocID}")]
+	public async Task<ActionResult<ApiResponse<List<ChiTietToaThuocReadModel>>>> GetChiTiet(int toaThuocID)
+	{
+		var result = await _service.GetByToaThuoc(toaThuocID);
 
-			return Ok(result);
-		}
+		return Ok(ApiResponse<List<ChiTietToaThuocReadModel>>
+			.SuccessResponse(result));
+	}
+
+	[HttpGet("paged")]
+	public async Task<ActionResult<ApiResponse<PagedResult<ToaThuocReadModel>>>> GetPaged(
+		int pageNumber = 1,
+		int pageSize = 10)
+	{
+		var result = await _service.GetPagedAsync(pageNumber, pageSize);
+
+		return Ok(ApiResponse<PagedResult<ToaThuocReadModel>>
+			.SuccessResponse(result));
 	}
 }

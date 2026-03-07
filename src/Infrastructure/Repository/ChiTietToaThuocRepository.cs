@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -37,17 +38,15 @@ public class ChiTietToaThuocRepository : IChiTietToaThuocRepository
 		}
 	}
 
-	public async Task<List<ChiTietToaThuoc>> GetByToaThuocIdAsync(int toaThuocID)
+	public async Task<List<ChiTietToaThuocReadModel>> GetByToaThuocAsync(int toaThuocID)
 	{
 		const string sql = @"
-        SELECT ct.ChiTietToaThuocID, ct.ToaThuocID,
-               ct.ThuocID, t.TenThuoc,
-               ct.LieuDung, ct.SoLuong
+        SELECT t.TenThuoc, ct.LieuDung, ct.SoLuong
         FROM ChiTietToaThuoc ct
         JOIN Thuoc t ON ct.ThuocID = t.ThuocID
         WHERE ct.ToaThuocID = @ToaThuocID";
 
-		var list = new List<ChiTietToaThuoc>();
+		var list = new List<ChiTietToaThuocReadModel>();
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
@@ -58,14 +57,12 @@ public class ChiTietToaThuocRepository : IChiTietToaThuocRepository
 
 		while (await reader.ReadAsync())
 		{
-			list.Add(new ChiTietToaThuoc(
-				reader.GetInt32(0),
-				reader.GetInt32(1),
-				reader.GetInt32(2),
-				reader.GetString(3),
-				reader["LieuDung"] as string,
-				reader.GetInt32(5)
-			));
+			list.Add(new ChiTietToaThuocReadModel
+			{
+				TenThuoc = reader.GetString(0),
+				LieuDung = reader.GetString(1),
+				SoLuong = reader.GetInt32(2)
+			});
 		}
 
 		return list;
