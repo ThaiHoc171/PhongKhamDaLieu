@@ -76,7 +76,7 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 	{
 		const string sql = @"
 			SELECT pk.PhienKham_CanLamSangID, cls.TenCLS, pk.TrangThai, pk.KetQua, pk.FileDinhKem, pk.NgayThucHien,
-				   nvcd.NhanVienID, ttcd.HoTen, nvth.NhanVienID, ttth.HoTen, pk.GhiChu
+				  ttcd.HoTen, ttth.HoTen, pk.GhiChu
 			FROM PhienKham_CanLamSang pk
 			JOIN CanLamSang cls ON pk.CanLamSangID = cls.CanLamSangID
 			JOIN NhanVien nvcd ON pk.NhanVienChiDinhID = nvcd.NhanVienID
@@ -103,17 +103,9 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			KetQua = reader.IsDBNull(3) ? null : reader.GetString(3),
 			FileDinhKem = reader.IsDBNull(4) ? null : reader.GetString(4),
 			NgayThucHien = reader.IsDBNull(5) ? null : reader.GetDateTime(5),
-			NhanVienChiDinh = new NameResponseDTO
-			{
-				Id = reader.GetInt32(6),
-				Name = reader.GetString(7)
-			},
-			NhanVienThucHien = reader.IsDBNull(8) ? null : new NameResponseDTO
-			{
-				Id = reader.GetInt32(8),
-				Name = reader.GetString(9)
-			},
-			GhiChu = reader.IsDBNull(10) ? null : reader.GetString(10)
+			NhanVienChiDinh = reader.GetString(6),
+			NhanVienThucHien = reader.GetString(7),
+			GhiChu = reader.IsDBNull(8) ? null : reader.GetString(8)
 		};
 	}
 	public async Task AddAsync(PhienKhamCLS phienKhamCLS)
