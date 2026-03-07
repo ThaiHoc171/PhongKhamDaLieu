@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Application.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,151 +20,57 @@ public class PhienKhamCLSController : ControllerBase
 
 	[Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpGet("phienkham/{phienKhamID}")]
-	public async Task<IActionResult> LayTheoPhienKham(int phienKhamID)
+	public async Task<ActionResult<ApiResponse<List<PhienKhamClsListReadModel>>>> LayTheoPhienKham(int phienKhamID)
 	{
-		try
-		{
-			var result = await _service.LayTheoPhienKhamAsync(phienKhamID);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi lấy danh sách cận lâm sàng",
-				detail = ex.Message
-			});
-		}
+		var result = await _service.LayTheoPhienKhamAsync(phienKhamID);
+		return Ok(ApiResponse<List<PhienKhamClsListReadModel>>.SuccessResponse(result));
 	}
+
 	[Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpGet("chitiet/{phienKhamBenhID}")]
-	public async Task<IActionResult> LayChiTiet(int phienKhamBenhID)
+	public async Task<ActionResult<ApiResponse<PhienKhamClsReadModel>>> LayChiTiet(int phienKhamBenhID)
 	{
-		try
-		{
-			var result = await _service.LayChiTietAsync(phienKhamBenhID);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi lấy chi tiết",
-				detail = ex.Message
-			});
-		}
+		var result = await _service.LayChiTietAsync(phienKhamBenhID);
+		if (result == null)
+			return NotFound(ApiResponse<PhienKhamClsReadModel>.Fail("CLS không tồn tại"));
+		return Ok(ApiResponse<PhienKhamClsReadModel>.SuccessResponse(result));
 	}
+
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpPost]
-	public async Task<IActionResult> ThemMoi([FromBody] TaoPhienKhamCLSDTO dto)
+	public async Task<ActionResult<ApiResponse<object>>> ThemMoi([FromBody] TaoPhienKhamCLSDTO dto)
 	{
-		try
-		{
-			await _service.ThemMoiAsync(dto);
-
-			return Ok(new
-			{
-				message = "Chỉ định cận lâm sàng thành công"
-			});
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi chỉ định cận lâm sàng",
-				detail = ex.Message
-			});
-		}
+		await _service.ThemMoiAsync(dto);
+		return Ok(ApiResponse<object>.SuccessResponse(null, "Chỉ định cận lâm sàng thành công"));
 	}
 
 	[Authorize(Policy = "KyThuatVienOnly")]
 	[HttpPut("{id}/nhan")]
-	public async Task<IActionResult> NhanThucHien(int id, [FromBody] NhanThucHienCLSDTO dto)
+	public async Task<ActionResult<ApiResponse<object>>> NhanThucHien(int id, [FromBody] NhanThucHienCLSDTO dto)
 	{
-		try
-		{
-			var success = await _service.NhanThucHienAsync(id, dto);
-			if (!success)
-				return NotFound(new { message = "CLS không tồn tại" });
-
-			return Ok(new
-			{
-				message = "Đã nhận thực hiện cận lâm sàng"
-			});
-		}
-		catch (InvalidOperationException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi nhận thực hiện cận lâm sàng",
-				detail = ex.Message
-			});
-		}
+		var success = await _service.NhanThucHienAsync(id, dto);
+		if (!success)
+			return NotFound(ApiResponse<object>.Fail("CLS không tồn tại"));
+		return Ok(ApiResponse<object>.SuccessResponse(null, "Đã nhận thực hiện cận lâm sàng"));
 	}
 
 	[Authorize(Policy = "KyThuatVienOnly")]
 	[HttpPut("{id}/ketqua")]
-	public async Task<IActionResult> CapNhatKetQua(int id, [FromBody] CapNhatKetQuaCLSDTO dto)
+	public async Task<ActionResult<ApiResponse<object>>> CapNhatKetQua(int id, [FromBody] CapNhatKetQuaCLSDTO dto)
 	{
-		try
-		{
-			var success = await _service.CapNhatKetQuaAsync(id, dto);
-			if (!success)
-				return NotFound(new { message = "CLS không tồn tại" });
-
-			return Ok(new
-			{
-				message = "Cập nhật kết quả cận lâm sàng thành công"
-			});
-		}
-		catch (InvalidOperationException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi cập nhật kết quả cận lâm sàng",
-				detail = ex.Message
-			});
-		}
+		var success = await _service.CapNhatKetQuaAsync(id, dto);
+		if (!success)
+			return NotFound(ApiResponse<object>.Fail("CLS không tồn tại"));
+		return Ok(ApiResponse<object>.SuccessResponse(null, "Cập nhật kết quả cận lâm sàng thành công"));
 	}
 
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}/huy")]
-	public async Task<IActionResult> Huy(int id)
+	public async Task<ActionResult<ApiResponse<object>>> Huy(int id)
 	{
-		try
-		{
-			var success = await _service.HuyAsync(id);
-			if (!success)
-				return NotFound(new { message = "CLS không tồn tại" });
-
-			return Ok(new
-			{
-				message = "Đã hủy cận lâm sàng"
-			});
-		}
-		catch (InvalidOperationException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi hủy cận lâm sàng",
-				detail = ex.Message
-			});
-		}
+		var success = await _service.HuyAsync(id);
+		if (!success)
+			return NotFound(ApiResponse<object>.Fail("CLS không tồn tại"));
+		return Ok(ApiResponse<object>.SuccessResponse(null, "Đã hủy cận lâm sàng"));
 	}
 }

@@ -1,13 +1,14 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Application.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
-[Authorize(Policy = "BacSiOnly")]
 [Route("api/[controller]")]
+[Authorize(Policy = "BacSiOnly")]
 public class PhienKhamBenhController : ControllerBase
 {
 	private readonly PhienKhamBenhService _service;
@@ -18,45 +19,29 @@ public class PhienKhamBenhController : ControllerBase
 	}
 
 	[HttpGet("phien-kham/{phienKhamID}")]
-	public async Task<IActionResult> GetByPhienKham(int phienKhamID)
+	public async Task<ActionResult<ApiResponse<List<PhienKhamBenhReadModel>>>> GetByPhienKham(int phienKhamID)
 	{
-		try
-		{
-			var result = await _service.GetByPhienKhamIdAsync(phienKhamID);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
+		var result = await _service.GetByPhienKhamIdAsync(phienKhamID);
+
+		return Ok(ApiResponse<List<PhienKhamBenhReadModel>>
+			.SuccessResponse(result));
 	}
 
-
 	[HttpPost]
-	public async Task<IActionResult> ThemMoi([FromBody] PhienKhamBenhRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<object>>> ThemMoi([FromBody] PhienKhamBenhRequestDTO dto)
 	{
-		try
-		{
-			await _service.ThemMoiAsync(dto);
-			return Ok(new { message = "Thêm chẩn đoán bệnh thành công" });
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
+		await _service.ThemMoiAsync(dto);
+
+		return Ok(ApiResponse<object>
+			.SuccessResponse(null, "Thêm chẩn đoán bệnh thành công"));
 	}
 
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id, [FromBody] PhienKhamBenhRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<object>>> CapNhat(int id,[FromBody] PhienKhamBenhRequestDTO dto)
 	{
-		try
-		{
-			await _service.CapNhatAsync(id, dto);
-			return Ok(new { message = "Cập nhật chẩn đoán bệnh thành công" });
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
+		await _service.CapNhatAsync(id, dto);
+
+		return Ok(ApiResponse<object>
+			.SuccessResponse(null, "Cập nhật chẩn đoán bệnh thành công"));
 	}
 }
