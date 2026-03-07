@@ -1,13 +1,14 @@
 ﻿using Application.DTOs;
 using Application.Services;
+using Application.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
 [ApiController]
-[Authorize(Policy = "BacSiOnly")]
 [Route("api/[controller]")]
+[Authorize(Policy = "BacSiOnly")]
 public class PhienKhamThietBiController : ControllerBase
 {
 	private readonly PhienKhamThietBiService _service;
@@ -17,108 +18,26 @@ public class PhienKhamThietBiController : ControllerBase
 		_service = service;
 	}
 
-	// GET: api/PhienKhamThietBi/phienkham/{phienKhamId}
 	[HttpGet("phienkham/{phienKhamId}")]
-	public async Task<IActionResult> LayDanhSachTheoPhienKham(int phienKhamId)
+	public async Task<ActionResult<ApiResponse<List<PhienKhamThietBiReadModel>>>> LayDanhSachTheoPhienKham(int phienKhamId)
 	{
-		try
-		{
-			var result = await _service.DanhSachTheoPhienKhamAsync(phienKhamId);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi lấy danh sách thiết bị theo phiên khám.",
-				error = ex.Message
-			});
-		}
+		var result = await _service.DanhSachTheoPhienKhamAsync(phienKhamId);
+		return Ok(ApiResponse<List<PhienKhamThietBiReadModel>>.SuccessResponse(result));
 	}
 
-	// GET: api/PhienKhamThietBi/{id}
-	[HttpGet("{id}")]
-	public async Task<IActionResult> LayTheoId(int id)
-	{
-		try
-		{
-			var result = await _service.LayTheoIdAsync(id);
-
-			if (result == null)
-				return NotFound(new { message = "Thiết bị không tồn tại trong phiên khám." });
-
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi lấy chi tiết thiết bị phiên khám.",
-				error = ex.Message
-			});
-		}
-	}
-
-	// POST: api/PhienKhamThietBi
 	[HttpPost]
-	public async Task<IActionResult> ThemMoi([FromBody] PhienKhamThietBiRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<object>>> ThemMoi([FromBody] PhienKhamThietBiRequestDTO dto)
 	{
-		try
-		{
-			await _service.ThemMoiAsync(dto);
-
-			return Ok(new
-			{
-				message = "Thêm thiết bị vào phiên khám thành công."
-			});
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new
-			{
-				message = ex.Message
-			});
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi thêm thiết bị vào phiên khám.",
-				error = ex.Message
-			});
-		}
+		await _service.ThemMoiAsync(dto);
+		return Ok(ApiResponse<object>.SuccessResponse(null, "Thêm thiết bị vào phiên khám thành công"));
 	}
 
-	// PUT: api/PhienKhamThietBi/{id}
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id, [FromBody] string ghiChu)
+	public async Task<ActionResult<ApiResponse<object>>> CapNhat(int id, [FromBody] string ghiChu)
 	{
-		try
-		{
-			var result = await _service.CapNhatAsync(id, ghiChu);
-
-			if (!result)
-				return NotFound(new { message = "Thiết bị không tồn tại trong phiên khám." });
-
-			return Ok(new
-			{
-				message = "Cập nhật thiết bị phiên khám thành công."
-			});
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new
-			{
-				message = ex.Message
-			});
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new
-			{
-				message = "Lỗi khi cập nhật thiết bị phiên khám.",
-				error = ex.Message
-			});
-		}
+		var result = await _service.CapNhatAsync(id, ghiChu);
+		if (!result)
+			return NotFound(ApiResponse<object>.Fail("Thiết bị không tồn tại trong phiên khám."));
+		return Ok(ApiResponse<object>.SuccessResponse(null, "Cập nhật thiết bị phiên khám thành công"));
 	}
 }
