@@ -24,14 +24,15 @@ public class ThongTinCaNhan
 
 	// Tạo mới (DÙNG ENUM)
 	public ThongTinCaNhan(string hoTen,DateTime? ngaySinh,GioiTinhEnum gioiTinh,string sdt,string emailLienHe,
-		string? diaChi,string? avatar,LoaiThongTinEnum loai,int? taiKhoanID = null)
+		string? diaChi,string? avatar,LoaiThongTinEnum loai,int? taiKhoanID)
 	{
 		if (string.IsNullOrWhiteSpace(hoTen))
 			throw new ArgumentException("Họ tên không hợp lệ");
 
 		if (string.IsNullOrWhiteSpace(sdt))
 			throw new ArgumentException("SĐT không hợp lệ");
-		HoTen = hoTen;
+        TaiKhoanID = taiKhoanID;
+        HoTen = hoTen;
 		NgaySinh = ngaySinh;
 		GioiTinh = gioiTinh.ToDbValue();
 		SDT = sdt;
@@ -39,7 +40,6 @@ public class ThongTinCaNhan
 		DiaChi = diaChi;
 		Avatar = avatar;
 		Loai = loai.ToDbValue();
-		TaiKhoanID = taiKhoanID;
 	}
 
 	// Map từ DB

@@ -38,10 +38,9 @@ public class BenhNhanService
 				throw new Exception("Phải cung cấp họ tên cho bệnh nhân mới");
 			if (string.IsNullOrWhiteSpace(dto.SDT))
 				throw new Exception("Phải cung cấp số điện thoại cho bệnh nhân mới");
-			if (string.IsNullOrWhiteSpace(dto.EmailLienHe))
-				throw new Exception("Phải cung cấp email cho bệnh nhân mới");
 
 			var thongTin = new ThongTinCaNhan(
+				taiKhoanID: dto.TaiKhoanID,
 				hoTen: dto.HoTen,
 				ngaySinh: dto.NgaySinh,
 				gioiTinh: GioiTinhExtensions.ParseGioiTinhOrDefault(dto.GioiTinh),
