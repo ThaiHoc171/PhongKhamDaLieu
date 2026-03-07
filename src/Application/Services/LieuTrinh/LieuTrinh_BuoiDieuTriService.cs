@@ -22,12 +22,12 @@ public class LieuTrinh_BuoiDieuTriService
     public async Task TaoBuoiDieuTriAsync(TaoBuoiDieuTriDTO dto)
     {
         var caKham = await _caKhamRepo.GetByIdAsync(dto.CaKhamID);
-        if (caKham == null || caKham.BenhNhanID == null)
+        if (caKham == null || caKham.ThongTinID == null)
             throw new Exception("Ca khám không hợp lệ");
 
         var lich = await _lichLamViecRepo.GetByIdAsync(dto.CaKhamID);
 
-        int benhNhanID = caKham.BenhNhanID.Value;
+        int benhNhanID = caKham.ThongTinID.Value;
 
         var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
 
