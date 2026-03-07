@@ -44,7 +44,7 @@ public class ThongTinCaNhanController : ControllerBase
 		}
 	}
 
-	[Authorize(Policy = "LeTanOnly")]
+	[Authorize]
 	[HttpPost("BenhNhan")]
 	public async Task<IActionResult> TaoBenhNhan(
 		[FromBody] ThemThongTinCaNhanDTO dto)
