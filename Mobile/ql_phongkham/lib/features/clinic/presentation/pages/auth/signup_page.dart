@@ -160,7 +160,7 @@ class _SignupPageState extends State<SignupPage> {
 
       final repo = AuthRepository();
 
-      final user = await repo.signup(
+      await repo.signup(
         emailController.text,
         passwordController.text,
         "Bệnh nhân",

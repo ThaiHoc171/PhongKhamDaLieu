@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/examination_repository.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 class LichKhamScreen extends StatefulWidget {
@@ -30,9 +29,8 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     {"id": 11, "gio": "15:00"},
     {"id": 12, "gio": "15:30"},
   ];
+  final LichKhamRepository _repository = LichKhamRepository();
 
-  String URL =
-      'https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/api';
   List<int> khungGioConTrong = [];
   int? selectedKhungGioId;
   bool loadingSlot = false;
@@ -43,7 +41,6 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
   DateTime _currentDay = DateTime.now();
 
   bool _dateSelected = false;
-  bool _timeSelected = false;
 
   @override
   void initState() {
@@ -162,32 +159,18 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
 
   Future<void> loadKhungGioConTrong() async {
     try {
+      setState(() {
+        loadingSlot = true;
+      });
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
+      if (token == null) return;
+      final data = await _repository.getKhungGioConTrong(_currentDay, token);
 
-      final formattedDate = DateFormat('yyyy-MM-dd').format(_currentDay);
-
-      final url =
-          '$URL/CaKham/khunggio-trong?ngayKham=$formattedDate&loaiCaKham=Khám';
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {'Authorization': 'Bearer $token', 'accept': '*/*'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-
-        setState(() {
-          khungGioConTrong = List<int>.from(data);
-          loadingSlot = false;
-        });
-      } else {
-        setState(() {
-          khungGioConTrong = []; // quan trọng
-          loadingSlot = false;
-        });
-      }
+      setState(() {
+        khungGioConTrong = data;
+        loadingSlot = false;
+      });
     } catch (e) {
       setState(() {
         loadingSlot = false;
@@ -199,68 +182,51 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
-
-      final formattedDate = DateFormat('yyyy-MM-dd').format(_currentDay);
-
-      final url =
-          '$URL/CaKham/trong?ngayKham=$formattedDate&khungGioId=$selectedKhungGioId&loaiCaKham=Khám';
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {'Authorization': 'Bearer $token', 'accept': '*/*'},
+      if (token == null) return;
+      final id = await _repository.getCaKhamId(
+        _currentDay,
+        selectedKhungGioId!,
+        token,
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-
-        setState(() {
-          caKhamId = data;
-        });
-      }
-    } catch (e) {
       setState(() {
-        loadingSlot = false;
+        caKhamId = id;
       });
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
   Future<bool> checkDangKy() async {
-    // ✅ Guard clause
-    if (selectedKhungGioId == null) return false;
-
     try {
       final prefs = await SharedPreferences.getInstance();
+
       final token = prefs.getString('accessToken');
-      final benhNhanID = prefs.getInt('benhNhanId');
-      final formattedDate = DateFormat('yyyy-MM-dd').format(_currentDay);
+      final benhNhanId = prefs.getInt('benhNhanId');
 
-      final url =
-          '$URL/CaKham/Kiemtradadangky?ngay=$formattedDate&khungGioId=$selectedKhungGioId&loaiCaKham=Khám&benhNhanId=$benhNhanID';
-
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {'Authorization': 'Bearer $token', 'accept': '*/*'},
+      final daDangKy = await _repository.checkDangKy(
+        _currentDay,
+        selectedKhungGioId!,
+        benhNhanId!,
+        token!,
       );
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-
-        if (data != null && data != false && data.toString().isNotEmpty) {
-          DialogHelper.showSnacFailed(
-            context,
-            "Bệnh nhân đã đăng ký ca khám trong khung giờ này!",
-          );
-          return true;
-        }
+      if (daDangKy) {
+        DialogHelper.showSnacFailed(
+          context,
+          "Bệnh nhân đã đăng ký ca khám này!",
+        );
+        return true;
       }
+
+      return false;
     } catch (e) {
-      debugPrint('checkDangKy error: $e');
+      return false;
     }
-    return false;
   }
 
   Future<void> dangkyKham() async {
-    if (caKhamId == null) {
+    if (selectedKhungGioId == null) {
       DialogHelper.showSnacFailed(context, "Vui lòng chọn khung giờ khám");
       return;
     }
@@ -272,41 +238,34 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
-      final benhNhanID = prefs.getInt('benhNhanId');
+      final benhNhanId = prefs.getInt('benhNhanId');
+      print("benhNhanId: $benhNhanId");
+      if (token == null || benhNhanId == null) return;
 
-      final url = '$URL/CaKham/$caKhamId/dangky';
-
-      final response = await http.put(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-          'accept': '*/*',
-        },
-        body: jsonEncode({
-          'benhNhanID': benhNhanID,
-          'lyDoKham': 'Khám da liễu',
-          'ngayDat': DateTime.now().toIso8601String(),
-          'ghiChu': '',
-        }),
+      final id = await _repository.getCaKhamId(
+        _currentDay,
+        selectedKhungGioId!,
+        token,
       );
 
-      setState(() {
-        loadingSlot = false;
-      });
+      caKhamId = id;
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        DialogHelper.showSnackSuccess(context, data['message']);
-      } else {
-        DialogHelper.showSnacFailed(context, "Đăng ký thất bại!");
-      }
+      final message = await _repository.dangKyKham(
+        caKhamId!,
+        benhNhanId,
+        token,
+      );
+
+      DialogHelper.showSnackSuccess(context, message);
     } catch (e) {
-      setState(() {
-        loadingSlot = false;
-      });
-      DialogHelper.showSnacFailed(context, "Có lỗi xảy ra");
+      print("dangkyKham error: $e");
+
+      DialogHelper.showSnacFailed(context, e.toString());
     }
+
+    setState(() {
+      loadingSlot = false;
+    });
   }
 
   Widget _buildKhungGioSliver() {
@@ -343,13 +302,10 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
 
           return GestureDetector(
             onTap: isAvailable
-                ? () async {
+                ? () {
                     setState(() {
                       selectedKhungGioId = khungGioId;
-                      _timeSelected = true;
                     });
-                    await loadcaKhamId();
-                    print(caKhamId);
                   }
                 : null,
             child: Container(

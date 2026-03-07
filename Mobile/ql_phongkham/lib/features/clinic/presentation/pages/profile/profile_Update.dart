@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/profile_repository.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/profile/profile_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,7 +47,6 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
       final thongTinId = prefs.getInt('thongTinId');
-      print("ThongTinId: $thongTinId");
       if (token == null || thongTinId == null) return;
 
       final data = await ProfileRepository().getProfile(token, thongTinId);
@@ -64,6 +64,59 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       });
     } catch (e) {
       DialogHelper.showSnacFailed(context, e.toString());
+    }
+  }
+
+  Future<void> addProfile() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken');
+      final taiKhoanId = prefs.getInt('userId');
+      if (taiKhoanId == null || taiKhoanId == 0) {
+        DialogHelper.showSnacFailed(context, "Không tìm thấy tài khoản");
+        return;
+      }
+      if (token == null || taiKhoanId == null) {
+        DialogHelper.showSnacFailed(context, "Thiếu thông tin đăng nhập");
+        return;
+      }
+
+      DateTime ngaySinh = DateFormat(
+        'dd/MM/yyyy',
+      ).parse(ngaySinhController.text);
+
+      final benhNhanId = await ProfileRepository().addProfile(
+        taiKhoanId,
+        hoTenController.text,
+        ngaySinh,
+        gioiTinh ?? "",
+        sdtController.text,
+        emailController.text,
+        diaChiController.text,
+        linkAvatar ?? "",
+        "",
+        token,
+      );
+      print("Response: $benhNhanId");
+      await prefs.setInt("benhNhanId", benhNhanId);
+
+      DialogHelper.showSnackSuccess(context, "Tạo hồ sơ thành công");
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => LoginPage()),
+        (route) => false,
+      );
+    } catch (e) {
+      DialogHelper.showSnacFailed(context, e.toString());
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -161,18 +214,10 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                         buttonText: "Lưu",
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
-                            final data = {
-                              "hoTen": hoTenController.text,
-                              "ngaySinh": ngaySinhController.text,
-                              "gioiTinh": gioiTinh,
-                              "sdt": sdtController.text,
-                              "email": emailController.text,
-                              "diaChi": diaChiController.text,
-                            };
+                            addProfile();
                           }
                         },
                       ),
-
                 const SizedBox(height: 20),
               ],
             ),
