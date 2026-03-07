@@ -2,69 +2,78 @@
 using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Application.Services;
-
+using Application.Common;
 namespace API.Controllers;
-
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] 
+[Authorize]
 public class PhienKhamController : ControllerBase
 {
 	private readonly PhienKhamService _service;
-
 	public PhienKhamController(PhienKhamService service)
 	{
 		_service = service;
 	}
-
 	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpPost]
-	public async Task<IActionResult> TaoMoi([FromBody] PhienKhamRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<int>>> TaoMoi([FromBody] PhienKhamRequestDTO dto)
 	{
 		var phienKhamId = await _service.TaoMoiAsync(dto);
-		return Ok(new { message = "Tạo phiên khám thành công.", phienKhamId });
+		return Ok(ApiResponse<int>.SuccessResponse(phienKhamId, "Tạo phiên khám thành công"	));
 	}
-
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id, [FromBody] PhienKhamUpdateDTO dto)
+	public async Task<ActionResult<ApiResponse<object>>> CapNhat(
+		int id,
+		[FromBody] PhienKhamUpdateDTO dto)
 	{
 		await _service.CapNhatAsync(id, dto);
-		return Ok(new { message = "Cập nhật phiên khám thành công." });
+		return Ok(ApiResponse<object>.SuccessResponse(null, "Cập nhật phiên khám thành công"));
 	}
-
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}/ket-thuc")]
-	public async Task<IActionResult> KetThuc(int id, [FromBody] string chanDoanCuoi)
+	public async Task<ActionResult<ApiResponse<object>>> KetThuc(
+		int id,
+		[FromBody] string chanDoanCuoi)
 	{
 		await _service.KetThucAsync(id, chanDoanCuoi);
-		return Ok(new { message = "Kết thúc phiên khám thành công." });
+		return Ok(ApiResponse<object>.SuccessResponse(null,	"Kết thúc phiên khám thành công"));
 	}
 	[Authorize(Roles = "Admin")]
 	[HttpGet("benhnhan/{benhNhanId}")]
-	public async Task<IActionResult> LayTheoBenhNhan(int benhNhanId,[FromQuery] int pageNumber = 1,[FromQuery] int pageSize = 10)
+	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> LayTheoBenhNhan(
+		int benhNhanId,
+		[FromQuery] int pageNumber = 1,
+		[FromQuery] int pageSize = 10)
 	{
-		var result = await _service.GetByBenhNhanAsync(benhNhanId, pageNumber, pageSize);
-		return Ok(result);
+		var result = await _service.GetByBenhNhanAsync(benhNhanId,pageNumber,pageSize);
+		return Ok(ApiResponse<PagedResult<PhienKhamListReadModel>>.SuccessResponse(result));
 	}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpGet]
-	public async Task<IActionResult> LayDanhSach([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15, 
-												 [FromQuery] int? nhanVienID = null, [FromQuery] string? trangThai = null)
-		=> Ok(await _service.GetPagedAsync(pageNumber, pageSize,nhanVienID,trangThai));
-
+	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> LayDanhSach(
+		[FromQuery] int pageNumber = 1,[FromQuery] int pageSize = 15,[FromQuery] int? nhanVienID = null,[FromQuery] string? trangThai = null)
+	{
+		var result = await _service.GetPagedAsync(pageNumber,pageSize,nhanVienID,trangThai);
+		return Ok(ApiResponse<PagedResult<PhienKhamListReadModel>>
+			.SuccessResponse(result));
+	}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpGet("timkiem")]
-	public async Task<IActionResult> Search([FromQuery] string keyword,[FromQuery] int? nhanVienID)
-		=> Ok(await _service.SearchAsync(keyword,nhanVienID));
-
+	public async Task<ActionResult<ApiResponse<List<PhienKhamListReadModel>>>> Search([FromQuery] string keyword,	[FromQuery] int? nhanVienID)
+	{
+		var result = await _service.SearchAsync(keyword, nhanVienID);
+		return Ok(ApiResponse<List<PhienKhamListReadModel>>.SuccessResponse(result));
+	}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpGet("{id}")]
-	public async Task<IActionResult> GetById(int id)
+	public async Task<ActionResult<ApiResponse<PhienKhamReadModel>>> GetById(int id)
 	{
 		var result = await _service.GetByIdAsync(id);
-		return result == null
-			? NotFound("Phiên khám không tồn tại")
-			: Ok(result);
+		if (result == null)
+			return NotFound(ApiResponse<PhienKhamReadModel>
+				.Fail("Phiên khám không tồn tại"));
+		return Ok(ApiResponse<PhienKhamReadModel>
+			.SuccessResponse(result));
 	}
 }

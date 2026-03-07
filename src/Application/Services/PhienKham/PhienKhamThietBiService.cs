@@ -15,14 +15,6 @@ public class PhienKhamThietBiService
 
 	public async Task<List<PhienKhamThietBiReadModel>> DanhSachTheoPhienKhamAsync(int phienKhamID)
 		=> await _repo.GetByPhienKhamAsync(phienKhamID);
-	public async Task<PhienKhamThietBiResponseDTO?> LayTheoIdAsync(int id)
-	{
-		var entity = await _repo.GetByIdAsync(id);
-		if (entity == null) return null;
-
-		return MapToResponse(entity);
-	}
-	// THÊM THIẾT BỊ VÀO PHIÊN
 	public async Task ThemMoiAsync(PhienKhamThietBiRequestDTO dto)
 	{
 		// Rule: 1 ChiTietID chỉ xuất hiện 1 lần trong 1 phiên khám
