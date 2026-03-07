@@ -45,15 +45,4 @@ public class PhienKhamThietBiService
 
 		return true;
 	}
-
-	private static PhienKhamThietBiResponseDTO MapToResponse(PhienKhamThietBi entity)
-	{
-		return new PhienKhamThietBiResponseDTO
-		{
-			PhienKhamThietBiID = entity.PhienKhamThietBiID,
-			PhienKhamID = entity.PhienKhamID,
-			ChiTietID = entity.ChiTietID,
-			GhiChu = entity.GhiChu
-		};
-	}
 }
