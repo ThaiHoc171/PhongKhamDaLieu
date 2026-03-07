@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Data.SqlClient;
-using Domain.Enums;
-using Domain.Entities;
+﻿using Application.DTOs;
 using Application.Interfaces;
+using Domain.Entities;
+using Domain.Enums;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Data;
 
 
 namespace Infrastructure.Repository;
@@ -37,16 +39,38 @@ public class PhienKhamBenhRepository : IPhienKhamBenhRepository
 		var count = Convert.ToInt32(result);
 		return count > 0;
 	}
-	public async Task<List<PhienKhamBenh>> GetByIdAsync(int phienKhamID)
+	public async Task<PhienKhamBenh?> GetByIdAsync(int id)
 	{
 		const string sql = @"
-		SELECT 
-			PhienKham_BenhID,
-			PhienKhamID,
-			LoaiBenhID,
-			LoaiChanDoan,
-			GhiChu
-		FROM PhienKham_Benh
+			SELECT PhienKham_BenhID, PhienKhamID, LoaiBenhID, LoaiChanDoan, GhiChu
+			FROM PhienKham_Benh
+			WHERE PhienKham_BenhID = @Id";
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@Id", id);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+		{
+			return new PhienKhamBenh(
+				phienKham_BenhID: reader.GetInt32(0),
+				phienKhamID: reader.GetInt32(1),
+				loaiBenhID: reader.GetInt32(2),
+				loaiChanDoan: LoaiChanDoanEnumExtensions.ToEnum(reader.GetString(3)),
+				ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
+			);
+		}
+		return null;
+	}
+	public async Task<List<PhienKhamBenhReadModel>> GetByPhienKhamAsync(int phienKhamID)
+	{
+		const string sql = @"
+		SELECT pk.PhienKham_BenhID, pk.PhienKhamID, pk.LoaiBenhID, lb.TenBenh, pk.LoaiChanDoan, pk.GhiChu
+		FROM PhienKham_Benh pk
+		JOIN LoaiBenh lb ON pk.LoaiBenhID = lb.LoaiBenhID
 		WHERE PhienKhamID = @PhienKhamID";
 
 		await using var conn = new SqlConnection(_connectionString);
@@ -56,17 +80,22 @@ public class PhienKhamBenhRepository : IPhienKhamBenhRepository
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
 
-		var results = new List<PhienKhamBenh>();
+		var results = new List<PhienKhamBenhReadModel>();
 
 		while (await reader.ReadAsync())
 		{
-			results.Add(new PhienKhamBenh(
-				phienKham_BenhID: reader.GetInt32(0),
-				phienKhamID: reader.GetInt32(1),
-				loaiBenhID: reader.GetInt32(2),
-				loaiChanDoan: LoaiChanDoanEnumExtensions.ToEnum(reader.GetString(3)),
-				ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
-			));
+			results.Add(new PhienKhamBenhReadModel
+			{
+				Id = reader.GetInt32(0),
+				PhienKhamID = reader.GetInt32(1),
+				LoaiBenh = new NameResponseDTO
+				{
+					Id = reader.GetInt32(2),
+					Name = reader.GetString(3)
+				},
+				LoaiChanDoan = reader.GetString(4),
+				GhiChu = reader.IsDBNull(5) ? null : reader.GetString(5)
+			});
 		}
 
 		return results;

@@ -35,7 +35,24 @@ public class PhienKhamCLSController : ControllerBase
 			});
 		}
 	}
-
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
+	[HttpGet("chitiet/{phienKhamBenhID}")]
+	public async Task<IActionResult> LayChiTiet(int phienKhamBenhID)
+	{
+		try
+		{
+			var result = await _service.LayChiTietAsync(phienKhamBenhID);
+			return Ok(result);
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, new
+			{
+				message = "Lỗi khi lấy chi tiết",
+				detail = ex.Message
+			});
+		}
+	}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpPost]
 	public async Task<IActionResult> ThemMoi([FromBody] TaoPhienKhamCLSDTO dto)

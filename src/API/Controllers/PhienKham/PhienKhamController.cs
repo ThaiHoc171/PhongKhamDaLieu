@@ -19,7 +19,7 @@ public class PhienKhamController : ControllerBase
 
 	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpPost]
-	public async Task<IActionResult> TaoMoi([FromBody] PhienKhamCreateDTO dto)
+	public async Task<IActionResult> TaoMoi([FromBody] PhienKhamRequestDTO dto)
 	{
 		var phienKhamId = await _service.TaoMoiAsync(dto);
 		return Ok(new { message = "Tạo phiên khám thành công.", phienKhamId });

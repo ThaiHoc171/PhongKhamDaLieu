@@ -7,23 +7,14 @@ namespace Application.Services;
 public class PhienKhamThietBiService
 {
 	private readonly IPhienKhamThietBiRepository _repo;
-	private readonly IPhienKhamRepository _phienKhamRepo;
 
-	public PhienKhamThietBiService(
-		IPhienKhamThietBiRepository repo,
-		IPhienKhamRepository phienKhamRepo)
+	public PhienKhamThietBiService(IPhienKhamThietBiRepository repo)
 	{
 		_repo = repo;
-		_phienKhamRepo = phienKhamRepo;
 	}
 
-	// DANH SÁCH THEO PHIÊN KHÁM
-	//public async Task<List<PhienKhamThietBiResponseDTO>> DanhSachTheoPhienKhamAsync(int phienKhamID)
-	//{
-	//	var entities = await _repo.GetByPhienKhamAsync(phienKhamID);
-	//	return entities.Select(MapToResponse).ToList();
-	//}
-	// LẤY THEO ID		
+	public async Task<List<PhienKhamThietBiReadModel>> DanhSachTheoPhienKhamAsync(int phienKhamID)
+		=> await _repo.GetByPhienKhamAsync(phienKhamID);
 	public async Task<PhienKhamThietBiResponseDTO?> LayTheoIdAsync(int id)
 	{
 		var entity = await _repo.GetByIdAsync(id);
@@ -52,7 +43,6 @@ public class PhienKhamThietBiService
 		await _repo.AddAsync(entity);
 	}
 
-	// CẬP NHẬT GHI CHÚ
 	public async Task<bool> CapNhatAsync(int id, string? ghiChu)
 	{
 		var entity = await _repo.GetByIdAsync(id);
@@ -64,7 +54,6 @@ public class PhienKhamThietBiService
 		return true;
 	}
 
-	// MAP ENTITY → RESPONSE DTO
 	private static PhienKhamThietBiResponseDTO MapToResponse(PhienKhamThietBi entity)
 	{
 		return new PhienKhamThietBiResponseDTO
