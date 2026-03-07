@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs;
+using Domain.Entities;
 
 namespace Application.Interfaces;
 public interface ICaKhamRepository
@@ -6,18 +7,18 @@ public interface ICaKhamRepository
 	//Xuất ca khám theo CaKhamID
 	Task<CaKham?> GetByIdAsync(int caKhamID);
 	//Xuất danh sách tất cả ca khám
-	Task<(List<CaKham> Data, int TotalCount)> GetByStatusAndDayAsync(DateTime ngayKham, string trangThai, int pageNumber, int pageSize);
+	Task<(List<CaKhamListReadModel>, int)> GetCaKhamsAsync(
+		DateTime ngayKham, string trangThai, string loaiCaKham, int pageNumber, int pageSize);
 	Task<List<(int Id, string Ten)>> GetIdAndNameByStatusAsync(string trangThai, DateTime ngayKham);
-	//Xuất danh sách ca khám theo ngày và trạng thái
-	Task<List<CaKham>> LocAsync(DateTime ngayKham, string trangThai);
-	//Xuất danh sách theo BenhNhanID
-	Task<List<CaKham>> GetByBenhNhanAsync(int benhNhanID);
+	Task<CaKhamReadModel?> GetCaKhamDetailAsync(int caKhamId);
+	//Xuất danh sách theo ThongTinID
+	Task<(List<CaKhamListReadModel>, int)> GetByThongTinAsync(int thongTinID, int pageNumber, int pageSize);
 	//Đếm số ca đã có trong ngày
 	Task<int> CountByNgayAndKhungGioAsync(DateTime ngay, int khungGioId, string loaiCaKham);
     //Kiểm tra ca khám đã tồn tại chưa, tránh tạo trùng
     Task<bool> ExistsAsync(DateTime ngay, int khungGioId, string loaiCaKham);
     //Kiểm tra bệnh nhân đã đăng ký khám trong 1 khung giờ
-    Task<bool> CheckBenhNhanDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId);
+    Task<bool> CheckThongTinDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId);
     //Đếm các khung giờ còn ca khám trống
     Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham);
     //Lấy ca khám gần nhất còn trống

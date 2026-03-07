@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.DTOs;
-
+﻿namespace Application.DTOs;
 public class TaoCaKhamDTO
 {
     public DateTime NgayKham { get; set; }
@@ -18,26 +11,26 @@ public class DangKyCaKhamDTO
     public DateTime NgayDat { get; set; }
     public string? GhiChu { get; set; }
 }
-
-public class CapNhatTrangThaiCaKhamDTO
+public class CaKhamListReadModel
 {
-    public string TrangThai { get; set; } = string.Empty;
+	public int CaKhamID { get; set; }
+	public string TenKhungGio { get; set; } = string.Empty;
+	public string TenPhong { get; set; } = string.Empty;
+	public string? HoTen { get; set; }
+	public string? LyDoKham { get; set; }
+	public string TrangThai { get; set; } = string.Empty;
 }
-
-public class CaKhamResponseDTO
+public class CaKhamReadModel
 {
-    public int CaKhamID { get; set; }
-    public string LoaiCaKham { get; set; }
-    public int LichLamViecID { get; set; }
-    public int KhungGioID { get; set; }
-    public int PhongChucNangID { get; set; }
-    public int? BenhNhanID { get; set; }
-    public string? LyDoKham { get; set; }
-
-    public string TrangThai { get; set; } = string.Empty;
-    public DateTime? NgayDat { get; set; }
-    public DateTime NgayKham { get; set; }
-    public string? GhiChu { get; set; }
+	public int CaKhamID { get; set; }
+	public string LoaiCaKham { get; set; } = string.Empty;
+	public int LichLamViecID { get; set; }
+	public string TenKhungGio { get; set; } = string.Empty;
+	public string TenPhong { get; set; } = string.Empty;
+	public string? HoTen { get; set; }
+	public string? LyDoKham { get; set; }
+	public string TrangThai { get; set; } = string.Empty;
+	public DateTime? NgayDat { get; set; }
+	public DateTime NgayKham { get; set; }
+	public string? GhiChu { get; set; }
 }
-
-
