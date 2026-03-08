@@ -23,8 +23,16 @@ public class LieuTrinh_BuoiDieuTriController : ControllerBase
 		[FromBody] TaoBuoiDieuTriDTO dto)
 	{
 		await _service.TaoBuoiDieuTriAsync(dto);
-		return Ok(new { message = "Tạo buổi điều trị thành công" });
-	}
+        try
+        {
+            await _service.TaoBuoiDieuTriAsync(dto);
+            return Ok("Tạo buổi điều trị thành công");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 
 	[Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpPut("{buoiDieuTriID:int}/trang-thai")]
