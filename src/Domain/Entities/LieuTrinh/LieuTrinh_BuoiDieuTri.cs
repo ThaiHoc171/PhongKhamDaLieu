@@ -27,8 +27,8 @@ public class LieuTrinh_BuoiDieuTri
         var ngayDuKienThuc = ngayDuKien
             ?? throw new Exception("Chưa có ngày dự kiến");
 
-        if (ngayThuc < ngayDuKienThuc.AddDays(7))
-            throw new Exception("Khoảng cách giữa các buổi điều trị phải tối thiểu 7 ngày");
+        if (ngayThuc < ngayDuKienThuc)
+            throw new Exception("Ngày thực hiện không được trước ngày dự kiến");
 
         LieuTrinhID = lieuTrinhID;
         CaKhamID = caKhamID;
