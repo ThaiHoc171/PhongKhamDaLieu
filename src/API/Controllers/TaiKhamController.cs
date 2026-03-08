@@ -48,8 +48,22 @@ public class TaiKhamController : ControllerBase
 
         return Ok(result);
     }
+    [Authorize]
+    [HttpGet("benhnhan/{benhNhanId:int}/pending")]
+    public async Task<IActionResult> LayTaiKhamChoXuLy(int benhNhanId)
+    {
+        var taiKhamId = await _service.GetIdByBenhNhanIdAsync(benhNhanId);
 
-	[Authorize(Policy = "LeTanOnly")]
+        if (taiKhamId == null)
+            return NotFound(new { message = "Không có lịch tái khám chờ xử lý." });
+
+        return Ok(new
+        {
+            taiKhamId = taiKhamId
+        });
+    }
+
+    [Authorize(Policy = "LeTanOnly")]
 	[HttpGet("filter")]
     public async Task<IActionResult> Loc(DateTime ngayDuKien, string trangThai)
     {

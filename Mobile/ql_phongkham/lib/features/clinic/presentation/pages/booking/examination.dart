@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/intl.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/examination_repository.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 class LichKhamScreen extends StatefulWidget {
   const LichKhamScreen({super.key});
@@ -297,7 +295,8 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
           final int khungGioId = slot["id"];
           final String gio = slot["gio"];
 
-          final bool isAvailable = khungGioConTrong.contains(khungGioId);
+          final bool isAvailable =
+              khungGioConTrong.contains(khungGioId) && !isPastTimeSlot(gio);
           final bool isSelected = selectedKhungGioId == khungGioId;
 
           return GestureDetector(
@@ -343,5 +342,25 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
         ),
       ),
     );
+  }
+
+  bool isPastTimeSlot(String gio) {
+    final now = DateTime.now();
+
+    // chỉ kiểm tra nếu ngày chọn là hôm nay
+    if (!isSameDay(_currentDay, now)) return false;
+
+    final parts = gio.split(":");
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+
+    final slotTime = DateTime(
+      _currentDay.year,
+      _currentDay.month,
+      _currentDay.day,
+      hour,
+      minute,
+    );
+    return slotTime.isBefore(now);
   }
 }

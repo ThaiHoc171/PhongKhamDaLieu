@@ -6,7 +6,7 @@ public interface ITaiKhamRepository
 {
     Task<TaiKham?> GetByIdAsync(int taiKhamID);
     Task<TaiKham?> GetByBenhNhanIdAsync(int benhNhanID);
-    Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID);
+    Task<int?> GetTaiKhamChoXuLyAsync(int benhNhanID);
     Task<List<TaiKham>> GetAllAsync();
     Task<List<TaiKham>> LocAsync(DateTime ngayDuKien, string trangThai);
     Task<List<TaiKham>> GetListByBenhNhanAsync(int benhNhanID);
