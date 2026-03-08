@@ -226,6 +226,9 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
         benhNhanId,
         token,
       );
+
+      await Future.delayed(const Duration(milliseconds: 300));
+
       if (widget.lieuTrinhID != null) {
         await _repository.addBuoiDieuTri(
           widget.lieuTrinhID!,
