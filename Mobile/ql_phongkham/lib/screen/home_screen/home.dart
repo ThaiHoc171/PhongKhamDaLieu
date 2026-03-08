@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/examination_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/booking/treatment_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/profile/proflie.dart';
 import 'package:ql_phongkham/screen/home_screen/menubar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -52,7 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
         DialogHelper.showThongBao(context, 'Bạn không có lịch tái khám!');
       }
     } catch (e) {
-      DialogHelper.showThongBao(context, 'Lỗi kết nối: $e');
+      DialogHelper.showThongBao(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+      );
     }
   }
 
@@ -67,11 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => LichKhamScreen(taiKhamId: check.taiKhamID),
+            builder: (_) => LichDieuTriScreen(lieuTrinhID: check.lieuTrinhID),
           ),
         );
       } else {
-        DialogHelper.showThongBao(context, 'Bạn không có lịch tái khám!');
+        DialogHelper.showThongBao(context, 'Bạn không có lịch điều trị!');
       }
     } catch (e) {
       DialogHelper.showThongBao(context, 'Lỗi kết nối: $e');
@@ -272,7 +276,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        checkDieuTri();
+                      },
                       child: const Text(
                         'Đặt lịch điều trị',
                         style: TextStyle(fontSize: 15),

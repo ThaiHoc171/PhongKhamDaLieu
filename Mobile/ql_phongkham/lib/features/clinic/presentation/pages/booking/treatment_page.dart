@@ -214,7 +214,7 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
       print("benhNhanId: $benhNhanId");
       if (token == null || benhNhanId == null) return;
 
-      final id = await _repository.getCaKhamId(
+      final id = await _repository.getCaKhamIdDieuTri(
         _currentDay,
         selectedKhungGioId!,
         token,

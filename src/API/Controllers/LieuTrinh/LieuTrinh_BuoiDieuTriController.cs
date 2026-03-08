@@ -17,7 +17,7 @@ public class LieuTrinh_BuoiDieuTriController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize(Policy = "BacSiOnly")]
+	[Authorize]
 	[HttpPost]
 	public async Task<IActionResult> TaoBuoiDieuTri(
 		[FromBody] TaoBuoiDieuTriDTO dto)
