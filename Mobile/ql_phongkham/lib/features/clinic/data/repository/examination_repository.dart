@@ -153,6 +153,6 @@ class LichKhamRepository {
       "benhNhanID": benhNhanId,
     }, token: token);
 
-    return response["message"] ?? "Đăng ký buổi điều trị thành công";
+    return response["message"];
   }
 }

@@ -33,26 +33,28 @@ public class LieuTrinh_BuoiDieuTriService
         if (lich == null)
             throw new Exception("Lịch làm việc không tồn tại");
 
-        var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(dto.BenhNhanID);
+        var lieuTrinh = await _lieuTrinhRepo.GetByIdAsync(dto.LieuTrinhID);
+        if (lieuTrinh == null)
+            throw new Exception("Không tìm thấy liệu trình");
 
         if (lieuTrinh.TrangThai != "Đang điều trị")
             throw new Exception("Liệu trình không ở trạng thái đang điều trị");
 
         int soBuoi = await _repo.CountBySoBuoiAsync(lieuTrinh.LieuTrinhID) + 1;
+
         if (soBuoi > lieuTrinh.TongSoBuoi)
-            throw new Exception("Liệu trình điều trị đã đủ số buổi");
+            throw new Exception("Liệu trình đã đủ số buổi");
 
         DateTime ngayDuKien =
             lieuTrinh.NgayBatDau.AddDays((soBuoi - 1) * 7);
 
-        
         var buoi = new LieuTrinh_BuoiDieuTri(
-            lieuTrinhID: lieuTrinh.LieuTrinhID,
-                caKhamID: dto.CaKhamID,
-                soBuoi: soBuoi,
-                ngayDuKien: ngayDuKien,
-                ngayThucHien: caKham.NgayKham,
-                nhanVienID: lich.NhanVienID
+            lieuTrinh.LieuTrinhID,
+            dto.CaKhamID,
+            soBuoi,
+            ngayDuKien,
+            caKham.NgayKham,
+            lich.NhanVienID
         );
 
         await _repo.AddAsync(buoi);
