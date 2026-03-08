@@ -85,18 +85,15 @@ class LichKhamRepository {
     int benhNhanId,
     String token,
   ) async {
-    try {
-      final response = await ApiClient.get(
-        "TaiKham/benhnhan/$benhNhanId/pending",
-        token: token,
-      );
-
-      if (response["data"] == null) return null;
-
-      return TaiKhamModel.fromJson(response["data"]);
-    } catch (e) {
+    final response = await ApiClient.get(
+      "TaiKham/benhnhan/$benhNhanId/pending",
+      token: token,
+    );
+    if (response == null || response["taiKhamId"] == null) {
       return null;
     }
+
+    return TaiKhamModel.fromJson(response["taiKhamId"]);
   }
 
   Future<String> updateTaiKham(
