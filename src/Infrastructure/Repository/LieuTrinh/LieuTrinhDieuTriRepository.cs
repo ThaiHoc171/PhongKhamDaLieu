@@ -40,6 +40,7 @@ public class LieuTrinhDieuTriRepository : ILieuTrinhDieuTriRepository
                    TongSoBuoi, TrangThai, GhiChu, NgayBatDau, NgayKetThuc
             FROM LieuTrinhDieuTri
             WHERE BenhNhanID = @BenhNhanID
+            AND TrangThai = N'Đang điều trị'
             ORDER BY NgayBatDau DESC";
 
         await using var conn = new SqlConnection(_connectionString);

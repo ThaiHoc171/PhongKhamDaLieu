@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:ql_phongkham/core/network/api_client.dart';
 import 'package:ql_phongkham/features/clinic/data/models/reexam_model.dart';
+import 'package:ql_phongkham/features/clinic/data/models/treatment_model.dart';
 
 class LichKhamRepository {
   Future<List<int>> getKhungGioConTrong(DateTime date, String token) async {
@@ -70,6 +71,22 @@ class LichKhamRepository {
     return response['data'];
   }
 
+  Future<bool> checkDangKyDieuTri(
+    DateTime date,
+    int khungGioId,
+    int benhNhanId,
+    String token,
+  ) async {
+    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+    final response = await ApiClient.get(
+      "CaKham/kiemtra-dadangky?ngay=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Điều trị&benhNhanId=$benhNhanId",
+      token: token,
+    );
+
+    return response['data'];
+  }
+
   Future<String> dangKyKham(int caKhamId, int benhNhanId, String token) async {
     final response = await ApiClient.put("CaKham/$caKhamId/dangky", {
       'benhNhanID': benhNhanId,
@@ -107,5 +124,33 @@ class LichKhamRepository {
     }, token: token);
 
     return response["message"] ?? "Cập nhật thành công";
+  }
+
+  Future<LieuTrinhDieuTriModel?> checkDieuTriPending(
+    int benhNhanId,
+    String token,
+  ) async {
+    final response = await ApiClient.get(
+      "LieuTrinhDieuTri/benhnhan/$benhNhanId",
+      token: token,
+    );
+    if (response == null || response == null) {
+      return null;
+    }
+
+    return LieuTrinhDieuTriModel.fromJson(response);
+  }
+
+  Future<String> addBuoiDieuTri(
+    int lieuTrinhId,
+    int caKhamId,
+    String token,
+  ) async {
+    final response = await ApiClient.post("LieuTrinh_BuoiDieuTri", {
+      "lieuTrinhID": lieuTrinhId,
+      "caKhamID": caKhamId,
+    }, token: token);
+
+    return response["message"] ?? "Đăng ký buổi điều trị thành công";
   }
 }

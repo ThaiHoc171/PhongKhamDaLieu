@@ -56,6 +56,28 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> checkDieuTri() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('accessToken')!;
+      final benhNhanId = prefs.getInt('benhNhanId')!;
+      final repo = LichKhamRepository();
+      final check = await repo.checkDieuTriPending(benhNhanId, token);
+      if (check != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LichKhamScreen(taiKhamId: check.taiKhamID),
+          ),
+        );
+      } else {
+        DialogHelper.showThongBao(context, 'Bạn không có lịch tái khám!');
+      }
+    } catch (e) {
+      DialogHelper.showThongBao(context, 'Lỗi kết nối: $e');
+    }
+  }
+
   bool duocDangKyTaiKham(DateTime ngayDuKien) {
     final today = DateTime.now();
 
