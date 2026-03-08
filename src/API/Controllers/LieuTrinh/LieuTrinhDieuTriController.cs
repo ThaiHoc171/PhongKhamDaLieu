@@ -34,7 +34,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 			: Ok(result);
 	}
 
-	[Authorize(Policy = "BacSiOnly")]
+	[Authorize]
 	[HttpGet("benhnhan/{benhNhanId:int}")]
 	public async Task<IActionResult> LayTheoBenhNhan(int benhNhanId)
 	{
