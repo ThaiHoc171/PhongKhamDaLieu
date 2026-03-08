@@ -15,7 +15,7 @@ public class PhienKhamController : ControllerBase
 		_service = service;
 	}
 	[Authorize(Policy = "BacSiOrLeTan")]
-	[HttpPost("{caKhamId}")]
+	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> TaoMoi([FromQuery] int caKhamID)
 	{
 		var phienKhamId = await _service.TaoMoiAsync(caKhamID);
