@@ -211,6 +211,7 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
       final benhNhanId = prefs.getInt('benhNhanId');
+      final thongTinId = prefs.getInt('thongTinId');
       if (token == null || benhNhanId == null) return;
 
       final id = await _repository.getCaKhamIdDieuTri(
@@ -223,7 +224,7 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
 
       final message = await _repository.dangKyKham(
         caKhamId!,
-        benhNhanId,
+        thongTinId!,
         token,
       );
 
