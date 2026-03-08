@@ -110,6 +110,12 @@ public class ThongTinCaNhanController : ControllerBase
 			data = result
 		});
 	}
+	[Authorize(Policy = "LeTanOnly")]
+	[HttpGet("BenhNhan/Combobox")]
+	public async Task<IActionResult> GetComboboxAsync()
+	{
+		return Ok(await _service.GetCombobox());
+	}
 
 	[HttpPut("{id}")]
 	public async Task<IActionResult> CapNhat(

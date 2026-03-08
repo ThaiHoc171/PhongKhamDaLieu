@@ -97,6 +97,15 @@ public class ThongTinCaNhanService
 		return list.Select(MapToResponse).ToList();
 	}
 
+	public async Task<List<NameResponseDTO>> GetCombobox()
+	{
+		var list = await _repo.GetIdAndNameAsync();
+		return list.Select(e => new NameResponseDTO
+		{
+			Id = e.Id,
+			Name = e.Ten
+		}).ToList();
+	} 
 	public async Task<ThongTinCaNhanResponseDTO?> LayChiTietAsync(int id)
 	{
 		var entity = await _repo.GetByIdAsync(id);
