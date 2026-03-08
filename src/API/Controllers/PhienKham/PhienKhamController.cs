@@ -60,10 +60,11 @@ public class PhienKhamController : ControllerBase
 	}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpGet("timkiem")]
-	public async Task<ActionResult<ApiResponse<List<PhienKhamListReadModel>>>> Search([FromQuery] string keyword,	[FromQuery] int? nhanVienID)
+	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> Search(
+		[FromQuery] string keyword, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15,[FromQuery] int? nhanVienID = null)
 	{
-		var result = await _service.SearchAsync(keyword, nhanVienID);
-		return Ok(ApiResponse<List<PhienKhamListReadModel>>.SuccessResponse(result));
+		var result = await _service.SearchAsync(keyword, pageNumber, pageSize, nhanVienID);
+		return Ok(ApiResponse<PagedResult<PhienKhamListReadModel>>.SuccessResponse(result));
 	}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpGet("{id}")]
