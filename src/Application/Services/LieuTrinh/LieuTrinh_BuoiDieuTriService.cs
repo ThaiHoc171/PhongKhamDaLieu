@@ -24,8 +24,13 @@ public class LieuTrinh_BuoiDieuTriService
         var caKham = await _caKhamRepo.GetByIdAsync(dto.CaKhamID);
         if (caKham == null || caKham.ThongTinID == null)
             throw new Exception("Ca khám không hợp lệ");
+        var checklich = await _caKhamRepo.GetLichAsync(dto.CaKhamID);
+        if (checklich == 0)
+            throw new Exception("Không tìm thấy lịch làm việc");
 
-        var lich = await _lichLamViecRepo.GetByIdAsync(dto.CaKhamID);
+        var lich = await _lichLamViecRepo.GetByIdAsync(checklich);
+        if (lich == null)
+            throw new Exception("Lịch làm việc không tồn tại");
 
         int benhNhanID = caKham.ThongTinID.Value;
 
