@@ -28,8 +28,8 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmDangNhap));
 			this.pnlHeader = new Guna.UI2.WinForms.Guna2Panel();
-			this.btnExit = new Guna.UI2.WinForms.Guna2CircleButton();
 			this.pnlContent = new Guna.UI2.WinForms.Guna2Panel();
 			this.lblErrorRpt = new System.Windows.Forms.Label();
 			this.btnSubmit = new Guna.UI2.WinForms.Guna2CircleButton();
@@ -41,41 +41,30 @@
 			this.lblTitleSiginIn = new System.Windows.Forms.Label();
 			this.lblNamePhongKham = new System.Windows.Forms.Label();
 			this.pnlBackGround = new Guna.UI2.WinForms.Guna2Panel();
+			this.picBanner = new System.Windows.Forms.PictureBox();
+			this.btnExit = new Guna.UI2.WinForms.Guna2CircleButton();
 			this.pnlHeader.SuspendLayout();
 			this.pnlContent.SuspendLayout();
+			this.pnlBackGround.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.picBanner)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// pnlHeader
 			// 
 			this.pnlHeader.BackColor = System.Drawing.SystemColors.ScrollBar;
+			this.pnlHeader.BorderColor = System.Drawing.Color.Silver;
 			this.pnlHeader.Controls.Add(this.btnExit);
 			this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
 			this.pnlHeader.Location = new System.Drawing.Point(0, 0);
 			this.pnlHeader.Name = "pnlHeader";
-			this.pnlHeader.Size = new System.Drawing.Size(1100, 33);
+			this.pnlHeader.Size = new System.Drawing.Size(1338, 33);
 			this.pnlHeader.TabIndex = 2;
-			this.pnlHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pnlHeader_MouseDown);
-			// 
-			// btnExit
-			// 
-			this.btnExit.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-			this.btnExit.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-			this.btnExit.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-			this.btnExit.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-			this.btnExit.FillColor = System.Drawing.Color.Transparent;
-			this.btnExit.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.btnExit.ForeColor = System.Drawing.Color.White;
-			this.btnExit.Image = global::Clinic.WinForms.Properties.Resources.exit;
-			this.btnExit.ImageSize = new System.Drawing.Size(30, 30);
-			this.btnExit.Location = new System.Drawing.Point(1058, 1);
-			this.btnExit.Name = "btnExit";
-			this.btnExit.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-			this.btnExit.Size = new System.Drawing.Size(30, 30);
-			this.btnExit.TabIndex = 0;
-			this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
 			// 
 			// pnlContent
 			// 
+			this.pnlContent.BackColor = System.Drawing.Color.White;
+			this.pnlContent.BorderColor = System.Drawing.Color.DarkGray;
+			this.pnlContent.BorderThickness = 3;
 			this.pnlContent.Controls.Add(this.lblErrorRpt);
 			this.pnlContent.Controls.Add(this.btnSubmit);
 			this.pnlContent.Controls.Add(this.chkHienMK);
@@ -88,7 +77,7 @@
 			this.pnlContent.Dock = System.Windows.Forms.DockStyle.Left;
 			this.pnlContent.Location = new System.Drawing.Point(0, 33);
 			this.pnlContent.Name = "pnlContent";
-			this.pnlContent.Size = new System.Drawing.Size(432, 667);
+			this.pnlContent.Size = new System.Drawing.Size(413, 649);
 			this.pnlContent.TabIndex = 3;
 			// 
 			// lblErrorRpt
@@ -205,9 +194,9 @@
 			// lblTitleSiginIn
 			// 
 			this.lblTitleSiginIn.Font = new System.Drawing.Font("Palatino Linotype", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblTitleSiginIn.Location = new System.Drawing.Point(0, 140);
+			this.lblTitleSiginIn.Location = new System.Drawing.Point(50, 140);
 			this.lblTitleSiginIn.Name = "lblTitleSiginIn";
-			this.lblTitleSiginIn.Size = new System.Drawing.Size(432, 37);
+			this.lblTitleSiginIn.Size = new System.Drawing.Size(332, 37);
 			this.lblTitleSiginIn.TabIndex = 1;
 			this.lblTitleSiginIn.Text = "Đăng Nhập";
 			this.lblTitleSiginIn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -215,37 +204,75 @@
 			// lblNamePhongKham
 			// 
 			this.lblNamePhongKham.Font = new System.Drawing.Font("Palatino Linotype", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.lblNamePhongKham.Location = new System.Drawing.Point(0, 32);
+			this.lblNamePhongKham.Location = new System.Drawing.Point(50, 32);
 			this.lblNamePhongKham.Name = "lblNamePhongKham";
-			this.lblNamePhongKham.Size = new System.Drawing.Size(432, 37);
+			this.lblNamePhongKham.Size = new System.Drawing.Size(332, 37);
 			this.lblNamePhongKham.TabIndex = 0;
-			this.lblNamePhongKham.Text = "Tên Phòng Khám";
+			this.lblNamePhongKham.Text = "DA LIỄU HOÀN MỸ";
 			this.lblNamePhongKham.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// pnlBackGround
 			// 
+			this.pnlBackGround.BackColor = System.Drawing.Color.Silver;
+			this.pnlBackGround.BorderColor = System.Drawing.Color.Gray;
+			this.pnlBackGround.BorderThickness = 3;
+			this.pnlBackGround.Controls.Add(this.picBanner);
 			this.pnlBackGround.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pnlBackGround.Location = new System.Drawing.Point(432, 33);
+			this.pnlBackGround.Location = new System.Drawing.Point(413, 33);
 			this.pnlBackGround.Name = "pnlBackGround";
-			this.pnlBackGround.Size = new System.Drawing.Size(668, 667);
+			this.pnlBackGround.Size = new System.Drawing.Size(925, 649);
 			this.pnlBackGround.TabIndex = 4;
 			this.pnlBackGround.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlBackGround_Paint);
+			// 
+			// picBanner
+			// 
+			this.picBanner.BackColor = System.Drawing.Color.Transparent;
+			this.picBanner.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.picBanner.Image = global::Clinic.WinForms.Properties.Resources.banner;
+			this.picBanner.Location = new System.Drawing.Point(0, 0);
+			this.picBanner.Name = "picBanner";
+			this.picBanner.Size = new System.Drawing.Size(925, 649);
+			this.picBanner.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+			this.picBanner.TabIndex = 0;
+			this.picBanner.TabStop = false;
+			// 
+			// btnExit
+			// 
+			this.btnExit.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+			this.btnExit.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+			this.btnExit.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+			this.btnExit.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+			this.btnExit.Dock = System.Windows.Forms.DockStyle.Right;
+			this.btnExit.FillColor = System.Drawing.Color.Transparent;
+			this.btnExit.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.btnExit.ForeColor = System.Drawing.Color.White;
+			this.btnExit.Image = global::Clinic.WinForms.Properties.Resources.exit;
+			this.btnExit.ImageSize = new System.Drawing.Size(30, 30);
+			this.btnExit.Location = new System.Drawing.Point(1308, 0);
+			this.btnExit.Name = "btnExit";
+			this.btnExit.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+			this.btnExit.Size = new System.Drawing.Size(30, 33);
+			this.btnExit.TabIndex = 0;
+			this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
 			// 
 			// FrmDangNhap
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1100, 700);
+			this.ClientSize = new System.Drawing.Size(1338, 682);
 			this.Controls.Add(this.pnlBackGround);
 			this.Controls.Add(this.pnlContent);
 			this.Controls.Add(this.pnlHeader);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "FrmDangNhap";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "FrmDangNhap";
 			this.pnlHeader.ResumeLayout(false);
 			this.pnlContent.ResumeLayout(false);
 			this.pnlContent.PerformLayout();
+			this.pnlBackGround.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.picBanner)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -265,5 +292,6 @@
 		private Guna.UI2.WinForms.Guna2CheckBox chkHienMK;
 		private Guna.UI2.WinForms.Guna2CircleButton btnSubmit;
 		private System.Windows.Forms.Label lblErrorRpt;
+		private System.Windows.Forms.PictureBox picBanner;
 	}
 }

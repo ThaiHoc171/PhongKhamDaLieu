@@ -18,7 +18,10 @@ public class ToaThuocService
 		_chiTietRepo = chiTietRepo;
 		_phienKhamRepo = phienKhamRepo;
 	}
-
+	public async Task<bool> KiemTraTonTai(int phienKhamId)
+	{
+		return await _toaThuocRepo.IsToaThuocExits(phienKhamId);
+	}
 	public async Task<int> TaoToaThuocAsync(ToaThuocRequestDTO dto)
 	{
 		var phienKham = await _phienKhamRepo.GetByIdAsync(dto.PhienKhamID)
