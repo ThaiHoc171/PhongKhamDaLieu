@@ -16,9 +16,9 @@ public class PhienKhamController : ControllerBase
 	}
 	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<int>>> TaoMoi([FromBody] PhienKhamRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<int>>> TaoMoi([FromQuery] int caKhamID)
 	{
-		var phienKhamId = await _service.TaoMoiAsync(dto);
+		var phienKhamId = await _service.TaoMoiAsync(caKhamID);
 		return Ok(ApiResponse<int>.SuccessResponse(phienKhamId, "Tạo phiên khám thành công"	));
 	}
 	[Authorize(Policy = "BacSiOnly")]
@@ -60,10 +60,11 @@ public class PhienKhamController : ControllerBase
 	}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpGet("timkiem")]
-	public async Task<ActionResult<ApiResponse<List<PhienKhamListReadModel>>>> Search([FromQuery] string keyword,	[FromQuery] int? nhanVienID)
+	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> Search(
+		[FromQuery] string keyword, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15,[FromQuery] int? nhanVienID = null)
 	{
-		var result = await _service.SearchAsync(keyword, nhanVienID);
-		return Ok(ApiResponse<List<PhienKhamListReadModel>>.SuccessResponse(result));
+		var result = await _service.SearchAsync(keyword, pageNumber, pageSize, nhanVienID);
+		return Ok(ApiResponse<PagedResult<PhienKhamListReadModel>>.SuccessResponse(result));
 	}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpGet("{id}")]
