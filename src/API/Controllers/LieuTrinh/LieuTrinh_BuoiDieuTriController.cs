@@ -17,12 +17,10 @@ public class LieuTrinh_BuoiDieuTriController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize]
-	[HttpPost]
-	public async Task<IActionResult> TaoBuoiDieuTri(
-		[FromBody] TaoBuoiDieuTriDTO dto)
-	{
-		await _service.TaoBuoiDieuTriAsync(dto);
+    [HttpPost]
+    public async Task<IActionResult> TaoBuoiDieuTri(
+    [FromBody] TaoBuoiDieuTriDTO dto)
+    {
         try
         {
             await _service.TaoBuoiDieuTriAsync(dto);
@@ -34,7 +32,7 @@ public class LieuTrinh_BuoiDieuTriController : ControllerBase
         }
     }
 
-	[Authorize(Policy = "BacSiOrKyThuatVien")]
+    [Authorize(Policy = "BacSiOrKyThuatVien")]
 	[HttpPut("{buoiDieuTriID:int}/trang-thai")]
 	public async Task<IActionResult> CapNhatTrangThai(
 		int buoiDieuTriID,
