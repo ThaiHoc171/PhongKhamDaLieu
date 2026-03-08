@@ -58,13 +58,13 @@ class LichKhamRepository {
   Future<bool> checkDangKy(
     DateTime date,
     int khungGioId,
-    int benhNhanId,
+    int thongTinId,
     String token,
   ) async {
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
 
     final response = await ApiClient.get(
-      "CaKham/kiemtra-dadangky?ngay=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Khám&benhNhanId=$benhNhanId",
+      "CaKham/kiemtra-dadangky?ngay=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Khám&thongTinId=$thongTinId",
       token: token,
     );
 
@@ -74,13 +74,13 @@ class LichKhamRepository {
   Future<bool> checkDangKyDieuTri(
     DateTime date,
     int khungGioId,
-    int benhNhanId,
+    int thongTinId,
     String token,
   ) async {
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
 
     final response = await ApiClient.get(
-      "CaKham/kiemtra-dadangky?ngay=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Điều trị&benhNhanId=$benhNhanId",
+      "CaKham/kiemtra-dadangky?ngay=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Điều trị&thongTinId=$thongTinId",
       token: token,
     );
 
@@ -134,7 +134,7 @@ class LichKhamRepository {
       "LieuTrinhDieuTri/benhnhan/$benhNhanId",
       token: token,
     );
-    if (response == null || response == null) {
+    if (response == null) {
       return null;
     }
 
@@ -144,13 +144,11 @@ class LichKhamRepository {
   Future<String> addBuoiDieuTri(
     int lieuTrinhId,
     int caKhamId,
-    int benhNhanId,
     String token,
   ) async {
     final response = await ApiClient.post("LieuTrinh_BuoiDieuTri", {
       "lieuTrinhID": lieuTrinhId,
       "caKhamID": caKhamId,
-      "benhNhanID": benhNhanId,
     }, token: token);
 
     return response["message"];

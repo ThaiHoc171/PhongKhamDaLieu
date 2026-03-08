@@ -155,24 +155,28 @@ public class CaKhamRepository : ICaKhamRepository
 			list.Add(reader.GetInt32(0));
 		return list;
 	}
-	public async Task<int> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
-	{
-		const string sql = @"SELECT TOP 1 CaKhamID
-                             FROM CaKham
-                             WHERE NgayKham = @NgayKham
-                               AND KhungGioID = @KhungGioID
-                               AND LoaiCaKham = @LoaiCaKham
-                               AND TrangThai = N'Trống'
-                             ORDER BY CaKhamID ASC";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@NgayKham", ngayKham);
-		cmd.Parameters.AddWithValue("@KhungGioID", khungGioId);
-		cmd.Parameters.AddWithValue("@LoaiCaKham", loaiCaKham);
-		await conn.OpenAsync();
-		var result = await cmd.ExecuteScalarAsync();
-		return result == null ? 0 : (int)result;
-	}
+    public async Task<int> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
+    {
+        const string sql = @"SELECT TOP 1 CaKhamID
+                         FROM CaKham
+                         WHERE CAST(NgayKham AS DATE) = @NgayKham
+                           AND KhungGioID = @KhungGioID
+                           AND LoaiCaKham = @LoaiCaKham
+                           AND TrangThai = N'Trống'
+                         ORDER BY CaKhamID ASC";
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@NgayKham", ngayKham.Date);
+        cmd.Parameters.AddWithValue("@KhungGioID", khungGioId);
+        cmd.Parameters.AddWithValue("@LoaiCaKham", loaiCaKham);
+
+        await conn.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+
+        return result == null ? 0 : (int)result;
+    }
     public async Task<int> GetLichAsync(int CaKhamID)
     {
         const string sql = @"SELECT LichLamViecID
