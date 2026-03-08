@@ -9,6 +9,6 @@ public interface IPhienKhamRepository
 	Task<int?> GetBenhNhanIdByPhienKhamIdAsync(int phienKhamID);
 	Task<(List<PhienKhamListReadModel>, int)>	GetPagedAsync(int page, int size, int? nhanVienID, string? trangThai);
 	Task<(List<PhienKhamListReadModel>, int)>	GetByBenhNhanPagedAsync(int benhNhanID, int page, int size);
-	Task<List<PhienKhamListReadModel>> SearchAsync(string keyword, int? nhanVienID);
+	Task<(List<PhienKhamListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size, int? nhanVienID);
 	Task<PhienKhamReadModel?> GetDetailAsync(int id);
 }
