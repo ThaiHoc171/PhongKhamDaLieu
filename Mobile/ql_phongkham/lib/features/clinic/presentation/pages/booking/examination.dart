@@ -201,12 +201,12 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       final prefs = await SharedPreferences.getInstance();
 
       final token = prefs.getString('accessToken');
-      final benhNhanId = prefs.getInt('benhNhanId');
+      final thongTinId = prefs.getInt('thongTinId');
 
       final daDangKy = await _repository.checkDangKy(
         _currentDay,
         selectedKhungGioId!,
-        benhNhanId!,
+        thongTinId!,
         token!,
       );
 
@@ -237,9 +237,9 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
-      final benhNhanId = prefs.getInt('benhNhanId');
-      print("benhNhanId: $benhNhanId");
-      if (token == null || benhNhanId == null) return;
+      final thongTinId = prefs.getInt('thongTinId');
+
+      if (token == null || thongTinId == null) return;
 
       final id = await _repository.getCaKhamId(
         _currentDay,
@@ -251,7 +251,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
 
       final message = await _repository.dangKyKham(
         caKhamId!,
-        benhNhanId,
+        thongTinId,
         token,
       );
       if (widget.taiKhamId != null) {

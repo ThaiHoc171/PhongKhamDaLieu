@@ -87,9 +87,9 @@ class LichKhamRepository {
     return response['data'];
   }
 
-  Future<String> dangKyKham(int caKhamId, int benhNhanId, String token) async {
+  Future<String> dangKyKham(int caKhamId, int thongTinId, String token) async {
     final response = await ApiClient.put("CaKham/$caKhamId/dangky", {
-      'benhNhanID': benhNhanId,
+      'thongTinID': thongTinId,
       'lyDoKham': 'Khám da liễu',
       'ngayDat': DateTime.now().toIso8601String(),
       'ghiChu': '',
