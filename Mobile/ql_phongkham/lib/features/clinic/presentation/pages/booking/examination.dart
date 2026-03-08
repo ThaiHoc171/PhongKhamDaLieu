@@ -5,7 +5,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/examination_repository.dart';
 
 class LichKhamScreen extends StatefulWidget {
-  const LichKhamScreen({super.key});
+  final int? taiKhamId;
+  const LichKhamScreen({super.key, this.taiKhamId});
 
   @override
   State<LichKhamScreen> createState() => _LichKhamScreenState();
@@ -253,11 +254,11 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
         benhNhanId,
         token,
       );
-
+      if (widget.taiKhamId != null) {
+        await _repository.updateTaiKham(widget.taiKhamId!, caKhamId!, token);
+      }
       DialogHelper.showSnackSuccess(context, message);
     } catch (e) {
-      print("dangkyKham error: $e");
-
       DialogHelper.showSnacFailed(context, e.toString());
     }
 

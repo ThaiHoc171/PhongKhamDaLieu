@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
-import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/examination_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/profile/proflie.dart';
 import 'package:ql_phongkham/screen/home_screen/menubar.dart';
@@ -32,13 +32,21 @@ class _HomeScreenState extends State<HomeScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken')!;
       final benhNhanId = prefs.getInt('benhNhanId')!;
-      final repo = ReBookingRepository();
-      final check = await repo.checkTaiKham(token, benhNhanId);
-
-      if (check) {
+      final repo = LichKhamRepository();
+      final check = await repo.checkTaiKhamPending(benhNhanId, token);
+      if (check != null) {
+        if (!duocDangKyTaiKham(check.ngayDuKien)) {
+          DialogHelper.showSnacFailed(
+            context,
+            "Chỉ được đặt lịch sau ngày tái khám 7 ngày",
+          );
+          return;
+        }
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => LichKhamScreen()),
+          MaterialPageRoute(
+            builder: (_) => LichKhamScreen(taiKhamId: check.taiKhamID),
+          ),
         );
       } else {
         DialogHelper.showThongBao(context, 'Bạn không có lịch tái khám!');
@@ -48,22 +56,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void showThongBao(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Thông báo"),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      ),
+  bool duocDangKyTaiKham(DateTime ngayDuKien) {
+    final today = DateTime.now();
+
+    final todayOnly = DateTime(today.year, today.month, today.day);
+    final ngayDuKienOnly = DateTime(
+      ngayDuKien.year,
+      ngayDuKien.month,
+      ngayDuKien.day,
     );
+
+    return todayOnly.isAfter(ngayDuKienOnly) ||
+        todayOnly.isAtSameMomentAs(ngayDuKienOnly);
   }
 
   @override
