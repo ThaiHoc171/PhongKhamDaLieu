@@ -211,7 +211,6 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
       final benhNhanId = prefs.getInt('benhNhanId');
-      print("benhNhanId: $benhNhanId");
       if (token == null || benhNhanId == null) return;
 
       final id = await _repository.getCaKhamIdDieuTri(
@@ -228,7 +227,12 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
         token,
       );
       if (widget.lieuTrinhID != null) {
-        await _repository.addBuoiDieuTri(widget.lieuTrinhID!, caKhamId!, token);
+        await _repository.addBuoiDieuTri(
+          widget.lieuTrinhID!,
+          caKhamId!,
+          benhNhanId,
+          token,
+        );
       }
       DialogHelper.showSnackSuccess(context, message);
     } catch (e) {
@@ -284,9 +288,7 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
             child: Container(
               decoration: BoxDecoration(
                 color: !isAvailable
-                    ? Colors
-                          .grey
-                          .shade300 // full
+                    ? Colors.grey.shade300
                     : isSelected
                     ? Colors.blue
                     : Colors.white,
@@ -321,7 +323,6 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
   bool isPastTimeSlot(String gio) {
     final now = DateTime.now();
 
-    // chỉ kiểm tra nếu ngày chọn là hôm nay
     if (!isSameDay(_currentDay, now)) return false;
 
     final parts = gio.split(":");
