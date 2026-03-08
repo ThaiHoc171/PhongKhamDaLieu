@@ -136,7 +136,7 @@ public class LichLamViecRepository : ILichLamViecRepository
 			var phong = reader.GetInt32(reader.GetOrdinal("PhongChucNangID"));
 			return (nhanvien, phong);
 		}
-		return (0, 0);
+		throw new Exception("Không tìm thấy lịch làm việc");
 	}
 	public async Task AddAsync(LichLamViec entity)
 	{

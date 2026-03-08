@@ -52,12 +52,12 @@ public class BenhNhanRepository : IBenhNhanRepository
 			SELECT BenhNhanID
 			FROM BenhNhan 
 			WHERE ThongTinID = @id";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@id", id);
 		await conn.OpenAsync();
-		return Convert.ToInt32(await cmd.ExecuteReaderAsync());
+		var result = await cmd.ExecuteScalarAsync();
+		return result == null ? 0 : Convert.ToInt32(result);
 	}
 	public async Task<List<BenhNhan>> GetBenhNhans(string keyword)
 	{

@@ -34,9 +34,14 @@ public class PhienKhamService
 		
 		if (caKham?.ThongTinID == null)
 			throw new Exception("Không có ThongTinID");
-
-		var nv = await _lichRepo.GetNhanVienById(caKham.CaKhamID);
+		var nv = await _lichRepo.GetNhanVienById(caKham.LichLamViecID);
+		if (nv.nhanvien == 0)
+			throw new Exception("Không tìm thấy nhân viên cho ca khám");
+		if (nv.phong == 0)
+			throw new Exception("Không tìm thấy phòng chức năng");
 		var bn = await _benhNhanRepo.GetIdByThongTinAsync(caKham.ThongTinID.Value);
+		if (bn == null)
+			throw new Exception("Bệnh nhân không tồn tại");
 		// Tạo phiên khám mới
 		var entity = new PhienKham(
 			caKhamID,
