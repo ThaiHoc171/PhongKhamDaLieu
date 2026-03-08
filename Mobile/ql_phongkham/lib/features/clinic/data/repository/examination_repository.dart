@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:ql_phongkham/core/network/api_client.dart';
+import 'package:ql_phongkham/features/clinic/data/models/reexam_model.dart';
 
 class LichKhamRepository {
   Future<List<int>> getKhungGioConTrong(DateTime date, String token) async {
@@ -80,14 +81,19 @@ class LichKhamRepository {
     return response["message"];
   }
 
-  Future<int?> checkTaiKhamPending(int benhNhanId, String token) async {
+  Future<TaiKhamModel?> checkTaiKhamPending(
+    int benhNhanId,
+    String token,
+  ) async {
     try {
       final response = await ApiClient.get(
         "TaiKham/benhnhan/$benhNhanId/pending",
         token: token,
       );
 
-      return response["taiKhamId"];
+      if (response["data"] == null) return null;
+
+      return TaiKhamModel.fromJson(response["data"]);
     } catch (e) {
       return null;
     }
@@ -103,6 +109,6 @@ class LichKhamRepository {
       "caKhamID": caKhamId,
     }, token: token);
 
-    return response["message"];
+    return response["message"] ?? "Cập nhật thành công";
   }
 }

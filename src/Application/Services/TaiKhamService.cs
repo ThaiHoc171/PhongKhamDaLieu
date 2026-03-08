@@ -87,12 +87,13 @@ public class TaiKhamService
 
         return MapToDto(tk);
     }
-    public async Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID)
+    public async Task<TaiKhamResponeDTO?> GetIdByBenhNhanIdAsync(int benhNhanID)
     {
-        var taiKhamId = await _taiKhamRepo
+        var tk = await _taiKhamRepo
         .GetTaiKhamChoXuLyAsync(benhNhanID);
+        if (tk == null) return null;
 
-        return taiKhamId;
+        return MapToDto(tk);
     }
 
     private static TaiKhamResponeDTO MapToDto(TaiKham tk)
