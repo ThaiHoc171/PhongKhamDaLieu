@@ -13,11 +13,40 @@ class LichKhamRepository {
     return List<int>.from(response['data']);
   }
 
+  Future<List<int>> getKhungGioConTrongDieuTri(
+    DateTime date,
+    String token,
+  ) async {
+    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+    final response = await ApiClient.get(
+      "CaKham/khunggio-trong?ngayKham=$formattedDate&loaiCaKham=Điều trị",
+      token: token,
+    );
+
+    return List<int>.from(response['data']);
+  }
+
   Future<int> getCaKhamId(DateTime date, int khungGioId, String token) async {
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
 
     final response = await ApiClient.get(
       "CaKham/ca-trong?ngayKham=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Khám",
+      token: token,
+    );
+
+    return response['data'];
+  }
+
+  Future<int> getCaKhamIdDieuTri(
+    DateTime date,
+    int khungGioId,
+    String token,
+  ) async {
+    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+    final response = await ApiClient.get(
+      "CaKham/ca-trong?ngayKham=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Điều trị",
       token: token,
     );
 
@@ -46,6 +75,32 @@ class LichKhamRepository {
       'lyDoKham': 'Khám da liễu',
       'ngayDat': DateTime.now().toIso8601String(),
       'ghiChu': '',
+    }, token: token);
+
+    return response["message"];
+  }
+
+  Future<int?> checkTaiKhamPending(int benhNhanId, String token) async {
+    try {
+      final response = await ApiClient.get(
+        "TaiKham/benhnhan/$benhNhanId/pending",
+        token: token,
+      );
+
+      return response["taiKhamId"];
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<String> updateTaiKham(
+    int taiKhamId,
+    int caKhamId,
+    String token,
+  ) async {
+    final response = await ApiClient.put("TaiKham/$taiKhamId", {
+      "trangThai": "Đang xử lý",
+      "caKhamID": caKhamId,
     }, token: token);
 
     return response["message"];
