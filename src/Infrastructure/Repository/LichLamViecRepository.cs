@@ -3,9 +3,7 @@ using Microsoft.Data.SqlClient;
 using Domain.Entities;
 using Application.Interfaces;
 using System.Data;
-
 namespace Infrastructure.Repository;
-
 public class LichLamViecRepository : ILichLamViecRepository
 {
 	private readonly string _connectionString;
@@ -26,10 +24,8 @@ public class LichLamViecRepository : ILichLamViecRepository
 		cmd.Parameters.AddWithValue("@Id", ID);
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		if (!await reader.ReadAsync())
 			return null;
-
 		return new LichLamViec(
 			lichLamViecID: reader.GetInt32(0),
 			nhanVienID: reader.GetInt32(1),
@@ -71,7 +67,6 @@ public class LichLamViecRepository : ILichLamViecRepository
 		cmd.Parameters.AddWithValue("@NhanVienID", NhanVienID);
 		cmd.Parameters.AddWithValue("@TuNgay", tuNgay.Date);
 		cmd.Parameters.AddWithValue("@DenNgay", denNgay.Date);
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
 		while (await reader.ReadAsync())
@@ -92,11 +87,9 @@ public class LichLamViecRepository : ILichLamViecRepository
         SELECT n.ChucVuID
         FROM LichLamViecNhanVien l, NhanVien n
         WHERE LichLamViecID = @Id AND l.NhanVienID = n.NhanVienID";
-
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("@Id", lichLamViecId);
-
         await conn.OpenAsync();
         return (int?)await cmd.ExecuteScalarAsync();
     }
@@ -106,16 +99,12 @@ public class LichLamViecRepository : ILichLamViecRepository
         SELECT LichLamViecID, NhanVienID, Ngay, CaLamViec, GhiChu
         FROM LichLamViecNhanVien
         WHERE Ngay >= @tuNgay AND Ngay < @denNgay";
-
         var list = new List<LichLamViec>();
-
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@tuNgay", SqlDbType.DateTime).Value = tuNgay;
         cmd.Parameters.Add("@denNgay", SqlDbType.DateTime).Value = denNgay;
-
         await conn.OpenAsync();
-
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
@@ -127,24 +116,40 @@ public class LichLamViecRepository : ILichLamViecRepository
                 ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
             ));
         }
-
         return list;
     }
-
-    public async Task AddAsync(LichLamViec entity)
+	public async Task<(int nhanvien, int phong)> GetNhanVienById(int id)
+	{
+		const string sql = @"
+		SELECT llv.NhanVienID, nv.PhongChucNangID
+		FROM LichLamViecNhanVien llv
+		JOIN NhanVien nv ON llv.NhanVienID = nv.NhanVienID
+		WHERE LichLamViecID = @id";
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@id", id);
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+		if (await reader.ReadAsync())
+		{
+			var nhanvien = reader.GetInt32(reader.GetOrdinal("NhanVienID"));
+			var phong = reader.GetInt32(reader.GetOrdinal("PhongChucNangID"));
+			return (nhanvien, phong);
+		}
+		return (0, 0);
+	}
+	public async Task AddAsync(LichLamViec entity)
 	{
 		const string sql = @"
 			INSERT INTO LichLamViecNhanVien
 			(NhanVienID, Ngay, CaLamViec, GhiChu)
 			VALUES (@NhanVienID, @Ngay, @Ca, @GhiChu)
 		";
-
 		await using var cmd = new SqlCommand(sql, _conn!, _tran);
 		cmd.Parameters.AddWithValue("@NhanVienID", entity.NhanVienID);
 		cmd.Parameters.AddWithValue("@Ngay", entity.Ngay);
 		cmd.Parameters.AddWithValue("@Ca", entity.CaLamViec);
 		cmd.Parameters.AddWithValue("@GhiChu", (object?)entity.GhiChu ?? DBNull.Value);
-
 		await cmd.ExecuteNonQueryAsync();
 	}
 	public async Task<bool> IsExitsAsync(int nhanVienID, DateTime ngay, int caLamViec)
@@ -155,12 +160,10 @@ public class LichLamViecRepository : ILichLamViecRepository
 		WHERE NhanVienID = @NhanVienID
 		  AND Ngay = @Ngay
 		  AND CaLamViec = @CaLamViec";
-
 		await using var cmd = new SqlCommand(sql, _conn!, _tran);
 		cmd.Parameters.AddWithValue("@NhanVienID", nhanVienID);
 		cmd.Parameters.AddWithValue("@Ngay", ngay.Date);
 		cmd.Parameters.AddWithValue("@CaLamViec", caLamViec);
-
 		var result = await cmd.ExecuteScalarAsync();
 		return result != null;
 	}
@@ -174,28 +177,23 @@ public class LichLamViecRepository : ILichLamViecRepository
 		  AND llv.Ngay = @Ngay
 		  AND llv.CaLamViec = @CaLamViec
 	";
-
 		await using var cmd = new SqlCommand(sql, _conn!, _tran);
 		cmd.Parameters.AddWithValue("@ChucVuID", chucVuId);
 		cmd.Parameters.AddWithValue("@Ngay", ngay.Date);
 		cmd.Parameters.AddWithValue("@CaLamViec", caLamViec);
-
 		return (int)(await cmd.ExecuteScalarAsync() ?? 0);
 	}
-
 	public async Task BeginTransactionAsync()
 	{
 		_conn = new SqlConnection(_connectionString);
 		await _conn.OpenAsync();
 		_tran = _conn.BeginTransaction();
 	}
-
 	public async Task CommitAsync()
 	{
 		await _tran!.CommitAsync();
 		await _conn!.CloseAsync();
 	}
-
 	public async Task RollbackAsync()
 	{
 		await _tran!.RollbackAsync();

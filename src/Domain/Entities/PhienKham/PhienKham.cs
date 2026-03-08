@@ -20,18 +20,12 @@ public class PhienKham
 		int caKhamID,
 		int benhNhanID,
 		int nhanVienID,
-		int? phongChucNangID,
-		string? trieuChung,
-		string? ghiChu,
-		string? hinhAnhJSON)
+		int? phongChucNangID)
 	{
 		CaKhamID = caKhamID;
 		BenhNhanID = benhNhanID;
 		NhanVienID = nhanVienID;
 		PhongChucNangID = phongChucNangID;
-		TrieuChung = trieuChung;
-		GhiChu = ghiChu;
-		HinhAnhJSON = hinhAnhJSON;
 	}
 
 	// Map DB
@@ -60,29 +54,10 @@ public class PhienKham
 		NgayKham = ngayKham;
 		TrangThai = TrangThaiKhamExtensions.FromDb(trangThai);
 	}
-	// Map Lite
-	public PhienKham(
-		int phienKhamID,
-		int caKhamID,
-		int benhNhanID,
-		int nhanVienID,
-		DateTime ngayKham,
-		string trangThai,
-		string chanDoanCuoi)
-	{
-		PhienKhamID = phienKhamID;
-		CaKhamID = caKhamID;
-		BenhNhanID = benhNhanID;
-		NhanVienID = nhanVienID;
-		NgayKham = ngayKham;
-		TrangThai = TrangThaiKhamExtensions.FromDb(trangThai);
-		ChanDoanCuoi = chanDoanCuoi;
-	}
 	// Nghiệp vụ
 	public void CapNhat(
 		string? trieuChung,
 		string? ghiChu,
-		int? phongChucNangID,
 		string? hinhAnhJSON)
 	{
 		if (TrangThai != TrangThaiKhamEnum.DangKham)
@@ -90,7 +65,6 @@ public class PhienKham
 
 		TrieuChung = trieuChung;
 		GhiChu = ghiChu;
-		PhongChucNangID = phongChucNangID;
 		HinhAnhJSON = hinhAnhJSON;
 	}
 

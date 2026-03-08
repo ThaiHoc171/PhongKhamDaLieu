@@ -215,9 +215,9 @@ public class PhienKhamRepository : IPhienKhamRepository
 	{
 		const string sql =
 		@"INSERT INTO PhienKham
-          (CaKhamID,BenhNhanID,NhanVienID,PhongChucNangID,TrieuChung,GhiChu,HinhAnhJSON)
+          (CaKhamID,BenhNhanID,NhanVienID,PhongChucNangID)
           OUTPUT INSERTED.PhienKhamID
-          VALUES (@CaKhamID,@BenhNhanID,@NhanVienID,@PhongChucNangID,@TrieuChung,@GhiChu,@HinhAnhJSON)";
+          VALUES (@CaKhamID,@BenhNhanID,@NhanVienID,@PhongChucNangID)";
 
 		await using var conn = CreateConnection();
 		await using var cmd = new SqlCommand(sql, conn);
@@ -226,9 +226,6 @@ public class PhienKhamRepository : IPhienKhamRepository
 		cmd.Parameters.AddWithValue("@BenhNhanID", pk.BenhNhanID);
 		cmd.Parameters.AddWithValue("@NhanVienID", pk.NhanVienID);
 		cmd.Parameters.AddWithValue("@PhongChucNangID", (object?)pk.PhongChucNangID ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@TrieuChung", (object?)pk.TrieuChung ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@GhiChu", (object?)pk.GhiChu ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@HinhAnhJSON", (object?)pk.HinhAnhJSON ?? DBNull.Value);
 
 		await conn.OpenAsync();
 
@@ -241,7 +238,6 @@ public class PhienKhamRepository : IPhienKhamRepository
 		@"UPDATE PhienKham
           SET TrieuChung=@TrieuChung,
               GhiChu=@GhiChu,
-              PhongChucNangID=@PhongChucNangID,
               HinhAnhJSON=@HinhAnhJSON
           WHERE PhienKhamID=@Id";
 
@@ -250,7 +246,6 @@ public class PhienKhamRepository : IPhienKhamRepository
 
 		cmd.Parameters.AddWithValue("@TrieuChung", (object?)pk.TrieuChung ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@GhiChu", (object?)pk.GhiChu ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@PhongChucNangID", (object?)pk.PhongChucNangID ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@HinhAnhJSON", (object?)pk.HinhAnhJSON ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@Id", pk.PhienKhamID);
 
