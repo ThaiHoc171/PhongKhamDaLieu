@@ -6,7 +6,7 @@ public class TaoCaKhamDTO
 }
 public class DangKyCaKhamDTO
 {
-    public int BenhNhanID { get; set; }
+    public int ThongTinID { get; set; }
     public string LyDoKham { get; set; } = string.Empty;
     public DateTime NgayDat { get; set; }
     public string? GhiChu { get; set; }

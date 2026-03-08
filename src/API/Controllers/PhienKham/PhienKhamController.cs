@@ -15,10 +15,10 @@ public class PhienKhamController : ControllerBase
 		_service = service;
 	}
 	[Authorize(Policy = "BacSiOrLeTan")]
-	[HttpPost]
-	public async Task<ActionResult<ApiResponse<int>>> TaoMoi([FromBody] PhienKhamRequestDTO dto)
+	[HttpPost("{caKhamId}")]
+	public async Task<ActionResult<ApiResponse<int>>> TaoMoi([FromQuery] int caKhamID)
 	{
-		var phienKhamId = await _service.TaoMoiAsync(dto);
+		var phienKhamId = await _service.TaoMoiAsync(caKhamID);
 		return Ok(ApiResponse<int>.SuccessResponse(phienKhamId, "Tạo phiên khám thành công"	));
 	}
 	[Authorize(Policy = "BacSiOnly")]

@@ -11,6 +11,7 @@ public interface ILichLamViecRepository
     Task<LichLamViec?> GetByIdAsync(int ID);
 	Task<List<LichLamViec>> GetAllAsync();
 	Task<List<LichLamViec>> GetByNhanVienIdTheoTuanAsync(int NhanVienID, DateTime tuNgay,DateTime denNgay);
+	Task<(int nhanvien, int phong)> GetNhanVienById(int id);
 	Task AddAsync(LichLamViec lich);
 	Task BeginTransactionAsync();
 	Task CommitAsync();
