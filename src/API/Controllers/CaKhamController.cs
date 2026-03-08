@@ -70,12 +70,7 @@ public class CaKhamController : ControllerBase
 	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> GetPaged( [FromQuery] DateTime ngayKham, 
 		[FromQuery] string trangThai, [FromQuery] string loaiCaKham, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
 	{
-		var result = await _service.GetCaKhamPagedAsync(
-			ngayKham,
-			trangThai,
-			loaiCaKham,
-			pageNumber,
-			pageSize);
+		var result = await _service.GetCaKhamPagedAsync(ngayKham,trangThai,loaiCaKham,pageNumber,pageSize);
 
 		return Ok(ApiResponse<PagedResult<CaKhamListReadModel>>
 			.SuccessResponse(result));
@@ -111,9 +106,7 @@ public class CaKhamController : ControllerBase
 	[HttpGet("khunggio-trong")]
 	public async Task<ActionResult<ApiResponse<List<int>>>> GetKhungGioConTrong( DateTime ngayKham, string loaiCaKham)
 	{
-		var result = await _service.GetKhungGioConTrongAsync(
-			ngayKham,
-			loaiCaKham);
+		var result = await _service.GetKhungGioConTrongAsync(ngayKham,loaiCaKham);
 
 		return Ok(ApiResponse<List<int>>
 			.SuccessResponse(result));
@@ -121,7 +114,7 @@ public class CaKhamController : ControllerBase
 
 	[Authorize]
 	[HttpGet("ca-trong")]
-	public async Task<ActionResult<ApiResponse<int>>> GetCaTrong( DateTime ngayKham, int khungGioId,	string loaiCaKham)
+	public async Task<ActionResult<ApiResponse<int>>> GetCaTrong( DateTime ngayKham, int khungGioId, string loaiCaKham)
 	{
 		var result = await _service.GetCaKhamAsync(
 			ngayKham,
