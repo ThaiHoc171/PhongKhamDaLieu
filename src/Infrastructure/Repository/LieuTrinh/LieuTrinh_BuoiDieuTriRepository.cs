@@ -142,11 +142,11 @@ public class LieuTrinh_BuoiDieuTriRepository : ILieuTrinh_BuoiDieuTriRepository
     }
     public async Task<int> CountBySoBuoiAsync(int lieuTrinhID)
     {
-        const string sql = @"SELECT COUNT(SoBuoi) FROM LieuTrinh_BuoiDieuTri WHERE LieuTrinhID = @id AND TrangThai = N'Hoàn thành'";
+        const string sql = @"SELECT COUNT(*) FROM LieuTrinh_BuoiDieuTri WHERE LieuTrinhID = @id AND TrangThai = N'Hoàn thành'";
         var list = new List<CaKham>();
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@id", lieuTrinhID);
+        cmd.Parameters.AddWithValue("@id", lieuTrinhID);    
         await conn.OpenAsync();
         return (int)await cmd.ExecuteScalarAsync();
     }

@@ -173,7 +173,19 @@ public class CaKhamRepository : ICaKhamRepository
 		var result = await cmd.ExecuteScalarAsync();
 		return result == null ? 0 : (int)result;
 	}
-	public async Task<(List<CaKhamListReadModel>, int)> GetByThongTinAsync(int thongTinID, int pageNumber, int pageSize)
+    public async Task<int> GetLichAsync(int CaKhamID)
+    {
+        const string sql = @"SELECT LichLamViecID
+                             FROM CaKham
+                             WHERE CaKhamID = @CaKhamID";
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@CaKhamID", CaKhamID);
+        await conn.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+        return result == null ? 0 : (int)result;
+    }
+    public async Task<(List<CaKhamListReadModel>, int)> GetByThongTinAsync(int thongTinID, int pageNumber, int pageSize)
 	{
 		const string sql = @"
 		SELECT ck.CaKhamID, kg.TenKhung, pc.TenPhong, tt.HoTen, ck.LyDoKham, ck.TrangThai
