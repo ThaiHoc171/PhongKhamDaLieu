@@ -210,9 +210,8 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
-      final benhNhanId = prefs.getInt('benhNhanId');
       final thongTinId = prefs.getInt('thongTinId');
-      if (token == null || benhNhanId == null) return;
+      if (token == null || thongTinId == null) return;
 
       final id = await _repository.getCaKhamIdDieuTri(
         _currentDay,
@@ -224,19 +223,14 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
 
       final message = await _repository.dangKyKham(
         caKhamId!,
-        thongTinId!,
+        thongTinId,
         token,
       );
 
       await Future.delayed(const Duration(milliseconds: 300));
 
       if (widget.lieuTrinhID != null) {
-        await _repository.addBuoiDieuTri(
-          widget.lieuTrinhID!,
-          caKhamId!,
-          benhNhanId,
-          token,
-        );
+        await _repository.addBuoiDieuTri(widget.lieuTrinhID!, caKhamId!, token);
       }
       DialogHelper.showSnackSuccess(context, message);
     } catch (e) {
