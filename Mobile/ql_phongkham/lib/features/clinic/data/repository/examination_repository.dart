@@ -144,11 +144,13 @@ class LichKhamRepository {
   Future<String> addBuoiDieuTri(
     int lieuTrinhId,
     int caKhamId,
+    int benhNhanId,
     String token,
   ) async {
     final response = await ApiClient.post("LieuTrinh_BuoiDieuTri", {
       "lieuTrinhID": lieuTrinhId,
       "caKhamID": caKhamId,
+      "benhNhanID": benhNhanId,
     }, token: token);
 
     return response["message"] ?? "Đăng ký buổi điều trị thành công";

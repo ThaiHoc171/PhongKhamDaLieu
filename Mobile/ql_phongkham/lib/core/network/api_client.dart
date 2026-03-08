@@ -69,14 +69,22 @@ class ApiClient {
         return {};
       }
 
-      return jsonDecode(response.body);
+      try {
+        return jsonDecode(response.body);
+      } catch (e) {
+        return response.body;
+      }
     } else {
       if (response.body.isEmpty) {
         throw Exception("Lỗi server ${response.statusCode}");
       }
 
-      final json = jsonDecode(response.body);
-      throw Exception(json["message"] ?? "Lỗi server ${response.statusCode}");
+      try {
+        final json = jsonDecode(response.body);
+        throw Exception(json["message"] ?? "Lỗi server ${response.statusCode}");
+      } catch (e) {
+        throw Exception(response.body);
+      }
     }
   }
 }
