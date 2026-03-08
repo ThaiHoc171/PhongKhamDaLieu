@@ -35,4 +35,26 @@ class ProfileRepository {
     }, token: token);
     return response['benhNhanID'];
   }
+
+  Future<void> putProfile(
+    int thongTinId,
+    String hoTen,
+    DateTime ngaySinh,
+    String gioiTinh,
+    String sdt,
+    String emailLienHe,
+    String diaChi,
+    String avatar,
+    String token,
+  ) async {
+    await ApiClient.put('/ThongTinCaNhan/$thongTinId', {
+      "hoTen": hoTen,
+      "ngaySinh": ngaySinh.toIso8601String(),
+      "gioiTinh": gioiTinh,
+      "sdt": sdt,
+      "emailLienHe": emailLienHe,
+      "diaChi": diaChi,
+      "avatar": avatar,
+    }, token: token);
+  }
 }

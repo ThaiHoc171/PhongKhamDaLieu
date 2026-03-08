@@ -40,18 +40,26 @@ public class TaiKhamRepository : ITaiKhamRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         return await reader.ReadAsync() ? MapToEntity(reader) : null;
     }
-    public async Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID)
+    public async Task<int?> GetTaiKhamChoXuLyAsync(int benhNhanID)
     {
-        const string sql = @"SELECT TaiKhamID
-                                FROM TaiKham
-                                WHERE BenhNhanID = @benhNhanID
-                                ORDER BY NgayDuKien DESC;";
+        const string sql = @"
+        SELECT TOP 1 TaiKhamID
+        FROM TaiKham
+        WHERE BenhNhanID = @benhNhanID
+        AND TrangThai = N'Chờ xử lý'
+        ORDER BY NgayDuKien DESC;
+    ";
+
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
+
         cmd.Parameters.AddWithValue("@benhNhanID", benhNhanID);
+
         await conn.OpenAsync();
+
         var result = await cmd.ExecuteScalarAsync();
-        return result == null ? null : (int)result;
+
+        return result == null ? null : Convert.ToInt32(result);
     }
     public async Task<List<TaiKham>> GetAllAsync()
     {

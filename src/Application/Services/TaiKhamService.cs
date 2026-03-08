@@ -89,7 +89,10 @@ public class TaiKhamService
     }
     public async Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID)
     {
-        return await _taiKhamRepo.GetIdByBenhNhanIdAsync(benhNhanID);
+        var taiKhamId = await _taiKhamRepo
+        .GetTaiKhamChoXuLyAsync(benhNhanID);
+
+        return taiKhamId;
     }
 
     private static TaiKhamResponeDTO MapToDto(TaiKham tk)
