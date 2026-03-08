@@ -10,9 +10,7 @@ namespace Clinic.WinForms
 {
 	internal static class Program
 	{
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
+
 		[STAThread]
 		static void Main()
 		{
@@ -21,15 +19,17 @@ namespace Clinic.WinForms
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			using (var loginForm = new FrmDangNhap())
+			while (true)
 			{
-				if (loginForm.ShowDialog() == DialogResult.OK)
-				{
-					var mainForm = new MainFrm(loginForm.LoginResult);
-					Application.Run(mainForm);
-				}
-			}
+				var login = new FrmDangNhap();
 
+				if (login.ShowDialog() != DialogResult.OK)
+					break;
+
+				var main = new FormMain(login.LoginResult);
+				Application.Run(main);
+			}
+			//Application.Run(new MainFrm());
 		}
 	}
 }
