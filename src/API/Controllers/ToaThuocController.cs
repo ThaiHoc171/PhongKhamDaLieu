@@ -7,7 +7,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Policy = "BacSiOnly")]
+[Authorize]
 public class ToaThuocController : ControllerBase
 {
 	private readonly ToaThuocService _service;
@@ -16,7 +16,12 @@ public class ToaThuocController : ControllerBase
 	{
 		_service = service;
 	}
-
+	[HttpGet("exists/{phienKhamId}")]
+	public async Task<IActionResult> KiemTra(int phienKhamId)
+	{
+		var exists = await _service.KiemTraTonTai(phienKhamId);
+		return Ok(exists);
+	}
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> TaoToaThuoc([FromBody] ToaThuocRequestDTO dto)
 	{
