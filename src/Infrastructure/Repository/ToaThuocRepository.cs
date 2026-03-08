@@ -15,7 +15,23 @@ public class ToaThuocRepository : IToaThuocRepository
 		_connectionString = config.GetConnectionString("DefaultConnection")
 	?? throw new ArgumentNullException("Connection string not found");
 	}
+	public async Task<bool> IsToaThuocExits(int phienKhamID)
+	{
+		const string sql = @"
+        SELECT 1 
+        FROM ToaThuoc
+        WHERE PhienKhamID = @PhienKhamID";
 
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.AddWithValue("@PhienKhamID", phienKhamID);
+
+		await conn.OpenAsync();
+		var result = await cmd.ExecuteScalarAsync();
+
+		return result != null;
+	}
 	public async Task<int> AddAsync(ToaThuoc toaThuoc)
 	{
 		const string sql = @"

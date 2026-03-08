@@ -9,7 +9,7 @@ namespace Clinic.WinForms.DTOs
 	public class LoginDTO
 	{
 		public string Email { get; set; } = "";
-		public string Password { get; set; } = "";
+		public string MatKhau { get; set; } = "";
 	}
 	public class LoginResponseDTO
 	{
@@ -18,8 +18,10 @@ namespace Clinic.WinForms.DTOs
 		public string VaiTro { get; set; } = "";
 		public string AccessToken { get; set; } = "";
 		public string RefreshToken { get; set; } = "";
+		public int? ThongTinId { get; set; }
 		public int? NhanVienId { get; set; }
 		public int? BenhNhanId { get; set; }
 		public string ChucVu { get; set; }
+		public string HoTen { get; set; }
 	}
 }
