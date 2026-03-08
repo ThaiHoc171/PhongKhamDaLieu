@@ -22,8 +22,9 @@ public class LieuTrinh_BuoiDieuTriService
     public async Task TaoBuoiDieuTriAsync(TaoBuoiDieuTriDTO dto)
     {
         var caKham = await _caKhamRepo.GetByIdAsync(dto.CaKhamID);
-        if (caKham == null || caKham.ThongTinID == null)
+        if (caKham == null)
             throw new Exception("Ca khám không hợp lệ");
+
         var checklich = await _caKhamRepo.GetLichAsync(dto.CaKhamID);
         if (checklich == 0)
             throw new Exception("Không tìm thấy lịch làm việc");
@@ -32,12 +33,7 @@ public class LieuTrinh_BuoiDieuTriService
         if (lich == null)
             throw new Exception("Lịch làm việc không tồn tại");
 
-        int benhNhanID = caKham.ThongTinID.Value;
-
-        var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
-
-        if (lieuTrinh == null)
-            throw new Exception("Bệnh nhân không có liệu trình điều trị");
+        var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(dto.BenhNhanID);
 
         if (lieuTrinh.TrangThai != "Đang điều trị")
             throw new Exception("Liệu trình không ở trạng thái đang điều trị");
