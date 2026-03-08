@@ -122,6 +122,17 @@ public class PhienKhamService
 			};
 		}
 	}
-	public async Task<List<PhienKhamListReadModel>> SearchAsync(string keyword, int? nhanVienID)
-		=> await _repo.SearchAsync(keyword, nhanVienID);
+	public async Task<PagedResult<PhienKhamListReadModel>> SearchAsync(string keyword, int pageNumber, int pageSize, int? nhanVienID)
+	{
+		{
+			var (items, totalCount) = await _repo.SearchPagedAsync(keyword,pageNumber, pageSize, nhanVienID);
+			return new PagedResult<PhienKhamListReadModel>
+			{
+				Items = items,
+				TotalCount = totalCount,
+				PageNumber = pageNumber,
+				PageSize = pageSize
+			};
+		}
+	}
 }

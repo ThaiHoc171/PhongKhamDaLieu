@@ -146,19 +146,21 @@ public class PhienKhamRepository : IPhienKhamRepository
 		return result == null ? null : (int)result;
 	}
 
-	public async Task<List<PhienKhamListReadModel>> SearchAsync(string keyword, int? nhanVienID)
+	public async Task<(List<PhienKhamListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size, int? nhanVienID)
 	{
 		var sql =
-		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai, pk.ChanDoanCuoi,
-			   bn_ttc.HoTen AS TenBenhNhan, nv_ttc.HoTen AS TenNhanVien
-		FROM PhienKham pk
-		JOIN BenhNhan bn ON pk.BenhNhanID = bn.BenhNhanID
-		JOIN ThongTinCaNhan bn_ttc ON bn.ThongTinID = bn_ttc.ThongTinID
-		JOIN NhanVien nv ON pk.NhanVienID = nv.NhanVienID
-		JOIN ThongTinCaNhan nv_ttc ON nv.ThongTinID = nv_ttc.ThongTinID
-		WHERE (bn_ttc.HoTen LIKE @kw OR pk.TrieuChung LIKE @kw)";
+			@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai, pk.ChanDoanCuoi,
+				   bn_ttc.HoTen AS TenBenhNhan, nv_ttc.HoTen AS TenNhanVien
+			FROM PhienKham pk
+			JOIN BenhNhan bn ON pk.BenhNhanID = bn.BenhNhanID
+			JOIN ThongTinCaNhan bn_ttc ON bn.ThongTinID = bn_ttc.ThongTinID
+			JOIN NhanVien nv ON pk.NhanVienID = nv.NhanVienID
+			JOIN ThongTinCaNhan nv_ttc ON nv.ThongTinID = nv_ttc.ThongTinID
+			WHERE (bn_ttc.HoTen LIKE @kw OR pk.TrieuChung LIKE @kw)";
 
 		var cmd = new SqlCommand();
+
+		cmd.Parameters.AddWithValue("@kw", $"%{keyword}%");
 
 		if (nhanVienID.HasValue)
 		{
@@ -166,12 +168,26 @@ public class PhienKhamRepository : IPhienKhamRepository
 			cmd.Parameters.AddWithValue("@NhanVienID", nhanVienID.Value);
 		}
 
-		sql += " ORDER BY pk.NgayKham DESC";
+		sql +=
+			@" ORDER BY pk.NgayKham DESC
+		   OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
 
-		cmd.Parameters.AddWithValue("@kw", $"%{keyword}%");
+		   SELECT COUNT(*)
+		   FROM PhienKham pk
+		   JOIN BenhNhan bn ON pk.BenhNhanID = bn.BenhNhanID
+		   JOIN ThongTinCaNhan bn_ttc ON bn.ThongTinID = bn_ttc.ThongTinID
+		   WHERE (bn_ttc.HoTen LIKE @kw OR pk.TrieuChung LIKE @kw)";
+
+		if (nhanVienID.HasValue)
+			sql += " AND pk.NhanVienID=@NhanVienID";
+
+		cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
+		cmd.Parameters.AddWithValue("@PageSize", size);
+
 		cmd.CommandText = sql;
 
 		var list = new List<PhienKhamListReadModel>();
+		int total = 0;
 
 		await using var conn = CreateConnection();
 		cmd.Connection = conn;
@@ -183,7 +199,10 @@ public class PhienKhamRepository : IPhienKhamRepository
 		while (await reader.ReadAsync())
 			list.Add(MapToLiteDTO(reader));
 
-		return list;
+		if (await reader.NextResultAsync() && await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
 	}
 
 	public async Task<PhienKhamReadModel?> GetDetailAsync(int id)
