@@ -9,10 +9,11 @@ public class PhienKhamService
 	private readonly ICaKhamRepository _caKhamRepo;
 	private readonly IPhienKhamBenhRepository _pkBenhrepo;
 	private readonly IPhienKhamCLSRepository _pkClsRepo;
+	private readonly ILichLamViecRepository _lichRepo;
 	private readonly IBenhNhanRepository _benhNhanRepo;
 	private readonly INhanVienRepository _nhanVienRepo;
 	public PhienKhamService(IPhienKhamRepository repo, IPhienKhamBenhRepository pkBenhrepo, IPhienKhamCLSRepository pkClsRepo,
-		IBenhNhanRepository benhNhanRepo, INhanVienRepository nhanVienRepo, ICaKhamRepository caKhamRepo)
+		IBenhNhanRepository benhNhanRepo, INhanVienRepository nhanVienRepo, ICaKhamRepository caKhamRepo, ILichLamViecRepository lichRepo)
 	{
 		_repo = repo;
 		_pkBenhrepo = pkBenhrepo;
@@ -20,28 +21,28 @@ public class PhienKhamService
 		_benhNhanRepo = benhNhanRepo;
 		_nhanVienRepo = nhanVienRepo;
 		_caKhamRepo = caKhamRepo;
+		_lichRepo = lichRepo;
 	}
-	public async Task<int> TaoMoiAsync(PhienKhamRequestDTO dto)
+	public async Task<int> TaoMoiAsync(int caKhamID)
 	{
 		// Kiểm tra CaKham tồn tại
-		var caKham = await _caKhamRepo.GetByIdAsync(dto.CaKhamID);
+		var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
 		if (caKham == null)
-		{
 			throw new Exception("Ca khám không tồn tại!");
-		}
 		if (caKham.TrangThai != "Đã xác nhận")
-		{
 			throw new Exception("Ca khám chưa được xác nhận hoặc đã kết thúc!");
-		}
+		
+		if (caKham?.ThongTinID == null)
+			throw new Exception("Không có ThongTinID");
+
+		var nv = await _lichRepo.GetNhanVienById(caKham.CaKhamID);
+		var bn = await _benhNhanRepo.GetIdByThongTinAsync(caKham.ThongTinID.Value);
 		// Tạo phiên khám mới
 		var entity = new PhienKham(
-			dto.CaKhamID,
-			dto.BenhNhanID,
-			dto.NhanVienID,
-			dto.PhongChucNangID,
-			dto.TrieuChung,
-			dto.GhiChu,
-			dto.HinhAnhJSON);
+			caKhamID,
+			bn,
+			nv.nhanvien,
+			nv.phong);
 		return await _repo.AddAsync(entity);
 	}
 	public async Task CapNhatAsync(int id, PhienKhamUpdateDTO dto)
@@ -51,7 +52,6 @@ public class PhienKhamService
 		pk.CapNhat(
 			dto.TrieuChung,
 			dto.GhiChu,
-			dto.PhongChucNangID,
 			dto.HinhAnhJSON);
 		await _repo.UpdateAsync(pk);
 	}

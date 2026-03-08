@@ -87,7 +87,7 @@ public class CaKhamService
         if (caKham.ThongTinID != null || caKham.TrangThai != "Trống")
             throw new Exception("Ca khám không khả dụng để đăng ký");
         var lich = await _lichLamViecRepo.GetByIdAsync(caKham.LichLamViecID);
-        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(dto.BenhNhanID);
+        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(dto.ThongTinID);
         if (caKham.LoaiCaKham == "Khám")
         {
             if (taiKham != null && taiKham.TrangThai == "Chờ xử lý")
@@ -98,7 +98,7 @@ public class CaKhamService
         }
         if (caKham.LoaiCaKham == "Điều trị")
         {
-            var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(dto.BenhNhanID);
+            var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(dto.ThongTinID);
             if (lieuTrinh == null)
                 throw new Exception("Bệnh nhân không có liệu trình điều trị");
             if (lieuTrinh.TrangThai != "Đang điều trị")
@@ -123,7 +123,7 @@ public class CaKhamService
             if (soBuoi > lieuTrinh.TongSoBuoi)
                 throw new Exception("Liệu trình đã đủ số buổi");
             DateTime ngayDuKien = lieuTrinh.NgayBatDau.AddDays((soBuoi - 1) * 7);
-            caKham.DangKyKham(dto.BenhNhanID, dto.LyDoKham, dto.NgayDat, dto.GhiChu);
+            caKham.DangKyKham(dto.ThongTinID, dto.LyDoKham, dto.NgayDat, dto.GhiChu);
             await _caKhamRepo.UpdateAsync(caKham);
             var buoi = new LieuTrinh_BuoiDieuTri(
                 lieuTrinhID: lieuTrinh.LieuTrinhID,
@@ -136,7 +136,7 @@ public class CaKhamService
             await _lieuTrinh_BuoiDieuTriRepo.AddAsync(buoi);
             return true;
         }
-        caKham.DangKyKham(dto.BenhNhanID, dto.LyDoKham, dto.NgayDat, dto.GhiChu);
+        caKham.DangKyKham(dto.ThongTinID, dto.LyDoKham, dto.NgayDat, dto.GhiChu);
         await _caKhamRepo.UpdateAsync(caKham);
         return true;
     }

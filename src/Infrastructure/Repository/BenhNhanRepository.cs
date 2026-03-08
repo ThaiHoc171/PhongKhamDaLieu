@@ -46,6 +46,19 @@ public class BenhNhanRepository : IBenhNhanRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
+	public async Task<int> GetIdByThongTinAsync(int id)
+	{
+		const string sql = @"
+			SELECT BenhNhanID
+			FROM BenhNhan 
+			WHERE ThongTinID = @id";
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@id", id);
+		await conn.OpenAsync();
+		return Convert.ToInt32(await cmd.ExecuteReaderAsync());
+	}
 	public async Task<List<BenhNhan>> GetBenhNhans(string keyword)
 	{
 		const string sql = @"
