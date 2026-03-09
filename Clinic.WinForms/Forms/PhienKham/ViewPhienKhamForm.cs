@@ -15,6 +15,7 @@ namespace Clinic.WinForms.Forms.PhienKham
 		private readonly PhienKham_BenhClient _benhClient = new PhienKham_BenhClient();
 		private readonly PhienKham_ClsClient _clsClient = new PhienKham_ClsClient();
 		private readonly PhienKham_ThietBiClient _thietBiClient = new PhienKham_ThietBiClient();
+		private readonly ToaThuocClient _toaClient = new ToaThuocClient();
 		private readonly int _id;
 		public ViewPhienKhamForm(int id)
 		{
@@ -180,10 +181,18 @@ namespace Clinic.WinForms.Forms.PhienKham
 			Close();
 		}
 
-		private void btnToaThuoc_Click(object sender, EventArgs e)
+		private async void btnToaThuoc_Click(object sender, EventArgs e)
 		{
-			var frm = new ViewToaThuoc(_id);
-			frm.ShowDialog();
+			bool check = await _toaClient.KiemTraTonTaiAsync(_id);
+			if (check)
+			{
+				var frm = new ViewToaThuoc(_id);
+				frm.ShowDialog();
+			}
+			else
+			{
+				MessageHelper.ShowMessage("Phiên khám chưa có toa thuốc!");
+			}
 		}
 	}
 }
