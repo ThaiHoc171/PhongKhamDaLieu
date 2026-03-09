@@ -87,6 +87,8 @@ public class CaKhamService
         if (caKham.ThongTinID != null || caKham.TrangThai != "Trống")
             throw new Exception("Ca khám không khả dụng để đăng ký");
         var lich = await _lichLamViecRepo.GetByIdAsync(caKham.LichLamViecID);
+        if (lich == null)
+            throw new Exception("Không tìm thấy lịch làm việc");
         var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(dto.ThongTinID);
         if (caKham.LoaiCaKham == "Khám")
         {
@@ -108,7 +110,7 @@ public class CaKhamService
             {
                 if (!buoiGanNhat.NgayThucHien.HasValue)
                     throw new Exception("Buổi điều trị trước chưa hoàn thành");
-                if (caKham.NgayKham < buoiGanNhat.NgayThucHien.Value.AddDays(7))
+                if (caKham.NgayKham < buoiGanNhat.NgayThucHien.Value)
                     throw new Exception(
                         "Khoảng cách giữa các buổi điều trị phải tối thiểu 7 ngày"
                     );

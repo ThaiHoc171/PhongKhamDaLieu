@@ -4,7 +4,6 @@ public class TaoBuoiDieuTriDTO
 {
     public int LieuTrinhID { get; set; }
     public int CaKhamID { get; set; }
-    public int BenhNhanID { get; set; }
 }
 
 public class CapNhatTrangThaiBuoiDieuTriDTO
