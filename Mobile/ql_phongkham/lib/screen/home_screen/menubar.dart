@@ -34,8 +34,8 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
       final data = await ProfileRepository().getProfile(token, thongTinId);
 
       setState(() {
-        hoTen = data.hoTen ?? "";
-        email = data.emailLienHe ?? "";
+        hoTen = data.hoTen;
+        email = data.emailLienHe;
         linkAvatar = data.avatar;
       });
     } catch (e) {

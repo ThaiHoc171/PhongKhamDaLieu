@@ -24,7 +24,7 @@ public class LieuTrinh_BuoiDieuTriController : ControllerBase
         try
         {
             await _service.TaoBuoiDieuTriAsync(dto);
-            return Ok("Tạo buổi điều trị thành công");
+            return Ok(new { message = "Tạo buổi điều trị thành công" });
         }
         catch (Exception ex)	
         {
