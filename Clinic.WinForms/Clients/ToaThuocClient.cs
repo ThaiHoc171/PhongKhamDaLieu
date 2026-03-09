@@ -45,5 +45,10 @@ namespace Clinic.WinForms.Clients
 				throw new System.Exception(result.Data.Message);
 			return result.Data.Data;
 		}
+		public async Task<bool> KiemTraTonTaiAsync(int phienKhamID)
+		{
+			var result = await GetAsync<bool>($"api/ToaThuoc/exists/{phienKhamID}");
+			return result.Data;
+		}
 	}
 }
