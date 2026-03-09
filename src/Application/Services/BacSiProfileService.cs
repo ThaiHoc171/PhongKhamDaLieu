@@ -12,8 +12,24 @@ public class BacSiProfileService
 	{
 		_repository = repository;
 	}
+    public async Task<List<BacSiProfileDTO>> GetAllAsync()
+    {
+        var entities = await _repository.GetAllAsync();
 
-	public async Task<BacSiProfileDTO?> GetByNhanVienAsync(int nhanVienID)
+        return entities.Select(entity => new BacSiProfileDTO
+        {
+            BacSiProfileID = entity.BacSiProfileID,
+            NhanVienID = entity.NhanVienID,
+            GioiThieu = entity.GioiThieu,
+            ChuyenMon = entity.ChuyenMon,
+            ThanhTuu = entity.ThanhTuu,
+            HinhAnh = entity.HinhAnh,
+            KinhNghiem = entity.KinhNghiem,
+            NgayCapNhat = entity.NgayCapNhat
+        }).ToList();
+    }
+
+    public async Task<BacSiProfileDTO?> GetByNhanVienAsync(int nhanVienID)
 	{
 		var entity = await _repository.GetByNhanVienIdAsync(nhanVienID);
 		if (entity == null) return null;
