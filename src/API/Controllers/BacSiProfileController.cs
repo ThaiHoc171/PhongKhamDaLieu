@@ -25,8 +25,14 @@ public class BacSiProfileController : ControllerBase
 		return result == null ? NotFound() : Ok(result);
 	}
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var data = await _service.GetAllAsync();
+        return Ok(data);
+    }
 
-	[Authorize(Policy = "BacSiOnly")]
+    [Authorize(Policy = "BacSiOnly")]
 	[HttpPost("{nhanVienID}")]
 	public async Task<IActionResult> Create(int nhanVienID, BacSiProfileRequestDTO dto)
 	{
