@@ -15,8 +15,37 @@ public class BacSiProfileRepository : IBacSiProfileRepository
 		_connectionString = config.GetConnectionString("DefaultConnection")
 			?? throw new ArgumentNullException("Connection string not found");
 	}
+    public async Task<List<BacSiProfile>> GetAllAsync()
+    {
+        const string sql = @"SELECT BacSiProfileID, NhanVienID, GioiThieu, ChuyenMon, ThanhTuu, HinhAnh, KinhNghiem, NgayCapNhat
+                         FROM BacSiProfile
+                         ORDER BY NgayCapNhat DESC";
 
-	public async Task<BacSiProfile?> GetByNhanVienIdAsync(int nhanVienID)
+        var list = new List<BacSiProfile>();
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        await conn.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            list.Add(new BacSiProfile(
+                reader.GetInt32(reader.GetOrdinal("BacSiProfileID")),
+                reader.GetInt32(reader.GetOrdinal("NhanVienID")),
+                reader["GioiThieu"] as string,
+                reader["ChuyenMon"] as string,
+                reader["ThanhTuu"] as string,
+                reader["HinhAnh"] as string,
+                reader["KinhNghiem"] as string,
+                reader.GetDateTime(reader.GetOrdinal("NgayCapNhat"))
+            ));
+        }
+
+        return list;
+    }
+    public async Task<BacSiProfile?> GetByNhanVienIdAsync(int nhanVienID)
 	{
 		const string sql = @"SELECT * FROM BacSiProfile WHERE NhanVienID = @NhanVienID";
 
