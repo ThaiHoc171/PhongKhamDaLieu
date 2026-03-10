@@ -17,7 +17,16 @@ public class ChiTietPCNThietBiService
 		_chiTietRepo = chiTietRepo;
 		_pcnRepo = pcnRepo;
 	}
+	public async Task<List<NameResponseDTO>> GetComboboxAsync(int pcnId)
+	{
+		var list = await _chiTietRepo.GetComboboxAsync(pcnId);
 
+		return list.Select(x => new NameResponseDTO
+		{
+			Id = x.Id,
+			Name = x.Ten
+		}).ToList();
+	}
 	public async Task<IEnumerable<ChiTietPCNThietBi>> LayTheoPCNTBAsync(int pcnTbId)
 	{
 		return await _chiTietRepo.GetByPCNTBIdAsync(pcnTbId);
