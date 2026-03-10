@@ -192,13 +192,13 @@ public class CaKhamRepository : ICaKhamRepository
     public async Task<(List<CaKhamListReadModel>, int)> GetByThongTinAsync(int thongTinID, int pageNumber, int pageSize)
 	{
 		const string sql = @"
-		SELECT ck.CaKhamID, kg.TenKhung, pc.TenPhong, tt.HoTen, ck.LyDoKham, ck.TrangThai
+		SELECT ck.CaKhamID, ck.NgayKham kg.TenKhung, pc.TenPhong, tt.HoTen, ck.LyDoKham, ck.TrangThai
 		FROM CaKham ck
 		LEFT JOIN KhungGioKham kg ON ck.KhungGioID = kg.KhungGioID
 		LEFT JOIN PhongChucNang pc ON ck.PhongChucNangID = pc.PhongChucNangID
 		LEFT JOIN ThongTinCaNhan tt ON ck.ThongTinID = tt.ThongTinID
 		WHERE ck.ThongTinID = @ThongTinID
-		ORDER BY ck.CaKhamID
+		ORDER BY ck.CaKhamID DESC
 		OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
 		SELECT COUNT(*)
 		FROM CaKham
