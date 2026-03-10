@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.DTOs;
+﻿namespace Application.DTOs;
 
 public class LichLamViecDTO
 {
@@ -23,7 +17,7 @@ public class LichLamViecResponseDTO
 	public string? GhiChu { get; set; }
 }
 
-public class LichLamViecChucVuResponseDTO
+public class LichLamViecChucVuReadModel
 {
 	public int LichLamViecID { get; set; }
 	public string TenChucVu { get; set; } = null!;
@@ -40,17 +34,10 @@ public class LichLamViecBatchDTO
 	public List<LichLamViecDTO> LichLamViecs { get; set; } = new();
 }
 
-public class WeekLichLamViecDTO
+public class WeekLichLamViecReadModel
 {
 	public int Page { get; set; }
 	public DateTime TuanBatDau { get; set; }
 	public DateTime TuanKetThuc { get; set; }
 	public List<LichLamViecResponseDTO> LichLamViecs { get; set; } = new();
-}
-public class WeekLichLamViecChucVuDTO
-{
-	public int Page { get; set; }
-	public DateTime TuanBatDau { get; set; }
-	public DateTime TuanKetThuc { get; set; }
-	public List<LichLamViecChucVuResponseDTO> LichLamViecs { get; set; } = new();
 }

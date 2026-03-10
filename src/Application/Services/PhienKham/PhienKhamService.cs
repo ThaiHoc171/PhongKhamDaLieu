@@ -11,15 +11,15 @@ public class PhienKhamService
 	private readonly IPhienKhamCLSRepository _pkClsRepo;
 	private readonly ILichLamViecRepository _lichRepo;
 	private readonly IBenhNhanRepository _benhNhanRepo;
-	private readonly INhanVienRepository _nhanVienRepo;
+	private readonly IHoSoBenhAnRepository _hoSoBenhAnRepo;
 	public PhienKhamService(IPhienKhamRepository repo, IPhienKhamBenhRepository pkBenhrepo, IPhienKhamCLSRepository pkClsRepo,
-		IBenhNhanRepository benhNhanRepo, INhanVienRepository nhanVienRepo, ICaKhamRepository caKhamRepo, ILichLamViecRepository lichRepo)
+		IBenhNhanRepository benhNhanRepo, IHoSoBenhAnRepository hoSoBenhAnRepo, ICaKhamRepository caKhamRepo, ILichLamViecRepository lichRepo)
 	{
 		_repo = repo;
 		_pkBenhrepo = pkBenhrepo;
 		_pkClsRepo = pkClsRepo;
 		_benhNhanRepo = benhNhanRepo;
-		_nhanVienRepo = nhanVienRepo;
+		_hoSoBenhAnRepo = hoSoBenhAnRepo;
 		_caKhamRepo = caKhamRepo;
 		_lichRepo = lichRepo;
 	}
@@ -81,6 +81,9 @@ public class PhienKhamService
 		{
 			throw new Exception("Tất cả các chỉ định cận lâm sàng phải được hoàn thành trước khi kết thúc phiên khám");
 		}
+		var hs = await _hoSoBenhAnRepo.GetByBenhNhanIdAsync(pk.BenhNhanID);
+		if (hs != null)
+			throw new Exception("Chưa có hồ sơ bệnh án!");
 		pk.KetThuc(chanDoanCuoi);
 		// Lưu trạng thái mới
 		await _repo.KetThucAsync(pk);
