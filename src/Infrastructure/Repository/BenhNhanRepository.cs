@@ -223,6 +223,8 @@ public class BenhNhanRepository : IBenhNhanRepository
 
 		return list;
 	}
+
+
 	private static BenhNhan MapToEntity(SqlDataReader reader)
 	{
 		return new BenhNhan(
