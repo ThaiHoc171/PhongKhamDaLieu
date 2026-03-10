@@ -76,7 +76,7 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 	{
 		const string sql = @"
 			SELECT pk.PhienKham_CanLamSangID, cls.TenCLS, pk.TrangThai, pk.KetQua, pk.FileDinhKem, pk.NgayThucHien,
-				  ttcd.HoTen, ttth.HoTen, pk.GhiChu
+				  ttcd.HoTen, nvth.NhanVienID, ttth.HoTen, pk.GhiChu
 			FROM PhienKham_CanLamSang pk
 			JOIN CanLamSang cls ON pk.CanLamSangID = cls.CanLamSangID
 			JOIN NhanVien nvcd ON pk.NhanVienChiDinhID = nvcd.NhanVienID
@@ -104,7 +104,11 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			FileDinhKem = reader.IsDBNull(4) ? null : reader.GetString(4),
 			NgayThucHien = reader.IsDBNull(5) ? null : reader.GetDateTime(5),
 			NhanVienChiDinh = reader.GetString(6),
-			NhanVienThucHien = reader.GetString(7),
+			NhanVienThucHien = new NameResponseDTO 
+			{ 
+				Id = reader.GetInt32(7),
+				Name = reader.GetString(8),
+			},
 			GhiChu = reader.IsDBNull(8) ? null : reader.GetString(8)
 		};
 	}
