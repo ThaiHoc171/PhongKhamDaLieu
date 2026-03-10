@@ -220,7 +220,9 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
       );
 
       caKhamId = id;
-
+      if (widget.lieuTrinhID != null) {
+        await _repository.addBuoiDieuTri(widget.lieuTrinhID!, caKhamId!, token);
+      }
       final message = await _repository.dangKyKham(
         caKhamId!,
         thongTinId,
@@ -229,12 +231,15 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
 
       await Future.delayed(const Duration(milliseconds: 300));
 
-      if (widget.lieuTrinhID != null) {
-        await _repository.addBuoiDieuTri(widget.lieuTrinhID!, caKhamId!, token);
-      }
       DialogHelper.showSnackSuccess(context, message);
     } catch (e) {
-      DialogHelper.showSnacFailed(context, e.toString());
+      String message = e.toString();
+
+      if (message.contains("FormatException")) {
+        message = message.split('\n')[1];
+      }
+
+      DialogHelper.showSnacFailed(context, message);
     }
 
     setState(() {
