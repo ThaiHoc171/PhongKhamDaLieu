@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
+import 'package:ql_phongkham/features/clinic/data/models/bac_si_profile_model.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/bacsi_profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/examination_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/treatment_page.dart';
@@ -19,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<BacSiProfileModel> bacSiList = [];
+  bool isLoadingBacSi = true;
   int _selectedIndex = 0;
   final items = ['assets/images/banner1.jpg', 'assets/images/banner2.png'];
   int myCurrentIndex = 0;
@@ -26,6 +30,25 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    loadBacSi();
+  }
+
+  Future<void> loadBacSi() async {
+    try {
+      final repo = BacsiProfileRepository();
+
+      final data = await repo.getBacSiProfile(widget.token);
+
+      setState(() {
+        bacSiList = data;
+        isLoadingBacSi = false;
+      });
+    } catch (e) {
+      DialogHelper.showThongBao(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
   }
 
   Future<void> checkTaiKham() async {
@@ -78,7 +101,10 @@ class _HomeScreenState extends State<HomeScreen> {
         DialogHelper.showThongBao(context, 'Bạn không có lịch điều trị!');
       }
     } catch (e) {
-      DialogHelper.showThongBao(context, 'Lỗi kết nối: $e');
+      DialogHelper.showThongBao(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+      );
     }
   }
 
@@ -129,11 +155,17 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         drawer: MenuBarScreen(),
         appBar: AppBar(
-          backgroundColor: Colors.blueAccent,
-          elevation: 0,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF6EC6A8), Color(0xFF4F9FEF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           centerTitle: true,
-          titleTextStyle: TextStyle(fontFamily: 'Time New Roman', fontSize: 18),
-          title: Text('Phòng khám'),
+          title: Image.asset('assets/images/logo.png', height: 35),
         ),
         body: SafeArea(
           child: _selectedIndex == 0 ? homeScreen() : ProfileScreen(),
@@ -168,215 +200,284 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget homeScreen() {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          //Gioi thieu
-          SizedBox(height: 10),
-          Container(
-            width: MediaQuery.of(context).size.width - 15,
-            height: 150,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              children: [
-                CarouselSlider(
-                  items: items.map((path) {
-                    return Image.asset(
-                      path,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                    );
-                  }).toList(),
-                  options: CarouselOptions(
-                    height: 150,
-                    autoPlay: true,
-                    viewportFraction: 1.0,
-                    autoPlayInterval: Duration(seconds: 3),
-                    autoPlayAnimationDuration: Duration(milliseconds: 800),
-                    enlargeCenterPage: false,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        myCurrentIndex = index;
-                      });
-                    },
-                  ),
-                ),
-
-                Positioned(
-                  bottom: 8,
-                  left: 0,
-                  right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: items.asMap().entries.map((entry) {
-                      return AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        width: myCurrentIndex == entry.key ? 12 : 8,
-                        height: 8,
-                        margin: EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: myCurrentIndex == entry.key
-                              ? Colors.white
-                              : Colors.white54,
-                        ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          children: [
+            //Gioi thieu
+            SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(10),
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                children: [
+                  CarouselSlider(
+                    items: items.map((path) {
+                      return Image.asset(
+                        path,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
                       );
                     }).toList(),
+                    options: CarouselOptions(
+                      height: 150,
+                      autoPlay: true,
+                      viewportFraction: 1.0,
+                      autoPlayInterval: Duration(seconds: 3),
+                      autoPlayAnimationDuration: Duration(milliseconds: 800),
+                      enlargeCenterPage: false,
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          myCurrentIndex = index;
+                        });
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
 
-          //Đặt lịch khám
-          SizedBox(height: 10),
-          Container(
-            alignment: Alignment.topLeft,
-            width: MediaQuery.of(context).size.width - 20,
-            height: 150,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+                  Positioned(
+                    bottom: 8,
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: items.asMap().entries.map((entry) {
+                        return AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          width: myCurrentIndex == entry.key ? 12 : 8,
+                          height: 8,
+                          margin: EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: myCurrentIndex == entry.key
+                                ? Colors.white
+                                : Colors.white54,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    SizedBox(width: 10),
-                    Icon(Icons.date_range, size: 18, color: Colors.blueAccent),
-                    SizedBox(width: 5),
-                    Text(
-                      "Đặt lịch khám",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+
+            //Đặt lịch khám
+            SizedBox(height: 10),
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.all(10),
+              height: 165,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                border: BoxBorder.all(color: Colors.brown, width: 3),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(width: 10),
+                      Icon(
+                        Icons.date_range,
+                        size: 18,
                         color: Colors.blueAccent,
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => LichKhamScreen()),
-                        );
-                      },
-                      child: const Text(
-                        'Đặt lịch khám',
-                        style: TextStyle(fontSize: 15),
+                      SizedBox(width: 5),
+                      Text(
+                        "Đặt lịch khám",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
+                        ),
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        checkDieuTri();
-                      },
-                      child: const Text(
-                        'Đặt lịch điều trị',
-                        style: TextStyle(fontSize: 15),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => LichKhamScreen()),
+                          );
+                        },
+                        child: const Text(
+                          'Đặt lịch khám',
+                          style: TextStyle(fontSize: 15),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        checkTaiKham();
-                      },
+                      ElevatedButton(
+                        onPressed: () {
+                          checkDieuTri();
+                        },
+                        child: const Text(
+                          'Đặt lịch điều trị',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          checkTaiKham();
+                        },
 
-                      child: const Text(
-                        'Đặt lịch tái khám',
-                        style: TextStyle(fontSize: 15),
+                        child: const Text(
+                          'Đặt lịch tái khám',
+                          style: TextStyle(fontSize: 15),
+                        ),
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'Tư vấn hỗ trợ',
-                        style: TextStyle(fontSize: 15),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text(
+                          'Tư vấn hỗ trợ',
+                          style: TextStyle(fontSize: 15),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          //Bác sĩ profile
-          SizedBox(height: 10),
-          Container(
-            alignment: Alignment.topLeft,
-            width: MediaQuery.of(context).size.width - 20,
-            height: 100,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(width: 2),
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+            SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: BoxBorder.all(color: Colors.brown, width: 3),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: const [
+                      Icon(
+                        Icons.medical_services,
+                        size: 18,
+                        color: Colors.blueAccent,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        "Bác sĩ",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  isLoadingBacSi
+                      ? const Center(child: CircularProgressIndicator())
+                      : SizedBox(
+                          height: 225,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: bacSiList.length,
+                            itemBuilder: (context, index) {
+                              final bacSi = bacSiList[index];
+
+                              return Container(
+                                width: 160,
+                                margin: const EdgeInsets.only(right: 10),
+                                child: Card(
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 35,
+                                          backgroundImage: AssetImage(
+                                            "assets/images/${bacSi.hinhAnh}",
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 10),
+
+                                        Text(
+                                          bacSi.chuyenMon,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 5),
+
+                                        Text(
+                                          bacSi.kinhNghiem,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                SizedBox(width: 10),
-                Icon(
-                  Icons.medical_services,
-                  size: 18,
-                  color: Colors.blueAccent,
-                ),
-                SizedBox(width: 5),
-                Text(
-                  "Bác sĩ",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+
+            SizedBox(height: 10),
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.all(10),
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: BoxBorder.all(color: Colors.brown, width: 3),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+              child: Row(
+                children: [
+                  SizedBox(width: 10),
+                  Icon(
+                    Icons.library_books_rounded,
+                    size: 18,
                     color: Colors.blueAccent,
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          //Bài viết liên quan
-          SizedBox(height: 10),
-          Container(
-            alignment: Alignment.topLeft,
-            width: MediaQuery.of(context).size.width - 20,
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(width: 2),
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            child: Row(
-              children: [
-                SizedBox(width: 10),
-                Icon(
-                  Icons.library_books_rounded,
-                  size: 18,
-                  color: Colors.blueAccent,
-                ),
-                SizedBox(width: 5),
-                Text(
-                  "Bài viết",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
+                  SizedBox(width: 5),
+                  Text(
+                    "Bài viết",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
