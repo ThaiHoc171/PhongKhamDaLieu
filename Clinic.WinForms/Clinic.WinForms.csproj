@@ -638,6 +638,7 @@
     <None Include="Resources\icons\action\add-button.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\share.png" />
     <None Include="Resources\icons\action\file.png" />
     <None Include="Resources\icons\action\edit1.png" />
     <None Include="Resources\icons\action\pencil.png" />
