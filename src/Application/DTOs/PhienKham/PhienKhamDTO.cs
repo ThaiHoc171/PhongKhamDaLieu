@@ -12,7 +12,7 @@ public class PhienKhamReadModel
 	public int PhienKhamID { get; set; }
 	public int CaKhamID { get; set; }
 	public NameResponseDTO BenhNhan { get; init; } = default!;
-	public string? NhanVien { get; set; }
+	public NameResponseDTO NhanVien { get; init; } = default!;
 	public int? PhongChucNangID { get; set; }
 	public string? TrieuChung { get; set; }
 	public string? GhiChu { get; set; }
