@@ -108,6 +108,39 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			GhiChu = reader.IsDBNull(8) ? null : reader.GetString(8)
 		};
 	}
+	public async Task<List<PhienKhamClsListReadModel>> GetDanhSachAsync()
+	{
+		const string sql = @"
+		SELECT 
+			pk.PhienKham_CanLamSangID, cls.TenCLS, pk.TrangThai, pk.KetQua, pk.NgayThucHien, pk.GhiChu
+		FROM PhienKham_CanLamSang pk
+		JOIN CanLamSang cls ON pk.CanLamSangID = cls.CanLamSangID
+		WHERE pk.TrangThai = N'Đang chờ' OR pk.TrangThai = N'Đang thực hiện'
+		ORDER BY pk.PhienKham_CanLamSangID DESC";
+
+		var list = new List<PhienKhamClsListReadModel>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add(new PhienKhamClsListReadModel
+			{
+				PhienKhamCLSID = reader.GetInt32(0),
+				TenCLS = reader.GetString(1),
+				TrangThai = reader.GetString(2),
+				KetQua = reader.IsDBNull(3) ? null : reader.GetString(3),
+				NgayThucHien = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
+				GhiChu = reader.IsDBNull(5) ? null : reader.GetString(5)
+			});
+		}
+
+		return list;
+	}
 	public async Task AddAsync(PhienKhamCLS phienKhamCLS)
 	{
 		const string sql = @"
