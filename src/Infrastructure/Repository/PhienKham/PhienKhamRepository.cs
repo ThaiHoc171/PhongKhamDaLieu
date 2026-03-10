@@ -210,7 +210,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 		const string sql =
 		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai,
 			   pk.TrieuChung, pk.GhiChu, pk.HinhAnhJSON, pk.ChanDoanCuoi, pk.PhongChucNangID,
-			   bn_ttc.HoTen AS TenBenhNhan, nv_ttc.HoTen AS TenNhanVien
+			   bn.BenhNhanID, bn_ttc.HoTen AS TenBenhNhan, nv_ttc.HoTen AS TenNhanVien
 		FROM PhienKham pk
 		JOIN BenhNhan bn ON pk.BenhNhanID = bn.BenhNhanID
 		JOIN ThongTinCaNhan bn_ttc ON bn.ThongTinID = bn_ttc.ThongTinID
@@ -342,7 +342,11 @@ public class PhienKhamRepository : IPhienKhamRepository
 		HinhAnhJSON = r.IsDBNull("HinhAnhJSON") ? null : r.GetString("HinhAnhJSON"),
 		ChanDoanCuoi = r.IsDBNull("ChanDoanCuoi") ? null : r.GetString("ChanDoanCuoi"),
 		PhongChucNangID = r.IsDBNull("PhongChucNangID") ? null : r.GetInt32("PhongChucNangID"),
-		BenhNhan = r.GetString("TenBenhNhan"),
+		BenhNhan = new NameResponseDTO
+		{
+			Name = r.GetString("TenBenhNhan"),
+			Id = r.GetInt32("BenhNhanID")
+		},
 		NhanVien = r.GetString("TenNhanVien")
 	};
 }
