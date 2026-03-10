@@ -162,35 +162,9 @@ public class LichLamViecService
 		};
 	}
 
-	public async Task<List<LichLamViecChucVuResponseDTO>> GetByWeekAsync(int page)
+	public async Task<List<LichLamViecChucVuReadModel>> GetByWeekAsync(int page)
 	{
 		var (start, end) = DateTimeHelper.GetWeekByPage(page);
-		var entities = await _repo.GetByWeekAsync(start, end);
-
-		var result = new List<LichLamViecChucVuResponseDTO>();
-
-		foreach (var e in entities)
-		{
-			var tenNhanVien = await _nvRepo.GetNameByIdAsync(e.NhanVienID);
-			var tenChucVu = await _chucVuRepo.GetByNhanVienIdAsync(e.NhanVienID);
-			var phongId = await _nvRepo.GetPhongChucNangIdByNhanVienIdAsync(e.NhanVienID);
-
-			result.Add(new LichLamViecChucVuResponseDTO
-			{
-				LichLamViecID = e.LichLamViecID,
-				TenChucVu = tenChucVu ?? "",
-				PhongChucNangID = phongId ?? 0,
-				NhanVien = new NameResponseDTO
-				{
-					Id = e.NhanVienID,
-					Name = tenNhanVien ?? ""
-				},
-				Ngay = e.Ngay,
-				CaLamViec = e.CaLamViec,
-				GhiChu = e.GhiChu
-			});
-		}
-
-		return result;
+		return await _repo.GetByWeekAsync(start, end);
 	}
 }

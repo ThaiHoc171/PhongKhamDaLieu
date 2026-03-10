@@ -23,7 +23,7 @@ public class LichLamViecResponseDTO
 	public string? GhiChu { get; set; }
 }
 
-public class LichLamViecChucVuResponseDTO
+public class LichLamViecChucVuReadModel
 {
 	public int LichLamViecID { get; set; }
 	public string TenChucVu { get; set; } = null!;
@@ -52,5 +52,5 @@ public class WeekLichLamViecChucVuDTO
 	public int Page { get; set; }
 	public DateTime TuanBatDau { get; set; }
 	public DateTime TuanKetThuc { get; set; }
-	public List<LichLamViecChucVuResponseDTO> LichLamViecs { get; set; } = new();
+	public List<LichLamViecChucVuReadModel> LichLamViecs { get; set; } = new();
 }
