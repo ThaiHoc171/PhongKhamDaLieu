@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -57,14 +56,14 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       final data = await ProfileRepository().getProfile(token, thongTinId);
 
       setState(() {
-        hoTenController.text = data.hoTen ?? "";
-        ngaySinhController.text = data.ngaySinh != null
-            ? DateFormat('dd/MM/yyyy').format(data.ngaySinh)
-            : "";
+        hoTenController.text = data.hoTen;
+        ngaySinhController.text = DateFormat(
+          'dd/MM/yyyy',
+        ).format(data.ngaySinh);
         gioiTinh = data.gioiTinh;
-        sdtController.text = data.sdt ?? "";
-        emailController.text = data.emailLienHe ?? "";
-        diaChiController.text = data.diaChi ?? "";
+        sdtController.text = data.sdt;
+        emailController.text = data.emailLienHe;
+        diaChiController.text = data.diaChi;
         linkAvatar = data.avatar;
       });
     } catch (e) {
