@@ -51,7 +51,7 @@ public class CaKhamController : ControllerBase
 			"Cập nhật trạng thái thành công"));
 	}
 
-	[Authorize(Policy = "BacSiOrLeTan")]
+	[Authorize]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<CaKhamReadModel>>> GetById(int id)
 	{
