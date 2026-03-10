@@ -1,14 +1,20 @@
 import 'package:ql_phongkham/core/network/api_client.dart';
+import 'package:ql_phongkham/features/clinic/data/models/booking_model.dart';
 
-class ReBookingRepository {
-  Future<bool> checkTaiKham(String token, int benhNhanId) async {
+class CaKhamChiTietRepository {
+  Future<List<CaKhamModel>> getCaKhamBenhNhan(
+    String token,
+    int thongTinId,
+    int pageNumber,
+    int pageSize,
+  ) async {
     final response = await ApiClient.get(
-      '/TaiKham/Benhnhan/$benhNhanId',
+      "/CaKham/benhnhan/$thongTinId?pageNumber=$pageNumber&pageSize=$pageSize",
       token: token,
     );
-    if (response is List) {
-      return response.isNotEmpty;
-    }
-    return false;
+
+    final List items = response['data']['items'];
+
+    return items.map((e) => CaKhamModel.fromJson(e)).toList();
   }
 }

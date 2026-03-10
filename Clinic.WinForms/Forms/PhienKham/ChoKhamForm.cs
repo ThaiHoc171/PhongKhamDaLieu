@@ -87,7 +87,7 @@ namespace Clinic.WinForms.Forms.PhienKham
 				HeaderText = "Chẩn đoán",
 				FillWeight = 25
 			});
-			dgvContent.Columns.Add(SetupDatagridview.CreateButtonColumn("btnDetail", Properties.Resources.file, "Xem chi tiết phiên khám"));
+			dgvContent.Columns.Add(SetupDatagridview.CreateButtonColumn("btnKham", Properties.Resources.share, "Mở phiên khám"));
 		}
 		private void UpdateButtonState()
 		{
@@ -146,9 +146,9 @@ namespace Clinic.WinForms.Forms.PhienKham
 				return;
 			int id = Convert.ToInt32(row.Cells["PhienKhamID"].Value);
 			string columnName = dgvContent.Columns[e.ColumnIndex].Name;
-			if (columnName == "btnDetail")
+			if (columnName == "btnKham")
 			{
-				var frm = new ViewPhienKhamForm(id);
+				var frm = new StartPhienKhamForm(id);
 				frm.ShowDialog();
 			}
 		}
