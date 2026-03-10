@@ -11,7 +11,7 @@ public interface ILichLamViecRepository
 	Task<List<LichLamViecChucVuReadModel>> GetByWeekAsync(DateTime tuNgay, DateTime denNgay);
     Task<LichLamViec?> GetByIdAsync(int ID);
 	Task<List<LichLamViec>> GetAllAsync();
-	Task<List<LichLamViec>> GetByNhanVienIdTheoTuanAsync(int NhanVienID, DateTime tuNgay,DateTime denNgay);
+	Task<List<LichLamViecResponseDTO>> GetByNhanVienTheoTuanAsync(int NhanVienID, DateTime tuNgay,DateTime denNgay);
 	Task<(int nhanvien, int phong)> GetNhanVienById(int id);
 	Task AddAsync(LichLamViec lich);
 	Task BeginTransactionAsync();

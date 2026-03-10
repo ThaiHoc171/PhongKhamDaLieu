@@ -12,14 +12,12 @@ public class LichLamViecService
 	private readonly ILichLamViecRepository _repo;
 	private readonly INgayNghiNhanVienRepository _nghiRepo;
 	private readonly INhanVienRepository _nvRepo;
-	private readonly IChucVuRepository _chucVuRepo;
 
-	public LichLamViecService(ILichLamViecRepository repo, INgayNghiNhanVienRepository nghiRepo, INhanVienRepository nvRepo, IChucVuRepository chucVuRepo)
+	public LichLamViecService(ILichLamViecRepository repo, INgayNghiNhanVienRepository nghiRepo, INhanVienRepository nvRepo)
 	{
 		_repo = repo;
 		_nghiRepo = nghiRepo;
 		_nvRepo = nvRepo;
-		_chucVuRepo = chucVuRepo;
 	}
 	public async Task ThemLichLamViecAsync(LichLamViecBatchDTO dto)
 	{
@@ -131,34 +129,18 @@ public class LichLamViecService
 		}
 		return result;
 	}
-	public async Task<WeekLichLamViecDTO> GetLichTheoTuanAsync(
-			int nhanVienID,
-			int page
-		)
+	public async Task<WeekLichLamViecReadModel> GetLichTheoTuanAsync(int nhanVienID, int page)
 	{
 		var (start, end) = DateTimeHelper.GetWeekByPage(page);
 
-		var entities = await _repo.GetByNhanVienIdTheoTuanAsync(nhanVienID,start,end);
-		var nv = await _nvRepo.GetNameByIdAsync(nhanVienID);
-		return new WeekLichLamViecDTO
+		var lich = await _repo.GetByNhanVienTheoTuanAsync(nhanVienID, start, end);
+
+		return new WeekLichLamViecReadModel
 		{
-			
 			Page = page,
 			TuanBatDau = start,
 			TuanKetThuc = end,
-			LichLamViecs = entities.Select(e => new LichLamViecResponseDTO
-			{
-				
-				LichLamViecID = e.LichLamViecID,
-				NhanVien = new NameResponseDTO
-				{
-					Id = nhanVienID,
-					Name = nv
-				},
-				Ngay = e.Ngay,
-				CaLamViec = e.CaLamViec,
-				GhiChu = e.GhiChu
-			}).ToList()
+			LichLamViecs = lich
 		};
 	}
 
