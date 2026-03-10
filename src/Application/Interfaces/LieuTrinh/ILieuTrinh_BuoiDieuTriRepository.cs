@@ -10,6 +10,7 @@ public interface ILieuTrinh_BuoiDieuTriRepository
     Task<LieuTrinh_BuoiDieuTri?> GetBuoiGanNhatAsync(int lieuTrinhID);
     Task<bool> ExistsByCaKhamAsync(int caKhamID);
     Task<int> CountBySoBuoiAsync(int lieuTrinhID);
+    Task<int> GetMaxSoBuoiAsync(int lieuTrinhID);
     Task<int> AddAsync(LieuTrinh_BuoiDieuTri buoiDieuTri);
     Task UpdateTrangThaiAsync(LieuTrinh_BuoiDieuTri buoiDieuTri);
 }

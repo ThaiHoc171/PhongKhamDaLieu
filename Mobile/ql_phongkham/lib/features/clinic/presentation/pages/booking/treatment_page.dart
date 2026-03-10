@@ -227,11 +227,11 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
         token,
       );
 
-      // await Future.delayed(const Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 300));
 
-      // if (widget.lieuTrinhID != null) {
-      //   await _repository.addBuoiDieuTri(widget.lieuTrinhID!, caKhamId!, token);
-      // }
+      if (widget.lieuTrinhID != null) {
+        await _repository.addBuoiDieuTri(widget.lieuTrinhID!, caKhamId!, token);
+      }
       DialogHelper.showSnackSuccess(context, message);
     } catch (e) {
       DialogHelper.showSnacFailed(context, e.toString());
