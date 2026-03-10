@@ -43,7 +43,7 @@ public class CaKhamService
                 .GetChucVuIdByLichLamViecIdAsync(lich.LichLamViecID);
             if (chucVuId != 1 && chucVuId != 2) continue;
             int? ID = await _nhanVienRepo
-                .GetPhongChucNangIdByNhanVienIdAsync(lich.NhanVienID);
+                .GetPhongChucNangIdByNhanVienIdAsync(lich.NhanVien.Id);
             if (ID == null)
                 throw new Exception("Nhân viên không tồn tại!");
             int phongChucNangID = ID.Value;

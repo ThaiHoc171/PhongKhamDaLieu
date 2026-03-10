@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Data.SqlClient;
-using Domain.Entities;
+﻿using Application.DTOs;
 using Application.Interfaces;
+using Domain.Entities;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using System.Data;
 namespace Infrastructure.Repository;
 public class LichLamViecRepository : ILichLamViecRepository
@@ -93,31 +94,47 @@ public class LichLamViecRepository : ILichLamViecRepository
         await conn.OpenAsync();
         return (int?)await cmd.ExecuteScalarAsync();
     }
-    public async Task<List<LichLamViec>> GetByWeekAsync(DateTime tuNgay, DateTime denNgay)
-    {
-        const string sql = @"
-        SELECT LichLamViecID, NhanVienID, Ngay, CaLamViec, GhiChu
-        FROM LichLamViecNhanVien
-        WHERE Ngay >= @tuNgay AND Ngay < @denNgay";
-        var list = new List<LichLamViec>();
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@tuNgay", SqlDbType.DateTime).Value = tuNgay;
-        cmd.Parameters.Add("@denNgay", SqlDbType.DateTime).Value = denNgay;
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-        {
-            list.Add(new LichLamViec(
-                lichLamViecID: reader.GetInt32(0),
-                nhanVienID: reader.GetInt32(1),
-                ngay: reader.GetDateTime(2),
-                caLamViec: reader.GetInt32(3),
-                ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
-            ));
-        }
-        return list;
-    }
+	public async Task<List<LichLamViecChucVuReadModel>> GetByWeekAsync(DateTime tuNgay, DateTime denNgay)
+	{
+		const string sql = @"
+			SELECT llv.LichLamViecID, nv.NhanVienID, tt.HoTen, cv.TenChucVu,
+				nv.PhongChucNangID, llv.Ngay, llv.CaLamViec, llv.GhiChu
+			FROM LichLamViecNhanVien llv
+			JOIN NhanVien nv ON nv.NhanVienID = llv.NhanVienID
+			JOIN ChucVu cv ON cv.ChucVuID = nv.ChucVuID
+			JOIN ThongTinCaNhan tt ON tt.ThongTinID = nv.ThongTinID
+			WHERE llv.Ngay >= @tuNgay AND llv.Ngay < @denNgay";
+
+		var list = new List<LichLamViecChucVuReadModel>();
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@tuNgay", SqlDbType.Date).Value = tuNgay;
+		cmd.Parameters.Add("@denNgay", SqlDbType.Date).Value = denNgay;
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add(new LichLamViecChucVuReadModel
+			{
+				LichLamViecID = reader.GetInt32(0),
+				TenChucVu = reader.GetString(3),
+				PhongChucNangID = reader.GetInt32(4),
+
+				NhanVien = new NameResponseDTO
+				{
+					Id = reader.GetInt32(1),
+					Name = reader.GetString(2)
+				},
+
+				Ngay = reader.GetDateTime(5),
+				CaLamViec = reader.GetInt32(6),
+				GhiChu = reader.IsDBNull(7) ? null : reader.GetString(7)
+			});
+		}
+
+		return list;
+	}
 	public async Task<(int nhanvien, int phong)> GetNhanVienById(int id)
 	{
 		const string sql = @"
