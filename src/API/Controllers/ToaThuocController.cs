@@ -59,4 +59,12 @@ public class ToaThuocController : ControllerBase
 		return Ok(ApiResponse<PagedResult<ToaThuocReadModel>>
 			.SuccessResponse(result));
 	}
+	[Authorize(Policy = "BacSiOnly")]
+	[HttpPut("{toaThuocID}")]
+	public async Task<ActionResult<ApiResponse<string>>> UpdateToaThuoc(int toaThuocID,[FromBody] List<ChiTietToaThuocRequestDTO> chiTiet)
+	{
+		await _service.UpdateToaThuocAsync(toaThuocID, chiTiet);
+		return Ok(ApiResponse<string>
+			.SuccessResponse("Cập nhật toa thuốc thành công"));
+	}
 }

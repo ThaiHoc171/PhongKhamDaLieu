@@ -76,4 +76,37 @@ public class ToaThuocService
 			PageSize = size
 		};
 	}
+	public async Task UpdateToaThuocAsync(int toaThuocID, List<ChiTietToaThuocRequestDTO> chiTiet)
+	{
+		var insertList = new List<ChiTietToaThuoc>();
+		var updateList = new List<ChiTietToaThuoc>();
+		var deleteList = new List<int>();
+		var existedThuocIds = await _chiTietRepo.GetThuocIdsAsync(toaThuocID);
+		foreach (var x in chiTiet)
+		{
+			if (x.SoLuong == 0)
+			{
+				deleteList.Add(x.ThuocID);
+				continue;
+			}
+			var entity = new ChiTietToaThuoc(x.ThuocID,	x.LieuDung, x.SoLuong);
+			if (existedThuocIds.Contains(x.ThuocID))
+				updateList.Add(entity);
+			else
+				insertList.Add(entity);
+
+		}
+		if (insertList.Any())
+			await _chiTietRepo.AddAsync(toaThuocID, insertList);
+		if (updateList.Any())
+			await _chiTietRepo.UpdateAsync(toaThuocID, updateList);
+
+		foreach (var thuocId in deleteList)
+			await _chiTietRepo.DeleteAsync(toaThuocID, thuocId);
+
+		var count = await _chiTietRepo.CountAsync(toaThuocID);
+
+		if (count == 0)
+			await _toaThuocRepo.DeleteAsync(toaThuocID);
+	}
 }
