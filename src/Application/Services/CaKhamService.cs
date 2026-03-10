@@ -87,20 +87,15 @@ public class CaKhamService
         var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
         if (caKham == null)
             throw new Exception("Ca khám không tồn tại");
-
         if (caKham.ThongTinID != null || caKham.TrangThai != "Trống")
             throw new Exception("Ca khám không khả dụng để đăng ký");
-
         var lich = await _lichLamViecRepo.GetByIdAsync(caKham.LichLamViecID);
         if (lich == null)
             throw new Exception("Không tìm thấy lịch làm việc");
-
         var benhNhanId = await _benhNhanRepo.GetIdByThongTinAsync(dto.ThongTinID);
         if (benhNhanId == null)
             throw new Exception("Không tìm thấy bệnh nhân");
-
         var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanId);
-
         if (caKham.LoaiCaKham == "Khám")
         {
             if (taiKham != null && taiKham.TrangThai == "Chờ xử lý")
@@ -109,10 +104,48 @@ public class CaKhamService
                 await _taiKhamRepo.UpdateAsync(taiKham);
             }
         }
-
+        if (caKham.LoaiCaKham == "Điều trị")
+        {
+            var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanId);
+            if (lieuTrinh == null)
+                throw new Exception("Bệnh nhân không có liệu trình điều trị");
+            if (lieuTrinh.TrangThai != "Đang điều trị")
+                throw new Exception("Liệu trình không ở trạng thái điều trị");
+            var buoiGanNhat = await _lieuTrinh_BuoiDieuTriRepo.GetBuoiGanNhatAsync(lieuTrinh.LieuTrinhID);
+            if (buoiGanNhat != null)
+            {
+                if (!buoiGanNhat.NgayThucHien.HasValue)
+                    throw new Exception("Buổi điều trị trước chưa hoàn thành");
+                if (caKham.NgayKham < buoiGanNhat.NgayThucHien.Value)
+                    throw new Exception(
+                        "Khoảng cách giữa các buổi điều trị phải tối thiểu 7 ngày"
+                    );
+            }
+            var buoidieutri = await _lieuTrinh_BuoiDieuTriRepo.GetByLieuTrinhAsync(lieuTrinh.LieuTrinhID);
+            foreach (var dt in buoidieutri)
+            {
+                if(dt.TrangThai=="Chờ xử lý")
+                    throw new Exception("Bệnh nhân còn ca điều trị chưa xử lý xong, không thể đăng ký!");
+            }
+            int soBuoi = await _lieuTrinh_BuoiDieuTriRepo.CountBySoBuoiAsync(lieuTrinh.LieuTrinhID) + 1;
+            if (soBuoi > lieuTrinh.TongSoBuoi)
+                throw new Exception("Liệu trình đã đủ số buổi");
+            DateTime ngayDuKien = lieuTrinh.NgayBatDau.AddDays((soBuoi - 1) * 7);
+            caKham.DangKyKham(dto.ThongTinID, dto.LyDoKham, dto.NgayDat, dto.GhiChu);
+            await _caKhamRepo.UpdateAsync(caKham);
+            var buoi = new LieuTrinh_BuoiDieuTri(
+                lieuTrinhID: lieuTrinh.LieuTrinhID,
+                caKhamID: caKhamID,
+                soBuoi: soBuoi,
+                ngayDuKien: ngayDuKien,
+                ngayThucHien: caKham.NgayKham,
+                nhanVienID: lich.NhanVienID
+            );
+            await _lieuTrinh_BuoiDieuTriRepo.AddAsync(buoi);
+            return true;
+        }
         caKham.DangKyKham(dto.ThongTinID, dto.LyDoKham, dto.NgayDat, dto.GhiChu);
         await _caKhamRepo.UpdateAsync(caKham);
-
         return true;
     }
     public async Task<bool> UpdateTrangThaiAsync(int caKhamID, string trangThai)
