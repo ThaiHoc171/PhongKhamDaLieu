@@ -14,7 +14,37 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 		_connectionString = config.GetConnectionString("DefaultConnection")
 			?? throw new ArgumentNullException("Connection string not found");
 	}
+	public async Task<List<(int Id, string Ten)>> GetComboboxAsync(int pcnId)
+	{
+		const string sql = @"
+			SELECT ct.ChiTietID, tb.TenTB
+			FROM ChiTiet_PCNTB ct
+			JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
+			JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID
+			WHERE ptb.PhongChucNangID = @PhongChucNangID
+			ORDER BY tb.TenTB
+		";
 
+		var list = new List<(int Id, string Ten)>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.AddWithValue("@PhongChucNangID", pcnId);
+
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add((
+				Id: reader.GetInt32(0),
+				Ten: reader.GetString(1)
+			));
+		}
+
+		return list;
+	}
 	public async Task<List<ChiTietPCNThietBi>> GetByPCNTBIdAsync(int pcnTbId)
 	{
 		const string sql = @"

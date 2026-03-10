@@ -3,6 +3,7 @@ using Application.Services;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services;
 
 [ApiController]
 [Route("api/chitiet-pcntb")]
@@ -14,6 +15,14 @@ public class ChiTietPCNThietBiController : ControllerBase
 	public ChiTietPCNThietBiController(ChiTietPCNThietBiService service)
 	{
 		_service = service;
+	}
+
+	[Authorize(Roles = "Admin,Nhân viên")]
+	[HttpGet("combobox/{pcnId}")]
+	public async Task<IActionResult> GetIdAndName(int pcnId)
+	{
+		var result = await _service.GetComboboxAsync(pcnId);
+		return Ok(result);
 	}
 
 	[Authorize(Policy = "BacSiOrKyThuatVien")]
