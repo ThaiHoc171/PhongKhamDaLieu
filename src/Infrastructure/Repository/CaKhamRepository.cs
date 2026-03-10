@@ -197,7 +197,7 @@ public class CaKhamRepository : ICaKhamRepository
     public async Task<(List<CaKhamListReadModel>, int)> GetByThongTinAsync(int thongTinID, int pageNumber, int pageSize)
 	{
 		const string sql = @"
-		SELECT ck.CaKhamID, ck.NgayKham kg.TenKhung, pc.TenPhong, tt.HoTen, ck.LyDoKham, ck.TrangThai
+		SELECT ck.CaKhamID, ck.NgayKham, kg.TenKhung, pc.TenPhong, tt.HoTen, ck.LyDoKham, ck.TrangThai
 		FROM CaKham ck
 		LEFT JOIN KhungGioKham kg ON ck.KhungGioID = kg.KhungGioID
 		LEFT JOIN PhongChucNang pc ON ck.PhongChucNangID = pc.PhongChucNangID
@@ -224,11 +224,12 @@ public class CaKhamRepository : ICaKhamRepository
 			list.Add(new CaKhamListReadModel
 			{
 				CaKhamID = reader.GetInt32(0),
-				TenKhungGio = reader.GetString(1),
-				TenPhong = reader.GetString(2),
-				HoTen = reader.IsDBNull(3) ? null : reader.GetString(3),
-				LyDoKham = reader.IsDBNull(4) ? null : reader.GetString(4),
-				TrangThai = reader.GetString(5)
+				NgayKham = reader.GetDateTime(1),
+				TenKhungGio = reader.GetString(2),
+				TenPhong = reader.GetString(3),
+				HoTen = reader.IsDBNull(4) ? null : reader.GetString(4),
+				LyDoKham = reader.IsDBNull(5) ? null : reader.GetString(5),
+				TrangThai = reader.GetString(6)
 			});
 		}
 		if (await reader.NextResultAsync())
