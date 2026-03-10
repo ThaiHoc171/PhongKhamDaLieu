@@ -119,4 +119,16 @@ public class ToaThuocRepository : IToaThuocRepository
 
 		return (list, total);
 	}
+	public async Task DeleteAsync(int toaThuocID)
+	{
+		const string sql = "DELETE FROM ToaThuoc WHERE ToaThuocID = @ToaThuocID";
+
+		await using var conn = new SqlConnection(_connectionString);
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.AddWithValue("@ToaThuocID", toaThuocID);
+
+		await conn.OpenAsync();
+		await cmd.ExecuteNonQueryAsync();
+	}
 }
