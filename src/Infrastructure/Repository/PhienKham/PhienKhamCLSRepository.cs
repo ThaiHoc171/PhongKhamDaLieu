@@ -104,12 +104,12 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			FileDinhKem = reader.IsDBNull(4) ? null : reader.GetString(4),
 			NgayThucHien = reader.IsDBNull(5) ? null : reader.GetDateTime(5),
 			NhanVienChiDinh = reader.GetString(6),
-			NhanVienThucHien = new NameResponseDTO 
+			NhanVienThucHien = reader.IsDBNull(7) ? null : new NameResponseDTO
 			{ 
 				Id = reader.GetInt32(7),
 				Name = reader.GetString(8),
 			},
-			GhiChu = reader.IsDBNull(8) ? null : reader.GetString(8)
+			GhiChu = reader.IsDBNull(9) ? null : reader.GetString(9)
 		};
 	}
 	public async Task<List<PhienKhamClsListReadModel>> GetDanhSachAsync()
