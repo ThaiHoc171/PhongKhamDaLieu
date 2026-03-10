@@ -12,6 +12,7 @@ namespace Clinic.WinForms.Forms.PhienKham
 	public partial class StartPhienKhamForm : Form
 	{
 		private readonly PhienKhamClient _client = new PhienKhamClient();
+		private readonly ToaThuocClient _toaClient = new ToaThuocClient();
 
 		private readonly int _id;
 
@@ -96,10 +97,18 @@ namespace Clinic.WinForms.Forms.PhienKham
 			//frm.ShowDialog();
 		}
 
-		private void btnToaThuoc_Click(object sender, EventArgs e)
+		private async void btnToaThuoc_Click(object sender, EventArgs e)
 		{
-			var frm = new ViewToaThuoc(_id);
-			frm.ShowDialog();
+			bool check = await _toaClient.KiemTraTonTaiAsync(_id);
+			if (check)
+			{
+				var frm = new ViewToaThuoc(_id);
+				frm.ShowDialog();
+			}
+			else
+			{
+				MessageHelper.ShowMessage("Phiên khám chưa có toa thuốc!");
+			}
 		}
 
 		private void btnThemChanDoan_Click(object sender, EventArgs e)
