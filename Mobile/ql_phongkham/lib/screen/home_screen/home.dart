@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
-import 'package:ql_phongkham/features/clinic/data/models/bac_si_profile_model.dart';
-import 'package:ql_phongkham/features/clinic/data/repository/bacsi_profile_repository.dart';
+import 'package:ql_phongkham/features/clinic/data/models/doctor_profile_model.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/doctor_profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/examination_repository.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/booking/detail_booking.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/treatment_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/profile/proflie.dart';
@@ -168,7 +169,11 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Image.asset('assets/images/logo.png', height: 35),
         ),
         body: SafeArea(
-          child: _selectedIndex == 0 ? homeScreen() : ProfileScreen(),
+          child: _selectedIndex == 0
+              ? homeScreen()
+              : _selectedIndex == 1
+              ? ProfileScreen()
+              : DanhSachCaKhamPage(),
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
