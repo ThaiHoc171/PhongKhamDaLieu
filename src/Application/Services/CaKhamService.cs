@@ -11,6 +11,7 @@ public class CaKhamService
 	private readonly ITaiKhamRepository _taiKhamRepo;
 	private readonly ILieuTrinh_BuoiDieuTriRepository _lieuTrinh_BuoiDieuTriRepo;
     private readonly ILieuTrinhDieuTriRepository _lieuTrinhRepo;
+    private readonly IBenhNhanRepository _benhNhanRepo;
     public CaKhamService(
 		ICaKhamRepository caKhamRepo,
 		ILichLamViecRepository lichLamViecRepo, 
@@ -18,7 +19,8 @@ public class CaKhamService
 		INhanVienRepository nhanVienRepo,
         ITaiKhamRepository taiKhamRepo,
         ILieuTrinh_BuoiDieuTriRepository lieuTrinh_BuoiDieuTriRepo,
-        ILieuTrinhDieuTriRepository lieuTrinhRepo)
+        ILieuTrinhDieuTriRepository lieuTrinhRepo,
+        IBenhNhanRepository benhNhanRepo)
 	{
 		_caKhamRepo = caKhamRepo;
 		_lichLamViecRepo = lichLamViecRepo;
@@ -27,6 +29,7 @@ public class CaKhamService
         _taiKhamRepo = taiKhamRepo;
 		_lieuTrinh_BuoiDieuTriRepo = lieuTrinh_BuoiDieuTriRepo;
 		_lieuTrinhRepo = lieuTrinhRepo;
+        _benhNhanRepo = benhNhanRepo;
     }
     public async Task<int> TaoCaKhamAsync(TaoCaKhamDTO dto)
     {
@@ -89,7 +92,10 @@ public class CaKhamService
         var lich = await _lichLamViecRepo.GetByIdAsync(caKham.LichLamViecID);
         if (lich == null)
             throw new Exception("Không tìm thấy lịch làm việc");
-        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(dto.ThongTinID);
+        var benhNhanId = await _benhNhanRepo.GetIdByThongTinAsync(dto.ThongTinID);
+        if (lich == null)
+            throw new Exception("Không tìm thấy bệnh nhân");
+        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanId);
         if (caKham.LoaiCaKham == "Khám")
         {
             if (taiKham != null && taiKham.TrangThai == "Chờ xử lý")
@@ -100,7 +106,7 @@ public class CaKhamService
         }
         if (caKham.LoaiCaKham == "Điều trị")
         {
-            var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(dto.ThongTinID);
+            var lieuTrinh = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanId);
             if (lieuTrinh == null)
                 throw new Exception("Bệnh nhân không có liệu trình điều trị");
             if (lieuTrinh.TrangThai != "Đang điều trị")
