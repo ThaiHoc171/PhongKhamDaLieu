@@ -40,7 +40,8 @@ public class LieuTrinh_BuoiDieuTriService
         if (lieuTrinh.TrangThai != "Đang điều trị")
             throw new Exception("Liệu trình không ở trạng thái đang điều trị");
 
-        int soBuoi = await _repo.CountBySoBuoiAsync(lieuTrinh.LieuTrinhID) + 1;
+        int maxSoBuoi = await _repo.GetMaxSoBuoiAsync(lieuTrinh.LieuTrinhID);
+        int soBuoi = maxSoBuoi + 1;
 
         if (soBuoi > lieuTrinh.TongSoBuoi)
             throw new Exception("Liệu trình đã đủ số buổi");

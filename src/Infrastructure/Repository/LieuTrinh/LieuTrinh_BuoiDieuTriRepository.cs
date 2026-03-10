@@ -150,6 +150,23 @@ public class LieuTrinh_BuoiDieuTriRepository : ILieuTrinh_BuoiDieuTriRepository
         await conn.OpenAsync();
         return (int)await cmd.ExecuteScalarAsync();
     }
+
+    public async Task<int> GetMaxSoBuoiAsync(int lieuTrinhID)
+    {
+        const string sql = @"
+        SELECT ISNULL(MAX(SoBuoi), 0)
+        FROM LieuTrinh_BuoiDieuTri
+        WHERE LieuTrinhID = @id";
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@id", lieuTrinhID);
+
+        await conn.OpenAsync();
+
+        return (int)await cmd.ExecuteScalarAsync();
+    }
     public async Task<int> AddAsync(LieuTrinh_BuoiDieuTri buoi)
     {
         const string sql = @"
