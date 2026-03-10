@@ -56,33 +56,47 @@ public class LichLamViecRepository : ILichLamViecRepository
 		}
 		return result;
 	}
-	public async Task<List<LichLamViec>> GetByNhanVienIdTheoTuanAsync(int NhanVienID, DateTime tuNgay, DateTime denNgay)
+	public async Task<List<LichLamViecResponseDTO>> GetByNhanVienTheoTuanAsync(int nhanVienID, DateTime tuNgay, DateTime denNgay)
 	{
-		const string sql = @"SELECT LichLamViecID, NhanVienID, Ngay, CaLamViec, GhiChu
-					FROM LichLamViecNhanVien
-					WHERE NhanVienID = @NhanVienID AND Ngay >= @TuNgay AND Ngay <= @DenNgay
-					ORDER BY Ngay, CaLamViec	";
-		var result = new List<LichLamViec>();
+		const string sql = @"
+				SELECT l.LichLamViecID, l.NhanVienID, t.HoTen, l.Ngay, l.CaLamViec, l.GhiChu
+				FROM LichLamViecNhanVien l
+				JOIN NhanVien nv ON nv.NhanVienID = l.NhanVienID
+				JOIN ThongTinCaNhan t ON t.ThongTinID = nv.ThongTinID
+				WHERE l.NhanVienID = @NhanVienID AND l.Ngay BETWEEN @TuNgay AND @DenNgay
+				ORDER BY l.Ngay, l.CaLamViec";
+
+		var result = new List<LichLamViecResponseDTO>();
+
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@NhanVienID", NhanVienID);
+
+		cmd.Parameters.AddWithValue("@NhanVienID", nhanVienID);
 		cmd.Parameters.AddWithValue("@TuNgay", tuNgay.Date);
 		cmd.Parameters.AddWithValue("@DenNgay", denNgay.Date);
+
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
 		{
-			result.Add(new LichLamViec(
-				lichLamViecID: reader.GetInt32(0),
-				nhanVienID: reader.GetInt32(1),
-				ngay: reader.GetDateTime(2),
-				caLamViec: reader.GetInt32(3),
-				ghiChu: reader.IsDBNull(4) ? null : reader.GetString(4)
-			));
+			result.Add(new LichLamViecResponseDTO
+			{
+				LichLamViecID = reader.GetInt32(0),
+				NhanVien = new NameResponseDTO
+				{
+					Id = reader.GetInt32(1),
+					Name = reader.GetString(2)
+				},
+				Ngay = reader.GetDateTime(3),
+				CaLamViec = reader.GetInt32(4),
+				GhiChu = reader.IsDBNull(5) ? null : reader.GetString(5)
+			});
 		}
+
 		return result;
 	}
-    public async Task<int?> GetChucVuIdByLichLamViecIdAsync(int lichLamViecId)
+	public async Task<int?> GetChucVuIdByLichLamViecIdAsync(int lichLamViecId)
     {
         const string sql = @"
         SELECT n.ChucVuID
