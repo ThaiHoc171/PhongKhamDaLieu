@@ -143,7 +143,12 @@ public class CaKhamRepository : ICaKhamRepository
               AND LoaiCaKham = @LoaiCaKham
               AND TrangThai != N'Đã hủy'
             GROUP BY KhungGioID
-            HAVING COUNT(CASE WHEN TrangThai != N'Trống' THEN 1 END) < 5";
+            HAVING 
+			(
+				(@LoaiCaKham = N'Khám' AND COUNT(CASE WHEN TrangThai != N'Trống' THEN 1 END) < 5)
+				OR
+				(@LoaiCaKham = N'Điều trị' AND COUNT(CASE WHEN TrangThai != N'Trống' THEN 1 END) < 1)
+			)";
 		var list = new List<int>();
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
