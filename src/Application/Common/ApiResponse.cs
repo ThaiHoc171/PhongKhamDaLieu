@@ -1,5 +1,4 @@
 ﻿namespace Application.Common;
-
 public class ApiResponse<T>
 {
 	public bool Success { get; set; }

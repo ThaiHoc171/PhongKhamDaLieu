@@ -1,4 +1,5 @@
-﻿using Application.Interfaces;
+﻿using Application.Common;
+using Application.Interfaces;
 using Application.Repository;
 using Application.Services;
 using Infrastructure.Repositories;
@@ -54,28 +55,53 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddControllers()
-	.AddJsonOptions(opt =>
-	{
-		opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-	});
+.AddJsonOptions(opt =>
+{
+	opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-	.AddJwtBearer(options =>
+builder.Services
+.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+	options.TokenValidationParameters = new TokenValidationParameters
 	{
-		options.TokenValidationParameters = new TokenValidationParameters
+		ValidateIssuer = true,
+		ValidIssuer = builder.Configuration["Jwt:Issuer"],
+		ValidateAudience = false,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		IssuerSigningKey = new SymmetricSecurityKey(
+			Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+		),
+		RoleClaimType = ClaimTypes.Role
+	};
+
+	options.Events = new JwtBearerEvents
+	{
+		OnChallenge = async context =>
 		{
-			ValidateIssuer = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],	
-            ValidateAudience = false,
-			ValidateLifetime = true,
-			ValidateIssuerSigningKey = true,
-			IssuerSigningKey = new SymmetricSecurityKey(
-				Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
-			),
-			RoleClaimType = ClaimTypes.Role
-		};
-	});
+			context.HandleResponse();
 
+			context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+			context.Response.ContentType = "application/json";
+
+			await context.Response.WriteAsJsonAsync(
+				ApiResponse<string>.Fail("Bạn chưa đăng nhập")
+			);
+		},
+
+		OnForbidden = async context =>
+		{
+			context.Response.StatusCode = StatusCodes.Status403Forbidden;
+			context.Response.ContentType = "application/json";
+
+			await context.Response.WriteAsJsonAsync(
+				ApiResponse<string>.Fail("Bạn không có quyền truy cập")
+			);
+		}
+	};
+});
 builder.Services.AddAuthorization(options =>
 {
 	options.AddPolicy("BacSiOnly", p =>
@@ -176,7 +202,7 @@ builder.Services.AddScoped<CaKhamService>();
 builder.Services.AddScoped<IPhienKhamCLSRepository, PhienKhamCLSRepository>();
 builder.Services.AddScoped<PhienKhamCLSService>();
 builder.Services.AddScoped<IPhienKhamThietBiRepository, PhienKhamThietBiRepository>();
-builder.Services.AddScoped<PhienKhamThietBiService>();
+builder.Services.AddScoped<PhienKhamThietBiService>();	
 builder.Services.AddScoped<IHoSoBenhAnRepository, HoSoBenhAnRepository>();
 builder.Services.AddScoped<HoSoBenhAnService>();
 builder.Services.AddScoped<INgayNghiNhanVienRepository, NgayNghiNhanVienRepository>();
