@@ -69,7 +69,7 @@ builder.Services
 		ValidateIssuer = true,
 		ValidIssuer = builder.Configuration["Jwt:Issuer"],
 		ValidateAudience = false,
-		ValidateLifetime = true,
+		ValidateLifetime = true,	
 		ValidateIssuerSigningKey = true,
 		IssuerSigningKey = new SymmetricSecurityKey(
 			Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)

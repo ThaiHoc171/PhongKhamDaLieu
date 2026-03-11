@@ -22,7 +22,7 @@ public class LieuTrinhDieuTriService
 
     public async Task TaoLieuTrinhAsync(TaoLieuTrinhDieuTriDTO dto)
     {
-        var benhNhanId = await _phienKhamRepo.GetBenhNhanIdByPhienKhamIdAsync(dto.PhienKhamID);
+        var benhNhanId = await _phienKhamRepo.GetBenhNhanByIdAsync(dto.PhienKhamID);
         if (!benhNhanId.HasValue)
             throw new Exception("Phiên khám không tồn tại hoặc không hợp lệ");
         int benhNhanID = benhNhanId.Value;
