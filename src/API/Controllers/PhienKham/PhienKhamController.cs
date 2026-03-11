@@ -3,97 +3,85 @@ using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Application.Services;
 using Application.Common;
+
 namespace API.Controllers;
+
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/phienkham")]
 [Authorize]
 public class PhienKhamController : ControllerBase
 {
 	private readonly PhienKhamService _service;
+
 	public PhienKhamController(PhienKhamService service)
 	{
 		_service = service;
 	}
+
 	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<int>>> TaoMoi([FromQuery] int caKhamID)
+	public async Task<ActionResult<ApiResponse<int>>> Create([FromQuery] int caKhamId)
 	{
-		var phienKhamId = await _service.TaoMoiAsync(caKhamID);
-		return Ok(ApiResponse<int>.SuccessResponse(phienKhamId, "Tạo phiên khám thành công"	));
+		var result = await _service.TaoMoiAsync(caKhamId);
+		return Ok(result);
 	}
+
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}")]
-	public async Task<ActionResult<ApiResponse<object>>> CapNhat(
-		int id,
-		[FromBody] PhienKhamUpdateDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] PhienKhamUpdateDTO dto)
 	{
-		await _service.CapNhatAsync(id, dto);
-		return Ok(ApiResponse<object>.SuccessResponse(null, "Cập nhật phiên khám thành công"));
+		var result = await _service.CapNhatAsync(id, dto);
+		return Ok(result);
 	}
-	[Authorize(Policy = "BacSiOnly")]
-	[HttpPut("{id}/ket-thuc")]
-	public async Task<ActionResult<ApiResponse<object>>> KetThuc(int id,[FromBody] string chanDoanCuoi)
-	{
-		try
-		{
-			await _service.KetThucAsync(id, chanDoanCuoi);
 
-			return Ok(ApiResponse<object>.SuccessResponse(
-				null,
-				"Kết thúc phiên khám thành công"));
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(ApiResponse<object>.Fail(ex.Message));
-		}
+	[Authorize(Policy = "BacSiOnly")]
+	[HttpPut("{id}/complete")]
+	public async Task<ActionResult<ApiResponse<bool>>> Complete(int id, [FromBody] string chanDoanCuoi)
+	{
+		var result = await _service.KetThucAsync(id, chanDoanCuoi);
+		return Ok(result);
 	}
+
 	[Authorize(Roles = "Admin")]
 	[HttpGet("benhnhan/{benhNhanId}")]
-	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> LayTheoBenhNhan(
-		int benhNhanId,
-		[FromQuery] int pageNumber = 1,
-		[FromQuery] int pageSize = 10)
+	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> GetByPatient(
+		int benhNhanId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 	{
-		var result = await _service.GetByBenhNhanAsync(benhNhanId,pageNumber,pageSize);
-		return Ok(ApiResponse<PagedResult<PhienKhamListReadModel>>.SuccessResponse(result));
+		var result = await _service.GetByBenhNhanAsync(benhNhanId, pageNumber, pageSize);
+		return Ok(result);
 	}
+
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> LayDanhSach(
-		[FromQuery] int pageNumber = 1,[FromQuery] int pageSize = 15,[FromQuery] int? nhanVienID = null,[FromQuery] string? trangThai = null)
+	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> GetPaged(
+		[FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15, [FromQuery] int? nhanVienID = null, [FromQuery] string? trangThai = null)
 	{
-		var result = await _service.GetPagedAsync(pageNumber,pageSize,nhanVienID,trangThai);
-		return Ok(ApiResponse<PagedResult<PhienKhamListReadModel>>
-			.SuccessResponse(result));
+		var result = await _service.GetPagedAsync(pageNumber, pageSize, nhanVienID, trangThai);
+		return Ok(result);
 	}
+
 	[Authorize(Policy = "BacSiOnly")]
-	[HttpGet("timkiem")]
+	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> Search(
-		[FromQuery] string keyword, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15,[FromQuery] int? nhanVienID = null)
+		[FromQuery] string keyword, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15, [FromQuery] int? nhanVienID = null)
 	{
 		var result = await _service.SearchAsync(keyword, pageNumber, pageSize, nhanVienID);
-		return Ok(ApiResponse<PagedResult<PhienKhamListReadModel>>.SuccessResponse(result));
+		return Ok(result);
 	}
+
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<PhienKhamReadModel>>> GetById(int id)
 	{
 		var result = await _service.GetByIdAsync(id);
-		if (result == null)
-			return NotFound(ApiResponse<PhienKhamReadModel>
-				.Fail("Phiên khám không tồn tại"));
-		return Ok(ApiResponse<PhienKhamReadModel>
-			.SuccessResponse(result));
+		return Ok(result);
 	}
-    [Authorize]
-    [HttpGet("CaKham/{caKhamId}")]
-    public async Task<ActionResult<ApiResponse<PhienKhamReadModel>>> GetByCaKhamId(int caKhamId)
-    {
-        var result = await _service.GetByCaKhamIdAsync(caKhamId);
-        if (result == null)
-            return NotFound(ApiResponse<PhienKhamReadModel>
-                .Fail("Phiên khám không tồn tại"));
-        return Ok(ApiResponse<PhienKhamReadModel>
-            .SuccessResponse(result));
-    }
+
+	[Authorize]
+	[HttpGet("cakham/{caKhamId}")]
+	public async Task<ActionResult<ApiResponse<PhienKhamReadModel>>> GetByCaKham(int caKhamId)
+	{
+		var result = await _service.GetByCaKhamIdAsync(caKhamId);
+		return Ok(result);
+	}
 }

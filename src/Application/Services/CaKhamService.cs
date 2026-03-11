@@ -95,7 +95,7 @@ public class CaKhamService
         var benhNhanId = await _benhNhanRepo.GetIdByThongTinAsync(dto.ThongTinID);
         if (benhNhanId == null)
             throw new Exception("Không tìm thấy bệnh nhân");
-        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanId);
+        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanId.Value);
         if (caKham.LoaiCaKham == "Khám")
         {
             if (taiKham != null && taiKham.TrangThai == "Chờ xử lý")
