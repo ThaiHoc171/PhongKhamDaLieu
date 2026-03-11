@@ -97,7 +97,15 @@ public class PhienKhamService
 
 		return result;
 	}
-	public async Task<PagedResult<PhienKhamListReadModel>>GetByBenhNhanAsync(int benhNhanId, int pageNumber, int pageSize)
+    public async Task<PhienKhamReadModel> GetByCaKhamIdAsync(int caKhamId)
+    {
+        var result = await _repo.GetByCaKhamIdAsync(caKhamId);
+
+        if (result == null)
+            throw new Exception("Phiên khám không tồn tại");
+        return result;
+    }
+    public async Task<PagedResult<PhienKhamListReadModel>>GetByBenhNhanAsync(int benhNhanId, int pageNumber, int pageSize)
 	{
 		var (items, totalCount) =
 			await _repo.GetByBenhNhanPagedAsync(benhNhanId, pageNumber, pageSize);

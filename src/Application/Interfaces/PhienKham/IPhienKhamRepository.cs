@@ -3,7 +3,9 @@ using Domain.Entities;
 public interface IPhienKhamRepository
 {
 	Task<PhienKham?> GetByIdAsync(int id);
-	Task<int> AddAsync(PhienKham entity);
+	Task<PhienKhamReadModel?> GetByCaKhamIdAsync(int id);
+
+    Task<int> AddAsync(PhienKham entity);
 	Task UpdateAsync(PhienKham entity);
 	Task KetThucAsync(PhienKham entity);
 	Task<int?> GetBenhNhanIdByPhienKhamIdAsync(int phienKhamID);

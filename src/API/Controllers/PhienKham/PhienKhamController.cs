@@ -77,4 +77,15 @@ public class PhienKhamController : ControllerBase
 		return Ok(ApiResponse<PhienKhamReadModel>
 			.SuccessResponse(result));
 	}
+    [Authorize]
+    [HttpGet("/CaKham/{caKhamId}")]
+    public async Task<ActionResult<ApiResponse<PhienKhamReadModel>>> GetByCaKhamId(int caKhamId)
+    {
+        var result = await _service.GetByCaKhamIdAsync(caKhamId);
+        if (result == null)
+            return NotFound(ApiResponse<PhienKhamReadModel>
+                .Fail("Phiên khám không tồn tại"));
+        return Ok(ApiResponse<PhienKhamReadModel>
+            .SuccessResponse(result));
+    }
 }
