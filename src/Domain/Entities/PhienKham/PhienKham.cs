@@ -1,5 +1,4 @@
 ﻿using Domain.Enums;
-
 namespace Domain.Entities;
 public class PhienKham
 {
@@ -7,20 +6,17 @@ public class PhienKham
 	public int CaKhamID { get; private set; }
 	public int BenhNhanID { get; private set; }
 	public int NhanVienID { get; private set; }
-	public int? PhongChucNangID { get; private set; }
+	public int PhongChucNangID { get; private set; }
 	public string? TrieuChung { get; private set; }
 	public string? GhiChu { get; private set; }
-	public string? HinhAnhJSON { get; private set; }
+	public string? HinhAnh { get; private set; }
 	public string? ChanDoanCuoi { get; private set; }
+
 	public DateTime NgayKham { get; private set; }
-	public TrangThaiKhamEnum TrangThai { get; private set; } = default!;
+	public TrangThaiKhamEnum TrangThai { get; private set; }
 
 	// Tạo mới
-	public PhienKham(
-		int caKhamID,
-		int benhNhanID,
-		int nhanVienID,
-		int? phongChucNangID)
+	public PhienKham( int caKhamID, int benhNhanID, int nhanVienID, int phongChucNangID)
 	{
 		CaKhamID = caKhamID;
 		BenhNhanID = benhNhanID;
@@ -29,18 +25,8 @@ public class PhienKham
 	}
 
 	// Map DB
-	public PhienKham(
-		int phienKhamID,
-		int caKhamID,
-		int benhNhanID,
-		int nhanVienID,
-		int? phongChucNangID,
-		string? trieuChung,
-		string? ghiChu,
-		string? hinhAnhJSON,
-		string? chanDoanCuoi,
-		DateTime ngayKham,
-		string trangThai)
+	public PhienKham( int phienKhamID, int caKhamID, int benhNhanID, int nhanVienID, int phongChucNangID,
+		string? trieuChung,	string? ghiChu,	string? hinhAnh, string? chanDoanCuoi, DateTime ngayKham,string trangThai)
 	{
 		PhienKhamID = phienKhamID;
 		CaKhamID = caKhamID;
@@ -49,23 +35,19 @@ public class PhienKham
 		PhongChucNangID = phongChucNangID;
 		TrieuChung = trieuChung;
 		GhiChu = ghiChu;
-		HinhAnhJSON = hinhAnhJSON;
+		HinhAnh = hinhAnh;
 		ChanDoanCuoi = chanDoanCuoi;
 		NgayKham = ngayKham;
 		TrangThai = TrangThaiKhamExtensions.FromDb(trangThai);
 	}
-	// Nghiệp vụ
-	public void CapNhat(
-		string? trieuChung,
-		string? ghiChu,
-		string? hinhAnhJSON)
+
+	public void CapNhat(string? trieuChung, string? ghiChu, string? hinhAnh)
 	{
 		if (TrangThai != TrangThaiKhamEnum.DangKham)
 			throw new InvalidOperationException("Phiên khám đã kết thúc");
-
 		TrieuChung = trieuChung;
 		GhiChu = ghiChu;
-		HinhAnhJSON = hinhAnhJSON;
+		HinhAnh = hinhAnh;
 	}
 
 	public void KetThuc(string chanDoanCuoi)
