@@ -19,7 +19,7 @@ public class TaiKhamService
 
     public async Task TaoTaiKhamAsync(TaoTaiKhamDTO dto)
     {
-        var pk = await _phienKhamRepo.GetBenhNhanIdByPhienKhamIdAsync(dto.PhienKhamID);
+        var pk = await _phienKhamRepo.GetBenhNhanByIdAsync(dto.PhienKhamID);
         
         if (pk == null)
             throw new Exception("Phiên khám không tồn tại, không thể tạo");

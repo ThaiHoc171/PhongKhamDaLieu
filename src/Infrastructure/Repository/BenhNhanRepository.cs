@@ -46,7 +46,7 @@ public class BenhNhanRepository : IBenhNhanRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<int> GetIdByThongTinAsync(int id)
+	public async Task<int?> GetIdByThongTinAsync(int id)
 	{
 		const string sql = @"
 			SELECT BenhNhanID
