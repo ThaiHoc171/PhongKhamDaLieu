@@ -38,8 +38,7 @@ public class PhienKhamRepository : IPhienKhamRepository
 
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-
-	public async Task<(List<PhienKhamListReadModel>, int)> GetPagedAsync(int page, int size, int? nhanVienID, string? trangThai)
+    public async Task<(List<PhienKhamListReadModel>, int)> GetPagedAsync(int page, int size, int? nhanVienID, string? trangThai)
 	{
 		var sql =
 		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai, pk.ChanDoanCuoi,
@@ -204,8 +203,31 @@ public class PhienKhamRepository : IPhienKhamRepository
 
 		return (list, total);
 	}
+    public async Task<PhienKhamReadModel?> GetByCaKhamIdAsync(int caKhamId)
+    {
+        const string sql =
+        @"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai,
+			   pk.TrieuChung, pk.GhiChu, pk.HinhAnhJSON, pk.ChanDoanCuoi, pk.PhongChucNangID,
+			   bn.BenhNhanID, bn_ttc.HoTen AS TenBenhNhan,nv.NhanVienID, nv_ttc.HoTen AS TenNhanVien
+		FROM PhienKham pk
+		JOIN BenhNhan bn ON pk.BenhNhanID = bn.BenhNhanID
+		JOIN ThongTinCaNhan bn_ttc ON bn.ThongTinID = bn_ttc.ThongTinID
+		JOIN NhanVien nv ON pk.NhanVienID = nv.NhanVienID
+		JOIN ThongTinCaNhan nv_ttc ON nv.ThongTinID = nv_ttc.ThongTinID
+		WHERE pk.CaKhamID=@caKhamId";
 
-	public async Task<PhienKhamReadModel?> GetDetailAsync(int id)
+        await using var conn = CreateConnection();
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@caKhamId", caKhamId);
+
+        await conn.OpenAsync();
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        return await reader.ReadAsync() ? MapToDetailDTO(reader) : null;
+    }
+    public async Task<PhienKhamReadModel?> GetDetailAsync(int id)
 	{
 		const string sql =
 		@"SELECT pk.PhienKhamID, pk.CaKhamID, pk.NgayKham, pk.TrangThai,
