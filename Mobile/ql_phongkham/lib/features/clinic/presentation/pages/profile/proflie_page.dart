@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
+import 'package:ql_phongkham/features/clinic/data/models/profile_model.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/profile_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,15 +13,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String? gioiTinh;
-  String? linkAvatar;
-
-  String hoTen = "";
-  String ngaySinh = "";
-  String sdt = "";
-  String email = "";
-  String diaChi = "";
-
+  ProfileModel? profile;
+  late final avatar = profile!.avatar;
   @override
   void initState() {
     super.initState();
@@ -36,20 +30,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (token == null || thongTinId == null) return;
 
       final data = await ProfileRepository().getProfile(token, thongTinId);
-
       setState(() {
-        hoTen = data.hoTen ?? "";
-        ngaySinh = data.ngaySinh != null
-            ? DateFormat('dd/MM/yyyy').format(data.ngaySinh)
-            : "";
-        gioiTinh = data.gioiTinh;
-        sdt = data.sdt ?? "";
-        email = data.emailLienHe ?? "";
-        diaChi = data.diaChi ?? "";
-        linkAvatar = data.avatar;
+        profile = data;
       });
     } catch (e) {
-      DialogHelper.showSnacFailed(context, e.toString());
+      DialogHelper.showSnacFailed(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+      );
     }
   }
 
@@ -90,17 +78,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               imageProfile(),
               const SizedBox(height: 30),
-              profileField("Họ tên", hoTen),
+              profileField("Họ tên", profile!.hoTen),
               const SizedBox(height: 20),
-              profileField("Ngày sinh", ngaySinh),
+              profileField(
+                "Ngày sinh",
+                DateFormat('dd/MM/yyyy').format(profile!.ngaySinh!),
+              ),
               const SizedBox(height: 20),
-              profileField("Giới tính", gioiTinh ?? ""),
+              profileField("Giới tính", profile!.gioiTinh),
               const SizedBox(height: 20),
-              profileField("Số điện thoại", sdt),
+              profileField("Số điện thoại", profile!.sdt),
               const SizedBox(height: 20),
-              profileField("Email liên hệ", email),
+              profileField("Email liên hệ", profile!.emailLienHe),
               const SizedBox(height: 20),
-              profileField("Địa chỉ", diaChi),
+              profileField("Địa chỉ", profile!.diaChi),
               const SizedBox(height: 20),
             ],
           ),
@@ -115,8 +106,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           CircleAvatar(
             radius: 60,
-            backgroundImage: linkAvatar != null && linkAvatar!.isNotEmpty
-                ? AssetImage("assets/images/$linkAvatar")
+            backgroundImage: avatar != null && avatar!.isNotEmpty
+                ? AssetImage("assets/images/$avatar")
                 : const AssetImage("assets/images/user.png"),
           ),
         ],

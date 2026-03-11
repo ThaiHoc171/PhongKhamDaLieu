@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:ql_phongkham/features/clinic/data/repository/examination_repository.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
 
 class LichKhamScreen extends StatefulWidget {
   final int? taiKhamId;
