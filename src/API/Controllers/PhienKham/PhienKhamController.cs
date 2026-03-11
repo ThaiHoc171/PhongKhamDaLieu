@@ -86,7 +86,7 @@ public class PhienKhamController : ControllerBase
 			.SuccessResponse(result));
 	}
     [Authorize]
-    [HttpGet("/CaKham/{caKhamId}")]
+    [HttpGet("CaKham/{caKhamId}")]
     public async Task<ActionResult<ApiResponse<PhienKhamReadModel>>> GetByCaKhamId(int caKhamId)
     {
         var result = await _service.GetByCaKhamIdAsync(caKhamId);
