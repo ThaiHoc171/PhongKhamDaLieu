@@ -35,6 +35,13 @@ public class PhienKhamCLSController : ControllerBase
 			return NotFound(ApiResponse<PhienKhamClsReadModel>.Fail("CLS không tồn tại"));
 		return Ok(ApiResponse<PhienKhamClsReadModel>.SuccessResponse(result));
 	}
+	[Authorize(Policy = "BacSiOrKyThuatVien")]
+	[HttpGet("danhsach")]
+	public async Task<ActionResult<ApiResponse<PhienKhamClsListReadModel>>> DanhSach()
+	{
+		var result = await _service.DanhSach();
+		return Ok(ApiResponse< List<PhienKhamClsListReadModel>>.SuccessResponse(result));
+	}
 
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpPost]

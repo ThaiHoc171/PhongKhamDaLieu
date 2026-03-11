@@ -16,6 +16,10 @@ public class PhienKhamCLSService
 	{
 		return await _repo.GetDetailAsync(id);
 	}
+	public async Task<List<PhienKhamClsListReadModel>> DanhSach()
+	{
+		return await _repo.GetDanhSachAsync();
+	}
 	public async Task ThemMoiAsync(TaoPhienKhamCLSDTO dto)
 	{
 		var entity = new PhienKhamCLS(

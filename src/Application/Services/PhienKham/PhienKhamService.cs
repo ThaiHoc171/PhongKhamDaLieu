@@ -82,7 +82,7 @@ public class PhienKhamService
 			throw new Exception("Tất cả các chỉ định cận lâm sàng phải được hoàn thành trước khi kết thúc phiên khám");
 		}
 		var hs = await _hoSoBenhAnRepo.GetByBenhNhanIdAsync(pk.BenhNhanID);
-		if (hs != null)
+		if (hs == null)
 			throw new Exception("Chưa có hồ sơ bệnh án!");
 		pk.KetThuc(chanDoanCuoi);
 		// Lưu trạng thái mới

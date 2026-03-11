@@ -32,12 +32,20 @@ public class PhienKhamController : ControllerBase
 	}
 	[Authorize(Policy = "BacSiOnly")]
 	[HttpPut("{id}/ket-thuc")]
-	public async Task<ActionResult<ApiResponse<object>>> KetThuc(
-		int id,
-		[FromBody] string chanDoanCuoi)
+	public async Task<ActionResult<ApiResponse<object>>> KetThuc(int id,[FromBody] string chanDoanCuoi)
 	{
-		await _service.KetThucAsync(id, chanDoanCuoi);
-		return Ok(ApiResponse<object>.SuccessResponse(null,	"Kết thúc phiên khám thành công"));
+		try
+		{
+			await _service.KetThucAsync(id, chanDoanCuoi);
+
+			return Ok(ApiResponse<object>.SuccessResponse(
+				null,
+				"Kết thúc phiên khám thành công"));
+		}
+		catch (Exception ex)
+		{
+			return BadRequest(ApiResponse<object>.Fail(ex.Message));
+		}
 	}
 	[Authorize(Roles = "Admin")]
 	[HttpGet("benhnhan/{benhNhanId}")]
