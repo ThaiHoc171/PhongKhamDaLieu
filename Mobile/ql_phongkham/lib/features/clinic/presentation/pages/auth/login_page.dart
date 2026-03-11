@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/theme/app_pallete.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/signup_page.dart';
-import 'package:ql_phongkham/features/clinic/presentation/pages/profile/profile_Update.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/profile/profile_Update_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_field.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/auth_repository.dart';
