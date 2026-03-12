@@ -101,24 +101,25 @@ public class TaiKhoanService
 		}
 		else if (tk.VaiTro == "Nhân viên")
 		{
-			var nv = await _nhanVienRepo.GetForAuthAsync(tk.Id);
-			if (nv != null)
+			int nvId = await _nhanVienRepo.GetIdAsync(tk.Id);
+			var nv = await _nhanVienRepo.GetDetailAsync(nvId);
+			if (nv != null && nv.ChucVu != null)
 			{
 				nhanVienId = nv.NhanVienID;
 				thongTinId = nv.ThongTinID;
-				chucVu = await _chucVuRepo.GetNameByIdAsync(nv.ChucVuID);
-				hoTen = await _nhanVienRepo.GetNameByIdAsync(nv.NhanVienID);
-				quyen = await _chucVuQuyenRepo.GetNameByChucVuAsync(nv.ChucVuID);
+				chucVu = nv.ChucVu.Name;
+				hoTen = nv.HoTen;
+				quyen = await _chucVuQuyenRepo.GetNameByChucVuAsync(nv.ChucVu.Id);
 			}
 		}
 		else if (tk.VaiTro == "Bệnh nhân")
 		{
-			var bn = await _benhNhanRepo.GetForAuthAsync(tk.Id);
+			var bn = await _benhNhanRepo.GetDetailAsync(tk.Id);
 			if(bn != null)
 			{
 				benhNhanId = bn.BenhNhanID;
 				thongTinId = bn.ThongTinID;
-                hoTen = await _benhNhanRepo.GetNameByIdAsync(benhNhanId.Value);
+                hoTen = bn.HoTen;
             }
 			quyen.Add("DatLichKham");
 			quyen.Add("XemHoSo");
@@ -225,24 +226,25 @@ public class TaiKhoanService
 
         if (taiKhoan.VaiTro == "Nhân viên")
         {
-            var nv = await _nhanVienRepo.GetForAuthAsync(taiKhoan.Id);
-            if (nv != null)
-            {
-                nhanVienId = nv.NhanVienID;
+			int nvId = await _nhanVienRepo.GetIdAsync(taiKhoan.Id);
+			var nv = await _nhanVienRepo.GetDetailAsync(nvId);
+			if (nv != null && nv.ChucVu != null )
+			{
+				nhanVienId = nv.NhanVienID;
 				thongTinId = nv.ThongTinID;
-                chucVu = await _chucVuRepo.GetNameByIdAsync(nv.ChucVuID);
-                hoTen = await _nhanVienRepo.GetNameByIdAsync(nv.NhanVienID);
-				quyen = await _chucVuQuyenRepo.GetNameByChucVuAsync(nv.ChucVuID);
+				chucVu = nv.ChucVu.Name;
+				hoTen = nv.HoTen;
+				quyen = await _chucVuQuyenRepo.GetNameByChucVuAsync(nv.ChucVu.Id);
 			}
-        }
+		}
         else if (taiKhoan.VaiTro == "Bệnh nhân")
         {
-            var bn = await _benhNhanRepo.GetForAuthAsync(taiKhoan.Id);
+            var bn = await _benhNhanRepo.GetDetailAsync(taiKhoan.Id);
             if (bn != null)
             {
                 benhNhanId = bn.BenhNhanID;
                 thongTinId = bn.ThongTinID;
-                hoTen = await _benhNhanRepo.GetNameByIdAsync(benhNhanId.Value);
+                hoTen = bn.HoTen;
             }
         }
         else if (taiKhoan.VaiTro == "Admin")

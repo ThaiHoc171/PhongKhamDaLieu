@@ -1,77 +1,88 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Application.Common;
 using Application.DTOs;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Controllers;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] 
+[Authorize]
 public class BenhNhanController : ControllerBase
 {
-	private readonly BenhNhanService _benhNhanService;
+	private readonly BenhNhanService _service;
 
-	public BenhNhanController(BenhNhanService benhNhanService)
+	public BenhNhanController(BenhNhanService service)
 	{
-		_benhNhanService = benhNhanService;
+		_service = service;
 	}
 
-
-	[Authorize]
+	[Authorize(Policy = "BENHNHAN_CREATE")]
 	[HttpPost]
-	public async Task<IActionResult> TaoBenhNhan([FromBody] BenhNhanRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] BenhNhanRequestDTO dto)
 	{
-		var benhNhanID = await _benhNhanService.ThemBenhNhanAsync(dto);
+		var result = await _service.AddAsync(dto);
 
-		return Ok(new
-		{
-			message = "Tạo bệnh nhân thành công.",
-			BenhNhanID = benhNhanID
-		});
+		if (!result.Success)
+			return BadRequest(result);
+
+		return CreatedAtAction(nameof(Detail), new { id = result.Data }, result);
 	}
 
-	[Authorize(Policy = "LeTanOnly")]
+	[Authorize(Policy = "BENHNHAN_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhatBenhNhan(
-		int id,
-		[FromBody] CapNhatBenhNhanDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] BenhNhanUpdateRequestDTO dto)
 	{
-		var result = await _benhNhanService.CapNhatBenhNhanAsync(id, dto.GhiChu);
+		var result = await _service.UpdateAsync(id, dto);
 
-		return result
-			? Ok(new { message = "Cập nhật bệnh nhân thành công." })
-			: NotFound(new { message = "Bệnh nhân không tồn tại" });
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
 	}
 
-	[Authorize(Policy = "LeTanOnly")]
-	[HttpGet]
-	public async Task<IActionResult> DanhSach([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
-		=> Ok(await _benhNhanService.DanhSachBenhNhanAsync(pageNumber,pageSize));
-
-	[Authorize(Policy = "LeTanOnly")]
-	[HttpGet("Search")]
-	public async Task<IActionResult> Search([FromQuery] string keyword)
-		=> Ok(await _benhNhanService.SearchdAsync(keyword));
-
-
-	[Authorize(Policy = "BacSiOrLeTan")]
+	[Authorize(Policy = "BENHNHAN_VIEW")]
 	[HttpGet("{id}")]
-	public async Task<IActionResult> LayTheoId(int id)
+	public async Task<ActionResult<ApiResponse<BenhNhanDetailReadModel>>> Detail(int id)
 	{
-		var bn = await _benhNhanService.LayBenhNhanTheoIdAsync(id);
+		var result = await _service.GetDetailAsync(id);
 
-		return bn == null
-			? NotFound(new { message = "Bệnh nhân không tồn tại" })
-			: Ok(bn);
+		if (!result.Success)
+			return NotFound(result);
+
+		return Ok(result);
 	}
 
-	//Get combobox
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("combobox")]
-	public async Task<IActionResult> GetIdAndName()
+	[Authorize(Policy = "BENHNHAN_VIEW")]
+	[HttpGet]
+	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadModel>>>> List(
+		[FromQuery] int pageNumber = 1,
+		[FromQuery] int pageSize = 10)
 	{
-		var result = await _benhNhanService.GetComboboxAsync();
+		var result = await _service.GetPagedAsync(pageNumber, pageSize);
+
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "BENHNHAN_VIEW")]
+	[HttpGet("Search")]
+	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadModel>>>> Search(
+		[FromQuery] string? keyword,
+		[FromQuery] int pageNumber = 1,
+		[FromQuery] int pageSize = 10)
+	{
+		var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
+
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "BENHNHAN_VIEW")]
+	[HttpGet("Combobox")]
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
+	{
+		var result = await _service.GetComboboxAsync();
+
 		return Ok(result);
 	}
 }
