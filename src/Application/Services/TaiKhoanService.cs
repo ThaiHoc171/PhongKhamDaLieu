@@ -1,6 +1,5 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
-using Azure.Core;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Extensions.Configuration;
@@ -19,8 +18,11 @@ public class TaiKhoanService
 	private readonly IChucVuRepository _chucVuRepo;
 	private readonly IConfiguration _configuration;
     private readonly IRefreshTokenRepository _refreshRepo;
+	private readonly IChucVuQuyenRepository _chucVuQuyenRepo;
 
-    public TaiKhoanService(ITaiKhoanRepository repo, IConfiguration configuration, INhanVienRepository nhanVienRepo, IBenhNhanRepository benhNhanRepo, IChucVuRepository chucVuRepo, IRefreshTokenRepository refreshRepo)
+	public TaiKhoanService(ITaiKhoanRepository repo, IConfiguration configuration, INhanVienRepository nhanVienRepo, 
+		IBenhNhanRepository benhNhanRepo, IChucVuRepository chucVuRepo, IRefreshTokenRepository refreshRepo,
+		IChucVuQuyenRepository chucVuQuyenRepo)
 	{
 		_repo = repo;
 		_configuration = configuration;
@@ -28,13 +30,10 @@ public class TaiKhoanService
 		_benhNhanRepo = benhNhanRepo;
 		_chucVuRepo = chucVuRepo;
 		_refreshRepo = refreshRepo;
+		_chucVuQuyenRepo = chucVuQuyenRepo;
 	}
-    private string TaoAccessToken(
-	TaiKhoan tk,
-	int? thongTinId,
-	int? nhanVienId,
-	int? benhNhanId,
-	string? chucVu)
+    private string TaoAccessToken(TaiKhoan tk, int? thongTinId, int? nhanVienId,
+		int? benhNhanId, string? chucVu, List<string>? quyen)
 	{
 		var claims = new List<Claim>
 	{
@@ -51,6 +50,11 @@ public class TaiKhoanService
 		if (benhNhanId.HasValue)
 			claims.Add(new Claim("BenhNhanID", benhNhanId.Value.ToString()));
 
+		if (quyen != null)
+		{
+			foreach (var p in quyen)
+				claims.Add(new Claim("Permission", p));
+		}
 		if (!string.IsNullOrEmpty(chucVu))
 			claims.Add(new Claim("ChucVu", chucVu));
 
@@ -90,8 +94,12 @@ public class TaiKhoanService
 		int? benhNhanId = null;
 		string? chucVu = null;
 		string? hoTen = null;
-
-		if (tk.VaiTro == "Nhân viên")
+		List<string> quyen = new();
+		if (tk.VaiTro == "Admin")
+		{
+			hoTen = "Admin";
+		}
+		else if (tk.VaiTro == "Nhân viên")
 		{
 			var nv = await _nhanVienRepo.GetForAuthAsync(tk.Id);
 			if (nv != null)
@@ -100,6 +108,7 @@ public class TaiKhoanService
 				thongTinId = nv.ThongTinID;
 				chucVu = await _chucVuRepo.GetNameByIdAsync(nv.ChucVuID);
 				hoTen = await _nhanVienRepo.GetNameByIdAsync(nv.NhanVienID);
+				quyen = await _chucVuQuyenRepo.GetNameByChucVuAsync(nv.ChucVuID);
 			}
 		}
 		else if (tk.VaiTro == "Bệnh nhân")
@@ -111,13 +120,11 @@ public class TaiKhoanService
 				thongTinId = bn.ThongTinID;
                 hoTen = await _benhNhanRepo.GetNameByIdAsync(benhNhanId.Value);
             }
-		}
-		else if (tk.VaiTro == "Admin")
-		{
-			hoTen = "Admin";
+			quyen.Add("DatLichKham");
+			quyen.Add("XemHoSo");
 		}
 
-		var accessToken = TaoAccessToken(tk, thongTinId, nhanVienId, benhNhanId, chucVu);
+		var accessToken = TaoAccessToken(tk, thongTinId, nhanVienId, benhNhanId, chucVu, quyen);
         var refreshToken = GenerateRefreshToken();
 		var token = new RefreshToken(tk.Id, refreshToken, DateTime.UtcNow.AddDays(7));
         await _refreshRepo.SaveAsync(token);	
@@ -202,8 +209,8 @@ public class TaiKhoanService
     {	
 
         var storedToken = await _refreshRepo.GetAsync(refreshToken);
-
-        if (storedToken == null ||
+		List<string> quyen = new();
+		if (storedToken == null ||
             storedToken.IsRevoked ||
             storedToken.ExpiryDate < DateTime.UtcNow)
             return null;
@@ -225,7 +232,8 @@ public class TaiKhoanService
 				thongTinId = nv.ThongTinID;
                 chucVu = await _chucVuRepo.GetNameByIdAsync(nv.ChucVuID);
                 hoTen = await _nhanVienRepo.GetNameByIdAsync(nv.NhanVienID);
-            }
+				quyen = await _chucVuQuyenRepo.GetNameByChucVuAsync(nv.ChucVuID);
+			}
         }
         else if (taiKhoan.VaiTro == "Bệnh nhân")
         {
@@ -248,7 +256,7 @@ public class TaiKhoanService
         var token = new RefreshToken(taiKhoan.Id, newRefreshToken, DateTime.UtcNow.AddDays(7));
         await _refreshRepo.SaveAsync(token);
        
-        var accessToken = TaoAccessToken(taiKhoan, thongTinId, nhanVienId, benhNhanId, chucVu);
+        var accessToken = TaoAccessToken(taiKhoan, thongTinId, nhanVienId, benhNhanId, chucVu,quyen);
 
         return new LoginResponseDTO
         {
