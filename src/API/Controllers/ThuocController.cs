@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
@@ -10,71 +11,44 @@ namespace API.Controllers;
 [Authorize]
 public class ThuocController : ControllerBase
 {
-	private readonly ThuocService _service;
+    private readonly ThuocService _service;
 
-	public ThuocController(ThuocService service)
-	{
-		_service = service;
-	}
-    [Authorize(Policy = "BacSiOnly")]
-    [HttpGet("combobox")]
-    public async Task<IActionResult> GetComboboxAsync()
+    public ThuocController(ThuocService service)
     {
-        return Ok(await _service.GetComboboxAsync());
+        _service = service;
     }
-    [Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet]
-	public async Task<IActionResult> LayDanhSach([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
-		=> Ok(await _service.DanhSachPagedAsync(pageNumber, pageSize));
 
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("timkiem")]
-	public async Task<IActionResult> TimKiem([FromQuery] string kw)
-	{
-		return Ok(await _service.TimKiemAsync(kw));
-	}
+    [HttpGet]
+    public async Task<IActionResult> DanhSach(int page = 1, int size = 15)
+        => Ok(await _service.DanhSachAsync(page, size));
 
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("{id}")]
-	public async Task<IActionResult> LayTheoId(int id)
-	{
-		var result = await _service.LayTheoIdAsync(id);
-		if (result == null)
-			return NotFound(new { message = "Thuốc không tồn tại." });
+    [HttpGet("timkiem")]
+    public async Task<IActionResult> TimKiem(string kw)
+        => Ok(await _service.TimKiemAsync(kw));
 
-		return Ok(result);
-	}
+    [HttpGet("combobox")]
+    public async Task<IActionResult> Combobox()
+        => Ok(await _service.ComboboxAsync());
 
-	[Authorize(Roles = "Admin")]
-	[HttpPost]
-	public async Task<IActionResult> Them([FromBody] ThuocRequestDTO dto)
-	{
-		try
-		{
-			await _service.ThemAsync(dto);
-			return Ok(new { message = "Thêm thuốc thành công." });
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-	}
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+        => Ok(await _service.GetByIdAsync(id));
 
-	[Authorize(Roles = "Admin")]
-	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id, [FromBody] ThuocRequestDTO dto)
-	{
-		try
-		{
-			var result = await _service.CapNhatAsync(id, dto);
-			if (!result)
-				return NotFound(new { message = "Thuốc không tồn tại." });
+    [HttpPost]
+    public async Task<IActionResult> Them(ThuocRequestDTO dto)
+    {
+        await _service.ThemAsync(dto);
+        return Ok();
+    }
 
-			return Ok(new { message = "Cập nhật thuốc thành công." });
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-	}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> CapNhat(int id, ThuocRequestDTO dto)
+    {
+        var result = await _service.CapNhatAsync(id, dto);
+
+        if (!result)
+            return NotFound();
+
+        return Ok();
+    }
 }

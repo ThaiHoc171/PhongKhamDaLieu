@@ -2,82 +2,70 @@
 using Application.Interfaces;
 using Domain.Entities;
 
-namespace Services;
+namespace Application.Services;
 
 public class ThuocService
 {
-	private readonly IThuocRepository _repo;
+    private readonly IThuocRepository _repo;
 
-	public ThuocService(IThuocRepository repo)
-	{
-		_repo = repo;
-	}
-
-	public async Task<PagedResult<ThuocResponseDTO>> DanhSachPagedAsync(int pageNumber, int pageSize)
-	{
-		var (data, totalCount) = await _repo.GetPagedAsync(pageNumber, pageSize);
-
-		return new PagedResult<ThuocResponseDTO>
-		{
-			Items = data.Select(MapToDto).ToList(),
-			TotalCount = totalCount,
-			PageNumber = pageNumber,
-			PageSize = pageSize
-		};
-	}
-
-	public async Task<List<ThuocResponseDTO>> TimKiemAsync(string keyword)
-	{
-		var list = await _repo.SearchAsync(keyword);
-		return list.Select(MapToDto).ToList();
-	}
-
-    public async Task<List<NameResponseDTO>> GetComboboxAsync()
+    public ThuocService(IThuocRepository repo)
     {
-        var list = await _repo.GetIdAndNameAsync();
-        return list.Select(e => new NameResponseDTO
-        {
-            Id = e.Id,
-            Name = e.Ten
-        }).ToList();
+        _repo = repo;
     }
 
-    public async Task<ThuocResponseDTO?> LayTheoIdAsync(int id)
-	{
-		var thuoc = await _repo.GetByIdAsync(id);
-		if (thuoc == null) return null;
+    public async Task<PagedResult<ThuocListReadModel>> DanhSachAsync(int page, int size)
+    {
+        var items = await _repo.GetPagedAsync(page, size);
+        var total = await _repo.CountAsync();
 
-		return MapToDto(thuoc);
-	}
+        return new PagedResult<ThuocListReadModel>
+        {
+            Items = items,
+            TotalCount = total,
+            PageNumber = page,
+            PageSize = size
+        };
+    }
 
-	public async Task ThemAsync(ThuocRequestDTO dto)
-	{
-		var thuoc = new Thuoc(dto.TenThuoc, dto.HoatChat);
-		var danhsach = await _repo.GetAllAsync();
-		thuoc.KiemTraTrungTen(danhsach);
-		await _repo.AddAsync(thuoc);
-	}
+    public async Task<List<ThuocListReadModel>> TimKiemAsync(string keyword)
+    {
+        return await _repo.SearchAsync(keyword);
+    }
 
-	public async Task<bool> CapNhatAsync(int id, ThuocRequestDTO dto)
-	{
-		var thuoc = await _repo.GetByIdAsync(id);
-		if (thuoc == null) return false;
+    public async Task<List<ThuocComboboxReadModel>> ComboboxAsync()
+    {
+        return await _repo.GetComboboxAsync();
+    }
 
-		thuoc.CapNhat(dto.TenThuoc, dto.HoatChat);
-		var danhsach = await _repo.GetAllAsync();
-		thuoc.KiemTraTrungTen(danhsach);
-		await _repo.UpdateAsync(thuoc);
+    public async Task<Thuoc?> GetByIdAsync(int id)
+    {
+        return await _repo.GetByIdAsync(id);
+    }
 
-		return true;
-	}
+    public async Task ThemAsync(ThuocRequestDTO dto)
+    {
+        var entity = new Thuoc(dto.TenThuoc, dto.HoatChat);
 
-	private static ThuocResponseDTO MapToDto(Thuoc t)
-	{
-		return new ThuocResponseDTO
-		{
-			ThuocID = t.ThuocID,
-			TenThuoc = t.TenThuoc,
-			HoatChat = t.HoatChat
-		};
-	}
+        var ds = await _repo.GetAllAsync();
+        entity.KiemTraTrungTen(ds);
+
+        await _repo.AddAsync(entity);
+    }
+
+    public async Task<bool> CapNhatAsync(int id, ThuocRequestDTO dto)
+    {
+        var entity = await _repo.GetByIdAsync(id);
+
+        if (entity == null)
+            return false;
+
+        entity.CapNhat(dto.TenThuoc, dto.HoatChat);
+
+        var ds = await _repo.GetAllAsync();
+        entity.KiemTraTrungTen(ds);
+
+        await _repo.UpdateAsync(entity);
+
+        return true;
+    }
 }
