@@ -1,33 +1,63 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
+using Microsoft.Extensions.Configuration;
+
 
 namespace Application.Services;
 
 public class NhanVienService
 {
 	private readonly INhanVienRepository _repo;
-	private readonly ThongTinCaNhanService _thongTinService;
-
-	public NhanVienService(
-		INhanVienRepository repo,
-		ThongTinCaNhanService thongTinService)
+	private readonly IThongTinCaNhanRepository _thongTinRepo;
+	private readonly ITaiKhoanRepository _taiKhoanRepo;
+	private readonly IConfiguration _config;
+	public NhanVienService(INhanVienRepository repo, IThongTinCaNhanRepository thongTinRepo, 
+		IConfiguration config, ITaiKhoanRepository taiKhoanRepository)
 	{
 		_repo = repo;
-		_thongTinService = thongTinService;
+		_thongTinRepo = thongTinRepo;
+		_config = config;
+		_taiKhoanRepo = taiKhoanRepository;
 	}
 
-	public async Task TaoNhanVienAsync(TaoNhanVienDTO dto)
+	private static GioiTinhEnum ParseGioiTinh(string value)
 	{
-		// 1. Tạo thông tin cá nhân
-		var result = await _thongTinService.TaoNhanVienAsync(dto.ThongTin);
+		if (string.IsNullOrWhiteSpace(value))
+			return GioiTinhEnum.Khac;
+		return GioiTinhExtensions.ToEnum(value);
+	}
+	public async Task<ApiResponse<int>> AddNhanVienAsync(NhanVienRequestDTO dto)
+	{
+		var defaultPassword = _config["DefaultPassword"];
+		if (string.IsNullOrWhiteSpace(defaultPassword))
+			return ApiResponse<int>.Fail("Chưa cấu hình mật khẩu mặc định.");
+		var hash = Helper.Password.PassWordHash(defaultPassword);
+		var taiKhoan = new TaiKhoan(dto.ThongTin.EmailLienHe, hash, VaiTroEnum.NhanVien);
+		await _taiKhoanRepo.AddAsync(taiKhoan);
+		var created = await _taiKhoanRepo.GetByEmailAsync(dto.ThongTin.EmailLienHe);
+		if (created == null)
+			return ApiResponse<int>.Fail("Không tạo được tài khoản.");
+		var entity = new ThongTinCaNhan(
+			dto.ThongTin.HoTen,
+			dto.ThongTin.NgaySinh,
+			ParseGioiTinh(dto.ThongTin.GioiTinh),
+			dto.ThongTin.SDT,
+			dto.ThongTin.EmailLienHe,
+			dto.ThongTin.DiaChi,
+			dto.ThongTin.Avatar,
+			LoaiThongTinEnum.NhanVien,
+			created.Id
+		);
+		int? id = await _thongTinRepo.AddAsync(entity);
 
-		if (!result.Success)
-			throw new Exception(result.Message);
+		if (id == null)
+			return ApiResponse<int>.Fail("Lỗi khởi tạo hồ sơ!");
 
-		var thongTinID = result.Data!;
+		var thongTinID = id.Value;
 
-		// 2. Tạo entity NhanVien
 		var nv = new NhanVien(
 			thongTinID: thongTinID,
 			chucVuID: dto.ChucVuID,
@@ -38,14 +68,19 @@ public class NhanVienService
 		);
 
 		await _repo.AddAsync(nv);
+
+		return ApiResponse<int>.SuccessResponse(nv.NhanVienID, "Tạo nhân viên thành công");
 	}
 
-	public async Task<bool> CapNhatNhanVienAsync(int nhanVienID, CapNhatNhanVienDTO dto)
+
+	public async Task<ApiResponse<bool>> UpdateAsync(int nhanVienID, NhanVienRequestUpdateDTO dto)
 	{
 		var nv = await _repo.GetByIdAsync(nhanVienID);
-		if (nv == null) return false;
 
-		nv.CapNhatThongTin(
+		if (nv == null)
+			return ApiResponse<bool>.Fail("Nhân viên không tồn tại");
+
+		nv.Update(
 			chucVuID: dto.ChucVuID,
 			phongChucNangID: dto.PhongChucNangID,
 			ngayVaoLam: dto.NgayVaoLam,
@@ -54,103 +89,80 @@ public class NhanVienService
 		);
 
 		await _repo.UpdateAsync(nv);
-		return true;
+
+		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thành công");
 	}
-	public async Task<bool> CapNhatTrangThaiAsync(int nhanVienID, string trangThai)
+
+
+	public async Task<ApiResponse<bool>> StatusAsync(int nhanVienID, string trangThai)
 	{
 		var nv = await _repo.GetByIdAsync(nhanVienID);
-		if (nv == null) return false;
 
-		nv.CapNhatTrangThai(trangThai);
+		if (nv == null)
+			return ApiResponse<bool>.Fail("Nhân viên không tồn tại");
+
+		nv.Status(trangThai);
+
 		await _repo.UpdateAsync(nv);
-		return true;
+
+		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật trạng thái thành công");
+	}
+	public async Task<ApiResponse<NhanVienDetailReadModel>> GetDetailAsync(int nhanVienID)
+	{
+		var nv = await _repo.GetDetailAsync(nhanVienID);
+
+		if (nv == null)
+			return ApiResponse<NhanVienDetailReadModel>.Fail("Không tìm thấy nhân viên");
+
+		return ApiResponse<NhanVienDetailReadModel>.SuccessResponse(nv);
 	}
 
-	public async Task<List<NhanVienResponseDTO>> LayDanhSachAsync()
+	public async Task<ApiResponse<PagedResult<NhanVienListReadModel>>> 
+		GetPagedAsync(int pageNumber, int pageSize)
 	{
-		var list = await _repo.GetAllAsync();
-		return list.Select(MapToResponse).ToList();
-	}
-	public async Task<PagedResult<NhanVienResponseDTO>> DanhSachNhanVienPagedAsync(int pageNumber, int pageSize)
-	{
+		if (pageNumber <= 0) pageNumber = 1;
+		if (pageSize <= 0) pageSize = 10;
+
 		var (data, totalCount) = await _repo.GetPageAsync(pageNumber, pageSize);
 
-		return new PagedResult<NhanVienResponseDTO>
+		var result = new PagedResult<NhanVienListReadModel>
 		{
-			Items = data.Select(MapToResponse).ToList(),
+			Items = data,
 			TotalCount = totalCount,
 			PageNumber = pageNumber,
 			PageSize = pageSize
 		};
-	}
-	public async Task<NhanVienChiTietDTO?> LayTheoIDAsync(int nhanVienID)
-	{
-		var nv = await _repo.GetByIdAsync(nhanVienID);
-		if (nv == null) return null;
 
-		return MapChiTiet(nv);
+		return ApiResponse<PagedResult<NhanVienListReadModel>>
+			.SuccessResponse(result);
 	}
-	public async Task<PagedResult<NhanVienResponseDTO>>
+
+	public async Task<ApiResponse<PagedResult<NhanVienListReadModel>>> 
 		SearchAsync(string keyword, int pageNumber, int pageSize)
 	{
 		if (pageNumber <= 0) pageNumber = 1;
 		if (pageSize <= 0) pageSize = 10;
 
 		var (data, totalCount) =
-			await _repo.SearchAsync(keyword ?? string.Empty, pageNumber, pageSize);
+			await _repo.SearchAsync(keyword ?? "", pageNumber, pageSize);
 
-		return new PagedResult<NhanVienResponseDTO>
+		var result = new PagedResult<NhanVienListReadModel>
 		{
-			Items = data.Select(MapToResponse).ToList(),
+			Items = data,
 			TotalCount = totalCount,
 			PageNumber = pageNumber,
 			PageSize = pageSize
 		};
+
+		return ApiResponse<PagedResult<NhanVienListReadModel>>
+			.SuccessResponse(result);
 	}
 
-	public async Task<List<NameResponseDTO>>GetDropdownAsync(int chucVuId)
+	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync(int chucVuId)
 	{
-		var data = await _repo.GetDropdownAsync(chucVuId);
+		var data = await _repo.GetComboboxAsync(chucVuId);
 
-		return data.Select(x => new NameResponseDTO
-		{
-			Id = x.Id,
-			Name = x.Name
-		}).ToList();
-	}
-
-	private static NhanVienResponseDTO MapToResponse(NhanVien nv)
-	{
-		return new NhanVienResponseDTO
-		{
-			NhanVienID = nv.NhanVienID,
-			HoTen = nv.ThongTinCaNhan?.HoTen,
-			Email = nv.ThongTinCaNhan?.EmailLienHe,
-			TenChucVu = nv.TenChucVu,
-			TrangThai = nv.TrangThai
-		};
-	}
-	private static NhanVienChiTietDTO MapChiTiet(NhanVien nv)
-	{
-		return new NhanVienChiTietDTO
-		{
-			NhanVienID = nv.NhanVienID,
-			ThongTinID = nv.ThongTinID,
-			ChucVuID = nv.ChucVuID,
-			PhongChucNangID = nv.PhongChucNangID,
-			HoTen = nv.ThongTinCaNhan?.HoTen,
-			NgaySinh = nv.ThongTinCaNhan?.NgaySinh,
-			GioiTinh = nv.ThongTinCaNhan?.GioiTinh,
-			SDT = nv.ThongTinCaNhan?.SDT,
-			EmailLienHe = nv.ThongTinCaNhan?.EmailLienHe,
-			DiaChi = nv.ThongTinCaNhan?.DiaChi,
-			Avatar = nv.ThongTinCaNhan?.Avatar,
-			NgayVaoLam = nv.NgayVaoLam,
-			BangCap = nv.BangCap,
-			KinhNghiem = nv.KinhNghiem,
-			TrangThai = nv.TrangThai,
-			NgayTao = nv.NgayTao,
-			NgayCapNhat = nv.NgayCapNhat
-		};
+		return ApiResponse<List<NameResponseDTO>>
+			.SuccessResponse(data);
 	}
 }

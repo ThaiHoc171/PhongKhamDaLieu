@@ -18,46 +18,38 @@ public class ThongTinCaNhanController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize(Policy = "NHANVIEN_CREATE")]
-	[HttpPost("NhanVien")]
-	public async Task<ActionResult<ApiResponse<int>>> TaoNhanVien([FromBody] ThongTinRequestDTO dto)
-	{
-		var result = await _service.TaoNhanVienAsync(dto);
-
-		if (!result.Success)
-			return BadRequest(result);
-
-		return CreatedAtAction(nameof(LayThongTin), new { id = result.Data }, result);
-	}
-
 	[Authorize(Policy = "BENHNHAN_CREATE")]
 	[HttpPost("BenhNhan")]
 	public async Task<ActionResult<ApiResponse<int>>> TaoBenhNhan([FromBody] ThongTinRequestDTO dto)
 	{
-		var result = await _service.AddAsync(dto);
+		var result = await _service.AddBenhNhanAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
 
 		return CreatedAtAction(nameof(LayThongTin), new { id = result.Data }, result);
 	}
+	[Authorize(Policy = "KHACH_CREATE")]
+	[HttpPost("Khach")]
+	public async Task<ActionResult<ApiResponse<int>>> TaoKhach([FromBody] ThongTinRequestDTO dto)
+	{
+		var result = await _service.AddKhachAsync(dto);
 
+		if (!result.Success)
+			return BadRequest(result);
+
+		return CreatedAtAction(nameof(LayThongTin), new { id = result.Data }, result);
+	}
 	[Authorize(Policy = "NHANVIEN_VIEW")]
 	[HttpGet("NhanVien")]
-	public async Task<ActionResult<ApiResponse<List<ThongTinCaNhanResponseDTO>>>> DanhSachNhanVien()
+
+	[Authorize(Policy = "KHACH_VIEW")]
+	[HttpGet("Khach")]
+	public async Task<ActionResult<ApiResponse<List<ThongTinCaNhanResponseDTO>>>> DanhSachKhach()
 	{
-		var result = await _service.DanhSachNhanVienAsync();
+		var result = await _service.DanhSachKhachAsync();
 		return Ok(result);
 	}
-
-	[Authorize(Policy = "BENHNHAN_VIEW")]
-	[HttpGet("BenhNhan")]
-	public async Task<ActionResult<ApiResponse<List<ThongTinCaNhanResponseDTO>>>> DanhSachBenhNhan()
-	{
-		var result = await _service.DanhSachBenhNhanAsync();
-		return Ok(result);
-	}
-
 	[Authorize(Policy = "USER_VIEW")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<ThongTinCaNhanResponseDTO>>> LayThongTin(int id)

@@ -45,11 +45,12 @@ public class CaKhamService
             var chucVuId = await _lichLamViecRepo
                 .GetChucVuIdByLichLamViecIdAsync(lich.LichLamViecID);
             if (chucVuId != 1 && chucVuId != 2) continue;
-            int? ID = await _nhanVienRepo
-                .GetPhongChucNangIdByNhanVienIdAsync(lich.NhanVien.Id);
-            if (ID == null)
+            var nv = await _nhanVienRepo.GetByIdAsync(lich.NhanVien.Id);
+            if (nv == null)
                 throw new Exception("Nhân viên không tồn tại!");
-            int phongChucNangID = ID.Value;
+			if (nv.PhongChucNangID == null)
+				throw new Exception("Nhân viên chưa được gán phòng chức năng");
+			int phongChucNangID = nv.PhongChucNangID;
             string loaiCaKham =
                 phongChucNangID == 1 ? "Khám" :
                 phongChucNangID == 2 ? "Điều trị" : null;
@@ -92,10 +93,10 @@ public class CaKhamService
         var lich = await _lichLamViecRepo.GetByIdAsync(caKham.LichLamViecID);
         if (lich == null)
             throw new Exception("Không tìm thấy lịch làm việc");
-        var benhNhanId = await _benhNhanRepo.GetIdByThongTinAsync(dto.ThongTinID);
-        if (benhNhanId == null)
+        var bn = await _benhNhanRepo.GetDetailAsync(dto.ThongTinID);
+        if (bn == null)
             throw new Exception("Không tìm thấy bệnh nhân");
-        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanId.Value);
+        var taiKham = await _taiKhamRepo.GetByBenhNhanIdAsync(bn.BenhNhanID);
         if (caKham.LoaiCaKham == "Khám")
         {
             if (taiKham != null && taiKham.TrangThai == "Chờ xử lý")

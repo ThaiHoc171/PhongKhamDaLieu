@@ -44,12 +44,12 @@ public class PhienKhamService
 			return ApiResponse<int>.Fail("Không tìm thấy nhân viên cho ca khám");
 		if (nv.phong == 0)
 			return ApiResponse<int>.Fail("Không tìm thấy phòng chức năng");
-		int? bn = await _benhNhanRepo.GetIdByThongTinAsync(caKham.ThongTinID.Value);
+		var bn = await _benhNhanRepo.GetDetailAsync(caKham.ThongTinID.Value);
 		if (bn == null)
 			return ApiResponse<int>.Fail("Bệnh nhân không tồn tại");
 		var entity = new PhienKham(
 			caKhamID,
-			bn.Value,
+			bn.BenhNhanID,
 			nv.nhanvien,
 			nv.phong);
 		var id = await _repo.AddAsync(entity);

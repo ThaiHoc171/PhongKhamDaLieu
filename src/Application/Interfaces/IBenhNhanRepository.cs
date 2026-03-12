@@ -1,17 +1,16 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs;
+using Domain.Entities;
 
 namespace Application.Interfaces;
 public interface IBenhNhanRepository
 {
 	Task<bool> ExistsByThongTinIdAsync(int thongTinId);
 	Task<BenhNhan?> GetByIdAsync(int id);
-	Task<int?> GetIdByThongTinAsync(int id);
-	Task<List<BenhNhan>> GetBenhNhans(string keyword);
-	Task<(List<BenhNhan> Data, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize);
-	Task<string?> GetNameByIdAsync(int id);
-    Task<BenhNhan?> GetForAuthAsync(int TaiKhoanId);
+	Task<BenhNhanDetailReadModel?> GetDetailAsync(int id);
+	Task<(List<BenhNhanReadModel> Data, int TotalCount)> SearchAsync(string? keyword, int pageNumber, int pageSize);
+	Task<(List<BenhNhanReadModel> Data, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize);
     Task<int> AddAsync(BenhNhan benhNhan);
 	Task UpdateAsync(BenhNhan benhNhan);
-	Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
+	Task<List<NameResponseDTO>> GetComboboxAsync();
 }
 
