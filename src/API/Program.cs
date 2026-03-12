@@ -104,59 +104,39 @@ builder.Services
 });
 builder.Services.AddAuthorization(options =>
 {
-	options.AddPolicy("BacSiOnly", p =>
+	var permissions = new[]
 	{
-		p.RequireAssertion(context =>
-			context.User.IsInRole("Admin") ||
-			(
-				context.User.IsInRole("Nhân viên") && 
-				(context.User.HasClaim("ChucVu", "Bác sĩ khám bệnh") ||
-				 context.User.HasClaim("ChucVu", "Bác sĩ điều trị"))
-			)
-		);
-	});
+		"USER_VIEW","USER_CREATE","USER_UPDATE","USER_DELETE",
 
-	options.AddPolicy("LeTanOnly", p =>
-	{
-		p.RequireAssertion(context =>
-			context.User.IsInRole("Admin") ||
-			(
-				context.User.IsInRole("Nhân viên") &&
-				context.User.HasClaim("ChucVu", "Lễ tân")
-			)
-		);
-	});
+		"ROLE_VIEW","ROLE_CREATE","ROLE_UPDATE","ROLE_DELETE",
 
-	options.AddPolicy("KyThuatVienOnly", p =>
+		"PERMISSION_VIEW","PERMISSION_ASSIGN",
+
+		"NHANVIEN_VIEW","NHANVIEN_CREATE","NHANVIEN_UPDATE","NHANVIEN_DELETE",
+
+		"BENHNHAN_VIEW","BENHNHAN_CREATE","BENHNHAN_UPDATE","BENHNHAN_DELETE",
+
+		"LICHLAMVIEC_VIEW","LICHLAMVIEC_CREATE","LICHLAMVIEC_UPDATE","LICHLAMVIEC_DELETE",
+
+		"LICHKHAM_VIEW","LICHKHAM_CREATE","LICHKHAM_UPDATE","LICHKHAM_DELETE",
+
+		"PHIENKHAM_VIEW","PHIENKHAM_CREATE","PHIENKHAM_UPDATE",
+
+		"HOSO_VIEW","HOSO_CREATE","HOSO_UPDATE",
+
+		"HOADON_VIEW","HOADON_CREATE","HOADON_UPDATE"
+	};
+
+	foreach (var permission in permissions)
 	{
-		p.RequireAssertion(context =>
-			context.User.IsInRole("Admin") ||
-			(
-				context.User.IsInRole("Nhân viên") &&
-				context.User.HasClaim("ChucVu", "Kỹ thuật viên")
-			)
-		);
-	});
-	options.AddPolicy("BacSiOrKyThuatVien", policy =>
-	{
-		policy.RequireAssertion(context =>
-			context.User.IsInRole("Admin") ||
-			(context.User.IsInRole("Nhân viên") &&
-				(context.User.HasClaim("ChucVu", "Bác sĩ khám bệnh") ||
-				 context.User.HasClaim("ChucVu", "Bác sĩ điều trị") ||
-				 context.User.HasClaim("ChucVu", "Kỹ thuật viên")))
-		);
-	});
-	options.AddPolicy("BacSiOrLeTan", policy =>
-	{
-		policy.RequireAssertion(context =>
-			context.User.IsInRole("Admin") ||
-			(context.User.IsInRole("Nhân viên") &&
-				(context.User.HasClaim("ChucVu", "Bác sĩ khám bệnh") ||
-				 context.User.HasClaim("ChucVu", "Bác sĩ điều trị") ||
-				 context.User.HasClaim("ChucVu", "Lễ tân")))
-		);
-	});
+		options.AddPolicy(permission, policy =>
+		{
+			policy.RequireAssertion(context =>
+				context.User.IsInRole("Admin") ||
+				context.User.HasClaim("Permission", permission)
+			);
+		});
+	}
 });
 
 builder.Services.AddScoped<ITaiKhoanRepository, TaiKhoanRepository>();
@@ -217,6 +197,9 @@ builder.Services.AddScoped<IBaiVietRepository, BaiVietRepository>();
 builder.Services.AddScoped<BaiVietService>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<RefreshTokenService>();
+builder.Services.AddScoped<IQuyenRepository, QuyenRepository>();
+builder.Services.AddScoped<IChucVuQuyenRepository, ChucVuQuyenRepository>();
+builder.Services.AddScoped<ChucVuQuyenService>();
 
 var app = builder.Build();
 

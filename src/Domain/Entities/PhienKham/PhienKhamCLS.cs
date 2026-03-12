@@ -15,15 +15,14 @@ public class PhienKhamCLS
 	public int? NhanVienThucHienID { get; private set; }
 	public string? GhiChu { get; private set; }
 
-	// Constructor MAP từ DB
-	public PhienKhamCLS(int phienKhamCLSID,int phienKhamID,int clsID,string trangThai,
-		string? ketQua,string? fileDinhKem,DateTime? ngayThucHien,int nhanVienChiDinhID,
-		int? nhanVienThucHienID,string? ghiChu)
+	// MAP DB
+	public PhienKhamCLS(int phienKhamCLSID, int phienKhamID, int clsID, TrangThaiCLSEnum trangThai, string? ketQua,
+		string? fileDinhKem, DateTime? ngayThucHien, int nhanVienChiDinhID, int? nhanVienThucHienID, string? ghiChu)
 	{
 		PhienKhamCLSID = phienKhamCLSID;
 		PhienKhamID = phienKhamID;
 		CLSID = clsID;
-		TrangThai = TrangThaiCLSExtensions.ToEnum(trangThai);
+		TrangThai = trangThai;
 		KetQua = ketQua;
 		FileDinhKem = fileDinhKem;
 		NgayThucHien = ngayThucHien;
@@ -32,9 +31,15 @@ public class PhienKhamCLS
 		GhiChu = ghiChu;
 	}
 
-	// Constructor TẠO MỚI
-	public PhienKhamCLS(int phienKhamID,int clsID,int nhanVienChiDinhID,string? ghiChu)
+	// CREATE
+	public PhienKhamCLS(int phienKhamID, int clsID, int nhanVienChiDinhID, string? ghiChu)
 	{
+		if (phienKhamID <= 0)
+			throw new ArgumentException("PhienKhamID không hợp lệ");
+
+		if (clsID <= 0)
+			throw new ArgumentException("CLSID không hợp lệ");
+
 		PhienKhamID = phienKhamID;
 		CLSID = clsID;
 		NhanVienChiDinhID = nhanVienChiDinhID;
@@ -43,21 +48,22 @@ public class PhienKhamCLS
 		TrangThai = TrangThaiCLSEnum.DangCho;
 	}
 
-	// Nghiệp vụ
-	public void NhanPhienKhamCLS(int nhanVienThucHienID)
+	// nhận CLS
+	public void Accept(int nhanVienThucHienID)
 	{
 		if (TrangThai != TrangThaiCLSEnum.DangCho)
-			throw new InvalidOperationException("Chỉ được nhận CLS khi đang chờ xử lý");
+			throw new InvalidOperationException("CLS không ở trạng thái chờ");
 
 		TrangThai = TrangThaiCLSEnum.DangThucHien;
 		NhanVienThucHienID = nhanVienThucHienID;
 		NgayThucHien = DateTime.Now;
 	}
 
-	public void CapNhatKetQua(string? ketQua, string? fileDinhKem, string? ghiChu)
+	// cập nhật kết quả
+	public void Complete(string? ketQua, string? fileDinhKem, string? ghiChu)
 	{
 		if (TrangThai != TrangThaiCLSEnum.DangThucHien)
-			throw new InvalidOperationException("CLS chưa được xử lý");
+			throw new InvalidOperationException("CLS chưa được thực hiện");
 
 		TrangThai = TrangThaiCLSEnum.HoanThanh;
 		KetQua = ketQua;
@@ -65,10 +71,11 @@ public class PhienKhamCLS
 		GhiChu = ghiChu;
 	}
 
-	public void HuyPhienKhamCLS()
+	// hủy
+	public void Cancel()
 	{
 		if (TrangThai == TrangThaiCLSEnum.HoanThanh)
-			throw new InvalidOperationException("CLS đã hoàn thành, không thể hủy");
+			throw new InvalidOperationException("CLS đã hoàn thành");
 
 		TrangThai = TrangThaiCLSEnum.DaHuy;
 	}

@@ -2,7 +2,7 @@
 
 public class TaoNhanVienDTO
 {
-	public ThemThongTinCaNhanDTO ThongTin { get; set; } = default!;
+	public ThongTinRequestDTO ThongTin { get; set; } = default!;
 	public int ChucVuID { get; set; }
 	public int PhongChucNangID { get; set; }
 	public DateTime? NgayVaoLam { get; set; }
