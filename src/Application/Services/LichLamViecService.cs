@@ -93,14 +93,14 @@ public class LichLamViecService
 		var entity = await _repo.GetByIdAsync(id);
 		if (entity == null)
 			return null;
-		var nv = await _nvRepo.GetNameByIdAsync(entity.NhanVienID);
+		var nv = await _nvRepo.GetDetailAsync(entity.NhanVienID);
 		return new LichLamViecResponseDTO
 		{
 			LichLamViecID = entity.LichLamViecID,
 			NhanVien = new NameResponseDTO
 			{
 				Id = entity.NhanVienID,
-				Name = nv
+				Name = nv.HoTen
 			},
 			Ngay = entity.Ngay,
 			CaLamViec = entity.CaLamViec,
@@ -113,19 +113,22 @@ public class LichLamViecService
 		var result = new List<LichLamViecResponseDTO>();
 		foreach (var entity in entities)
 		{
-			var nv = await _nvRepo.GetNameByIdAsync(entity.NhanVienID);
-			result.Add(new LichLamViecResponseDTO
+			var nv = await _nvRepo.GetDetailAsync(entity.NhanVienID);
+			if(nv != null)
 			{
-				LichLamViecID = entity.LichLamViecID,
-				NhanVien = new NameResponseDTO
+				result.Add(new LichLamViecResponseDTO
 				{
-					Id = entity.NhanVienID,
-					Name = nv
-				},
-				Ngay = entity.Ngay,
-				CaLamViec = entity.CaLamViec,
-				GhiChu = entity.GhiChu
-			});
+					LichLamViecID = entity.LichLamViecID,
+					NhanVien = new NameResponseDTO
+					{
+						Id = entity.NhanVienID,
+						Name = nv.HoTen
+					},
+					Ngay = entity.Ngay,
+					CaLamViec = entity.CaLamViec,
+					GhiChu = entity.GhiChu
+				});
+			}
 		}
 		return result;
 	}

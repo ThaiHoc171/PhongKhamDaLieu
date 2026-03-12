@@ -1,6 +1,5 @@
 ﻿namespace Application.DTOs;
-
-public class TaoNhanVienDTO
+public class NhanVienRequestDTO
 {
 	public ThongTinRequestDTO ThongTin { get; set; } = default!;
 	public int ChucVuID { get; set; }
@@ -9,8 +8,7 @@ public class TaoNhanVienDTO
 	public string BangCap { get; set; } = default!;
 	public string KinhNghiem { get; set; } = default!;
 }
-
-public class CapNhatNhanVienDTO
+public class NhanVienRequestUpdateDTO
 {
 	public int ChucVuID { get; set; }
 	public int PhongChucNangID { get; set; }
@@ -18,34 +16,31 @@ public class CapNhatNhanVienDTO
 	public string BangCap { get; set; } = default!;
 	public string KinhNghiem { get; set; } = default!;
 }
-
-public class NhanVienResponseDTO
+public class NhanVienListReadModel
 {
 	public int NhanVienID { get; set; }
-	public string? HoTen { get; set; }
-	public string? Email { get; set; }
-	public string? TenChucVu { get; set; }
-	public string? TrangThai { get; set; }
+	public string HoTen { get; set; } = default!;
+	public string Email { get; set; } = default!;
+	public string TenChucVu { get; set; } = default!;
+	public string TrangThai { get; set; } = default!;
 }
-public class NhanVienChiTietDTO
+public class NhanVienDetailReadModel
 {
 	public int NhanVienID { get; set; }
 	public int ThongTinID { get; set; }
-	public int ChucVuID { get; set; }
-	public int PhongChucNangID { get; set; }
-
-	public string? HoTen { get; set; }
+	public NameResponseDTO? ChucVu{ get; init; }
+	public NameResponseDTO? PhongChucNang { get; set; }
+	public string HoTen { get; set; } = default!;
 	public DateTime? NgaySinh { get; set; }
 	public string? GioiTinh { get; set; }
 	public string? SDT { get; set; }
-	public string? EmailLienHe { get; set; }
+	public string EmailLienHe { get; set; } = default!;
 	public string? DiaChi { get; set; }
 	public string? Avatar { get; set; }
 	public DateTime? NgayVaoLam { get; set; }
 	public string? BangCap { get; set; }
 	public string? KinhNghiem { get; set; }
-	public string? TrangThai { get; set; }
-
-	public DateTime? NgayTao { get; set; }
+	public string TrangThai { get; set; } = default!;
+	public DateTime NgayTao { get; set; }
 	public DateTime? NgayCapNhat { get; set; }
 }

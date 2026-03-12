@@ -8,16 +8,9 @@ namespace Application.Services;
 public class ThongTinCaNhanService
 {
 	private readonly IThongTinCaNhanRepository _repo;
-	private readonly ITaiKhoanRepository _taiKhoanRepo;
-	private readonly IConfiguration _config;
-	public ThongTinCaNhanService(
-		IThongTinCaNhanRepository repo,
-		ITaiKhoanRepository taiKhoanRepo,
-		IConfiguration config)
+	public ThongTinCaNhanService(IThongTinCaNhanRepository repo)
 	{
 		_repo = repo;
-		_taiKhoanRepo = taiKhoanRepo;
-		_config = config;
 	}
 	private static GioiTinhEnum ParseGioiTinh(string value)
 	{
@@ -25,17 +18,8 @@ public class ThongTinCaNhanService
 			return GioiTinhEnum.Khac;
 		return GioiTinhExtensions.ToEnum(value);
 	}
-	public async Task<ApiResponse<int>> TaoNhanVienAsync(ThongTinRequestDTO dto)
+	public async Task<ApiResponse<int>> AddKhachAsync(ThongTinRequestDTO dto)
 	{
-		var defaultPassword = _config["DefaultPassword"];
-		if (string.IsNullOrWhiteSpace(defaultPassword))
-			return ApiResponse<int>.Fail("Chưa cấu hình mật khẩu mặc định.");
-		var hash = Helper.Password.PassWordHash(defaultPassword);
-		var taiKhoan = new TaiKhoan(dto.EmailLienHe, hash, VaiTroEnum.NhanVien);
-		await _taiKhoanRepo.AddAsync(taiKhoan);
-		var created = await _taiKhoanRepo.GetByEmailAsync(dto.EmailLienHe);
-		if (created == null)
-			return ApiResponse<int>.Fail("Không tạo được tài khoản.");
 		var entity = new ThongTinCaNhan(
 			dto.HoTen,
 			dto.NgaySinh,
@@ -44,13 +28,13 @@ public class ThongTinCaNhanService
 			dto.EmailLienHe,
 			dto.DiaChi,
 			dto.Avatar,
-			LoaiThongTinEnum.NhanVien,
-			created.Id
+			LoaiThongTinEnum.Khach,
+			dto.TaiKhoanID
 		);
 		var id = await _repo.AddAsync(entity);
-		return ApiResponse<int>.SuccessResponse(id, "Tạo nhân viên thành công");
+		return ApiResponse<int>.SuccessResponse(id);
 	}
-	public async Task<ApiResponse<int>> AddAsync(ThongTinRequestDTO dto)
+	public async Task<ApiResponse<int>> AddBenhNhanAsync(ThongTinRequestDTO dto)
 	{
 		var entity = new ThongTinCaNhan(
 			dto.HoTen,
@@ -66,17 +50,9 @@ public class ThongTinCaNhanService
 		var id = await _repo.AddAsync(entity);
 		return ApiResponse<int>.SuccessResponse(id);
 	}
-	public async Task<ApiResponse<List<ThongTinCaNhanResponseDTO>>> DanhSachNhanVienAsync()
+	public async Task<ApiResponse<List<ThongTinCaNhanResponseDTO>>> DanhSachKhachAsync()
 	{
-		return await GetAllByLoaiAsync(LoaiThongTinEnum.NhanVien);
-	}
-	public async Task<ApiResponse<List<ThongTinCaNhanResponseDTO>>> DanhSachBenhNhanAsync()
-	{
-		return await GetAllByLoaiAsync(LoaiThongTinEnum.BenhNhan);
-	}
-	private async Task<ApiResponse<List<ThongTinCaNhanResponseDTO>>> GetAllByLoaiAsync(LoaiThongTinEnum loai)
-	{
-		var list = await _repo.GetAllByLoaiAsync(loai);
+		var list = await _repo.GetAllByLoaiAsync(LoaiThongTinEnum.Khach);
 		var result = list.Select(e => new ThongTinCaNhanResponseDTO
 		{
 			ThongTinID = e.ThongTinID,
