@@ -1,42 +1,36 @@
-﻿
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class BenhNhan
 {
 	public int BenhNhanID { get; private set; }
 	public int ThongTinID { get; private set; }
+	public string GhiChu { get; private set; }
 	public DateTime NgayTao { get; private set; }
 	public DateTime NgayCapNhat { get; private set; }
-	public string GhiChu { get; private set; }
 
-	public ThongTinCaNhan? ThongTinCaNhan { get; private set; }
-
-	// Constructor dùng khi tạo mới từ DTO
-	public BenhNhan(int thongTinID, string ghiChu = "")
+	// Constructor tạo mới
+	public BenhNhan(int thongTinID, string? ghiChu = null)
 	{
-		if (thongTinID <= 0) throw new ArgumentException("ThongTinID không hợp lệ");
+		if (thongTinID <= 0)
+			throw new ArgumentException("ThongTinID không hợp lệ");
 
 		ThongTinID = thongTinID;
-		GhiChu = ghiChu;
+		GhiChu = ghiChu ?? "";
 	}
 
-	// Constructor dùng khi map từ DB
-	public BenhNhan(int benhNhanID, string ghiChu, ThongTinCaNhan? thongTinCaNhan)
-	{
-		BenhNhanID = benhNhanID;
-		GhiChu = ghiChu;
-		ThongTinCaNhan = thongTinCaNhan;
-	}
+	// Constructor map DB
 	public BenhNhan(int benhNhanID, int thongTinID, string ghiChu, DateTime ngayTao, DateTime ngayCapNhat)
 	{
 		BenhNhanID = benhNhanID;
-		ThongTinID= thongTinID;
+		ThongTinID = thongTinID;
 		GhiChu = ghiChu;
 		NgayTao = ngayTao;
 		NgayCapNhat = ngayCapNhat;
 	}
-    public void CapNhat(string ghiChu)
+
+	// Business method
+	public void CapNhatGhiChu(string? ghiChu)
 	{
-		GhiChu = ghiChu;
+		GhiChu = ghiChu ?? "";
 	}
 }

@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -115,6 +115,7 @@ builder.Services.AddAuthorization(options =>
 		"NHANVIEN_VIEW","NHANVIEN_CREATE","NHANVIEN_UPDATE","NHANVIEN_DELETE",
 
 		"BENHNHAN_VIEW","BENHNHAN_CREATE","BENHNHAN_UPDATE","BENHNHAN_DELETE",
+		"KHACH_VIEW", "KHACH_CREATE",
 
 		"LICHLAMVIEC_VIEW","LICHLAMVIEC_CREATE","LICHLAMVIEC_UPDATE","LICHLAMVIEC_DELETE",
 
@@ -140,7 +141,6 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddScoped<ITaiKhoanRepository, TaiKhoanRepository>();
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<TaiKhoanService>();
 builder.Services.AddScoped<IChucVuRepository, ChucVuRepository>();
 builder.Services.AddScoped<ChucVuService>();

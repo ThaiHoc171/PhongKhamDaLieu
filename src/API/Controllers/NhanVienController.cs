@@ -1,107 +1,93 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class NhanVienController : ControllerBase
 {
-	[ApiController]
-	[Authorize]
-	[Route("api/[controller]")]
-	public class NhanVienController : ControllerBase
+	private readonly NhanVienService _service;
+
+	public NhanVienController(NhanVienService service)
 	{
-		private readonly NhanVienService _service;
-
-		public NhanVienController(NhanVienService service)
-		{
-			_service = service;
-		}
-
-		// POST: api/NhanVien
-		[Authorize(Roles = "Admin")]
-		[HttpPost]
-		public async Task<IActionResult> TaoNhanVien([FromBody] TaoNhanVienDTO dto)
-		{
-			try
-			{
-				await _service.TaoNhanVienAsync(dto);
-				return Ok(new { message = "Tạo nhân viên thành công." });
-			} catch (Exception ex)
-			{
-				return BadRequest(new { message = "Tạo nhân viên thất bại.", Message = ex.Message });
-			}
-		}
-
-		// PUT: api/NhanVien/{id}
-		[Authorize(Roles = "Admin")]
-		[HttpPut("{id}")]
-		public async Task<IActionResult> CapNhatNhanVien(
-			int id,
-			[FromBody] CapNhatNhanVienDTO dto)
-		{
-			var result = await _service.CapNhatNhanVienAsync(id, dto);
-
-			if (!result)
-				return NotFound(new { message = "Nhân viên không tồn tại." });
-
-			return Ok(new { message = "Cập nhật nhân viên thành công." });
-		}
-
-		// PUT: api/NhanVien/{id}/trangthai
-		[Authorize(Roles = "Admin")]
-		[HttpPut("{id}/trangthai")]
-		public async Task<IActionResult> CapNhatTrangThai(
-			int id,
-			[FromBody] string trangThai)
-		{
-			var result = await _service.CapNhatTrangThaiAsync(id, trangThai);
-
-			if (!result)
-				return NotFound(new { message = "Nhân viên không tồn tại." });
-
-			return Ok(new { message = "Cập nhật trạng thái thành công." });
-		}
-
-		// GET: api/NhanVien
-		[Authorize(Roles = "Admin,Nhân viên")]
-		[HttpGet]
-		public async Task<IActionResult> LayDanhSach()
-		{
-			var list = await _service.LayDanhSachAsync();
-			return Ok(list);
-		}
-		[Authorize(Roles = "Admin,Nhân viên")]
-		[HttpGet("paged")]
-		public async Task<IActionResult> LayDanhSachNhanVienPaged([FromQuery] int pageNumber = 1,[FromQuery] int pageSize = 10)
-		{
-			var result = await _service.DanhSachNhanVienPagedAsync(pageNumber, pageSize);
-			return Ok(result);
-		}
-
-		[Authorize(Roles = "Admin,Nhân viên")]
-		[HttpGet("search")]
-		public async Task<IActionResult> Search([FromQuery] string? keyword,[FromQuery] int pageNumber = 1,	[FromQuery] int pageSize = 10)
-		{
-			var result = await _service.SearchAsync(keyword ?? string.Empty, pageNumber, pageSize);
-
-			return Ok(result);
-		}
-
-		[Authorize(Roles = "Admin,Nhân viên")]
-		[HttpGet("{id}")]
-		public async Task<IActionResult> LayNhanVienById(int id)
-		{
-			var nv = await _service.LayTheoIDAsync(id);
-			if (nv == null)
-				return NotFound(new { message = "Nhân viên không tồn tại." });
-			return Ok(nv);
-		}
-		[Authorize(Roles = "Admin,Nhân viên")]
-		[HttpGet("Combobox")]
-		public async Task<IActionResult> LayCombobox(int chucVuId)
-		{
-			var result = await _service.GetDropdownAsync(chucVuId);
-			return Ok(result);
-		}
+		_service = service;
 	}
+
+	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[HttpGet]
+	public async Task<ActionResult<ApiResponse<PagedResult<NhanVienListReadModel>>>> 
+		GetPaged(int pageNumber = 1, int pageSize = 10)
+	{
+		var result = await _service.GetPagedAsync(pageNumber, pageSize);
+		return Ok(result);
+	}
+
+
+	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[HttpGet("search")]
+	public async Task<ActionResult<ApiResponse<PagedResult<NhanVienListReadModel>>>> 
+		Search(string keyword, int pageNumber = 1, int pageSize = 10)
+	{
+		var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[HttpGet("{id}")]
+	public async Task<ActionResult<ApiResponse<NhanVienDetailReadModel>>> GetDetail(int id)
+	{
+		var result = await _service.GetDetailAsync(id);
+
+		if (!result.Success)
+			return NotFound(result);
+
+		return Ok(result);
+	}
+	[Authorize(Policy = "NHANVIEN_CREATE")]
+	[HttpPost("{id}")]
+	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] NhanVienRequestDTO dto)
+	{
+		var result = await _service.AddNhanVienAsync(dto);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+	[Authorize(Policy = "NHANVIEN_UPDATE")]
+	[HttpPut("{id}")]
+	public async Task<ActionResult<ApiResponse<bool>>> Update(int id,[FromBody] NhanVienRequestUpdateDTO dto)
+	{
+		var result = await _service.UpdateAsync(id, dto);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+	[Authorize(Policy = "NHANVIEN_UPDATE")]
+	[HttpPut("status/{id}")]
+	public async Task<ActionResult<ApiResponse<bool>>> Status(int id, [FromQuery] string trangthai)
+	{
+		var result = await _service.StatusAsync(id, trangthai);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[HttpGet("combobox/{chucVuId}")]
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox(int chucVuId)
+	{
+		var result = await _service.GetComboboxAsync(chucVuId);
+		return Ok(result);
+	}
+
 }

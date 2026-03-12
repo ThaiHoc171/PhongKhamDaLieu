@@ -1,9 +1,8 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using Microsoft.Extensions.Configuration;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Services;
 
@@ -12,32 +11,34 @@ public class BenhNhanService
 	private readonly IBenhNhanRepository _benhNhanRepo;
 	private readonly IThongTinCaNhanRepository _thongTinRepo;
 
-	public BenhNhanService(IBenhNhanRepository benhNhanRepo, IThongTinCaNhanRepository thongTinRepo)
+	public BenhNhanService(
+		IBenhNhanRepository benhNhanRepo,
+		IThongTinCaNhanRepository thongTinRepo)
 	{
 		_benhNhanRepo = benhNhanRepo;
 		_thongTinRepo = thongTinRepo;
 	}
 
-	public async Task<int> ThemBenhNhanAsync(BenhNhanRequestDTO dto)
+	public async Task<ApiResponse<int>> AddAsync(BenhNhanRequestDTO dto)
 	{
 		int thongTinID;
 
 		if (dto.ThongTinID.HasValue)
 		{
-			// Bệnh nhân đã có thông tin cá nhân
 			var existing = await _thongTinRepo.GetByIdAsync(dto.ThongTinID.Value);
+
 			if (existing == null)
-				throw new Exception("Thông tin cá nhân không tồn tại");
+				return ApiResponse<int>.Fail("Thông tin cá nhân không tồn tại");
 
 			thongTinID = existing.ThongTinID;
 		}
 		else
 		{
-			// Bệnh nhân mới, phải cung cấp ít nhất tên, SDT, Email
 			if (string.IsNullOrWhiteSpace(dto.HoTen))
-				throw new Exception("Phải cung cấp họ tên cho bệnh nhân mới");
+				return ApiResponse<int>.Fail("Phải cung cấp họ tên");
+
 			if (string.IsNullOrWhiteSpace(dto.SDT))
-				throw new Exception("Phải cung cấp số điện thoại cho bệnh nhân mới");
+				return ApiResponse<int>.Fail("Phải cung cấp số điện thoại");
 
 			var thongTin = new ThongTinCaNhan(
 				taiKhoanID: dto.TaiKhoanID,
@@ -53,105 +54,80 @@ public class BenhNhanService
 
 			thongTinID = await _thongTinRepo.AddAsync(thongTin);
 		}
-		// check trùng
-		var exists = await _benhNhanRepo.ExistsByThongTinIdAsync(thongTinID);
-		if (exists)
-			throw new Exception("Thông tin cá nhân này đã là bệnh nhân");
 
-		// Tạo BenhNhan mới
-		var benhNhan = new BenhNhan(
+		var exists = await _benhNhanRepo.ExistsByThongTinIdAsync(thongTinID);
+
+		if (exists)
+			return ApiResponse<int>.Fail("Thông tin cá nhân này đã là bệnh nhân");
+
+		var entity = new BenhNhan(
 			thongTinID: thongTinID,
-			ghiChu: dto.GhiChu ?? ""
+			ghiChu: dto.GhiChu
 		);
 
-		return await _benhNhanRepo.AddAsync(benhNhan);
+		var id = await _benhNhanRepo.AddAsync(entity);
+
+		return ApiResponse<int>.SuccessResponse(id);
 	}
 
-	public async Task<bool> CapNhatBenhNhanAsync(int benhNhanID, string ghiChu)
+	public async Task<ApiResponse<bool>> UpdateAsync(int id, BenhNhanUpdateRequestDTO dto)
 	{
-		var benhNhan = await _benhNhanRepo.GetByIdAsync(benhNhanID);
-		if (benhNhan == null) return false;
+		var entity = await _benhNhanRepo.GetByIdAsync(id);
 
-		benhNhan.CapNhat(ghiChu);
-		await _benhNhanRepo.UpdateAsync(benhNhan);
-		return true;
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Bệnh nhân không tồn tại");
+
+		entity.CapNhatGhiChu(dto.GhiChu);
+
+		await _benhNhanRepo.UpdateAsync(entity);
+
+		return ApiResponse<bool>.SuccessResponse(true);
 	}
 
-	public async Task<PagedResult<BenhNhanResponseDTO>>	DanhSachBenhNhanAsync(int pageNumber, int pageSize)
+	public async Task<ApiResponse<BenhNhanDetailReadModel>> GetDetailAsync(int id)
 	{
-		if (pageNumber <= 0) pageNumber = 1;
-		if (pageSize <= 0) pageSize = 10;
+		var result = await _benhNhanRepo.GetDetailAsync(id);
 
-		var (data, totalCount) =
+		if (result == null)
+			return ApiResponse<BenhNhanDetailReadModel>.Fail("Bệnh nhân không tồn tại");
+
+		return ApiResponse<BenhNhanDetailReadModel>.SuccessResponse(result);
+	}
+
+	public async Task<ApiResponse<PagedResult<BenhNhanReadModel>>> GetPagedAsync(int pageNumber, int pageSize)
+	{
+		var (items, totalCount) =
 			await _benhNhanRepo.GetPagedAsync(pageNumber, pageSize);
 
-		var result = data.Select(bn => new BenhNhanResponseDTO
-		{
-			BenhNhanID = bn.BenhNhanID,
-			ThongTinID = bn.ThongTinCaNhan?.ThongTinID ?? 0,
-			HoTen = bn.ThongTinCaNhan?.HoTen ?? "",
-			SDT = bn.ThongTinCaNhan?.SDT ?? "",
-			EmailLienHe = bn.ThongTinCaNhan?.EmailLienHe ?? "",
-			GhiChu = bn.GhiChu
-		}).ToList();
-
-		return new PagedResult<BenhNhanResponseDTO>
-		{
-			Items = result,
-			TotalCount = totalCount,
-			PageNumber = pageNumber,
-			PageSize = pageSize
-		};
+		return ApiResponse<PagedResult<BenhNhanReadModel>>.SuccessResponse(
+			new PagedResult<BenhNhanReadModel>
+			{
+				Items = items,
+				TotalCount = totalCount,
+				PageNumber = pageNumber,
+				PageSize = pageSize
+			});
 	}
 
-
-	public async Task<BenhNhanIdResponseDTO?> LayBenhNhanTheoIdAsync(int benhNhanID)
+	public async Task<ApiResponse<PagedResult<BenhNhanReadModel>>> SearchAsync(	string? keyword, int pageNumber, int pageSize)
 	{
-		var bn = await _benhNhanRepo.GetByIdAsync(benhNhanID);
-		if (bn == null) return null;
+		var (items, totalCount) =
+			await _benhNhanRepo.SearchAsync(keyword, pageNumber, pageSize);
 
-		var thongTin = await _thongTinRepo.GetByIdAsync(bn.ThongTinID);
-		if (bn == null) return null;
-		return new BenhNhanIdResponseDTO
-		{
-			BenhNhanID = bn.BenhNhanID,
-			ThongTinID = bn.ThongTinID,
-			GhiChu = bn.GhiChu,
-			HoTen = thongTin?.HoTen,
-			NgaySinh = thongTin?.NgaySinh,
-			GioiTinh = thongTin?.GioiTinh,
-			SDT = thongTin?.SDT,
-			EmailLienHe = thongTin?.EmailLienHe,
-			DiaChi = thongTin?.DiaChi,
-			Avatar = thongTin?.Avatar,
-			NgayTao = bn.NgayTao,
-			NgayCapNhat = bn.NgayCapNhat,
-		};
+		return ApiResponse<PagedResult<BenhNhanReadModel>>.SuccessResponse(
+			new PagedResult<BenhNhanReadModel>
+			{
+				Items = items,
+				TotalCount = totalCount,
+				PageNumber = pageNumber,
+				PageSize = pageSize
+			});
 	}
 
-	public async Task<List<BenhNhanResponseDTO>> SearchdAsync(string keyword)
+	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync()
 	{
-		var data = await _benhNhanRepo.GetBenhNhans(keyword);
-		var result = data.Select(bn => new BenhNhanResponseDTO
-		{
-			BenhNhanID = bn.BenhNhanID,
-			ThongTinID = bn.ThongTinCaNhan?.ThongTinID ?? 0,
-			HoTen = bn.ThongTinCaNhan?.HoTen ?? "",
-			SDT = bn.ThongTinCaNhan?.SDT ?? "",
-			EmailLienHe = bn.ThongTinCaNhan?.EmailLienHe ?? "",
-			GhiChu = bn.GhiChu
-		}).ToList();
+		var result = await _benhNhanRepo.GetComboboxAsync();
 
-		return result;
-	}
-
-	public async Task<List<NameResponseDTO>> GetComboboxAsync()
-	{
-		var list = await _benhNhanRepo.GetIdAndNameAsync();
-		return list.Select(e => new NameResponseDTO
-		{
-			Id = e.Id,
-			Name = e.Ten
-		}).ToList();
+		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(result);
 	}
 }

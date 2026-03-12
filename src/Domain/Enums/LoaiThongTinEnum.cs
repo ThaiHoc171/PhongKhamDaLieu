@@ -2,7 +2,8 @@
 public enum LoaiThongTinEnum
 {
 	NhanVien,
-	BenhNhan
+	BenhNhan,
+	Khach
 }
 public static class LoaiThongTinExtensions
 {
@@ -11,6 +12,7 @@ public static class LoaiThongTinExtensions
 		{
 			LoaiThongTinEnum.NhanVien => "Nhân viên",
 			LoaiThongTinEnum.BenhNhan => "Bệnh nhân",
+			LoaiThongTinEnum.Khach => "Khách",
 			_ => throw new ArgumentOutOfRangeException()
 		};
 
@@ -19,6 +21,7 @@ public static class LoaiThongTinExtensions
 		{
 			"Nhân viên" => LoaiThongTinEnum.NhanVien,
 			"Bệnh nhân" => LoaiThongTinEnum.BenhNhan,
+			"Khách" => LoaiThongTinEnum.Khach,
 			_ => throw new ArgumentException($"Loại thông tin không hợp lệ: {value}")
 		};
 }
