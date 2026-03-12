@@ -18,66 +18,59 @@ public class PhienKhamCLSController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize(Policy = "BacSiOrKyThuatVien")]
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
 	[HttpGet("phienkham/{phienKhamID}")]
 	public async Task<ActionResult<ApiResponse<List<PhienKhamClsListReadModel>>>> LayTheoPhienKham(int phienKhamID)
 	{
-		var result = await _service.LayTheoPhienKhamAsync(phienKhamID);
-		return Ok(ApiResponse<List<PhienKhamClsListReadModel>>.SuccessResponse(result));
+		var result = await _service.GetByPhienKhamAsync(phienKhamID);
+		return Ok(result);
 	}
 
-	[Authorize(Policy = "BacSiOrKyThuatVien")]
-	[HttpGet("chitiet/{phienKhamBenhID}")]
-	public async Task<ActionResult<ApiResponse<PhienKhamClsReadModel>>> LayChiTiet(int phienKhamBenhID)
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[HttpGet("{id}")]
+	public async Task<ActionResult<ApiResponse<PhienKhamClsReadModel>>> LayChiTiet(int id)
 	{
-		var result = await _service.LayChiTietAsync(phienKhamBenhID);
-		if (result == null)
-			return NotFound(ApiResponse<PhienKhamClsReadModel>.Fail("CLS không tồn tại"));
-		return Ok(ApiResponse<PhienKhamClsReadModel>.SuccessResponse(result));
-	}
-	[Authorize(Policy = "BacSiOrKyThuatVien")]
-	[HttpGet("danhsach")]
-	public async Task<ActionResult<ApiResponse<PhienKhamClsListReadModel>>> DanhSach()
-	{
-		var result = await _service.DanhSach();
-		return Ok(ApiResponse< List<PhienKhamClsListReadModel>>.SuccessResponse(result));
+		var result = await _service.GetDetailAsync(id);
+		return Ok(result);
 	}
 
-	[Authorize(Policy = "BacSiOnly")]
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[HttpGet]
+	public async Task<ActionResult<ApiResponse<List<PhienKhamClsListReadModel>>>> DanhSach()
+	{
+		var result = await _service.GetListAsync();
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<object>>> ThemMoi([FromBody] TaoPhienKhamCLSDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> ThemMoi([FromBody] PkClsRequestDTO dto)
 	{
-		await _service.ThemMoiAsync(dto);
-		return Ok(ApiResponse<object>.SuccessResponse(null, "Chỉ định cận lâm sàng thành công"));
+		var result = await _service.AddAsync(dto);
+		return Ok(result);
 	}
 
-	[Authorize(Policy = "KyThuatVienOnly")]
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}/nhan")]
-	public async Task<ActionResult<ApiResponse<object>>> NhanThucHien(int id, [FromBody] NhanThucHienCLSDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> NhanThucHien(int id, [FromBody] AcceptClsDTO dto)
 	{
-		var success = await _service.NhanThucHienAsync(id, dto);
-		if (!success)
-			return NotFound(ApiResponse<object>.Fail("CLS không tồn tại"));
-		return Ok(ApiResponse<object>.SuccessResponse(null, "Đã nhận thực hiện cận lâm sàng"));
+		var result = await _service.AcceptAsync(id, dto);
+		return Ok(result);
 	}
 
-	[Authorize(Policy = "KyThuatVienOnly")]
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}/ketqua")]
-	public async Task<ActionResult<ApiResponse<object>>> CapNhatKetQua(int id, [FromBody] CapNhatKetQuaCLSDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> CapNhatKetQua(int id, [FromBody] PkClsUpdateRequestDTO dto)
 	{
-		var success = await _service.CapNhatKetQuaAsync(id, dto);
-		if (!success)
-			return NotFound(ApiResponse<object>.Fail("CLS không tồn tại"));
-		return Ok(ApiResponse<object>.SuccessResponse(null, "Cập nhật kết quả cận lâm sàng thành công"));
+		var result = await _service.CompleteAsync(id, dto);
+		return Ok(result);
 	}
 
-	[Authorize(Policy = "BacSiOnly")]
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}/huy")]
-	public async Task<ActionResult<ApiResponse<object>>> Huy(int id)
+	public async Task<ActionResult<ApiResponse<bool>>> Huy(int id)
 	{
-		var success = await _service.HuyAsync(id);
-		if (!success)
-			return NotFound(ApiResponse<object>.Fail("CLS không tồn tại"));
-		return Ok(ApiResponse<object>.SuccessResponse(null, "Đã hủy cận lâm sàng"));
+		var result = await _service.CancelAsync(id);
+		return Ok(result);
 	}
 }

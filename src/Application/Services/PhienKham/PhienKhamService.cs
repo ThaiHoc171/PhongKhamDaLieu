@@ -78,7 +78,7 @@ public class PhienKhamService
 			return ApiResponse<bool>.Fail("Phiên khám không tồn tại");
 		if (!string.IsNullOrEmpty(pk.ChanDoanCuoi))
 			return ApiResponse<bool>.Fail("Phiên khám đã được kết thúc trước đó");
-		var pkBenh = await _pkBenhrepo.GetByPhienKhamAsync(phienKhamId);
+		var pkBenh = await _pkBenhrepo.GetByPhienKhamIdAsync(phienKhamId);
 		if (pkBenh == null || !pkBenh.Any())
 			return ApiResponse<bool>.Fail("Phải có ít nhất một chẩn đoán bệnh trước khi kết thúc");
 		var pkCls = await _pkClsRepo.GetByPhienKhamAsync(phienKhamId);

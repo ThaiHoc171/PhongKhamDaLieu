@@ -8,7 +8,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Policy = "BacSiOnly")]
+[Authorize(Policy = "PHIENKHAM_UPDATE")]
 public class PhienKhamThietBiController : ControllerBase
 {
 	private readonly PhienKhamThietBiService _service;
@@ -18,26 +18,27 @@ public class PhienKhamThietBiController : ControllerBase
 		_service = service;
 	}
 
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
 	[HttpGet("phienkham/{phienKhamId}")]
 	public async Task<ActionResult<ApiResponse<List<PhienKhamThietBiReadModel>>>> LayDanhSachTheoPhienKham(int phienKhamId)
 	{
 		var result = await _service.DanhSachTheoPhienKhamAsync(phienKhamId);
-		return Ok(ApiResponse<List<PhienKhamThietBiReadModel>>.SuccessResponse(result));
+		return Ok(result);
 	}
 
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<object>>> ThemMoi([FromBody] PhienKhamThietBiRequestDTO dto)
 	{
-		await _service.ThemMoiAsync(dto);
-		return Ok(ApiResponse<object>.SuccessResponse(null, "Thêm thiết bị vào phiên khám thành công"));
+		var result = await _service.ThemMoiAsync(dto);
+		return Ok(result);
 	}
 
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<ActionResult<ApiResponse<object>>> CapNhat(int id, [FromBody] string ghiChu)
+	public async Task<ActionResult<ApiResponse<object>>> CapNhat(int id, [FromBody] string? ghiChu)
 	{
 		var result = await _service.CapNhatAsync(id, ghiChu);
-		if (!result)
-			return NotFound(ApiResponse<object>.Fail("Thiết bị không tồn tại trong phiên khám."));
-		return Ok(ApiResponse<object>.SuccessResponse(null, "Cập nhật thiết bị phiên khám thành công"));
+		return Ok(result);
 	}
 }

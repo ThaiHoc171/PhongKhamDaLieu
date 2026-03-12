@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace Infrastructure.Repository;
 
@@ -112,7 +113,7 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			GhiChu = reader.IsDBNull(9) ? null : reader.GetString(9)
 		};
 	}
-	public async Task<List<PhienKhamClsListReadModel>> GetDanhSachAsync()
+	public async Task<List<PhienKhamClsListReadModel>> GetListAsync()
 	{
 		const string sql = @"
 		SELECT 
@@ -151,16 +152,16 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			INSERT INTO PhienKham_CanLamSang
 			(PhienKhamID, CanLamSangID, NhanVienChiDinhID, GhiChu)
 			VALUES
-			(@PhienKhamID, @CanLamSangID, @NhanVienChiDinhID, @GhiChu);
-		";
+			(@PhienKhamID, @CanLamSangID, @NhanVienChiDinhID, @GhiChu)";
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 
-		cmd.Parameters.AddWithValue("@PhienKhamID", phienKhamCLS.PhienKhamID);
-		cmd.Parameters.AddWithValue("@CanLamSangID", phienKhamCLS.CLSID);
-		cmd.Parameters.AddWithValue("@NhanVienChiDinhID", phienKhamCLS.NhanVienChiDinhID);
-		cmd.Parameters.AddWithValue("@GhiChu", (object?)phienKhamCLS.GhiChu ?? DBNull.Value);
+		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamCLS.PhienKhamID;
+		cmd.Parameters.Add("@CanLamSangID", SqlDbType.Int).Value = phienKhamCLS.CLSID;
+		cmd.Parameters.Add("@NhanVienChiDinhID", SqlDbType.Int).Value = phienKhamCLS.NhanVienChiDinhID;
+		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar).Value =
+			(object?)phienKhamCLS.GhiChu ?? DBNull.Value;
 
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
@@ -175,19 +176,17 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 				FileDinhKem = @FileDinhKem,
 				NhanVienThucHienID = @NhanVienThucHienID,
 				GhiChu = @GhiChu
-			WHERE PhienKham_CanLamSangID = @ID;
-		";
+			WHERE PhienKham_CanLamSangID = @ID";
 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 
-		cmd.Parameters.AddWithValue("@ID", phienKhamCLS.PhienKhamCLSID);
-		cmd.Parameters.AddWithValue("@TrangThai", phienKhamCLS.TrangThai.ToDbValue());
-		cmd.Parameters.AddWithValue("@KetQua", (object?)phienKhamCLS.KetQua ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@FileDinhKem", (object?)phienKhamCLS.FileDinhKem ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@NhanVienThucHienID", (object?)phienKhamCLS.NhanVienThucHienID ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@GhiChu", (object?)phienKhamCLS.GhiChu ?? DBNull.Value);
-
+		cmd.Parameters.Add("@ID", SqlDbType.Int).Value = phienKhamCLS.PhienKhamCLSID;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = phienKhamCLS.TrangThai.ToDbValue();
+		cmd.Parameters.Add("@KetQua", SqlDbType.NVarChar).Value = (object?)phienKhamCLS.KetQua ?? DBNull.Value;
+		cmd.Parameters.Add("@FileDinhKem", SqlDbType.NVarChar).Value = (object?)phienKhamCLS.FileDinhKem ?? DBNull.Value;
+		cmd.Parameters.Add("@NhanVienThucHienID", SqlDbType.Int).Value = (object?)phienKhamCLS.NhanVienThucHienID ?? DBNull.Value;
+		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar).Value = (object?)phienKhamCLS.GhiChu ?? DBNull.Value;
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
@@ -198,7 +197,7 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			phienKhamCLSID: reader.GetInt32(0),
 			phienKhamID: reader.GetInt32(1),
 			clsID: reader.GetInt32(2),
-			trangThai: reader.GetString(3),
+			trangThai: TrangThaiCLSExtensions.ToEnum(reader.GetString(3)),
 			ketQua: reader.IsDBNull(4) ? null : reader.GetString(4),
 			fileDinhKem: reader.IsDBNull(5) ? null : reader.GetString(5),
 			ngayThucHien: reader.IsDBNull(6) ? null : reader.GetDateTime(6),
