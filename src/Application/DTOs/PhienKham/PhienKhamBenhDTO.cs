@@ -1,5 +1,4 @@
-﻿using Domain.Enums;
-namespace Application.DTOs;
+﻿namespace Application.DTOs;
 
 public class PhienKhamBenhRequestDTO
 {
@@ -8,11 +7,20 @@ public class PhienKhamBenhRequestDTO
 	public string LoaiChanDoan { get; set; } = default!;
 	public string? GhiChu { get; set; }
 }
+public class PhienKhamBenhResponseDTO
+{
+	public int Id { get; init; }
+	public int PhienKhamID { get; init; }
+	public int LoaiBenhID { get; init; }
+	public string LoaiChanDoan { get; init; } = default!;
+	public string? GhiChu { get; init; }
+}
+
 public class PhienKhamBenhReadModel
 {
 	public int Id { get; init; }
 	public int PhienKhamID { get; init; }
-	public string? LoaiBenh { get; init; }
+	public NameResponseDTO? LoaiBenh { get; init; }
 	public string LoaiChanDoan { get; init; } = default!;
 	public string? GhiChu { get; init; }
 }

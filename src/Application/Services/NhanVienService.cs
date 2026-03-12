@@ -20,7 +20,12 @@ public class NhanVienService
 	public async Task TaoNhanVienAsync(TaoNhanVienDTO dto)
 	{
 		// 1. Tạo thông tin cá nhân
-		var thongTinID = await _thongTinService.TaoNhanVienAsync(dto.ThongTin);
+		var result = await _thongTinService.TaoNhanVienAsync(dto.ThongTin);
+
+		if (!result.Success)
+			throw new Exception(result.Message);
+
+		var thongTinID = result.Data!;
 
 		// 2. Tạo entity NhanVien
 		var nv = new NhanVien(

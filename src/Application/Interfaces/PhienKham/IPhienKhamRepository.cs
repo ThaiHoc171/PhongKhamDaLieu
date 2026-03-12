@@ -2,11 +2,11 @@
 using Domain.Entities;
 public interface IPhienKhamRepository
 {
-	//--CRUD
+	//--CUD
     Task<int> AddAsync(PhienKham entity);
 	Task UpdateAsync(PhienKham entity);
 	Task KetThucAsync(PhienKham entity);
-	//--Read-only
+	//--R
 	Task<PhienKham?> GetByIdAsync(int id);
 	Task<PhienKhamReadModel?> GetByCaKhamIdAsync(int id);
 	Task<int?> GetBenhNhanByIdAsync(int phienKhamID);

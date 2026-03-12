@@ -1,9 +1,10 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Presentation.Controllers;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -16,134 +17,76 @@ public class ThongTinCaNhanController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Roles = "Admin")]
+
+	[Authorize(Policy = "NHANVIEN_CREATE")]
 	[HttpPost("NhanVien")]
-	public async Task<IActionResult> TaoNhanVien(
-		[FromBody] ThemThongTinCaNhanDTO dto)
+	public async Task<ActionResult<ApiResponse<int>>> TaoNhanVien([FromBody] ThongTinRequestDTO dto)
 	{
-		if (dto == null)
-			return BadRequest(new { message = "Dữ liệu không hợp lệ." });
+		var result = await _service.TaoNhanVienAsync(dto);
 
-		try
-		{
-			var id = await _service.TaoNhanVienAsync(dto);
+		if (!result.Success)
+			return BadRequest(result);
 
-			return CreatedAtAction(
-				nameof(LayThongTin),
-				new { id },
-				new { message = "Tạo nhân viên thành công.", thongTinID = id }
-			);
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new { message = ex.Message });
-		}
+		return CreatedAtAction(nameof(LayThongTin), new { id = result.Data }, result);
 	}
 
-	[Authorize]
+	[Authorize(Policy = "BENHNHAN_CREATE")]
 	[HttpPost("BenhNhan")]
-	public async Task<IActionResult> TaoBenhNhan(
-		[FromBody] ThemThongTinCaNhanDTO dto)
+	public async Task<ActionResult<ApiResponse<int>>> TaoBenhNhan([FromBody] ThongTinRequestDTO dto)
 	{
-		if (dto == null)
-			return BadRequest(new { message = "Dữ liệu không hợp lệ." });
+		var result = await _service.AddAsync(dto);
 
-		try
-		{
-			var id = await _service.TaoBenhNhanAsync(dto);
+		if (!result.Success)
+			return BadRequest(result);
 
-			return CreatedAtAction(
-				nameof(LayThongTin),
-				new { id },
-				new { message = "Tạo bệnh nhân thành công.", thongTinID = id }
-			);
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new { message = ex.Message });
-		}
+		return CreatedAtAction(nameof(LayThongTin), new { id = result.Data }, result);
 	}
-	[Authorize(Roles = "Admin")]
+
+	[Authorize(Policy = "NHANVIEN_VIEW")]
 	[HttpGet("NhanVien")]
-	public async Task<IActionResult> DanhSachNhanVien()
+	public async Task<ActionResult<ApiResponse<List<ThongTinCaNhanResponseDTO>>>> DanhSachNhanVien()
 	{
 		var result = await _service.DanhSachNhanVienAsync();
-		return Ok(new
-		{
-			message = "Lấy danh sách nhân viên thành công.",
-			data = result
-		});
+		return Ok(result);
 	}
 
-	[Authorize(Policy = "LeTanOnly")]
+	[Authorize(Policy = "BENHNHAN_VIEW")]
 	[HttpGet("BenhNhan")]
-	public async Task<IActionResult> DanhSachBenhNhan()
+	public async Task<ActionResult<ApiResponse<List<ThongTinCaNhanResponseDTO>>>> DanhSachBenhNhan()
 	{
 		var result = await _service.DanhSachBenhNhanAsync();
-		return Ok(new
-		{
-			message = "Lấy danh sách bệnh nhân thành công.",
-			data = result
-		});
+		return Ok(result);
 	}
 
-
+	[Authorize(Policy = "USER_VIEW")]
 	[HttpGet("{id}")]
-	public async Task<IActionResult> LayThongTin(int id)
+	public async Task<ActionResult<ApiResponse<ThongTinCaNhanResponseDTO>>> LayThongTin(int id)
 	{
-		var result = await _service.LayChiTietAsync(id);
+		var result = await _service.GetDetailAsync(id);
 
-		if (result == null)
-			return NotFound(new { message = "Không tìm thấy thông tin cá nhân." });
+		if (!result.Success)
+			return NotFound(result);
 
-		return Ok(new
-		{
-			message = "Lấy thông tin cá nhân thành công.",
-			data = result
-		});
+		return Ok(result);
 	}
-	[Authorize(Policy = "LeTanOnly")]
+
+	[Authorize(Policy = "BENHNHAN_VIEW")]
 	[HttpGet("BenhNhan/Combobox")]
-	public async Task<IActionResult> GetComboboxAsync()
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetComboboxAsync()
 	{
-		return Ok(await _service.GetCombobox());
+		var result = await _service.GetCombobox();
+		return Ok(result);
 	}
 
+	[Authorize(Policy = "USER_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(
-		int id,
-		[FromBody] CapNhatThongTinCaNhanDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> CapNhat(int id, [FromBody] ThongTinUpdateRequestDTO dto)
 	{
-		if (dto == null)
-			return BadRequest(new { message = "Dữ liệu không hợp lệ." });
+		var result = await _service.UpdateAsync(id, dto);
 
-		try
-		{
-			var success = await _service.CapNhatAsync(id, dto);
+		if (!result.Success)
+			return BadRequest(result);
 
-			if (!success)
-				return NotFound(new { message = "Không tìm thấy thông tin để cập nhật." });
-
-			return Ok(new
-			{
-				message = "Cập nhật thông tin cá nhân thành công."
-			});
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-		catch (Exception ex)
-		{
-			return StatusCode(500, new { message = ex.Message });
-		}
+		return Ok(result);
 	}
 }
