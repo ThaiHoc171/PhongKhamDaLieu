@@ -42,11 +42,8 @@ public class PhienKhamRepository : IPhienKhamRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<(List<PhienKhamListReadModel>, int)> GetPagedAsync(
-		int page,
-		int size,
-		int? nhanVienID,
-		string? trangThai)
+	public async Task<(List<PhienKhamListReadModel>, int)>
+		GetPagedAsync( int page, int size, int? nhanVienID,	string? trangThai)
 	{
 		var sql =
 		$@"{BaseSelectLite}
@@ -75,7 +72,8 @@ public class PhienKhamRepository : IPhienKhamRepository
 			total = reader.GetInt32(0);
 		return (list, total);
 	}
-	public async Task<(List<PhienKhamListReadModel>, int)> SearchPagedAsync(string? keyword,int page,int size,int? nhanVienID)
+	public async Task<(List<PhienKhamListReadModel>, int)> 
+		SearchPagedAsync(string? keyword,int page,int size,int? nhanVienID)
 	{
 		var sql =
 		$@"{BaseSelectLite}

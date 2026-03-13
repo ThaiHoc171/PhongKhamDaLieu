@@ -5,13 +5,13 @@ namespace Application.Interfaces;
 
 public interface IThuocRepository
 {
-    Task<List<ThuocListReadModel>> GetPagedAsync(int pageNumber, int pageSize);
+    Task<List<ThuocReadModel>> GetPagedAsync(int pageNumber, int pageSize);
 
     Task<int> CountAsync();
 
-    Task<List<ThuocListReadModel>> SearchAsync(string keyword);
+    Task<List<ThuocReadModel>> SearchAsync(string keyword);
 
-    Task<List<ThuocComboboxReadModel>> GetComboboxAsync();
+    Task<List<NameResponseDTO>> GetComboboxAsync();
 
     Task<Thuoc?> GetByIdAsync(int id);
 
