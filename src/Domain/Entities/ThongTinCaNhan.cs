@@ -11,7 +11,7 @@ public class ThongTinCaNhan
 	public DateTime? NgaySinh { get; private set; }
 	public string? GioiTinh { get; private set; }
 	public string SDT { get; private set; } = null!;
-	public string EmailLienHe { get; private set; } = null!;
+	public string? EmailLienHe { get; private set; }
 	public string? DiaChi { get; private set; }
 	public string? Avatar { get; private set; }
 	public string Loai { get; private set; } = null!;
@@ -20,7 +20,7 @@ public class ThongTinCaNhan
 
 	// Constructor tạo mới
 	public ThongTinCaNhan(string hoTen, DateTime? ngaySinh, GioiTinhEnum gioiTinh, string sdt,
-		string emailLienHe, string? diaChi, string? avatar, LoaiThongTinEnum loai, int? taiKhoanID)
+		string? emailLienHe, string? diaChi, string? avatar, LoaiThongTinEnum loai, int? taiKhoanID)
 	{
 		if (string.IsNullOrWhiteSpace(hoTen))
 			throw new ArgumentException("Họ tên không hợp lệ");

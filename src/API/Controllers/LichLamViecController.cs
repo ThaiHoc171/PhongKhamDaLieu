@@ -1,112 +1,85 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
+
 [ApiController]
-[Route("api/[controller]")]
-public class LichLamViecController: ControllerBase
+[Route("api/lich-lam-viec")]
+[Authorize]
+public class LichLamViecController : ControllerBase
 {
 	private readonly LichLamViecService _service;
+
 	public LichLamViecController(LichLamViecService service)
 	{
 		_service = service;
 	}
 
-	[Authorize(Policy = "LeTanOnly")]
-	[HttpPost("TaoLich")]
-	public async Task<IActionResult> TaoLichMulti(LichLamViecBatchDTO dto)
+	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	[HttpPost("import")]
+	public async Task<IActionResult> ImportExcel(IFormFile file)
 	{
-		try
-		{
-			await _service.ThemLichLamViecAsync(dto);
-			return Ok(new { message = "Tạo lịch thành công" });
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = "Lỗi: " + ex.Message
-			});
-		}
+		if (file == null || file.Length == 0)
+			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
+
+		using var stream = file.OpenReadStream();
+		var response = await _service.ImportExcelAsync(stream);
+
+		if (!response.Success)
+			return BadRequest(response);
+
+		return Ok(response);
 	}
 
-	[Authorize(Policy = "LeTanOnly")]
+	[Authorize(Policy = "LICHLAMVIEC_UPDATE")]
+	[HttpPut("{id}")]
+	public async Task<IActionResult> Update(int id, LichLamViecUpdateRequestDTO request)
+	{
+		var response = await _service.UpdateAsync(id, request);
+
+		if (!response.Success)
+			return NotFound(response);
+
+		return Ok(response);
+	}
+
+	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
 	[HttpGet("{id}")]
-	public async Task<IActionResult> GetById(int id)
+	public async Task<IActionResult> Detail(int id)
 	{
-		try
-		{
-			var result = await _service.GetByIdAsync(id);
-			if (result == null)
-				return NotFound();
+		var response = await _service.GetDetailAsync(id);
 
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = "Lỗi: " + ex.Message
-			});
-		}
+		if (!response.Success)
+			return NotFound(response);
+
+		return Ok(response);
 	}
 
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("GetByWeek")]
-    public async Task<IActionResult> GetByWeek([FromQuery] int page = 0)
-    {
-        try
-        {
-            var result = await _service.GetByWeekAsync(page);
-            if (result == null)
-                return NotFound();
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new
-            {
-                message = "Lỗi: " + ex.Message
-            });
-        }
-    }
-
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("GetAll")]
-	public async Task<IActionResult> GetAll()
+	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	[HttpGet]
+	public async Task<IActionResult> List([FromQuery] int page = 0)
 	{
-		try
-		{
-			var result = await _service.GetAllAsync();
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = "Lỗi: " + ex.Message
-			});
-		}
+		var response = await _service.GetWeekAsync(page);
+
+		if (!response.Success)
+			return BadRequest(response);
+
+		return Ok(response);
 	}
 
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("GetByNhanVien/{nhanVienID}")]
+
+	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	[HttpGet("nhan-vien/{nhanVienID}")]
 	public async Task<IActionResult> GetByNhanVien(int nhanVienID, [FromQuery] int page = 0)
 	{
-		try
-		{
-			var result = await _service.GetLichTheoTuanAsync(nhanVienID,page);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = "Lỗi: " + ex.Message
-			});
-		}
+		var response = await _service.GetWeekByNhanVienAsync(nhanVienID, page);
+
+		if (!response.Success)
+			return BadRequest(response);
+
+		return Ok(response);
 	}
 }
