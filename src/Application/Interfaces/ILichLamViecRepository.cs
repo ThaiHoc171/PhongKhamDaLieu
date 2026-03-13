@@ -5,16 +5,11 @@ namespace Application.Interfaces;
 
 public interface ILichLamViecRepository
 {
-	Task <bool> IsExitsAsync(int nhanVienID, DateTime ngay, int caLamViec);
-	Task<int> CountNhanVienTheoChucVuAsync(int chucVuId, DateTime ngay, int caLamViec);
-	Task<int?> GetChucVuIdByLichLamViecIdAsync(int lichLamViecId);
-	Task<List<LichLamViecChucVuReadModel>> GetByWeekAsync(DateTime tuNgay, DateTime denNgay);
-    Task<LichLamViec?> GetByIdAsync(int ID);
-	Task<List<LichLamViec>> GetAllAsync();
-	Task<List<LichLamViecResponseDTO>> GetByNhanVienTheoTuanAsync(int NhanVienID, DateTime tuNgay,DateTime denNgay);
-	Task<(int nhanvien, int phong)> GetNhanVienById(int id);
-	Task AddAsync(LichLamViec lich);
-	Task BeginTransactionAsync();
-	Task CommitAsync();
-	Task RollbackAsync();
+	Task<int> AddAsync(LichLamViec entity);
+	Task UpdateAsync(LichLamViec entity);
+	Task<LichLamViec?> GetByIdAsync(int id);
+	Task<List<LichLamViecReadModel>> GetWeekByNhanVienAsync(int nhanVienID, DateTime tuNgay, DateTime denNgay);
+	Task<List<LichLamViecChucVuReadModel>> GetWeekAsync(DateTime tuNgay, DateTime denNgay);
+	Task<bool> ExistsAsync(int nhanVienID, DateTime ngay, int caLamViec);
+	Task<int> CountByChucVuAsync(int chucVuId, DateTime ngay, int caLamViec);
 }

@@ -18,17 +18,6 @@ public class ThongTinCaNhanController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize(Policy = "BENHNHAN_CREATE")]
-	[HttpPost("BenhNhan")]
-	public async Task<ActionResult<ApiResponse<int>>> TaoBenhNhan([FromBody] ThongTinRequestDTO dto)
-	{
-		var result = await _service.AddBenhNhanAsync(dto);
-
-		if (!result.Success)
-			return BadRequest(result);
-
-		return CreatedAtAction(nameof(LayThongTin), new { id = result.Data }, result);
-	}
 	[Authorize(Policy = "KHACH_CREATE")]
 	[HttpPost("Khach")]
 	public async Task<ActionResult<ApiResponse<int>>> TaoKhach([FromBody] ThongTinRequestDTO dto)
