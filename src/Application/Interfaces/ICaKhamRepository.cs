@@ -6,11 +6,13 @@ public interface ICaKhamRepository
 {
 	//Xuất ca khám theo CaKhamID
 	Task<CaKham?> GetByIdAsync(int caKhamID);
-	//Xuất danh sách tất cả ca khám
-	Task<(List<CaKhamListReadModel>, int)> GetCaKhamsAsync(
+	Task<CaKhamReadModel?> GetDetailAsync(int caKhamId);
+	//Xuất danh sách tất cả ca khám	
+	Task<(List<CaKhamListReadModel>, int)> GetPagedAsync(
 		DateTime ngayKham, string trangThai, string loaiCaKham, int pageNumber, int pageSize);
-	Task<List<(int Id, string Ten)>> GetIdAndNameByStatusAsync(string trangThai, DateTime ngayKham);
-	Task<CaKhamReadModel?> GetCaKhamDetailAsync(int caKhamId);
+	Task<int> AssignAsync(DateTime tuNgay, DateTime denNgay);
+	Task<int> CountNotAssignedAsync(DateTime tuNgay, DateTime denNgay);
+
 	//Xuất danh sách theo ThongTinID
 	Task<(List<CaKhamListReadModel>, int)> GetByThongTinAsync(int thongTinID, int pageNumber, int pageSize);
 	//Đếm số ca đã có trong ngày
@@ -23,8 +25,6 @@ public interface ICaKhamRepository
     Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham);
     //Lấy ca khám gần nhất còn trống
     Task<int> GetCaKhamAsync(DateTime ngay, int khungGioId, string loaiCaKham);
-	//Lấy lịch làm việc id từ CaKhamID
-    Task<int> GetLichAsync(int CaKhamID);
     //Tạo ca khám
     Task<int> AddAsync(CaKham caKham);
 	//Update ca khám sau khi bệnh nhân đăng ký lịch

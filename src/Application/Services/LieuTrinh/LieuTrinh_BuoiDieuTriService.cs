@@ -22,14 +22,10 @@ public class LieuTrinh_BuoiDieuTriService
     public async Task TaoBuoiDieuTriAsync(TaoBuoiDieuTriDTO dto)
     {
         var caKham = await _caKhamRepo.GetByIdAsync(dto.CaKhamID);
-        if (caKham == null)
+        if (caKham == null || caKham.LichLamViecID == null)
             throw new Exception("Ca khám không hợp lệ");
 
-        var checklich = await _caKhamRepo.GetLichAsync(dto.CaKhamID);
-        if (checklich == 0)
-            throw new Exception("Không tìm thấy lịch làm việc");
-
-        var lich = await _lichLamViecRepo.GetByIdAsync(checklich);
+        var lich = await _lichLamViecRepo.GetByIdAsync(caKham.LichLamViecID.Value);
         if (lich == null)
             throw new Exception("Lịch làm việc không tồn tại");
 

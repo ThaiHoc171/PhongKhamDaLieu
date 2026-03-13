@@ -3,137 +3,98 @@ using Microsoft.AspNetCore.Mvc;
 using Application.DTOs;
 using Application.Services;
 using Application.Common;
-
 namespace API.Controllers;
-
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/cakham")]
 [Authorize]
 public class CaKhamController : ControllerBase
 {
 	private readonly CaKhamService _service;
-
 	public CaKhamController(CaKhamService service)
 	{
 		_service = service;
 	}
 
-	[Authorize(Policy = "LeTanOnly")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<int>>> TaoMoi([FromBody] TaoCaKhamDTO dto)
+	[Authorize(Policy = "LICHKHAM_CREATE")]
+	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CaKhamRequestDTO request)
 	{
-		var result = await _service.TaoCaKhamAsync(dto);
-
-		return Ok(ApiResponse<int>.SuccessResponse(
-			result,
-			"Tạo ca khám thành công"));
+		var response = await _service.AddAsync(request);
+		if (!response.Success)
+			return BadRequest(response);
+		return CreatedAtAction(nameof(GetDetail),new { id = response.Data },response);
 	}
 
-	[Authorize]
-	[HttpPut("{id}/dangky")]
-	public async Task<ActionResult<ApiResponse<object>>> DangKy(int id, [FromBody] DangKyCaKhamDTO dto)
+	[HttpPut("{id}")]
+	[Authorize(Policy = "LICHKHAM_UPDATE")]
+	public async Task<ActionResult<ApiResponse<bool>>>
+		Update(int id, [FromBody] CaKhamUpdateRequestDTO request)
 	{
-		var result = await _service.DangKyKhamAsync(id, dto);
-
-		return Ok(ApiResponse<object>.SuccessResponse(
-			null,
-			"Đăng ký ca khám thành công"));
+		var response = await _service.UpdateAsync(id, request);
+		if (!response.Success)
+			return NotFound(response);
+		return Ok(response);
 	}
 
-	[Authorize(Policy = "BacSiOnly")]
-	[HttpPut("{id}/trangthai")]
-	public async Task<ActionResult<ApiResponse<object>>> CapNhatTrangThai(int id, [FromQuery] string TrangThai)
-	{
-		await _service.UpdateTrangThaiAsync(id, TrangThai);
-
-		return Ok(ApiResponse<object>.SuccessResponse(
-			null,
-			"Cập nhật trạng thái thành công"));
-	}
-
-	[Authorize]
 	[HttpGet("{id}")]
-	public async Task<ActionResult<ApiResponse<CaKhamReadModel>>> GetById(int id)
+	[Authorize(Policy = "LICHKHAM_VIEW")]
+	public async Task<ActionResult<ApiResponse<CaKhamReadModel>>> GetDetail(int id)
 	{
-		var result = await _service.LayCaKhamTheoIdAsync(id);
-
-		if (result == null)
-			return NotFound(ApiResponse<CaKhamReadModel>
-				.Fail("Ca khám không tồn tại"));
-
-		return Ok(ApiResponse<CaKhamReadModel>
-			.SuccessResponse(result));
+		var response = await _service.GetDetailAsync(id);
+		if (!response.Success)
+			return NotFound(response);
+		return Ok(response);
 	}
 
-	[Authorize(Policy = "BacSiOrLeTan")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> GetPaged( [FromQuery] DateTime ngayKham, 
-		[FromQuery] string trangThai, [FromQuery] string loaiCaKham, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
+	[Authorize(Policy = "LICHKHAM_VIEW")]
+	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> 
+		List([FromQuery] DateTime ngayKham, [FromQuery] string trangThai,[FromQuery] string loaiCaKham,
+		[FromQuery] int pageNumber = 1,	[FromQuery] int pageSize = 15)
 	{
-		var result = await _service.GetCaKhamPagedAsync(ngayKham,trangThai,loaiCaKham,pageNumber,pageSize);
-
-		return Ok(ApiResponse<PagedResult<CaKhamListReadModel>>
-			.SuccessResponse(result));
+		var response = await _service.GetPagedAsync( ngayKham,trangThai, loaiCaKham, pageNumber,	pageSize);
+		return Ok(response);
 	}
 
-	[Authorize(Roles = "Bệnh nhân")]
-	[HttpGet("benhnhan/{thongTinID}")]
-	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> GetByBenhNhan(int thongTinID, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+	[HttpGet("search/by-thongtin/{thongTinId}")]
+	[Authorize(Policy = "LICHKHAM_VIEW")]
+	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> 
+		SearchByThongTin(int thongTinId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 	{
-		var result = await _service.GetByBenhNhanAsync(
-			thongTinID,
-			pageNumber,
-			pageSize);
-
-		return Ok(ApiResponse<PagedResult<CaKhamListReadModel>>
-			.SuccessResponse(result));
+		var response = await _service.GetByThongTinAsync(thongTinId, pageNumber, pageSize);
+		if (!response.Success)
+			return BadRequest(response);
+		return Ok(response);
 	}
 
-	[Authorize]
-	[HttpGet("kiemtra-dadangky")]
-	public async Task<ActionResult<ApiResponse<bool>>> KiemTraDaDangKy(	DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId)
+	[HttpPut("{id}/register")]
+	[Authorize(Policy = "LICHKHAM_CREATE")]
+	public async Task<ActionResult<ApiResponse<bool>>> Register(int id, [FromBody] CaKhamRegisterDTO request)
 	{
-		var result = await _service.CheckBenhNhanDaDangKyAsync(
-			ngay,
-			khungGioId,
-			loaiCaKham,
-			benhNhanId);
-
-		return Ok(ApiResponse<bool>.SuccessResponse(result));
+		var response = await _service.RegisterAsync(id, request);
+		if (!response.Success)
+			return BadRequest(response);
+		return Ok(response);
 	}
 
-	[Authorize]
-	[HttpGet("khunggio-trong")]
-	public async Task<ActionResult<ApiResponse<List<int>>>> GetKhungGioConTrong( DateTime ngayKham, string loaiCaKham)
+	[HttpPut("{id}/cancel")]
+	[Authorize(Policy = "LICHKHAM_UPDATE")]
+	public async Task<ActionResult<ApiResponse<bool>>> Cancel(int id)
 	{
-		var result = await _service.GetKhungGioConTrongAsync(ngayKham,loaiCaKham);
-
-		return Ok(ApiResponse<List<int>>
-			.SuccessResponse(result));
+		var response = await _service.CancelAsync(id);
+		if (!response.Success)
+			return BadRequest(response);
+		return Ok(response);
 	}
 
-	[Authorize]
-	[HttpGet("ca-trong")]
-	public async Task<ActionResult<ApiResponse<int>>> GetCaTrong( DateTime ngayKham, int khungGioId, string loaiCaKham)
+	[HttpPost("assign-lich")]
+	[Authorize(Policy = "LICHKHAM_UPDATE")]
+	public async Task<ActionResult<ApiResponse<AssignLichLamViecReport>>> 
+		AssignLichLamViec([FromQuery] DateTime tuNgay, [FromQuery] DateTime denNgay)
 	{
-		var result = await _service.GetCaKhamAsync(
-			ngayKham,
-			khungGioId,
-			loaiCaKham);
-
-		return Ok(ApiResponse<int>
-			.SuccessResponse(result));
-	}
-
-	[Authorize(Policy = "BacSiOrLeTan")]
-	[HttpGet("combobox")]
-	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox( DateTime ngayKham, string trangThai)
-	{
-		var result = await _service.GetComboboxAsync(
-			trangThai,
-			ngayKham);
-
-		return Ok(ApiResponse<List<NameResponseDTO>>
-			.SuccessResponse(result));
+		var response = await _service.AssignLichLamViecAsync(tuNgay, denNgay);
+		if (!response.Success)
+			return BadRequest(response);
+		return Ok(response);
 	}
 }

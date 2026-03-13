@@ -1,7 +1,6 @@
 ﻿namespace Application.DTOs;
 public class BenhNhanRequestDTO
 {
-	public int? ThongTinID { get; set; }
 	public int? TaiKhoanID { get; set; }
 	public string? HoTen { get; set; }
 	public DateTime? NgaySinh { get; set; }
