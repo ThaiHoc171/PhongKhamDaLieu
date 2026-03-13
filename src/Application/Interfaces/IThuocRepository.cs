@@ -1,23 +1,26 @@
-﻿using Domain.Entities;
-using Application.DTOs;
-
-namespace Application.Interfaces;
+﻿using Application.DTOs;
+using Domain.Entities;
 
 public interface IThuocRepository
 {
-    Task<List<ThuocListReadModel>> GetPagedAsync(int pageNumber, int pageSize);
+    //--CUD
+    Task<int> AddAsync(Thuoc entity);
+    Task UpdateAsync(Thuoc entity);
+    Task DeleteAsync(int id);
 
-    Task<int> CountAsync();
-
-    Task<List<ThuocListReadModel>> SearchAsync(string keyword);
-
-    Task<List<ThuocComboboxReadModel>> GetComboboxAsync();
-
+    //--READ
     Task<Thuoc?> GetByIdAsync(int id);
 
-    Task<List<Thuoc>> GetAllAsync();
+    Task<(List<ThuocListReadModel>, int)> GetPagedAsync(
+        int page,
+        int size
+    );
 
-    Task AddAsync(Thuoc thuoc);
+    Task<(List<ThuocListReadModel>, int)> SearchPagedAsync(
+        string keyword,
+        int page,
+        int size
+    );
 
-    Task UpdateAsync(Thuoc thuoc);
+    Task<ThuocReadModel?> GetDetailAsync(int id);
 }

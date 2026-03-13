@@ -1,15 +1,26 @@
-﻿using Domain.Entities;
-
-namespace Application.Interfaces;
+﻿using Application.DTOs;
+using Domain.Entities;
 
 public interface IThietBiRepository
 {
-	Task<List<ThietBi>> GetAllAsync();
-	Task<ThietBi?> GetByIdAsync(int id);
-	Task<List<ThietBi>> SearchByTenAsync(string tenTB);
-	Task AddAsync(ThietBi thietBi);
-	Task UpdateAsync(ThietBi thietBi);
+    //-- CUD
+    Task<int> AddAsync(ThietBi entity);
+    Task UpdateAsync(ThietBi entity);
+    Task DeleteAsync(int id);
 
-	Task<string?> GetNameByIdAsync(int id);
-	Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
+    //-- READ
+    Task<ThietBi?> GetByIdAsync(int id);
+
+    Task<(List<ThietBiListReadModel>, int)> GetPagedAsync(
+        int page,
+        int size
+    );
+
+    Task<(List<ThietBiListReadModel>, int)> SearchPagedAsync(
+        string keyword,
+        int page,
+        int size
+    );
+
+    Task<ThietBiReadModel?> GetDetailAsync(int id);
 }

@@ -1,13 +1,11 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services;
-
-namespace API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/thuoc")]
 [Authorize]
 public class ThuocController : ControllerBase
 {
@@ -18,37 +16,50 @@ public class ThuocController : ControllerBase
         _service = service;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> DanhSach(int page = 1, int size = 15)
-        => Ok(await _service.DanhSachAsync(page, size));
-
-    [HttpGet("timkiem")]
-    public async Task<IActionResult> TimKiem(string kw)
-        => Ok(await _service.TimKiemAsync(kw));
-
-    [HttpGet("combobox")]
-    public async Task<IActionResult> Combobox()
-        => Ok(await _service.ComboboxAsync());
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-        => Ok(await _service.GetByIdAsync(id));
-
     [HttpPost]
-    public async Task<IActionResult> Them(ThuocRequestDTO dto)
+    public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ThuocRequestDTO dto)
     {
-        await _service.ThemAsync(dto);
-        return Ok();
+        var result = await _service.TaoMoiAsync(dto);
+        return Ok(result);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> CapNhat(int id, ThuocRequestDTO dto)
+    public async Task<ActionResult<ApiResponse<bool>>> Update(int id, ThuocUpdateDTO dto)
     {
         var result = await _service.CapNhatAsync(id, dto);
+        return Ok(result);
+    }
 
-        if (!result)
-            return NotFound();
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
+    {
+        var result = await _service.DeleteAsync(id);
+        return Ok(result);
+    }
 
-        return Ok();
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<PagedResult<ThuocListReadModel>>>> GetPaged(
+        int pageNumber = 1,
+        int pageSize = 10)
+    {
+        var result = await _service.GetPagedAsync(pageNumber, pageSize);
+        return Ok(result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiResponse<ThuocReadModel>>> GetById(int id)
+    {
+        var result = await _service.GetByIdAsync(id);
+        return Ok(result);
+    }
+
+    [HttpGet("search")]
+    public async Task<ActionResult<ApiResponse<PagedResult<ThuocListReadModel>>>> Search(
+        string keyword,
+        int pageNumber = 1,
+        int pageSize = 10)
+    {
+        var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
+        return Ok(result);
     }
 }
