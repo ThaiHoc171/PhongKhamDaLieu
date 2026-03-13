@@ -1,14 +1,18 @@
 ﻿namespace Application.DTOs;
-
-public class LichLamViecDTO
+public class LichLamViecRequestDTO
 {
 	public int NhanVienID { get; set; }
-	public int ChucVuID { get; set; }
 	public DateTime Ngay { get; set; }
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
 }
-public class LichLamViecResponseDTO
+public class LichLamViecUpdateRequestDTO
+{
+	public DateTime Ngay { get; set; }
+	public int CaLamViec { get; set; }
+	public string? GhiChu { get; set; }
+}
+public class LichLamViecReadModel
 {
 	public int LichLamViecID { get; set; }
 	public NameResponseDTO NhanVien { get; init; } = null!;
@@ -16,28 +20,20 @@ public class LichLamViecResponseDTO
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
 }
-
 public class LichLamViecChucVuReadModel
 {
 	public int LichLamViecID { get; set; }
-	public string TenChucVu { get; set; } = null!;
-	public int PhongChucNangID { get; set; }
+	public NameResponseDTO ChucVu { get; init; } = null!;
+	public NameResponseDTO PhongChucNang { get; init; } = null!;
 	public NameResponseDTO NhanVien { get; init; } = null!;
 	public DateTime Ngay { get; set; }
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
 }
-public class LichLamViecBatchDTO
-{
-	public int Thang { get; set; }
-	public int Nam { get; set; }
-	public List<LichLamViecDTO> LichLamViecs { get; set; } = new();
-}
-
 public class WeekLichLamViecReadModel
 {
 	public int Page { get; set; }
 	public DateTime TuanBatDau { get; set; }
 	public DateTime TuanKetThuc { get; set; }
-	public List<LichLamViecResponseDTO> LichLamViecs { get; set; } = new();
+	public List<LichLamViecReadModel> LichLamViecs { get; set; } = new();
 }

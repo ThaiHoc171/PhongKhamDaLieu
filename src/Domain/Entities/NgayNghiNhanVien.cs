@@ -10,15 +10,12 @@ public class NgayNghiNhanVien
 	// Constructor tạo mới
 	public NgayNghiNhanVien(int nhanVienID, DateTime ngay, string? lyDo)
 	{
-		if (ngay.Date < DateTime.Today)
-			throw new ArgumentException("Ngày nghỉ không được là ngày trong quá khứ.");
-
+		SetDate(ngay);
 		NhanVienID = nhanVienID;
-		Ngay = ngay.Date;
 		LyDo = lyDo;
 	}
 
-	// Constructor map từ DB
+	// Constructor map DB
 	public NgayNghiNhanVien(
 		int ngayNghiID,
 		int nhanVienID,
@@ -30,8 +27,24 @@ public class NgayNghiNhanVien
 		Ngay = ngay.Date;
 		LyDo = lyDo;
 	}
-	public void CapNhatLyDo(string? lyDo)
+
+
+	public void Update(DateTime ngay, string? lyDo)
+	{
+		SetDate(ngay);
+		LyDo = lyDo;
+	}
+
+	public void UpdateCause(string? lyDo)
 	{
 		LyDo = lyDo;
+	}
+
+	private void SetDate(DateTime ngay)
+	{
+		if (ngay.Date < DateTime.Today)
+			throw new ArgumentException("Ngày nghỉ không được là ngày trong quá khứ.");
+
+		Ngay = ngay.Date;
 	}
 }
