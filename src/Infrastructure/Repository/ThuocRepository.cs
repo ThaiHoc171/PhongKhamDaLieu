@@ -15,7 +15,7 @@ public class ThuocRepository : IThuocRepository
         _connectionString = config.GetConnectionString("DefaultConnection")!;
     }
 
-    public async Task<List<ThuocListReadModel>> GetPagedAsync(int pageNumber, int pageSize)
+    public async Task<List<ThuocReadModel>> GetPagedAsync(int pageNumber, int pageSize)
     {
         const string sql = @"
             SELECT ThuocID, TenThuoc, HoatChat
@@ -23,7 +23,7 @@ public class ThuocRepository : IThuocRepository
             ORDER BY ThuocID
             OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
-        var list = new List<ThuocListReadModel>();
+        var list = new List<ThuocReadModel>();
 
         int offset = (pageNumber - 1) * pageSize;
 
@@ -39,7 +39,7 @@ public class ThuocRepository : IThuocRepository
 
         while (await reader.ReadAsync())
         {
-            list.Add(new ThuocListReadModel
+            list.Add(new ThuocReadModel
             {
                 ThuocID = reader.GetInt32(0),
                 TenThuoc = reader.GetString(1),
@@ -62,14 +62,14 @@ public class ThuocRepository : IThuocRepository
         return (int)await cmd.ExecuteScalarAsync();
     }
 
-    public async Task<List<ThuocListReadModel>> SearchAsync(string keyword)
+    public async Task<List<ThuocReadModel>> SearchAsync(string keyword)
     {
         const string sql = @"
             SELECT ThuocID, TenThuoc, HoatChat
             FROM Thuoc
             WHERE TenThuoc LIKE @kw OR HoatChat LIKE @kw";
 
-        var list = new List<ThuocListReadModel>();
+        var list = new List<ThuocReadModel>();
 
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
@@ -82,7 +82,7 @@ public class ThuocRepository : IThuocRepository
 
         while (await reader.ReadAsync())
         {
-            list.Add(new ThuocListReadModel
+            list.Add(new ThuocReadModel
             {
                 ThuocID = reader.GetInt32(0),
                 TenThuoc = reader.GetString(1),
@@ -93,14 +93,14 @@ public class ThuocRepository : IThuocRepository
         return list;
     }
 
-    public async Task<List<ThuocComboboxReadModel>> GetComboboxAsync()
+    public async Task<List<NameResponseDTO>> GetComboboxAsync()
     {
         const string sql = @"
             SELECT ThuocID, TenThuoc
             FROM Thuoc
             ORDER BY TenThuoc";
 
-        var list = new List<ThuocComboboxReadModel>();
+        var list = new List<NameResponseDTO>();
 
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
@@ -111,8 +111,8 @@ public class ThuocRepository : IThuocRepository
 
         while (await reader.ReadAsync())
         {
-            list.Add(new ThuocComboboxReadModel
-            {
+            list.Add(new NameResponseDTO
+			{
                 Id = reader.GetInt32(0),
                 Name = reader.GetString(1)
             });

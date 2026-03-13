@@ -1,114 +1,177 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-
+using Domain.Enums;
 namespace Application.Services;
-
 public class TaiKhamService
 {
-    private readonly ITaiKhamRepository _taiKhamRepo;
-    private readonly IPhienKhamRepository _phienKhamRepo;
-    private readonly ICaKhamRepository _caKhamRepo;
-
-    public TaiKhamService(ITaiKhamRepository taiKhamRepo, IPhienKhamRepository phienKhamRepo, ICaKhamRepository caKhamRepo)
-    {
-        _taiKhamRepo = taiKhamRepo;
-        _phienKhamRepo = phienKhamRepo;
-        _caKhamRepo = caKhamRepo;
-    }
-
-    public async Task TaoTaiKhamAsync(TaoTaiKhamDTO dto)
-    {
-        var pk = await _phienKhamRepo.GetBenhNhanByIdAsync(dto.PhienKhamID);
-        
-        if (pk == null)
-            throw new Exception("Phiên khám không tồn tại, không thể tạo");
-
-        var tt = await _taiKhamRepo.GetByBenhNhanIdAsync(dto.PhienKhamID);
-        if (tt != null && tt.TrangThai == "Chờ xử lý")
-            throw new Exception("Bệnh nhân còn lịch tái khám chưa xử lý xong, không thể tạo thêm.");
-        var daCoTaiKham = await _taiKhamRepo
-            .ExistsByPhienKhamAsync(dto.PhienKhamID);
-        if (daCoTaiKham)
-            throw new Exception("Phiên khám này đã được tạo tái khám");
-        if (dto.NgayDuKien.Date < DateTime.Today)
-            throw new Exception("Ngày tái khám không hợp lệ, không thể tạo");
-        int BenhNhanID = pk.Value;  
-        var tk = new TaiKham(
-            dto.PhienKhamID,
-            BenhNhanID,
-            dto.NgayDuKien,
-            dto.LyDo
-        );
-
-        await _taiKhamRepo.AddAsync(tk);
-    }
-    public async Task<bool> CapNhatAsync(int taiKhamID, CapNhatTaiKhamDTO dto)
-    {
-        var taiKham = await _taiKhamRepo.GetByIdAsync(taiKhamID);
-        if (taiKham == null) return false;
-        if (taiKham.TrangThai == "Hoàn thành")
-            throw new Exception("Tái khám đã hoàn thành, không thể chỉnh sửa.");
-        if (taiKham.CaKhamID != null && dto.CaKhamID != taiKham.CaKhamID && taiKham.TrangThai == "Chờ xử lý")
-            throw new Exception("Bệnh nhân đang có lịch tái khám, không thể chỉnh sửa.");
-        if (taiKham.CaKhamID != null && dto.CaKhamID == null)
-            throw new Exception("Không thể hủy gán ca khám");
-        taiKham.CapNhat(dto.TrangThai, dto.CaKhamID);
-        await _taiKhamRepo.UpdateAsync(taiKham);
-        return true;
-    }
-
-    public async Task<List<TaiKhamResponeDTO>> GetListByBenhNhanAsync(int benhNhanID)
-    {
-        var list = await _taiKhamRepo.GetListByBenhNhanAsync(benhNhanID);
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<List<TaiKhamResponeDTO>> LocAsync(DateTime ngayDuKien, string trangThai)
-    {
-        var list = await _taiKhamRepo.LocAsync(ngayDuKien, trangThai);
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<List<TaiKhamResponeDTO>> GetAllAsync()
-    {
-        var list = await _taiKhamRepo.GetAllAsync();
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<TaiKhamResponeDTO?> GetByIdAsync(int taiKhamID)
-    {
-        var tk = await _taiKhamRepo.GetByIdAsync(taiKhamID);
-        if(tk == null) return null;
-
-        return MapToDto(tk);
-    }
-    public async Task<TaiKhamResponeDTO?> GetByBenhNhanID(int benhNhanID)
-    {
-        var tk = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanID);
-        if (tk == null) return null;
-
-        return MapToDto(tk);
-    }
-    public async Task<TaiKhamResponeDTO?> GetIdByBenhNhanIdAsync(int benhNhanID)
-    {
-        var tk = await _taiKhamRepo
-        .GetTaiKhamChoXuLyAsync(benhNhanID);
-        if (tk == null) return null;
-
-        return MapToDto(tk);
-    }
-
-    private static TaiKhamResponeDTO MapToDto(TaiKham tk)
-    {
-        return new TaiKhamResponeDTO
-        {
-            TaiKhamID = tk.TaiKhamID,
-            PhienKhamID = tk.PhienKhamID,
-            BenhNhanID = tk.BenhNhanID,
-            NgayDuKien = tk.NgayDuKien,
-            LyDo = tk.LyDo,
-            TrangThai = tk.TrangThai,
-            CaKhamID = tk.CaKhamID,
-            NgayTao = tk.NgayTao
-        };
-    }
-
+	private readonly ITaiKhamRepository _taiKhamRepo;
+	private readonly IPhienKhamRepository _phienKhamRepo;
+	private readonly ICaKhamRepository _caKhamRepo;
+	public TaiKhamService(
+		ITaiKhamRepository taiKhamRepo,
+		IPhienKhamRepository phienKhamRepo,
+		ICaKhamRepository caKhamRepo)
+	{
+		_taiKhamRepo = taiKhamRepo;
+		_phienKhamRepo = phienKhamRepo;
+		_caKhamRepo = caKhamRepo;
+	}
+	public async Task<ApiResponse<int>> AddAsync(TaiKhamRequestDTO dto)
+	{
+		var validation = await ValidateCreate(dto);
+		if (!validation.Success)
+			return ApiResponse<int>.Fail(validation.Message!);
+		var (phienKhamId, benhNhanId) = validation.Data!;
+		var entity = new TaiKham(
+			phienKhamId,
+			benhNhanId,
+			dto.NgayDuKien,
+			dto.LyDo
+		);
+		var id = await _taiKhamRepo.AddAsync(entity);
+		return ApiResponse<int>.SuccessResponse(id);
+	}
+	public async Task<ApiResponse<bool>> UpdateAsync(int id, TaiKhamUpdateRequestDTO dto)
+	{
+		var taiKham = await _taiKhamRepo.GetByIdAsync(id);
+		if (taiKham == null)
+			return ApiResponse<bool>.Fail("Tái khám không tồn tại");
+		if (taiKham.TrangThai == TrangThaiTaiKhamEnum.DaKham)
+			return ApiResponse<bool>.Fail("Tái khám đã hoàn thành");
+		if (taiKham.CaKhamID != null &&
+			dto.CaKhamID != taiKham.CaKhamID &&
+			taiKham.TrangThai == TrangThaiTaiKhamEnum.ChoKham)
+		{
+			return ApiResponse<bool>.Fail("Không thể thay đổi ca khám khi đã có lịch");
+		}
+		if (taiKham.CaKhamID != null && dto.CaKhamID == null)
+			return ApiResponse<bool>.Fail("Không thể hủy ca khám");
+		taiKham.CapNhatCaKham(dto.CaKhamID);
+		await _taiKhamRepo.UpdateAsync(taiKham);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<TaiKhamDetailReadModel>> GetDetailAsync(int id)
+	{
+		var result = await _taiKhamRepo.GetDetailAsync(id);
+		if (result == null)
+			return ApiResponse<TaiKhamDetailReadModel>.Fail("Tái khám không tồn tại");
+		return ApiResponse<TaiKhamDetailReadModel>.SuccessResponse(result);
+	}
+	public async Task<ApiResponse<bool>> UpdateStatusAsync(int id, string trangThai)
+	{
+		var taiKham = await _taiKhamRepo.GetByIdAsync(id);
+		if (taiKham == null)
+			return ApiResponse<bool>.Fail("Tái khám không tồn tại");
+		if (string.IsNullOrEmpty(trangThai))
+			return ApiResponse<bool>.Fail("Trạng thái không hợp lệ");
+		try
+		{
+			var status = TrangThaiTaiKhamExtensions.Parse(trangThai);
+			if (taiKham.TrangThai == TrangThaiTaiKhamEnum.DaKham)
+				return ApiResponse<bool>.Fail("Tái khám đã hoàn thành");
+			taiKham.DoiTrangThai(status);
+		}
+		catch (Exception ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		await _taiKhamRepo.UpdateAsync(taiKham);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<PagedResult<TaiKhamReadModel>>> GetPagedAsync(
+		int page,
+		int size,
+		string? trangThai)
+	{
+		var (items, total) = await _taiKhamRepo.GetPagedAsync(page, size, trangThai);
+		return ApiResponse<PagedResult<TaiKhamReadModel>>.SuccessResponse(
+			new PagedResult<TaiKhamReadModel>
+			{
+				Items = items,
+				TotalCount = total,
+				PageNumber = page,
+				PageSize = size
+			});
+	}
+	public async Task<ApiResponse<PagedResult<TaiKhamReadModel>>> SearchAsync(
+		string? keyword,
+		int page,
+		int size)
+	{
+		var (items, total) = await _taiKhamRepo.SearchAsync(keyword, page, size);
+		return ApiResponse<PagedResult<TaiKhamReadModel>>.SuccessResponse(
+			new PagedResult<TaiKhamReadModel>
+			{
+				Items = items,
+				TotalCount = total,
+				PageNumber = page,
+				PageSize = size
+			});
+	}
+	public async Task<ApiResponse<PagedResult<TaiKhamReadModel>>> GetByBenhNhanAsync(
+		int benhNhanId,
+		int page,
+		int size)
+	{
+		var (items, total) =
+			await _taiKhamRepo.GetListByBenhNhanAsync(benhNhanId, page, size);
+		return ApiResponse<PagedResult<TaiKhamReadModel>>.SuccessResponse(
+			new PagedResult<TaiKhamReadModel>
+			{
+				Items = items,
+				TotalCount = total,
+				PageNumber = page,
+				PageSize = size
+			});
+	}
+	public async Task<ApiResponse<bool>> GanCaKhamAsync(int taiKhamId, int caKhamId)
+	{
+		var taiKham = await _taiKhamRepo.GetByIdAsync(taiKhamId);
+		if (taiKham == null)
+			return ApiResponse<bool>.Fail("Tái khám không tồn tại");
+		if (taiKham.TrangThai == TrangThaiTaiKhamEnum.DaKham)
+			return ApiResponse<bool>.Fail("Tái khám đã hoàn thành, không thể gán ca khám");
+		if (taiKham.CaKhamID != null)
+			return ApiResponse<bool>.Fail("Tái khám đã được gán ca khám trước đó");
+		var caKham = await _caKhamRepo.GetByIdAsync(caKhamId);
+		if (caKham == null)
+			return ApiResponse<bool>.Fail("Ca khám không tồn tại");
+		try
+		{
+			taiKham.CapNhatCaKham(caKhamId);
+		}
+		catch (Exception ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		await _taiKhamRepo.UpdateAsync(taiKham);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	private async Task<ApiResponse<(int PhienKhamID, int BenhNhanID)>> ValidateCreate(TaiKhamRequestDTO dto)
+	{
+		if (dto.PhienKhamID <= 0)
+			return ApiResponse<(int, int)>.Fail("PhienKhamID không hợp lệ");
+		if (dto.NgayDuKien.Date <= DateTime.Today)
+			return ApiResponse<(int, int)>.Fail("Ngày tái khám không hợp lệ");
+		var benhNhanId = await _phienKhamRepo.GetBenhNhanByIdAsync(dto.PhienKhamID);
+		if (benhNhanId == null)
+			return ApiResponse<(int, int)>.Fail("Phiên khám không tồn tại");
+		var taiKhamDangCho =
+			await _taiKhamRepo.GetTaiKhamDangChoAsync(benhNhanId.Value);
+		if (taiKhamDangCho != null &&
+			taiKhamDangCho.TrangThai == TrangThaiTaiKhamEnum.ChoKham)
+		{
+			return ApiResponse<(int, int)>.Fail(
+				"Bệnh nhân còn lịch tái khám chưa xử lý");
+		}
+		var exists =
+			await _taiKhamRepo.ExistsByPhienKhamAsync(dto.PhienKhamID);
+		if (exists)
+			return ApiResponse<(int, int)>.Fail(
+				"Phiên khám này đã có tái khám");
+		return ApiResponse<(int, int)>.SuccessResponse(
+			(dto.PhienKhamID, benhNhanId.Value));
+	}
 }
