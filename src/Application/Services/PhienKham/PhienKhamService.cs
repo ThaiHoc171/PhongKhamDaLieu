@@ -13,6 +13,7 @@ public class PhienKhamService
 	private readonly ILichLamViecRepository _lichRepo;
 	private readonly IBenhNhanRepository _benhNhanRepo;
 	private readonly IHoSoBenhAnRepository _hoSoBenhAnRepo;
+	private readonly INhanVienRepository _nhanVienRepo;
 	public PhienKhamService(
 		IPhienKhamRepository repo,
 		IPhienKhamBenhRepository pkBenhrepo,
@@ -20,7 +21,8 @@ public class PhienKhamService
 		IBenhNhanRepository benhNhanRepo,
 		IHoSoBenhAnRepository hoSoBenhAnRepo,
 		ICaKhamRepository caKhamRepo,
-		ILichLamViecRepository lichRepo)
+		ILichLamViecRepository lichRepo,
+		INhanVienRepository nhanVienRepo)
 	{
 		_repo = repo;
 		_pkBenhrepo = pkBenhrepo;
@@ -29,29 +31,30 @@ public class PhienKhamService
 		_hoSoBenhAnRepo = hoSoBenhAnRepo;
 		_caKhamRepo = caKhamRepo;
 		_lichRepo = lichRepo;
+		_nhanVienRepo = nhanVienRepo;
 	}
 	public async Task<ApiResponse<int>> TaoMoiAsync(int caKhamID)
 	{
 		var caKham = await _caKhamRepo.GetByIdAsync(caKhamID);
-		if (caKham == null)
+		if (caKham == null || caKham.LichLamViecID == null || caKham.ThongTinID == null)
 			return ApiResponse<int>.Fail("Ca khám không tồn tại");
 		if (caKham.TrangThai != "Đã xác nhận")
 			return ApiResponse<int>.Fail("Ca khám chưa được xác nhận hoặc đã kết thúc");
-		if (caKham.ThongTinID == null)
-			return ApiResponse<int>.Fail("Không có ThongTinID");
-		var nv = await _lichRepo.GetNhanVienById(caKham.LichLamViecID);
-		if (nv.nhanvien == 0)
-			return ApiResponse<int>.Fail("Không tìm thấy nhân viên cho ca khám");
-		if (nv.phong == 0)
-			return ApiResponse<int>.Fail("Không tìm thấy phòng chức năng");
+		
+		var lich = await _lichRepo.GetByIdAsync(caKham.LichLamViecID.Value);
+		if (lich == null)
+			return ApiResponse<int>.Fail("Không tìm thấy lịch làm việc!");
+		var nv = await _nhanVienRepo.GetByIdAsync(lich.NhanVienID);
+		if (nv == null)
+			return ApiResponse<int>.Fail("Không tìm thấy nhân viên!");
 		var bn = await _benhNhanRepo.GetDetailAsync(caKham.ThongTinID.Value);
 		if (bn == null)
 			return ApiResponse<int>.Fail("Bệnh nhân không tồn tại");
 		var entity = new PhienKham(
 			caKhamID,
 			bn.BenhNhanID,
-			nv.nhanvien,
-			nv.phong);
+			nv.NhanVienID,
+			nv.PhongChucNangID);
 		var id = await _repo.AddAsync(entity);
 		return ApiResponse<int>.SuccessResponse(id);
 	}

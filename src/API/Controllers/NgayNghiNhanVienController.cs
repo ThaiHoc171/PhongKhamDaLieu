@@ -1,4 +1,5 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,90 +7,81 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Authorize(Policy = "LeTanOnly")]
 [Route("api/ngaynghi")]
+[Authorize]
 public class NgayNghiNhanVienController : ControllerBase
 {
 	private readonly NgayNghiNhanVienService _service;
-
 	public NgayNghiNhanVienController(NgayNghiNhanVienService service)
 	{
 		_service = service;
 	}
+	// CREATE
 	[HttpPost]
-	public async Task<IActionResult> TaoNgayNghi([FromBody] NgayNghiRequestDTO dto)
+	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	public async Task<IActionResult> Create([FromBody] NgayNghiRequestDTO dto)
 	{
-		try
-		{
-			await _service.ThemNgayNghiAsync(dto);
-			return Ok(new { message = "Tạo ngày nghỉ thành công." });
-		}
-		catch (Exception ex)
-        {
-			return BadRequest(new
-			{
-				message = "Lỗi: " + ex.Message
-			});
-		}
+		var result = await _service.AddAsync(dto);
+		if (!result.Success)
+			return BadRequest(result);
+		return CreatedAtAction(
+			nameof(GetDetail),
+			new { id = result.Data },
+			result
+		);
 	}
-
-	[HttpGet("nhanvien/{nhanVienID}")]
-	public async Task<IActionResult> LayTheoNhanVien(int nhanVienID)
-	{
-		try
-		{
-			var result = await _service.GetByNhanVienAsync(nhanVienID);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = "Lỗi: " + ex.Message
-			});
-		}
-
-	}
-
+	// UPDATE
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhatLyDo(int id, [FromBody] string? lyDo)
+	[Authorize(Policy = "LICHLAMVIEC_UPDATE")]
+	public async Task<IActionResult> Update(int id, [FromBody] NgayNghiUpdateRequestDTO dto)
 	{
-		try
-		{
-			var success = await _service.CapNhatNgayNghiAsync(id, lyDo);
-
-			if (!success)
-				return NotFound(new { message = "Ngày nghỉ không tồn tại." });
-
-			return Ok(new { message = "Cập nhật lý do nghỉ thành công." });
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = "Lỗi: " + ex.Message
-			});
-		}
+		var result = await _service.UpdateAsync(id, dto);
+		if (!result.Success)
+			return NotFound(result);
+		return Ok(result);
 	}
-	[HttpGet("thang")]
-	public async Task<IActionResult> GetByMonth(int? thang, int? nam)
+	// DETAIL
+	[HttpGet("{id}")]
+	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	public async Task<IActionResult> GetDetail(int id)
+	{
+		var result = await _service.GetDetailAsync(id);
+		if (!result.Success)
+			return NotFound(result);
+		return Ok(result);
+	}
+	// LIST BY NHANVIEN
+	[HttpGet("nhanvien/{nhanVienID}")]
+	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	public async Task<IActionResult> GetByNhanVien(int nhanVienID)
+	{
+		var result = await _service.GetByNhanVienAsync(nhanVienID);
+		if (!result.Success)
+			return BadRequest(result);
+		return Ok(result);
+	}
+	// LIST BY MONTH
+	[HttpGet("month")]
+	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	public async Task<IActionResult> GetByMonth([FromQuery] int? thang,	[FromQuery] int? nam)
 	{
 		var now = DateTime.Now;
-
 		int thangValue = thang ?? now.Month;
 		int namValue = nam ?? now.Year;
-
-		try
-		{
-			var result = await _service.GetByMonthAsync(thangValue, namValue);
-			return Ok(result);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(new
-			{
-				message = "Lỗi: " + ex.Message
-			});
-		}
+		var result = await _service.GetByMonthAsync(thangValue, namValue);
+		if (!result.Success)
+			return BadRequest(result);
+		return Ok(result);
+	}
+	// IMPORT EXCEL
+	[HttpPost("import")]
+	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	public async Task<IActionResult> ImportExcel(IFormFile file)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
+		using var stream = file.OpenReadStream();
+		var result = await _service.ImportExcelAsync(stream);
+		return Ok(result);
 	}
 }

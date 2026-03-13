@@ -22,39 +22,27 @@ public class BenhNhanService
 	public async Task<ApiResponse<int>> AddAsync(BenhNhanRequestDTO dto)
 	{
 		int thongTinID;
+		if (string.IsNullOrWhiteSpace(dto.HoTen))
+			return ApiResponse<int>.Fail("Phải cung cấp họ tên");
 
-		if (dto.ThongTinID.HasValue)
-		{
-			var existing = await _thongTinRepo.GetByIdAsync(dto.ThongTinID.Value);
+		if (string.IsNullOrWhiteSpace(dto.SDT))
+			return ApiResponse<int>.Fail("Phải cung cấp số điện thoại");
+		if (string.IsNullOrWhiteSpace(dto.DiaChi))
+			return ApiResponse<int>.Fail("Phải cung địa chỉ");
 
-			if (existing == null)
-				return ApiResponse<int>.Fail("Thông tin cá nhân không tồn tại");
+		var thongTin = new ThongTinCaNhan(
+			taiKhoanID: dto.TaiKhoanID,
+			hoTen: dto.HoTen,
+			ngaySinh: dto.NgaySinh,
+			gioiTinh: GioiTinhExtensions.ParseGioiTinhOrDefault(dto.GioiTinh),
+			sdt: dto.SDT,
+			emailLienHe: dto.EmailLienHe,
+			diaChi: dto.DiaChi,
+			avatar: dto.Avatar,
+			loai: LoaiThongTinEnum.BenhNhan
+		);
 
-			thongTinID = existing.ThongTinID;
-		}
-		else
-		{
-			if (string.IsNullOrWhiteSpace(dto.HoTen))
-				return ApiResponse<int>.Fail("Phải cung cấp họ tên");
-
-			if (string.IsNullOrWhiteSpace(dto.SDT))
-				return ApiResponse<int>.Fail("Phải cung cấp số điện thoại");
-
-			var thongTin = new ThongTinCaNhan(
-				taiKhoanID: dto.TaiKhoanID,
-				hoTen: dto.HoTen,
-				ngaySinh: dto.NgaySinh,
-				gioiTinh: GioiTinhExtensions.ParseGioiTinhOrDefault(dto.GioiTinh),
-				sdt: dto.SDT,
-				emailLienHe: dto.EmailLienHe,
-				diaChi: dto.DiaChi,
-				avatar: dto.Avatar,
-				loai: LoaiThongTinEnum.BenhNhan
-			);
-
-			thongTinID = await _thongTinRepo.AddAsync(thongTin);
-		}
-
+		thongTinID = await _thongTinRepo.AddAsync(thongTin);
 		var exists = await _benhNhanRepo.ExistsByThongTinIdAsync(thongTinID);
 
 		if (exists)

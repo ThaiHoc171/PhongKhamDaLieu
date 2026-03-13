@@ -1,33 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.DTOs;
 
-namespace Application.DTOs;
-
-public class TaoTaiKhamDTO
+public class TaiKhamRequestDTO
 {
     public int PhienKhamID { get; set; }
     public DateTime NgayDuKien { get; set; }
     public string? LyDo { get; set; }
 }
 
-public class CapNhatTaiKhamDTO
+public class TaiKhamUpdateRequestDTO
 {
     public string? TrangThai { get; set; }
     public int? CaKhamID { get; set; }
 }
 
-public class TaiKhamResponeDTO
+public class TaiKhamReadModel
 {
     public int TaiKhamID { get; set; }
-    public int PhienKhamID { get; set; }
-    public int BenhNhanID { get; set; }
+    public NameResponseDTO BenhNhan { get; set; } = default!;
     public DateTime NgayDuKien { get; set; }
     public string? LyDo { get; set; }
     public string? TrangThai { get; set; }
-    public int? CaKhamID { get; set; }
-    public DateTime NgayTao { get; set; }
+}
+public class TaiKhamDetailReadModel
+{
+	public int TaiKhamID { get; set; }
+	public int PhienKhamID { get; set; }
+	public NameResponseDTO BenhNhan { get; set; } = default!;
+	public DateTime NgayDuKien { get; set; }
+	public string? LyDo { get; set; }
+	public string? TrangThai { get; set; }
+	public int? CaKhamID { get; set; }
+	public DateTime NgayTao { get; set; }
 }
 

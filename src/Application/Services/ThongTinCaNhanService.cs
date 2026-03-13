@@ -3,7 +3,6 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using Microsoft.Extensions.Configuration;
 namespace Application.Services;
 public class ThongTinCaNhanService
 {
@@ -29,22 +28,6 @@ public class ThongTinCaNhanService
 			dto.DiaChi,
 			dto.Avatar,
 			LoaiThongTinEnum.Khach,
-			dto.TaiKhoanID
-		);
-		var id = await _repo.AddAsync(entity);
-		return ApiResponse<int>.SuccessResponse(id);
-	}
-	public async Task<ApiResponse<int>> AddBenhNhanAsync(ThongTinRequestDTO dto)
-	{
-		var entity = new ThongTinCaNhan(
-			dto.HoTen,
-			dto.NgaySinh,
-			ParseGioiTinh(dto.GioiTinh),
-			dto.SDT,
-			dto.EmailLienHe,
-			dto.DiaChi,
-			dto.Avatar,
-			LoaiThongTinEnum.BenhNhan,
 			dto.TaiKhoanID
 		);
 		var id = await _repo.AddAsync(entity);

@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using Application.Interfaces;
 using Application.DTOs;
-using System.Collections.Generic;
+using Domain.Enums;
 
 namespace Application.Services;
 public class LieuTrinhDieuTriService
@@ -28,7 +28,7 @@ public class LieuTrinhDieuTriService
         int benhNhanID = benhNhanId.Value;
 
         var tontai = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanID);
-        if (tontai != null && tontai.TrangThai == "Chờ xử lý")
+        if (tontai != null && tontai.TrangThai == TrangThaiTaiKhamEnum.ChoKham)
             throw new Exception("Bệnh nhân đang có lịch tái khám, không thể tạo liệu trình.");
 
         var dangDieuTri = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
