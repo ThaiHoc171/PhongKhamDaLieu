@@ -1,98 +1,128 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace Presentation.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/taikham")]
 [Authorize]
-
 public class TaiKhamController : ControllerBase
 {
-    private readonly TaiKhamService _service;
+	private readonly TaiKhamService _service;
 
-    public TaiKhamController(TaiKhamService service)
-    {
-        _service = service;
-    }
+	public TaiKhamController(TaiKhamService service)
+	{
+		_service = service;
+	}
 
-	[Authorize(Policy = "LeTanOnly")]
-	[HttpGet]
-    public async Task<IActionResult> LayDanhSach()
-    {
-        var result = await _service.GetAllAsync();
-        return Ok(result);
-    }
-
-	[Authorize(Policy = "BacSiOrLeTan")]
-	[HttpGet("{id:int}")]
-    public async Task<IActionResult> LayTheoId(int id)
-    {
-        var result = await _service.GetByIdAsync(id);
-        if (result == null)
-            return NotFound(new { message = "Lịch tái khám không tồn tại." });
-
-        return Ok(result);
-    }
-
-	[Authorize]
-	[HttpGet("benhnhan/{benhNhanId:int}")]
-    public async Task<IActionResult> LayTheoBenhNhanId(int benhNhanId)
-    {
-        var result = await _service.GetListByBenhNhanAsync(benhNhanId);
-        if (result == null)
-            return NotFound(new { message = "Bệnh nhân không tồn tại hoặc chưa có lịch tái khám." });
-
-        return Ok(result);
-    }
-    [Authorize]
-    [HttpGet("benhnhan/{benhNhanId:int}/pending")]
-    public async Task<IActionResult> LayTaiKhamChoXuLy(int benhNhanId)
-    {
-        var taiKhamId = await _service.GetIdByBenhNhanIdAsync(benhNhanId);
-
-        if (taiKhamId == null)
-            return NotFound(new { message = "Không có lịch tái khám chờ xử lý." });
-
-        return Ok(new
-        {
-            taiKhamId = taiKhamId
-        });
-    }
-
-    [Authorize(Policy = "LeTanOnly")]
-	[HttpGet("filter")]
-    public async Task<IActionResult> Loc(DateTime ngayDuKien, string trangThai)
-    {
-        var result = await _service.LocAsync(ngayDuKien, trangThai);
-        if (result == null)
-            return NotFound(new { message = "Ngày dự kiến hoặc trạng thái không tồn tại." });
-
-        return Ok(result);
-    }
-
-	[Authorize(Policy = "BacSiOnly")]
+	[Authorize(Policy = "PHIENKHAM_CREATE")]
 	[HttpPost]
-    public async Task<IActionResult> Them([FromBody] TaoTaiKhamDTO dto)
-    {
-        await _service.TaoTaiKhamAsync(dto);
-        return Ok(new { message = "Thêm lịch tái khám thành công." });
-    }
+	public async Task<ActionResult<ApiResponse<int>>> Create(
+		[FromBody] TaiKhamRequestDTO dto)
+	{
+		var result = await _service.AddAsync(dto);
 
-	[Authorize]
+		if (!result.Success)
+			return BadRequest(result);
+
+		return CreatedAtAction(
+			nameof(GetDetail),
+			new { id = result.Data },
+			result);
+	}
+
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}")]
-    public async Task<IActionResult> CapNhat(
-        int id,
-        [FromBody] CapNhatTaiKhamDTO dto)
-    {
-        var result = await _service.CapNhatAsync(id, dto);
+	public async Task<ActionResult<ApiResponse<bool>>> Update(
+		int id,
+		[FromBody] TaiKhamUpdateRequestDTO dto)
+	{
+		var result = await _service.UpdateAsync(id, dto);
 
-        if (!result)
-            return NotFound(new { Message = "Lịch tái khám không tồn tại" });
+		if (!result.Success)
+			return BadRequest(result);
 
-        return Ok(new { Message = "Cập nhật lịch tái khám thành công" });
-    }
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[HttpPut("{id}/status")]
+	public async Task<ActionResult<ApiResponse<bool>>> UpdateStatus(
+		int id,
+		[FromQuery] string trangThai)
+	{
+		var result = await _service.UpdateStatusAsync(id, trangThai);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[HttpPut("{id}/cakham/{caKhamId}")]
+	public async Task<ActionResult<ApiResponse<bool>>> AssignCaKham(
+		int id,
+		int caKhamId)
+	{
+		var result = await _service.GanCaKhamAsync(id, caKhamId);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[HttpGet("{id}")]
+	public async Task<ActionResult<ApiResponse<TaiKhamDetailReadModel>>> GetDetail(
+		int id)
+	{
+		var result = await _service.GetDetailAsync(id);
+
+		if (!result.Success)
+			return NotFound(result);
+
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[HttpGet]
+	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhamReadModel>>>> GetPaged(
+		[FromQuery] int page = 1,
+		[FromQuery] int size = 10,
+		[FromQuery] string? trangThai = null)
+	{
+		var result = await _service.GetPagedAsync(page, size, trangThai);
+
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[HttpGet("search")]
+	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhamReadModel>>>> Search(
+		[FromQuery] string? keyword,
+		[FromQuery] int page = 1,
+		[FromQuery] int size = 10)
+	{
+		var result = await _service.SearchAsync(keyword, page, size);
+
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[HttpGet("benhnhan/{benhNhanId}")]
+	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhamReadModel>>>> GetByBenhNhan(
+		int benhNhanId,
+		[FromQuery] int page = 1,
+		[FromQuery] int size = 10)
+	{
+		var result =
+			await _service.GetByBenhNhanAsync(benhNhanId, page, size);
+
+		return Ok(result);
+	}
 }
