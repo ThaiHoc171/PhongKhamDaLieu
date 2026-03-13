@@ -11,8 +11,10 @@ using Services;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using OfficeOpenXml;
 
 
+ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

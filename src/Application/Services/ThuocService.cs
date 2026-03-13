@@ -1,13 +1,10 @@
 ﻿using Application.Common;
 using Application.DTOs;
 using Domain.Entities;
-
 namespace Application.Services;
-
 public class ThuocService
 {
     private readonly IThuocRepository _repo;
-
     public ThuocService(IThuocRepository repo)
     {
         _repo = repo;
@@ -23,9 +20,9 @@ public class ThuocService
     }
 
     public async Task<ApiResponse<bool>> CapNhatAsync(int id, ThuocUpdateDTO dto)
+
     {
         var entity = await _repo.GetByIdAsync(id);
-
         if (entity == null)
             return ApiResponse<bool>.Fail("Không tìm thấy thuốc");
 
