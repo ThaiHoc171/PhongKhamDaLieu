@@ -1,77 +1,79 @@
-﻿using Application.DTOs;
-using Application.Interfaces;
+﻿using Application.Common;
+using Application.DTOs;
 using Domain.Entities;
 
 namespace Application.Services;
 
 public class ThietBiService
 {
-	private readonly IThietBiRepository _repo;
+    private readonly IThietBiRepository _repo;
 
-	public ThietBiService(IThietBiRepository repo)
-	{
-		_repo = repo;
-	}
+    public ThietBiService(IThietBiRepository repo)
+    {
+        _repo = repo;
+    }
 
-	// Lấy tất cả thiết bị
-	public async Task<List<ThietBiResponseDTO>> LayTatCaAsync()
-	{
-		var list = await _repo.GetAllAsync();
-		return list.Select(MapToResponse).ToList();
-	}
+    public async Task<ApiResponse<int>> TaoMoiAsync(ThietBiRequestDTO dto)
+    {
+        var entity = new ThietBi(dto.TenTB, dto.LoaiTB);
 
-	// Lấy theo ID
-	public async Task<ThietBiResponseDTO?> LayTheoIdAsync(int id)
-	{
-		var tb = await _repo.GetByIdAsync(id);
-		if (tb == null)
-			return null;
+        var id = await _repo.AddAsync(entity);
 
-		return MapToResponse(tb);
-	}
+        return ApiResponse<int>.SuccessResponse(id);
+    }
 
-	// Tìm theo tên
-	public async Task<List<ThietBiResponseDTO>> TimTheoTenAsync(string tenTB)
-	{
-		var list = await _repo.SearchByTenAsync(tenTB);
-		return list.Select(MapToResponse).ToList();
-	}
+    public async Task<ApiResponse<bool>> CapNhatAsync(int id, ThietBiUpdateDTO dto)
+    {
+        var entity = await _repo.GetByIdAsync(id);
 
-	// Thêm mới
-	public async Task ThemAsync(ThietBiRequestDTO dto)
-	{
-		var tb = new ThietBi(dto.TenTB, dto.LoaiTB);
-		await _repo.AddAsync(tb);
-	}
+        if (entity == null)
+            return ApiResponse<bool>.Fail("Không tìm thấy thiết bị");
 
-	// Cập nhật thông tin
-	public async Task<bool> CapNhatAsync(int id, ThietBiRequestDTO dto)
-	{
-		var tb = await _repo.GetByIdAsync(id);
-		if (tb == null)
-			return false;
+        entity.CapNhat(dto.TenTB, dto.LoaiTB);
 
-		tb.CapNhat(dto.TenTB, dto.LoaiTB);
-		await _repo.UpdateAsync(tb);
+        await _repo.UpdateAsync(entity);
 
-		return true;
-	}
-	public async Task<List<NameResponseDTO>> GetComboboxAsync()
-	{
-		var list = await _repo.GetIdAndNameAsync();
-		return list.Select(e => new NameResponseDTO
-		{
-			Id = e.Id,
-			Name = e.Ten
-		}).ToList();
-	}
+        return ApiResponse<bool>.SuccessResponse(true);
+    }
 
-	// Map Entity → DTO
-	private static ThietBiResponseDTO MapToResponse(ThietBi tb)
-		=> new()
-		{
-			Id = tb.Id,
-			TenTB = tb.TenTB,
-			LoaiTB = tb.LoaiTB
-		};
+    public async Task<ApiResponse<bool>> DeleteAsync(int id)
+    {
+        await _repo.DeleteAsync(id);
+        return ApiResponse<bool>.SuccessResponse(true);
+    }
+
+    public async Task<ApiResponse<PagedResult<ThietBiListReadModel>>> GetPagedAsync(int pageNumber, int pageSize)
+    {
+        var (items, totalCount) =
+            await _repo.GetPagedAsync(pageNumber, pageSize);
+        return ApiResponse<PagedResult<ThietBiListReadModel>>.SuccessResponse(
+            new PagedResult<ThietBiListReadModel>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            });
+    }
+
+    public async Task<ApiResponse<ThietBiReadModel>> GetByIdAsync(int id)
+    {
+        var result = await _repo.GetDetailAsync(id);
+
+        return ApiResponse<ThietBiReadModel>.SuccessResponse(result);
+    }
+
+    public async Task<ApiResponse<PagedResult<ThietBiListReadModel>>> SearchAsync(string keyword, int pageNumber, int pageSize)
+    {
+        var (items, totalCount) =
+            await _repo.SearchPagedAsync(keyword, pageNumber, pageSize);
+        return ApiResponse<PagedResult<ThietBiListReadModel>>.SuccessResponse(
+            new PagedResult<ThietBiListReadModel>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            });
+    }
 }

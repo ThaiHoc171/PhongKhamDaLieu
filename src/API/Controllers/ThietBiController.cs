@@ -1,75 +1,65 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers;
-[Authorize(Roles = "Admin,Nhân viên")]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/thietbi")]
+[Authorize]
 public class ThietBiController : ControllerBase
 {
-	private readonly ThietBiService _service;
+    private readonly ThietBiService _service;
 
-	public ThietBiController(ThietBiService service)
-	{
-		_service = service;
-	}
+    public ThietBiController(ThietBiService service)
+    {
+        _service = service;
+    }
 
-	// GET: api/ThietBi
-	[HttpGet]
-	public async Task<IActionResult> LayTatCa()
-	{
-		var result = await _service.LayTatCaAsync();
-		return Ok(result);
-	}
+    [HttpPost]
+    public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ThietBiRequestDTO dto)
+    {
+        var result = await _service.TaoMoiAsync(dto);
+        return Ok(result);
+    }
 
-	// GET: api/ThietBi/{id}
-	[HttpGet("{id}")]
-	public async Task<IActionResult> LayTheoId(int id)
-	{
-		var result = await _service.LayTheoIdAsync(id);
-		if (result == null)
-			return NotFound(new { message = "Thiết bị không tồn tại." });
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> Update(int id, ThietBiUpdateDTO dto)
+    {
+        var result = await _service.CapNhatAsync(id, dto);
+        return Ok(result);
+    }
 
-		return Ok(result);
-	}
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
+    {
+        var result = await _service.DeleteAsync(id);
+        return Ok(result);
+    }
 
-	// GET: api/ThietBi/timkiem?tenTB=...
-	[HttpGet("timkiem")]
-	public async Task<IActionResult> TimTheoTen([FromQuery] string tenTB)
-	{
-		if (string.IsNullOrWhiteSpace(tenTB))
-			return BadRequest(new { message = "Tên thiết bị không hợp lệ." });
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<PagedResult<ThietBiListReadModel>>>> GetPaged(
+        int pageNumber = 1,
+        int pageSize = 10)
+    {
+        var result = await _service.GetPagedAsync(pageNumber, pageSize);
+        return Ok(result);
+    }
 
-		var result = await _service.TimTheoTenAsync(tenTB);
-		return Ok(result);
-	}
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiResponse<ThietBiReadModel>>> GetById(int id)
+    {
+        var result = await _service.GetByIdAsync(id);
+        return Ok(result);
+    }
 
-	// POST: api/ThietBi
-	[Authorize(Roles = "Admin")]
-	[HttpPost]
-	public async Task<IActionResult> Them([FromBody] ThietBiRequestDTO dto)
-	{
-		await _service.ThemAsync(dto);
-		return Ok(new { message = "Thêm thiết bị thành công." });
-	}
-
-	// PUT: api/ThietBi/{id}
-	[Authorize(Roles = "Admin")]
-	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id, [FromBody] ThietBiRequestDTO dto)
-	{
-		var success = await _service.CapNhatAsync(id, dto);
-		if (!success)
-			return NotFound(new { message = "Thiết bị không tồn tại." });
-
-		return Ok(new { message = "Cập nhật thiết bị thành công." });
-	}
-	[Authorize(Roles = "Admin")]
-	[HttpGet("combobox")]
-	public async Task<IActionResult> GetComboboxAsync()
-	{
-		return Ok(await _service.GetComboboxAsync());
-	}
+    [HttpGet("search")]
+    public async Task<ActionResult<ApiResponse<PagedResult<ThietBiListReadModel>>>> Search(
+        string keyword,
+        int pageNumber = 1,
+        int pageSize = 10)
+    {
+        var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
+        return Ok(result);
+    }
 }

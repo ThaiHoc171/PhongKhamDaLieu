@@ -1,5 +1,5 @@
-﻿using Application.DTOs;
-using Application.Interfaces;
+﻿using Application.Common;
+using Application.DTOs;
 using Domain.Entities;
 
 namespace Application.Services;
@@ -13,59 +13,66 @@ public class ThuocService
         _repo = repo;
     }
 
-    public async Task<PagedResult<ThuocListReadModel>> DanhSachAsync(int page, int size)
-    {
-        var items = await _repo.GetPagedAsync(page, size);
-        var total = await _repo.CountAsync();
-
-        return new PagedResult<ThuocListReadModel>
-        {
-            Items = items,
-            TotalCount = total,
-            PageNumber = page,
-            PageSize = size
-        };
-    }
-
-    public async Task<List<ThuocListReadModel>> TimKiemAsync(string keyword)
-    {
-        return await _repo.SearchAsync(keyword);
-    }
-
-    public async Task<List<ThuocComboboxReadModel>> ComboboxAsync()
-    {
-        return await _repo.GetComboboxAsync();
-    }
-
-    public async Task<Thuoc?> GetByIdAsync(int id)
-    {
-        return await _repo.GetByIdAsync(id);
-    }
-
-    public async Task ThemAsync(ThuocRequestDTO dto)
+    public async Task<ApiResponse<int>> TaoMoiAsync(ThuocRequestDTO dto)
     {
         var entity = new Thuoc(dto.TenThuoc, dto.HoatChat);
 
-        var ds = await _repo.GetAllAsync();
-        entity.KiemTraTrungTen(ds);
+        var id = await _repo.AddAsync(entity);
 
-        await _repo.AddAsync(entity);
+        return ApiResponse<int>.SuccessResponse(id);
     }
 
-    public async Task<bool> CapNhatAsync(int id, ThuocRequestDTO dto)
+    public async Task<ApiResponse<bool>> CapNhatAsync(int id, ThuocUpdateDTO dto)
     {
         var entity = await _repo.GetByIdAsync(id);
 
         if (entity == null)
-            return false;
+            return ApiResponse<bool>.Fail("Không tìm thấy thuốc");
 
         entity.CapNhat(dto.TenThuoc, dto.HoatChat);
 
-        var ds = await _repo.GetAllAsync();
-        entity.KiemTraTrungTen(ds);
-
         await _repo.UpdateAsync(entity);
 
-        return true;
+        return ApiResponse<bool>.SuccessResponse(true);
+    }
+
+    public async Task<ApiResponse<bool>> DeleteAsync(int id)
+    {
+        await _repo.DeleteAsync(id);
+        return ApiResponse<bool>.SuccessResponse(true);
+    }
+
+    public async Task<ApiResponse<PagedResult<ThuocListReadModel>>> GetPagedAsync(int pageNumber, int pageSize)
+    {
+        var (items, totalCount) =
+            await _repo.GetPagedAsync(pageNumber, pageSize);
+        return ApiResponse<PagedResult<ThuocListReadModel>>.SuccessResponse(
+            new PagedResult<ThuocListReadModel>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            });
+    }
+
+    public async Task<ApiResponse<ThuocReadModel>> GetByIdAsync(int id)
+    {
+        var result = await _repo.GetDetailAsync(id);
+
+        return ApiResponse<ThuocReadModel>.SuccessResponse(result);
+    }
+
+    public async Task<ApiResponse<PagedResult<ThuocListReadModel>>> SearchAsync(string keyword, int pageNumber, int pageSize)
+    {
+        var (items, totalCount) = await _repo.SearchPagedAsync(keyword, pageNumber, pageSize);
+        return ApiResponse<PagedResult<ThuocListReadModel>>.SuccessResponse(
+            new PagedResult<ThuocListReadModel>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            });
     }
 }
