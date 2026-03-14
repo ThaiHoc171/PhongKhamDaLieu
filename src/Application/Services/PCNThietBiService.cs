@@ -48,7 +48,7 @@ public class PCNThietBiService
 
 	private async Task<PCNThietBiResponseDTO> MapAsync(PCNThietBi e)
 	{
-		var tenThietBi = await _tbRepository.GetNameByIdAsync(e.ThietBiID);
+		var tb = await _tbRepository.GetByIdAsync(e.ThietBiID);
 
 		return new PCNThietBiResponseDTO
 		{
@@ -57,7 +57,7 @@ public class PCNThietBiService
 			ThietBi = new NameResponseDTO
 			{
 				Id = e.ThietBiID,
-				Name = tenThietBi
+				Name = tb.TenTB
 			},
 			TongSoLuong = e.TongSoLuong
 		};
