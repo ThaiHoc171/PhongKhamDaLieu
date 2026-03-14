@@ -2,16 +2,17 @@
 using Application.Interfaces;
 using Application.Repository;
 using Application.Services;
+using Domain.Entities;
 using Infrastructure.Repositories;
 using Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OfficeOpenXml;
 using Services;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
-using OfficeOpenXml;
 
 
 ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");
@@ -117,6 +118,7 @@ builder.Services.AddAuthorization(options =>
 		"NHANVIEN_VIEW","NHANVIEN_CREATE","NHANVIEN_UPDATE","NHANVIEN_DELETE",
 
 		"BENHNHAN_VIEW","BENHNHAN_CREATE","BENHNHAN_UPDATE","BENHNHAN_DELETE",
+
 		"KHACH_VIEW", "KHACH_CREATE",
 
 		"LICHLAMVIEC_VIEW","LICHLAMVIEC_CREATE","LICHLAMVIEC_UPDATE","LICHLAMVIEC_DELETE",
@@ -124,6 +126,11 @@ builder.Services.AddAuthorization(options =>
 		"LICHKHAM_VIEW","LICHKHAM_CREATE","LICHKHAM_UPDATE","LICHKHAM_DELETE",
 
 		"PHIENKHAM_VIEW","PHIENKHAM_CREATE","PHIENKHAM_UPDATE",
+
+		"THIETBI_VIEW","THIETBI_CREATE","THIETBI_UPDATE",
+
+		"THUOC_VIEW","THUOC_CREATE","THUOC_UPDATE",
+		
 
 		"HOSO_VIEW","HOSO_CREATE","HOSO_UPDATE",
 
