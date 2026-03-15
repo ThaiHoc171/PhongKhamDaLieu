@@ -1,5 +1,4 @@
 ﻿namespace Domain.Enums;
-
 public enum TrangThaiKhamEnum
 {
 	DangCho,

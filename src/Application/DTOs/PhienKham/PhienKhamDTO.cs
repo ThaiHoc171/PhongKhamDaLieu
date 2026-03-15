@@ -1,5 +1,4 @@
 ﻿namespace Application.DTOs;
-
 public class PhienKhamUpdateDTO
 {
 	public string? TrieuChung { get; set; }

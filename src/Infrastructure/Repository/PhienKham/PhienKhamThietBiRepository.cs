@@ -3,38 +3,30 @@ using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-
 namespace Infrastructure.Repository;
-
 public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 {
 	private readonly string _connectionString;
-
 	public PhienKhamThietBiRepository(IConfiguration config)
 	{
 		_connectionString = config.GetConnectionString("DefaultConnection")
 			?? throw new ArgumentNullException("Connection string not found");
 	}
-
 	public async Task AddAsync(PhienKhamThietBi pk)
 	{
 		const string sql = @"
 			INSERT INTO PhienKham_ThietBi (PhienKhamID, ChiTietID, GhiChu)
 			VALUES (@PhienKhamID, @ChiTietID, @GhiChu)
 		";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.Add("@PhienKhamID", System.Data.SqlDbType.Int).Value = pk.PhienKhamID;
 		cmd.Parameters.Add("@ChiTietID", System.Data.SqlDbType.Int).Value = pk.ChiTietID;
 		cmd.Parameters.Add("@GhiChu", System.Data.SqlDbType.NVarChar).Value =
 			(object?)pk.GhiChu ?? DBNull.Value;
-
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-
 	public async Task<List<PhienKhamThietBiReadModel>> GetByPhienKhamAsync(int phienKhamID)
 	{
 		const string sql = @"
@@ -50,17 +42,12 @@ public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 			WHERE pktb.PhienKhamID = @PhienKhamID
 			ORDER BY tb.TenTB
 		";
-
 		var list = new List<PhienKhamThietBiReadModel>();
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.Add("@PhienKhamID", System.Data.SqlDbType.Int).Value = phienKhamID;
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		while (await reader.ReadAsync())
 		{
 			list.Add(new PhienKhamThietBiReadModel
@@ -71,10 +58,8 @@ public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 				GhiChu = reader.IsDBNull(3) ? null : reader.GetString(3)
 			});
 		}
-
 		return list;
 	}
-
 	public async Task<PhienKhamThietBi?> GetByPhienKhamAndChiTietAsync(int phienKhamID, int chiTietID)
 	{
 		const string sql = @"
@@ -86,22 +71,16 @@ public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 			WHERE PhienKhamID = @PhienKhamID
 			  AND ChiTietID = @ChiTietID
 		";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.Add("@PhienKhamID", System.Data.SqlDbType.Int).Value = phienKhamID;
 		cmd.Parameters.Add("@ChiTietID", System.Data.SqlDbType.Int).Value = chiTietID;
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		if (!await reader.ReadAsync())
 			return null;
-
 		return MapToEntity(reader);
 	}
-
 	public async Task<PhienKhamThietBi?> GetByIdAsync(int id)
 	{
 		const string sql = @"
@@ -112,21 +91,15 @@ public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 			FROM PhienKham_ThietBi
 			WHERE PhienKham_ThietBiID = @ID
 		";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.Add("@ID", System.Data.SqlDbType.Int).Value = id;
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		if (!await reader.ReadAsync())
 			return null;
-
 		return MapToEntity(reader);
 	}
-
 	public async Task UpdateAsync(PhienKhamThietBi pk)
 	{
 		const string sql = @"
@@ -134,19 +107,14 @@ public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 			SET GhiChu = @GhiChu
 			WHERE PhienKham_ThietBiID = @ID
 		";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.Add("@GhiChu", System.Data.SqlDbType.NVarChar).Value =
 			(object?)pk.GhiChu ?? DBNull.Value;
-
 		cmd.Parameters.Add("@ID", System.Data.SqlDbType.Int).Value = pk.PhienKhamThietBiID;
-
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-
 	private static PhienKhamThietBi MapToEntity(SqlDataReader reader)
 	{
 		return new PhienKhamThietBi(

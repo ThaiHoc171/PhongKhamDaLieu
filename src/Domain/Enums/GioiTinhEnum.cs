@@ -1,6 +1,4 @@
-﻿
-namespace Domain.Enums;
-
+﻿namespace Domain.Enums;
 public enum GioiTinhEnum
 {
 	Nam,
@@ -29,8 +27,6 @@ public static class GioiTinhExtensions
 	{
 		if (string.IsNullOrWhiteSpace(value))
 			return GioiTinhEnum.Khac;
-
 		return GioiTinhExtensions.ToEnum(value);
 	}
-
 }

@@ -1,15 +1,13 @@
-﻿using Domain.Entities;
-
+﻿using Application.DTOs;
+using Domain.Entities;
 namespace Application.Interfaces;
-
 public interface IPhongChucNangRepository
 {
-	Task<List<PhongChucNang>> GetAllAsync();
-	Task<List<PhongChucNang>> SearchAsync(string keyword);
 	Task<PhongChucNang?> GetByIdAsync(int id);
-	Task AddAsync(PhongChucNang phong);
+	Task<(List<PhongChucNangListReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai);
+	Task<(List<PhongChucNangListReadModel>, int)> SearchPagedAsync(string? keyword, int page, int size);
+	Task<PhongChucNangReadModel?> GetDetailAsync(int id);
+	Task<int> AddAsync(PhongChucNang phong);
 	Task UpdateAsync(PhongChucNang phong);
-
-	Task<string?> GetNameByIdAsync(int id);
-	Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
+	Task<List<(int Id, string Ten)>> GetComboboxAsync();
 }

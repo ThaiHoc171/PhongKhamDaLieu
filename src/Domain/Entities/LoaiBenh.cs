@@ -1,5 +1,4 @@
 ﻿namespace Domain.Entities;
-
 public class LoaiBenh
 {
 	public int LoaiBenhID { get; private set; }
@@ -10,7 +9,6 @@ public class LoaiBenh
 	public string? DoPhoBien { get; private set; }
 	public string? MucDoNghiemTrong { get; private set; }
 	public DateTime NgayTao { get; private set; }
-
 	// Tạo mới
 	public LoaiBenh(
 		string tenBenh,
@@ -22,7 +20,6 @@ public class LoaiBenh
 	{
 		if (string.IsNullOrWhiteSpace(tenBenh))
 			throw new ArgumentException("Tên bệnh không hợp lệ");
-
 		TenBenh = tenBenh.Trim();
 		TenKhoaHoc = tenKhoaHoc?.Trim();
 		NhomBenh = nhomBenh;
@@ -31,7 +28,6 @@ public class LoaiBenh
 		MucDoNghiemTrong = mucDoNghiemTrong;
 		NgayTao = DateTime.UtcNow;
 	}
-
 	// Map DB
 	public LoaiBenh(
 		int id,
@@ -52,7 +48,6 @@ public class LoaiBenh
 		MucDoNghiemTrong = mucDoNghiemTrong;
 		NgayTao = ngayTao;
 	}
-
 	public void CapNhat(
 		string tenBenh,
 		string? tenKhoaHoc,
@@ -63,7 +58,6 @@ public class LoaiBenh
 	{
 		if (string.IsNullOrWhiteSpace(tenBenh))
 			throw new ArgumentException("Tên bệnh không hợp lệ");
-
 		TenBenh = tenBenh.Trim();
 		TenKhoaHoc = tenKhoaHoc?.Trim();
 		NhomBenh = nhomBenh;
@@ -71,7 +65,6 @@ public class LoaiBenh
 		DoPhoBien = doPhoBien;
 		MucDoNghiemTrong = mucDoNghiemTrong;
 	}
-
 	// không trùng tên bệnh & tên khoa học
 	public void KiemTraTrung(
 		IEnumerable<LoaiBenh> danhSach)
@@ -82,7 +75,6 @@ public class LoaiBenh
 		{
 			throw new ArgumentException("Tên bệnh đã tồn tại");
 		}
-
 		if (!string.IsNullOrWhiteSpace(TenKhoaHoc) &&
 			danhSach.Any(x =>
 				x.LoaiBenhID != LoaiBenhID &&

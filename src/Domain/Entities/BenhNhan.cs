@@ -1,5 +1,4 @@
 ﻿namespace Domain.Entities;
-
 public class BenhNhan
 {
 	public int BenhNhanID { get; private set; }
@@ -7,17 +6,14 @@ public class BenhNhan
 	public string GhiChu { get; private set; }
 	public DateTime NgayTao { get; private set; }
 	public DateTime NgayCapNhat { get; private set; }
-
 	// Constructor tạo mới
 	public BenhNhan(int thongTinID, string? ghiChu = null)
 	{
 		if (thongTinID <= 0)
 			throw new ArgumentException("ThongTinID không hợp lệ");
-
 		ThongTinID = thongTinID;
 		GhiChu = ghiChu ?? "";
 	}
-
 	// Constructor map DB
 	public BenhNhan(int benhNhanID, int thongTinID, string ghiChu, DateTime ngayTao, DateTime ngayCapNhat)
 	{
@@ -27,7 +23,6 @@ public class BenhNhan
 		NgayTao = ngayTao;
 		NgayCapNhat = ngayCapNhat;
 	}
-
 	// Business method
 	public void CapNhatGhiChu(string? ghiChu)
 	{

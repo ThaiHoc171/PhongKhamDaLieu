@@ -1,7 +1,5 @@
 ﻿using Domain.Entities;
-
 namespace Application.Interfaces;
-
 public interface IChiTietPCNThietBiRepository
 {
 	Task<List<ChiTietPCNThietBi>> GetByPCNTBIdAsync(int pcnTbId);

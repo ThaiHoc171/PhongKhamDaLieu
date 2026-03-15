@@ -22,12 +22,9 @@ public class NhanVienRepository : INhanVienRepository
 	private const string SELECT_DETAIL = @"
 		SELECT nv.NhanVienID, nv.ThongTinID, nv.NgayVaoLam, nv.BangCap,
 			nv.KinhNghiem, nv.TrangThai, nv.NgayTao, nv.NgayCapNhat, 
-			
 			tt.HoTen, tt.NgaySinh, tt.GioiTinh,	tt.SDT, tt.EmailLienHe,
 			tt.DiaChi, tt.Avatar,
-
 			cv.ChucVuID, cv.TenChucVu,
-
 			pcn.PhongChucNangID, pcn.TenPhong
 		FROM NhanVien nv
 		JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID

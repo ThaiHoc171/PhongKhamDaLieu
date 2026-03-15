@@ -15,7 +15,6 @@ public static class LoaiThongTinExtensions
 			LoaiThongTinEnum.Khach => "Khách",
 			_ => throw new ArgumentOutOfRangeException()
 		};
-
 	public static LoaiThongTinEnum ToEnum(string value)
 		=> value switch
 		{
