@@ -1,101 +1,196 @@
-﻿using Application.Repository;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using System.Data;
-namespace Infrastructure.Repositories;
+namespace Infrastructure.Repository;
+
 public class BacSiProfileRepository : IBacSiProfileRepository
 {
-	private readonly string _connectionString;
-	public BacSiProfileRepository(IConfiguration config)
-	{
-		_connectionString = config.GetConnectionString("DefaultConnection")
-			?? throw new ArgumentNullException("Connection string not found");
-	}
-    public async Task<List<BacSiProfile>> GetAllAsync()
+    private readonly string _connectionString;
+    public BacSiProfileRepository(IConfiguration configuration)
     {
-        const string sql = @"SELECT BacSiProfileID, NhanVienID, GioiThieu, ChuyenMon, ThanhTuu, HinhAnh, KinhNghiem, NgayCapNhat
-                         FROM BacSiProfile
-                         ORDER BY NgayCapNhat DESC";
-        var list = new List<BacSiProfile>();
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
+    }
+    private const string BaseSelectLite = @"
+        SELECT BacSiProfileID, NhanVienID, ChuyenMon, HinhAnh, NgayCapNhat
+        FROM BacSiProfile";
+    private const string BaseSelectDetail = @"
+        SELECT BacSiProfileID, NhanVienID, GioiThieu, ChuyenMon, ThanhTuu, HinhAnh, KinhNghiem, NgayCapNhat
+        FROM BacSiProfile";
+    public async Task<BacSiProfile?> GetByIdAsync(int id)
+    {
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
+        var sql = BaseSelectDetail + " WHERE BacSiProfileID = @Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToEntity(reader);
+        return null;
+    }
+    public async Task<BacSiProfileReadModel?> GetDetailAsync(int id)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = BaseSelectDetail + " WHERE BacSiProfileID = @Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToDetailDTO(reader);
+        return null;
+    }
+    public async Task<BacSiProfileReadModel?> GetByNhanVienIdAsync(int nhanVienId)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = BaseSelectDetail + " WHERE NhanVienID = @NhanVienID";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@NhanVienID", nhanVienId);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToDetailDTO(reader);
+        return null;
+    }
+    public async Task<(List<BacSiProfileListReadModel>, int)> GetPagedAsync(int page, int size)
+    {
+        var list = new List<BacSiProfileListReadModel>();
+        int total = 0;
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        int offset = (page - 1) * size;
+        var sql = $@"
+            {BaseSelectLite}
+            ORDER BY BacSiProfileID
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+            SELECT COUNT(*) FROM BacSiProfile
+        ";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Offset", offset);
+        cmd.Parameters.AddWithValue("@PageSize", size);
+        using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            list.Add(new BacSiProfile(
-                reader.GetInt32(reader.GetOrdinal("BacSiProfileID")),
-                reader.GetInt32(reader.GetOrdinal("NhanVienID")),
-                reader["GioiThieu"] as string,
-                reader["ChuyenMon"] as string,
-                reader["ThanhTuu"] as string,
-                reader["HinhAnh"] as string,
-                reader["KinhNghiem"] as string,
-                reader.GetDateTime(reader.GetOrdinal("NgayCapNhat"))
-            ));
+            list.Add(MapToLiteDTO(reader));
         }
-        return list;
+        await reader.NextResultAsync();
+
+        if (await reader.ReadAsync())
+            total = reader.GetInt32(0);
+        return (list, total);
     }
-    public async Task<BacSiProfile?> GetByNhanVienIdAsync(int nhanVienID)
-	{
-		const string sql = @"SELECT * FROM BacSiProfile WHERE NhanVienID = @NhanVienID";
-		using var conn = new SqlConnection(_connectionString);
-		using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@NhanVienID", nhanVienID);
-		await conn.OpenAsync();
-		using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return new BacSiProfile(
-			reader.GetInt32("BacSiProfileID"),
-			reader.GetInt32("NhanVienID"),
-			reader["GioiThieu"] as string,
-			reader["ChuyenMon"] as string,
-			reader["ThanhTuu"] as string,
-			reader["HinhAnh"] as string,
-			reader["KinhNghiem"] as string,
-			reader.GetDateTime("NgayCapNhat")
-		);
-	}
-	public async Task AddAsync(BacSiProfile profile)
-	{
-		const string sql = @"
+    public async Task<(List<BacSiProfileListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size)
+    {
+        var list = new List<BacSiProfileListReadModel>();
+        int total = 0;
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        int offset = (page - 1) * size;
+        var sql = $@"
+            {BaseSelectLite}
+            WHERE ChuyenMon LIKE @Keyword
+            ORDER BY BacSiProfileID
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+            SELECT COUNT(*) FROM BacSiProfile
+            WHERE ChuyenMon LIKE @Keyword";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+        cmd.Parameters.AddWithValue("@Offset", offset);
+        cmd.Parameters.AddWithValue("@PageSize", size);
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            list.Add(MapToLiteDTO(reader));
+        }
+        await reader.NextResultAsync();
+        if (await reader.ReadAsync())
+            total = reader.GetInt32(0);
+        return (list, total);
+    }
+    public async Task<int> AddAsync(BacSiProfile entity)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = @"
         INSERT INTO BacSiProfile
-        (NhanVienID, GioiThieu, ChuyenMon, ThanhTuu, HinhAnh, KinhNghiem)
-        VALUES
-        (@NhanVienID, @GioiThieu, @ChuyenMon, @ThanhTuu, @HinhAnh, @KinhNghiem)";
-		using var conn = new SqlConnection(_connectionString);
-		using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@NhanVienID", profile.NhanVienID);
-		cmd.Parameters.AddWithValue("@GioiThieu", (object?)profile.GioiThieu ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@ChuyenMon", (object?)profile.ChuyenMon ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@ThanhTuu", (object?)profile.ThanhTuu ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@HinhAnh", (object?)profile.HinhAnh ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@KinhNghiem", (object?)profile.KinhNghiem ?? DBNull.Value);
-		await conn.OpenAsync();
-		await cmd.ExecuteNonQueryAsync();
-	}
-	public async Task UpdateAsync(BacSiProfile profile)
-	{
-		const string sql = @"
+        (NhanVienID, GioiThieu, ChuyenMon, ThanhTuu, HinhAnh, KinhNghiem, NgayCapNhat)
+        VALUES (@NhanVienID, @GioiThieu, @ChuyenMon, @ThanhTuu, @HinhAnh, @KinhNghiem, @NgayCapNhat);
+        SELECT SCOPE_IDENTITY();";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@NhanVienID", entity.NhanVienID);
+        cmd.Parameters.AddWithValue("@GioiThieu", (object?)entity.GioiThieu ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ChuyenMon", (object?)entity.ChuyenMon ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ThanhTuu", (object?)entity.ThanhTuu ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@HinhAnh", (object?)entity.HinhAnh ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@KinhNghiem", (object?)entity.KinhNghiem ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@NgayCapNhat", entity.NgayCapNhat);
+        var result = await cmd.ExecuteScalarAsync();
+        return Convert.ToInt32(result);
+    }
+    public async Task UpdateAsync(BacSiProfile entity)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = @"
         UPDATE BacSiProfile
-        SET GioiThieu = @GioiThieu,
+        SET
+            GioiThieu = @GioiThieu,
             ChuyenMon = @ChuyenMon,
             ThanhTuu = @ThanhTuu,
             HinhAnh = @HinhAnh,
             KinhNghiem = @KinhNghiem,
-            NgayCapNhat = GETDATE()
-        WHERE NhanVienID = @NhanVienID";
-		using var conn = new SqlConnection(_connectionString);
-		using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@NhanVienID", profile.NhanVienID);
-		cmd.Parameters.AddWithValue("@GioiThieu", (object?)profile.GioiThieu ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@ChuyenMon", (object?)profile.ChuyenMon ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@ThanhTuu", (object?)profile.ThanhTuu ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@HinhAnh", (object?)profile.HinhAnh ?? DBNull.Value);
-		cmd.Parameters.AddWithValue("@KinhNghiem", (object?)profile.KinhNghiem ?? DBNull.Value);
-		await conn.OpenAsync();
-		await cmd.ExecuteNonQueryAsync();
-	}
+            NgayCapNhat = @NgayCapNhat
+        WHERE BacSiProfileID = @Id
+        ";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", entity.BacSiProfileID);
+        cmd.Parameters.AddWithValue("@GioiThieu", (object?)entity.GioiThieu ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ChuyenMon", (object?)entity.ChuyenMon ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ThanhTuu", (object?)entity.ThanhTuu ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@HinhAnh", (object?)entity.HinhAnh ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@KinhNghiem", (object?)entity.KinhNghiem ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@NgayCapNhat", entity.NgayCapNhat);
+        await cmd.ExecuteNonQueryAsync();
+    }
+    private BacSiProfile MapToEntity(SqlDataReader r)
+    {
+        return new BacSiProfile(
+            (int)r["BacSiProfileID"],
+            (int)r["NhanVienID"],
+            r["GioiThieu"] as string,
+            r["ChuyenMon"] as string,
+            r["ThanhTuu"] as string,
+            r["HinhAnh"] as string,
+            r["KinhNghiem"] as string,
+            (DateTime)r["NgayCapNhat"]
+        );
+    }
+    private BacSiProfileListReadModel MapToLiteDTO(SqlDataReader r)
+    {
+        return new BacSiProfileListReadModel
+        {
+            BacSiProfileID = (int)r["BacSiProfileID"],
+            NhanVienID = (int)r["NhanVienID"],
+            ChuyenMon = r["ChuyenMon"] as string,
+            HinhAnh = r["HinhAnh"] as string,
+            NgayCapNhat = (DateTime)r["NgayCapNhat"]
+        };
+    }
+    private BacSiProfileReadModel MapToDetailDTO(SqlDataReader r)
+    {
+        return new BacSiProfileReadModel
+        {
+            BacSiProfileID = (int)r["BacSiProfileID"],
+            NhanVienID = (int)r["NhanVienID"],
+            GioiThieu = r["GioiThieu"] as string,
+            ChuyenMon = r["ChuyenMon"] as string,
+            ThanhTuu = r["ThanhTuu"] as string,
+            HinhAnh = r["HinhAnh"] as string,
+            KinhNghiem = r["KinhNghiem"] as string,
+            NgayCapNhat = (DateTime)r["NgayCapNhat"]
+        };
+    }
 }
