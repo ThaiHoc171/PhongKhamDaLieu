@@ -1,160 +1,155 @@
-﻿using Domain.Entities;
-using Application.Interfaces;
+﻿using Application.Common;
 using Application.DTOs;
+using Application.Interfaces;
+using Domain.Entities;
 using Domain.Enums;
-
 namespace Application.Services;
 public class LieuTrinhDieuTriService
 {
-    private readonly ILieuTrinhDieuTriRepository _lieuTrinhRepo;
-    private readonly IPhienKhamRepository _phienKhamRepo;
-    private readonly ILieuTrinh_BuoiDieuTriRepository _lieuTrinh_BuoiDieuTriRepo;
-    private readonly ITaiKhamRepository _taiKhamRepo;
-
-
-    public LieuTrinhDieuTriService(ILieuTrinhDieuTriRepository lieuTrinhRepo, IPhienKhamRepository phienKhamRepo, ILieuTrinh_BuoiDieuTriRepository lieuTrinh_BuoiDieuTriRepo, ITaiKhamRepository taiKhamRepo)
-    {
-        _lieuTrinhRepo = lieuTrinhRepo;
-        _phienKhamRepo = phienKhamRepo;
-        _lieuTrinh_BuoiDieuTriRepo = lieuTrinh_BuoiDieuTriRepo;
-        _taiKhamRepo = taiKhamRepo;
-    }
-
-    public async Task TaoLieuTrinhAsync(TaoLieuTrinhDieuTriDTO dto)
-    {
-        var benhNhanId = await _phienKhamRepo.GetBenhNhanByIdAsync(dto.PhienKhamID);
-        if (!benhNhanId.HasValue)
-            throw new Exception("Phiên khám không tồn tại hoặc không hợp lệ");
-        int benhNhanID = benhNhanId.Value;
-
-        var tontai = await _taiKhamRepo.GetByBenhNhanIdAsync(benhNhanID);
-        if (tontai != null && tontai.TrangThai == TrangThaiTaiKhamEnum.ChoKham)
-            throw new Exception("Bệnh nhân đang có lịch tái khám, không thể tạo liệu trình.");
-
-        var dangDieuTri = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
-        if (dangDieuTri != null && dangDieuTri.TrangThai == "Đang điều trị")
-            throw new Exception("Bệnh nhân đang có liệu trình điều trị, không thể tạo mới.");
-
-        if (dto.TongSoBuoi <= 0)
-            throw new Exception("Tổng số buổi phải lớn hơn 0");
-        int tongSoBuoi = dto.TongSoBuoi;
-
-        if (dto.NgayBatDau.Date < DateTime.Today)
-            throw new Exception("Ngày bắt đầu không được nhỏ hơn ngày hiện tại");
-        DateTime ngayKetThuc = dto.NgayBatDau.AddDays((tongSoBuoi - 1) * 7);
-        var lt = new LieuTrinhDieuTri(
-            benhNhanID,
-            dto.PhienKhamID,
-            dto.TenLieuTrinh,
-            dto.TongSoBuoi,
-            dto.GhiChu,
-            dto.NgayBatDau,
-            ngayKetThuc
-        );
-
-        await _lieuTrinhRepo.AddAsync(lt);
-    }
-
-    public async Task<bool> CapNhatAsync(int lieuTrinhID, CapNhatLieuTrinhDieuTriDTO dto)
-    {
-        var lieuTrinh = await _lieuTrinhRepo.GetByIdAsync(lieuTrinhID);
-
-        if (lieuTrinh == null) return false;
-
-        if (lieuTrinh.TrangThai == "Hoàn thành")
-            throw new Exception("Không thể cập nhật liệu trình đã hoàn thành");
-
-        lieuTrinh.CapNhat(dto.TenLieuTrinh, dto.TongSoBuoi, dto.NgayKetThuc);
-        await _lieuTrinhRepo.UpdateAsync(lieuTrinh);
-        return true;
-    }
-
-    public async Task<bool> CapNhatTrangThaiAsync(int lieuTrinhID, CapNhatTrangThaiLieuTrinhDieuTriDTO dto)
-    {
-        var lieuTrinh = await _lieuTrinhRepo.GetByIdAsync(lieuTrinhID);
-        if (lieuTrinh == null) return false;
-
-        if (lieuTrinh.TrangThai == "Hoàn thành")
-            throw new Exception("Không thể cập nhật liệu trình đã hoàn thành");
-
-        var trangThaiHopLe = new[] { "Đang điều trị", "Đã hủy", "Hoàn thành" };
-        if (!trangThaiHopLe.Contains(dto.TrangThai))
-            throw new Exception("Trạng thái không hợp lệ");
-
-        if (dto.TrangThai == "Hoàn thành")
-        {
-            var soBuoiDaDieuTri =
-                await _lieuTrinh_BuoiDieuTriRepo.CountBySoBuoiAsync(lieuTrinhID);
-
-            if (soBuoiDaDieuTri < lieuTrinh.TongSoBuoi)
-                throw new Exception("Chưa đủ số buổi để hoàn thành liệu trình");
-        }
-
-        lieuTrinh.CapNhatTrangThai(dto.TrangThai, dto.GhiChu);
-        await _lieuTrinhRepo.UpdateTrangThaiAsync(lieuTrinh);
-
-        return true;
-    }
-
-    public async Task<LieuTrinhDieuTriResponeDTO?> LayTheoIdAsync(int lieuTrinhID)
-    {
-        var lt = await _lieuTrinhRepo.GetByIdAsync(lieuTrinhID);
-        if (lt == null) return null;
-
-        return MapToDto(lt);
-    }
-
-    public async Task<LieuTrinhDieuTriResponeDTO?> LayTheoBenhNhanAsync(int benhNhanID)
-    {
-        var lt = await _lieuTrinhRepo.GetByBenhNhanIdAsync(benhNhanID);
-        if (lt == null) return null;
-
-        return MapToDto(lt);
-    }
-
-    public async Task<int?> LayIdTheoBenhNhanAsync(int benhNhanID)
-    {
-        return await _lieuTrinhRepo.GetIdByBenhNhanIdAsync(benhNhanID);
-    }
-
-    public async Task<List<LieuTrinhDieuTriResponeDTO>> DanhSachAsync()
-    {
-        var list = await _lieuTrinhRepo.GetAllAsync();
-
-        return list.Select(MapToDto).ToList();
-    }
-
-    public async Task<List<LieuTrinhDieuTriResponeDTO>> LocBatDauAsync(DateTime ngay, string trangThai)
-    {
-        var list = await _lieuTrinhRepo.LocBatDauAsync(ngay, trangThai);
-
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<List<LieuTrinhDieuTriResponeDTO>> LocKetThucAsync(DateTime ngay, string trangThai)
-    {
-        var list = await _lieuTrinhRepo.LocKetThucAsync(ngay, trangThai);
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<List<LieuTrinhDieuTriResponeDTO>> DanhSachTheoBenhNhanAsync(int benhNhanID)
-    {
-        var list = await _lieuTrinhRepo.GetListByBenhNhanAsync(benhNhanID);
-        return list.Select(MapToDto).ToList();
-    }
-
-    private static LieuTrinhDieuTriResponeDTO MapToDto(LieuTrinhDieuTri lt)
-    {
-        return new LieuTrinhDieuTriResponeDTO
-        {
-            LieuTrinhID = lt.LieuTrinhID,
-            BenhNhanID = lt.BenhNhanID,
-            PhienKhamID = lt.PhienKhamID,
-            TenLieuTrinh = lt.TenLieuTrinh,
-            TongSoBuoi = lt.TongSoBuoi,
-            TrangThai = lt.TrangThai,
-            GhiChu = lt.GhiChu,
-            NgayBatDau = lt.NgayBatDau,
-            NgayKetThuc = lt.NgayKetThuc
-        };
-    }
+	private readonly ILieuTrinhDieuTriRepository _repo;
+	private readonly IPhienKhamRepository _phienKhamRepo;
+	public LieuTrinhDieuTriService(
+		ILieuTrinhDieuTriRepository repo,
+		IPhienKhamRepository phienKhamRepo)
+	{
+		_repo = repo;
+		_phienKhamRepo = phienKhamRepo;
+	}
+	public async Task<ApiResponse<int>> CreateAsync(LieuTrinhDieuTriRequestDTO dto)
+	{
+		if (dto.PhienKhamID <= 0)
+			return ApiResponse<int>.Fail("Phiên khám không hợp lệ");
+		if (string.IsNullOrWhiteSpace(dto.TenLieuTrinh))
+			return ApiResponse<int>.Fail("Tên liệu trình không hợp lệ");
+		if (dto.TongSoBuoi <= 0)
+			return ApiResponse<int>.Fail("Tổng số buổi phải lớn hơn 0");
+		var phienKham = await _phienKhamRepo.GetByIdAsync(dto.PhienKhamID);
+		if (phienKham == null)
+			return ApiResponse<int>.Fail("Phiên khám không tồn tại");
+		var ngayKetThuc = dto.NgayBatDau.AddDays(dto.TongSoBuoi * 7);
+		var entity = new LieuTrinhDieuTri(
+			phienKham.BenhNhanID,
+			dto.PhienKhamID,
+			dto.TenLieuTrinh,
+			dto.TongSoBuoi,
+			dto.GhiChu,
+			dto.NgayBatDau,
+			ngayKetThuc
+		);
+		var id = await _repo.AddAsync(entity);
+		return ApiResponse<int>.SuccessResponse(id);
+	}
+	public async Task<ApiResponse<bool>> UpdateAsync(int id, LieuTrinhDieuTriUpdateDTO dto)
+	{
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Liệu trình không tồn tại");
+		try
+		{
+			entity.Update(
+				dto.TenLieuTrinh,
+				dto.TongSoBuoi,
+				dto.NgayKetThuc);
+		}
+		catch (Exception ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		await _repo.UpdateAsync(entity);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<bool>> CompleteAsync(int id)
+	{
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Liệu trình không tồn tại");
+		try
+		{
+			entity.Complete();
+		}
+		catch (Exception ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		await _repo.UpdateTrangThaiAsync(entity);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<bool>> CancelAsync(int id, string? ghiChu)
+	{
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Liệu trình không tồn tại");
+		try
+		{
+			entity.Cancel(ghiChu);
+		}
+		catch (Exception ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		await _repo.UpdateTrangThaiAsync(entity);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<bool>> UpdateStatusAsync(int id, string? ghiChu)
+	{
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Liệu trình không tồn tại");
+		entity.Status(ghiChu);
+		await _repo.UpdateTrangThaiAsync(entity);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<LieuTrinhDieuTriReadModel>> GetByIdAsync(int id)
+	{
+		var result = await _repo.GetDetailAsync(id);
+		if (result == null)
+			return ApiResponse<LieuTrinhDieuTriReadModel>.Fail("Liệu trình không tồn tại");
+		return ApiResponse<LieuTrinhDieuTriReadModel>.SuccessResponse(result);
+	}
+	public async Task<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>> GetPagedAsync(
+		int page,
+		int size,
+		string? trangThai)
+	{
+		var (items, totalCount) = await _repo.GetPagedAsync(page, size, trangThai);
+		return ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>.SuccessResponse(
+			new PagedResult<LieuTrinhDieuTriListReadModel>
+			{
+				Items = items,
+				TotalCount = totalCount,
+				PageNumber = page,
+				PageSize = size
+			});
+	}
+	public async Task<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>> SearchAsync(
+		string keyword,
+		int page,
+		int size)
+	{
+		var (items, totalCount) = await _repo.SearchAsync(keyword, page, size);
+		return ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>.SuccessResponse(
+			new PagedResult<LieuTrinhDieuTriListReadModel>
+			{
+				Items = items,
+				TotalCount = totalCount,
+				PageNumber = page,
+				PageSize = size
+			});
+	}
+	public async Task<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>> GetByBenhNhanAsync(
+		int benhNhanID,
+		int page,
+		int size)
+	{
+		var (items, totalCount) =
+			await _repo.GetBenhNhanPagedAsync(benhNhanID, page, size);
+		return ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>.SuccessResponse(
+			new PagedResult<LieuTrinhDieuTriListReadModel>
+			{
+				Items = items,
+				TotalCount = totalCount,
+				PageNumber = page,
+				PageSize = size
+			});
+	}
 }
-

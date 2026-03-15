@@ -5,19 +5,15 @@ using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
-
 namespace Infrastructure.Repository;
-
 public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 {
 	private readonly string _connectionString;
-
 	public PhienKhamCLSRepository(IConfiguration config)
 	{
 		_connectionString = config.GetConnectionString("DefaultConnection")
 			?? throw new ArgumentNullException("Connection string not found");
 	}
-
 	public async Task<PhienKhamCLS?> GetByIdAsync(int id)
 	{
 		const string sql = @"
@@ -26,19 +22,14 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 				   NhanVienChiDinhID, NhanVienThucHienID, GhiChu
 			FROM PhienKham_CanLamSang
 			WHERE PhienKham_CanLamSangID = @ID";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@ID", id);
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		if (!await reader.ReadAsync()) return null;
-
 		return MapToEntity(reader);
 	}
-
 	public async Task<List<PhienKhamClsListReadModel>> GetByPhienKhamAsync(int phienKhamID)
 	{
 		const string sql = @"
@@ -48,16 +39,12 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			JOIN CanLamSang cls ON pk.CanLamSangID = cls.CanLamSangID
 			WHERE pk.PhienKhamID = @PhienKhamID
 			ORDER BY pk.NgayThucHien";
-
 		var list = new List<PhienKhamClsListReadModel>();
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@PhienKhamID", phienKhamID);
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		while (await reader.ReadAsync())
 		{
 			list.Add(new PhienKhamClsListReadModel
@@ -70,7 +57,6 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 				GhiChu = reader.IsDBNull(5) ? null : reader.GetString(5)
 			});
 		}
-
 		return list;
 	}
 	public async Task<PhienKhamClsReadModel?> GetDetailAsync(int id)
@@ -85,17 +71,13 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			LEFT JOIN NhanVien nvth ON pk.NhanVienThucHienID = nvth.NhanVienID
 			LEFT JOIN ThongTinCaNhan ttth ON nvth.ThongTinID = ttth.ThongTinID
 			WHERE pk.PhienKham_CanLamSangID = @ID";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@ID", id);
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		if (!await reader.ReadAsync())
 			return null;
-
 		return new PhienKhamClsReadModel
 		{
 			PhienKhamCLSID = reader.GetInt32(0),
@@ -122,15 +104,11 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 		JOIN CanLamSang cls ON pk.CanLamSangID = cls.CanLamSangID
 		WHERE pk.TrangThai = N'Đang chờ' OR pk.TrangThai = N'Đang thực hiện'
 		ORDER BY pk.PhienKham_CanLamSangID DESC";
-
 		var list = new List<PhienKhamClsListReadModel>();
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		while (await reader.ReadAsync())
 		{
 			list.Add(new PhienKhamClsListReadModel
@@ -143,7 +121,6 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 				GhiChu = reader.IsDBNull(5) ? null : reader.GetString(5)
 			});
 		}
-
 		return list;
 	}
 	public async Task AddAsync(PhienKhamCLS phienKhamCLS)
@@ -153,20 +130,16 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 			(PhienKhamID, CanLamSangID, NhanVienChiDinhID, GhiChu)
 			VALUES
 			(@PhienKhamID, @CanLamSangID, @NhanVienChiDinhID, @GhiChu)";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamCLS.PhienKhamID;
 		cmd.Parameters.Add("@CanLamSangID", SqlDbType.Int).Value = phienKhamCLS.CLSID;
 		cmd.Parameters.Add("@NhanVienChiDinhID", SqlDbType.Int).Value = phienKhamCLS.NhanVienChiDinhID;
 		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar).Value =
 			(object?)phienKhamCLS.GhiChu ?? DBNull.Value;
-
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-
 	public async Task UpdateAsync(PhienKhamCLS phienKhamCLS)
 	{
 		const string sql = @"
@@ -177,10 +150,8 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 				NhanVienThucHienID = @NhanVienThucHienID,
 				GhiChu = @GhiChu
 			WHERE PhienKham_CanLamSangID = @ID";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.Add("@ID", SqlDbType.Int).Value = phienKhamCLS.PhienKhamCLSID;
 		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = phienKhamCLS.TrangThai.ToDbValue();
 		cmd.Parameters.Add("@KetQua", SqlDbType.NVarChar).Value = (object?)phienKhamCLS.KetQua ?? DBNull.Value;
@@ -190,7 +161,6 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-
 	private static PhienKhamCLS MapToEntity(SqlDataReader reader)
 	{
 		return new PhienKhamCLS(

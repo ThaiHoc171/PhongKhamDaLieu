@@ -1,23 +1,18 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-
 namespace Services;
-
 public class CanLamSangService
 {
 	private readonly ICanLamSangRepository _repo;
-
 	public CanLamSangService(ICanLamSangRepository repo)
 	{
 		_repo = repo;
 	}
-
 	// GET ALL
 	public async Task<PagedResult<CanLamSangResponseDTO>> DanhSachCanLamSangAsync(int pageNumber, int pageSize)
 	{
 		var (data, totalCount) = await _repo.GetPagedAsync(pageNumber, pageSize);
-
 		return new PagedResult<CanLamSangResponseDTO>
 		{
 			Items = data.Select(MapToDto).ToList(),
@@ -26,13 +21,11 @@ public class CanLamSangService
 			PageSize = pageSize
 		};
 	}
-
 	// GET BY ID
 	public async Task<CanLamSangResponseDTO?> LayCanLamSangTheoIdAsync(int id)
 	{
 		var cls = await _repo.GetByIdAsync(id);
 		if (cls == null) return null;
-
 		return MapToDto(cls);
 	}
 	//
@@ -53,31 +46,24 @@ public class CanLamSangService
 			dto.MoTa,
 			dto.LoaiXetNghiem
 		);
-
 		await _repo.AddAsync(cls);
 	}
-
 	// PUT
 	public async Task<bool> CapNhatCanLamSangAsync(int id, CanLamSangRequestDTO dto)
 	{
 		var cls = await _repo.GetByIdAsync(id);
 		if (cls == null) return false;
-
 		cls.CapNhat(dto.TenCLS, dto.MoTa, dto.LoaiXetNghiem);
 		await _repo.UpdateAsync(cls);
-
 		return true;
 	}
-
 	// PUT trạng thái
 	public async Task<bool> CapNhatTrangThaiAsync(int id, string trangThaiMoi)
 	{
 		var cls = await _repo.GetByIdAsync(id);
 		if (cls == null) return false;
-
 		cls.CapNhatTrangThai(trangThaiMoi);
 		await _repo.UpdateAsync(cls);
-
 		return true;
 	}
 	public async Task<List<CanLamSangResponseDTO>> TimTheoTenAsync(string tenCLS)

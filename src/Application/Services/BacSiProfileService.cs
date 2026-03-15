@@ -1,13 +1,10 @@
 ﻿using Application.DTO;
 using Application.Repository;
 using Domain.Entities;
-
 namespace Application.Services;
-
 public class BacSiProfileService
 {
 	private readonly IBacSiProfileRepository _repository;
-
 	public BacSiProfileService(IBacSiProfileRepository repository)
 	{
 		_repository = repository;
@@ -15,7 +12,6 @@ public class BacSiProfileService
     public async Task<List<BacSiProfileDTO>> GetAllAsync()
     {
         var entities = await _repository.GetAllAsync();
-
         return entities.Select(entity => new BacSiProfileDTO
         {
             BacSiProfileID = entity.BacSiProfileID,
@@ -28,12 +24,10 @@ public class BacSiProfileService
             NgayCapNhat = entity.NgayCapNhat
         }).ToList();
     }
-
     public async Task<BacSiProfileDTO?> GetByNhanVienAsync(int nhanVienID)
 	{
 		var entity = await _repository.GetByNhanVienIdAsync(nhanVienID);
 		if (entity == null) return null;
-
 		return new BacSiProfileDTO
 		{
 			BacSiProfileID = entity.BacSiProfileID,
@@ -46,14 +40,12 @@ public class BacSiProfileService
 			NgayCapNhat = entity.NgayCapNhat
 		};
 	}
-
 	// 🔹 TẠO MỚI
 	public async Task TaoMoiAsync(int nhanVienID, BacSiProfileRequestDTO dto)
 	{
 		var existed = await _repository.GetByNhanVienIdAsync(nhanVienID);
 		if (existed != null)
 			throw new InvalidOperationException("Bác sĩ đã có profile");
-
 		var profile = new BacSiProfile(
 			nhanVienID,
 			dto.GioiThieu,
@@ -62,17 +54,14 @@ public class BacSiProfileService
 			dto.HinhAnh,
 			dto.KinhNghiem
 		);
-
 		await _repository.AddAsync(profile);
 	}
-
 	// 🔹 CẬP NHẬT
 	public async Task CapNhatAsync(int nhanVienID, BacSiProfileRequestDTO dto)
 	{
 		var entity = await _repository.GetByNhanVienIdAsync(nhanVienID);
 		if (entity == null)
 			throw new InvalidOperationException("Không tìm thấy profile bác sĩ");
-
 		entity.CapNhat(
 			dto.GioiThieu,
 			dto.ChuyenMon,
@@ -80,7 +69,6 @@ public class BacSiProfileService
 			dto.HinhAnh,
 			dto.KinhNghiem
 		);
-
 		await _repository.UpdateAsync(entity);
 	}
 }

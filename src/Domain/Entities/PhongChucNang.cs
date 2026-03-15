@@ -1,53 +1,67 @@
 ﻿using Domain.Enums;
-
 namespace Domain.Entities;
 public class PhongChucNang
 {
-	public int Id { get; private set; }
+	public int PhongChucNangID { get; private set; }
 	public string TenPhong { get; private set; }
-	public string? LoaiPhong { get; private set; }
 	public string? MoTa { get; private set; }
 	public TinhTrang TrangThai { get; private set; }
 	public DateTime NgayTao { get; private set; }
 	public DateTime? NgayCapNhat { get; private set; }
-
-	// Tạo mới
-	public PhongChucNang(string tenPhong, string? loaiPhong, string? moTa)
+	// =========================
+	// Constructor tạo mới
+	// =========================
+	public PhongChucNang(string tenPhong, string? moTa)
 	{
 		if (string.IsNullOrWhiteSpace(tenPhong))
 			throw new ArgumentException("Tên phòng không hợp lệ");
-
 		TenPhong = tenPhong;
-		LoaiPhong = loaiPhong;
 		MoTa = moTa;
-		TrangThai = TinhTrang.HoatDong;
-		NgayTao = DateTime.UtcNow;
 	}
-
-	// Map từ DB
-	public PhongChucNang(int id,string tenPhong,string? loaiPhong,string? moTa,string trangThai,DateTime ngayTao,DateTime? ngayCapNhat)
+	// =========================
+	// Constructor map DB
+	// =========================
+	public PhongChucNang(
+		int phongChucNangID,
+		string tenPhong,
+		string? moTa,
+		string trangThai,
+		DateTime ngayTao,
+		DateTime? ngayCapNhat)
 	{
-		Id = id;
+		PhongChucNangID = phongChucNangID;
 		TenPhong = tenPhong;
-		LoaiPhong = loaiPhong;
 		MoTa = moTa;
 		TrangThai = TinhTrangExtensions.FromDb(trangThai);
 		NgayTao = ngayTao;
 		NgayCapNhat = ngayCapNhat;
 	}
-	public void CapNhat(string tenPhong, string? loaiPhong, string? moTa)
+	// =========================
+	// Business Methods
+	// =========================
+	public void CapNhat(string tenPhong, string? moTa)
 	{
 		if (string.IsNullOrWhiteSpace(tenPhong))
 			throw new ArgumentException("Tên phòng không hợp lệ");
 		TenPhong = tenPhong;
-		LoaiPhong = loaiPhong;
 		MoTa = moTa;
+		NgayCapNhat = DateTime.UtcNow;
 	}
 	public void ChuyenTrangThai(TinhTrang trangThaiMoi)
 	{
 		if (TrangThai == TinhTrang.Hong && trangThaiMoi == TinhTrang.HoatDong)
 			throw new InvalidOperationException("Phòng đang hỏng, cần bảo trì trước");
-
 		TrangThai = trangThaiMoi;
+		NgayCapNhat = DateTime.UtcNow;
+	}
+	public void BaoTri()
+	{
+		TrangThai = TinhTrang.BaoTri;
+		NgayCapNhat = DateTime.UtcNow;
+	}
+	public void BaoHong()
+	{
+		TrangThai = TinhTrang.Hong;
+		NgayCapNhat = DateTime.UtcNow;
 	}
 }

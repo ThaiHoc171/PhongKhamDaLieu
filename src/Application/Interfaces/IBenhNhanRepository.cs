@@ -1,6 +1,5 @@
 ﻿using Application.DTOs;
 using Domain.Entities;
-
 namespace Application.Interfaces;
 public interface IBenhNhanRepository
 {
@@ -13,4 +12,3 @@ public interface IBenhNhanRepository
 	Task UpdateAsync(BenhNhan benhNhan);
 	Task<List<NameResponseDTO>> GetComboboxAsync();
 }
-

@@ -1,13 +1,10 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-
 namespace Application.Services;
-
 public class RefreshTokenService
 {
     private readonly IRefreshTokenRepository _repo;
-
     public RefreshTokenService(IRefreshTokenRepository repo)
     {
         _repo = repo;
