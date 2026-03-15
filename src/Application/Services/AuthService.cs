@@ -1,0 +1,188 @@
+﻿using Application.Common;
+using Application.DTOs;
+using Application.Interfaces;
+using Domain.Entities;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+namespace Application.Services;
+public class AuthService
+{
+	private readonly ITaiKhoanRepository _repo;
+	private readonly INhanVienRepository _nhanVienRepo;
+	private readonly IBenhNhanRepository _benhNhanRepo;
+	private readonly IRefreshTokenRepository _refreshRepo;
+	private readonly IChucVuQuyenRepository _chucVuQuyenRepo;
+	private readonly IConfiguration _configuration;
+	public AuthService(
+		ITaiKhoanRepository repo,
+		INhanVienRepository nhanVienRepo,
+		IBenhNhanRepository benhNhanRepo,
+		IRefreshTokenRepository refreshRepo,
+		IChucVuQuyenRepository chucVuQuyenRepo,
+		IConfiguration configuration)
+	{
+		_repo = repo;
+		_nhanVienRepo = nhanVienRepo;
+		_benhNhanRepo = benhNhanRepo;
+		_refreshRepo = refreshRepo;
+		_chucVuQuyenRepo = chucVuQuyenRepo;
+		_configuration = configuration;
+	}
+	public async Task<ApiResponse<LoginResponseDTO>> DangNhapAsync(LoginRequestDTO dto)
+	{
+		if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.MatKhau))
+			return ApiResponse<LoginResponseDTO>.Fail("Email hoặc mật khẩu không hợp lệ");
+		var tk = await _repo.GetByEmailAsync(dto.Email);
+		if (tk == null)
+			return ApiResponse<LoginResponseDTO>.Fail("Tài khoản không tồn tại");
+		if (!Helper.Password.VerifyPassword(dto.MatKhau, tk.MatKhau))
+			return ApiResponse<LoginResponseDTO>.Fail("Sai mật khẩu");
+		var info = await BuildUserInfoAsync(tk);
+		var accessToken = GenerateAccessToken(tk, info);
+		var refreshToken = GenerateRefreshToken();
+		await _refreshRepo.SaveAsync(
+			new RefreshToken(tk.TaiKhoanID, refreshToken, DateTime.UtcNow.AddDays(7)));
+		return ApiResponse<LoginResponseDTO>.SuccessResponse(
+			new LoginResponseDTO
+			{
+				Id = tk.TaiKhoanID,
+				Email = tk.Email,
+				VaiTro = tk.VaiTro,
+				AccessToken = accessToken,
+				RefreshToken = refreshToken,
+				HoTen = new NameResponseDTO
+				{
+					Id = info.ThongTinID ?? 0,
+					Name = info.HoTen ?? ""
+				},
+				NhanVienId = info.NhanVienID,
+				BenhNhanId = info.BenhNhanID,
+				ChucVu = info.ChucVu
+			});
+	}
+	public async Task<ApiResponse<LoginResponseDTO>> RefreshTokenAsync(string refreshToken)
+	{
+		var storedToken = await _refreshRepo.GetAsync(refreshToken);
+		if (storedToken == null ||
+			storedToken.IsRevoked ||
+			storedToken.ExpiryDate < DateTime.UtcNow)
+			return ApiResponse<LoginResponseDTO>.Fail("RefreshToken không hợp lệ");
+		var taiKhoan = await _repo.GetByIdAsync(storedToken.TaiKhoanId);
+		if (taiKhoan == null)
+			return ApiResponse<LoginResponseDTO>.Fail("Tài khoản không tồn tại");
+		var info = await BuildUserInfoAsync(taiKhoan);
+		await _refreshRepo.RevokeAsync(refreshToken);
+		var newRefreshToken = GenerateRefreshToken();
+		await _refreshRepo.SaveAsync(
+			new RefreshToken(taiKhoan.TaiKhoanID, newRefreshToken, DateTime.UtcNow.AddDays(7)));
+		var accessToken = GenerateAccessToken(taiKhoan, info);
+		return ApiResponse<LoginResponseDTO>.SuccessResponse(
+			new LoginResponseDTO
+			{
+				Id = taiKhoan.TaiKhoanID,
+				Email = taiKhoan.Email,
+				VaiTro = taiKhoan.VaiTro,
+				AccessToken = accessToken,
+				RefreshToken = newRefreshToken,
+				HoTen = new NameResponseDTO
+				{
+					Id = info.ThongTinID ?? 0,
+					Name = info.HoTen ?? ""
+				},
+				NhanVienId = info.NhanVienID,
+				BenhNhanId = info.BenhNhanID,
+				ChucVu = info.ChucVu
+			});
+	}
+	public async Task<ApiResponse<bool>> LogoutAsync(string refreshToken)
+	{
+		await _refreshRepo.RevokeAsync(refreshToken);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	private async Task<UserInfo> BuildUserInfoAsync(TaiKhoan tk)
+	{
+		var info = new UserInfo();
+		if (tk.VaiTro == "Admin")
+		{
+			info.HoTen = "Admin";
+			return info;
+		}
+		if (tk.VaiTro == "Nhân viên")
+		{
+			int nvId = await _nhanVienRepo.GetIdAsync(tk.TaiKhoanID);
+			var nv = await _nhanVienRepo.GetDetailAsync(nvId);
+			if (nv != null)
+			{
+				info.NhanVienID = nv.NhanVienID;
+				info.ThongTinID = nv.ThongTinID;
+				info.HoTen = nv.HoTen;
+				if (nv.ChucVu != null)
+				{
+					info.ChucVu = nv.ChucVu.Name;
+					info.Quyen = await _chucVuQuyenRepo
+						.GetNameByChucVuAsync(nv.ChucVu.Id);
+				}
+			}
+		}
+		if (tk.VaiTro == "Bệnh nhân")
+		{
+			var bn = await _benhNhanRepo.GetDetailAsync(tk.TaiKhoanID);
+			if (bn != null)
+			{
+				info.BenhNhanID = bn.BenhNhanID;
+				info.ThongTinID = bn.ThongTinID;
+				info.HoTen = bn.HoTen;
+				info.Quyen.Add("DatLichKham");
+				info.Quyen.Add("XemHoSo");
+			}
+		}
+		return info;
+	}
+	private string GenerateAccessToken(TaiKhoan tk, UserInfo info)
+	{
+		var claims = new List<Claim>
+		{
+			new Claim(ClaimTypes.NameIdentifier, tk.TaiKhoanID.ToString()),
+			new Claim(ClaimTypes.Email, tk.Email),
+			new Claim(ClaimTypes.Role, tk.VaiTro)
+		};
+		if (info.ThongTinID.HasValue)
+			claims.Add(new Claim("ThongTinID", info.ThongTinID.Value.ToString()));
+		if (info.NhanVienID.HasValue)
+			claims.Add(new Claim("NhanVienID", info.NhanVienID.Value.ToString()));
+		if (info.BenhNhanID.HasValue)
+			claims.Add(new Claim("BenhNhanID", info.BenhNhanID.Value.ToString()));
+		if (!string.IsNullOrEmpty(info.ChucVu))
+			claims.Add(new Claim("ChucVu", info.ChucVu));
+		foreach (var p in info.Quyen)
+			claims.Add(new Claim("Permission", p));
+		var key = new SymmetricSecurityKey(
+			Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+		var token = new JwtSecurityToken(
+			issuer: _configuration["Jwt:Issuer"],
+			expires: DateTime.UtcNow.AddMinutes(30),
+			claims: claims,
+			signingCredentials: creds);
+		return new JwtSecurityTokenHandler().WriteToken(token);
+	}
+	private string GenerateRefreshToken()
+	{
+		var bytes = new byte[64];
+		using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+		rng.GetBytes(bytes);
+		return Convert.ToBase64String(bytes);
+	}
+	private class UserInfo
+	{
+		public int? ThongTinID;
+		public int? NhanVienID;
+		public int? BenhNhanID;
+		public string? HoTen;
+		public string? ChucVu;
+		public List<string> Quyen = new();
+	}
+}

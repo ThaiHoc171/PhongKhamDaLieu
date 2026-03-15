@@ -45,7 +45,7 @@ public class NhanVienService
 			dto.ThongTin.DiaChi,
 			dto.ThongTin.Avatar,
 			LoaiThongTinEnum.NhanVien,
-			created.Id
+			created.TaiKhoanID
 		);
 		int? id = await _thongTinRepo.AddAsync(entity);
 		if (id == null)
