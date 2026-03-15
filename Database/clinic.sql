@@ -110,7 +110,7 @@ CREATE TABLE NhanVien (
         FOREIGN KEY (PhongChucNangID) 
         REFERENCES PhongChucNang(PhongChucNangID)
 );
-TABLE BacSiProfile (
+CREATE TABLE BacSiProfile (
     BacSiProfileID INT IDENTITY(1,1) PRIMARY KEY,
     NhanVienID INT NOT NULL UNIQUE,
     GioiThieu NVARCHAR(MAX),

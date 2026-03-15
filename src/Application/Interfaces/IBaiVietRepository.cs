@@ -1,11 +1,19 @@
-﻿using Domain.Entities;
+﻿using Application.Common;
+using Application.DTOs;
+using Domain.Entities;
+
 namespace Application.Interfaces;
+
 public interface IBaiVietRepository
 {
-    Task<int> AddAsync(BaiViet baiViet);
-    Task UpdateAsync(BaiViet baiViet);
+    //CUD
+    Task<int> AddAsync(BaiViet entity);
+    Task UpdateAsync(BaiViet entity);
+    Task DeleteAsync(int id);
+
+    //Read
     Task<BaiViet?> GetByIdAsync(int id);
-    Task<List<BaiViet>> GetAllAsync();
-    Task<List<BaiViet>> GetByLuotXemAsync();
+    Task<(List<BaiVietListReadModel>, int)> GetPagedAsync(int page, int size);
     Task<List<BaiViet>> GetByLoaiBenhAsync(int loaiBenhID);
+    Task<List<BaiViet>> GetTopLuotXemAsync(int top);
 }

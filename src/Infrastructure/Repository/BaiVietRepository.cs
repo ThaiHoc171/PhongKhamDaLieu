@@ -1,119 +1,304 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-namespace Infrastructure.Repositories;
+
+namespace Infrastructure.Repository;
+
 public class BaiVietRepository : IBaiVietRepository
 {
     private readonly string _connectionString;
-    public BaiVietRepository(IConfiguration config)
+
+    public BaiVietRepository(IConfiguration configuration)
     {
-        _connectionString = config.GetConnectionString("DefaultConnection")
-            ?? throw new ArgumentNullException("Connection string not found");
+        _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
-    public async Task<int> AddAsync(BaiViet bv)
-    {
-        const string sql = @"
-            INSERT INTO BaiViet (TieuDe, TomTat, NoiDung, HinhAnh, TacGiaID, LoaiBenhID, LuotXem, NgayDang, NgayCapNhat)
-            OUTPUT INSERTED.BaiVietID
-            VALUES (@TieuDe, @TomTat, @NoiDung, @HinhAnh, @TacGiaID, @LoaiBenhID, @LuotXem, @NgayDang, @NgayCapNhat)";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@TieuDe", bv.TieuDe);
-        cmd.Parameters.AddWithValue("@TomTat", bv.TomTat);
-        cmd.Parameters.AddWithValue("@NoiDung", bv.NoiDung);
-        cmd.Parameters.AddWithValue("@HinhAnh", bv.HinhAnh ?? "");
-        cmd.Parameters.AddWithValue("@TacGiaID", bv.TacGiaID);
-        cmd.Parameters.AddWithValue("@LoaiBenhID", bv.LoaiBenhID);
-        cmd.Parameters.AddWithValue("@LuotXem", bv.LuotXem);
-        cmd.Parameters.AddWithValue("@NgayDang", bv.NgayDang);
-        cmd.Parameters.AddWithValue("@NgayCapNhat", bv.NgayCapNhat);
-        await conn.OpenAsync();
-        return (int)await cmd.ExecuteScalarAsync();
-    }
+
+    private const string BaseSelectLite = @"
+        SELECT BaiVietID, TieuDe, TomTat, HinhAnh, LuotXem, NgayDang
+        FROM BaiViet";
+
+    private const string BaseSelectDetail = @"
+        SELECT BaiVietID, TieuDe, TomTat, NoiDung, HinhAnh,
+               TacGiaID, LoaiBenhID, LuotXem, NgayDang, NgayCapNhat, TrangThai
+        FROM BaiViet";
+
     public async Task<BaiViet?> GetByIdAsync(int id)
     {
-        const string sql = @"SELECT BaiVietID, TieuDe, TomTat, NoiDung, HinhAnh, TacGiaID, LoaiBenhID, LuotXem, NgayDang, NgayCapNhat 
-                            FROM BaiViet WHERE BaiVietID = @Id";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var sql = BaseSelectDetail + " WHERE BaiVietID = @Id";
+
+        using var cmd = new SqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("@Id", id);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? Map(reader) : null;
+
+        using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+            return MapToEntity(reader);
+
+        return null;
     }
-    public async Task<List<BaiViet>> GetAllAsync()
+
+    public async Task<BaiVietReadModel?> GetDetailAsync(int id)
     {
-        const string sql = @"SELECT BaiVietID, TieuDe, TomTat, NoiDung, HinhAnh, TacGiaID, LoaiBenhID, LuotXem, NgayDang, NgayCapNhat 
-                            FROM BaiViet ORDER BY NgayDang DESC";
-        var list = new List<BaiViet>();
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-            list.Add(Map(reader));
-        return list;
+
+        var sql = BaseSelectDetail + " WHERE BaiVietID = @Id";
+
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+            return MapToDetailDTO(reader);
+
+        return null;
     }
-    public async Task<List<BaiViet>> GetByLuotXemAsync()
+
+    public async Task<(List<BaiVietListReadModel>, int)> GetPagedAsync(int page, int size)
     {
-        const string sql = @"SELECT BaiVietID, TieuDe, TomTat, NoiDung, HinhAnh, TacGiaID, LoaiBenhID, LuotXem, NgayDang, NgayCapNhat 
-                            FROM BaiViet ORDER BY LuotXem DESC";
-        var list = new List<BaiViet>();
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
+        var list = new List<BaiVietListReadModel>();
+        int total = 0;
+
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
+
+        int offset = (page - 1) * size;
+
+        var sql = $@"
+            {BaseSelectLite}
+            ORDER BY NgayDang DESC
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+            SELECT COUNT(*) FROM BaiViet
+        ";
+
+        using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@Offset", offset);
+        cmd.Parameters.AddWithValue("@PageSize", size);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+
         while (await reader.ReadAsync())
-            list.Add(Map(reader));
-        return list;
+        {
+            list.Add(MapToLiteDTO(reader));
+        }
+
+        await reader.NextResultAsync();
+
+        if (await reader.ReadAsync())
+            total = reader.GetInt32(0);
+
+        return (list, total);
+    }
+
+    public async Task<(List<BaiVietListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size)
+    {
+        var list = new List<BaiVietListReadModel>();
+        int total = 0;
+
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        int offset = (page - 1) * size;
+
+        var sql = $@"
+            {BaseSelectLite}
+            WHERE TieuDe LIKE @Keyword
+            ORDER BY NgayDang DESC
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+
+            SELECT COUNT(*) FROM BaiViet
+            WHERE TieuDe LIKE @Keyword
+        ";
+
+        using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+        cmd.Parameters.AddWithValue("@Offset", offset);
+        cmd.Parameters.AddWithValue("@PageSize", size);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            list.Add(MapToLiteDTO(reader));
+        }
+
+        await reader.NextResultAsync();
+
+        if (await reader.ReadAsync())
+            total = reader.GetInt32(0);
+
+        return (list, total);
+    }
+
+    public async Task<int> AddAsync(BaiViet entity)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var sql = @"
+        INSERT INTO BaiViet
+        (TieuDe, TomTat, NoiDung, HinhAnh, TacGiaID, LoaiBenhID, LuotXem, NgayDang, TrangThai)
+        VALUES (@TieuDe, @TomTat, @NoiDung, @HinhAnh, @TacGiaID, @LoaiBenhID, 0, GETDATE(), 'Bản nháp');
+
+        SELECT SCOPE_IDENTITY();";
+
+        using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@TieuDe", entity.TieuDe);
+        cmd.Parameters.AddWithValue("@TomTat", (object?)entity.TomTat ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@NoiDung", entity.NoiDung);
+        cmd.Parameters.AddWithValue("@HinhAnh", (object?)entity.HinhAnh ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@TacGiaID", (object?)entity.TacGiaID ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@LoaiBenhID", (object?)entity.LoaiBenhID ?? DBNull.Value);
+
+        var result = await cmd.ExecuteScalarAsync();
+
+        return Convert.ToInt32(result);
+    }
+
+    public async Task UpdateAsync(BaiViet entity)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var sql = @"
+        UPDATE BaiViet
+        SET
+            TieuDe = @TieuDe,
+            TomTat = @TomTat,
+            NoiDung = @NoiDung,
+            HinhAnh = @HinhAnh,
+            LoaiBenhID = @LoaiBenhID,
+            NgayCapNhat = @NgayCapNhat
+        WHERE BaiVietID = @Id
+        ";
+
+        using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@Id", entity.BaiVietID);
+        cmd.Parameters.AddWithValue("@TieuDe", entity.TieuDe);
+        cmd.Parameters.AddWithValue("@TomTat", (object?)entity.TomTat ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@NoiDung", entity.NoiDung);
+        cmd.Parameters.AddWithValue("@HinhAnh", (object?)entity.HinhAnh ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@LoaiBenhID", (object?)entity.LoaiBenhID ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@NgayCapNhat", entity.NgayCapNhat);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var sql = "DELETE FROM BaiViet WHERE BaiVietID=@Id";
+
+        using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@Id", id);
+
+        await cmd.ExecuteNonQueryAsync();
     }
     public async Task<List<BaiViet>> GetByLoaiBenhAsync(int loaiBenhID)
     {
-        const string sql = "SELECT * FROM BaiViet WHERE LoaiBenhID = @loaiBenhID ORDER BY LuotXem DESC";
         var list = new List<BaiViet>();
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@loaiBenhID", loaiBenhID);
+
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
+
+        var sql = BaseSelectDetail + " WHERE LoaiBenhID = @LoaiBenhID";
+
+        using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@LoaiBenhID", loaiBenhID);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+
         while (await reader.ReadAsync())
-            list.Add(Map(reader));
+        {
+            list.Add(MapToEntity(reader));
+        }
+
         return list;
     }
-    public async Task UpdateAsync(BaiViet bv)
+    public async Task<List<BaiViet>> GetTopLuotXemAsync(int top)
     {
-        const string sql = @"
-            UPDATE BaiViet
-            SET TieuDe=@TieuDe, TomTat=@TomTat, NoiDung=@NoiDung, HinhAnh=@HinhAnh,
-                LoaiBenhID=@LoaiBenhID, LuotXem=@LuotXem, NgayCapNhat=@NgayCapNhat
-            WHERE BaiVietID=@Id";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", bv.BaiVietID);
-        cmd.Parameters.AddWithValue("@TieuDe", bv.TieuDe);
-        cmd.Parameters.AddWithValue("@TomTat", bv.TomTat);
-        cmd.Parameters.AddWithValue("@NoiDung", bv.NoiDung);
-        cmd.Parameters.AddWithValue("@HinhAnh", bv.HinhAnh ?? "");
-        cmd.Parameters.AddWithValue("@LoaiBenhID", bv.LoaiBenhID);
-        cmd.Parameters.AddWithValue("@LuotXem", bv.LuotXem);
-        cmd.Parameters.AddWithValue("@NgayCapNhat", bv.NgayCapNhat);
+        var list = new List<BaiViet>();
+
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await cmd.ExecuteNonQueryAsync();
+
+        var sql = $@"
+            SELECT TOP (@Top) *
+            FROM BaiViet
+            ORDER BY LuotXem DESC";
+
+        using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("@Top", top);
+
+        using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            list.Add(MapToEntity(reader));
+        }
+
+        return list;
     }
-    private static BaiViet Map(SqlDataReader r)
+    private BaiViet MapToEntity(SqlDataReader r)
     {
-        return new BaiViet(
-            r.GetInt32(0),
-            r.GetString(1),
-            r.GetString(2),
-            r.GetString(3),
-            r.IsDBNull(4) ? "" : r.GetString(4),
-            r.GetInt32(5),
-            r.GetInt32(6),
-            r.GetInt32(7),
-            r.GetDateTime(8),
-            r.GetDateTime(9)
-        );
+        return new BaiViet
+        {
+            BaiVietID = (int)r["BaiVietID"],
+            TieuDe = (string)r["TieuDe"],
+            TomTat = r["TomTat"] as string,
+            NoiDung = r["NoiDung"] as string,
+            HinhAnh = r["HinhAnh"] as string,
+            TacGiaID = r["TacGiaID"] as int?,
+            LoaiBenhID = r["LoaiBenhID"] as int?,
+            LuotXem = (int)r["LuotXem"],
+            NgayDang = (DateTime)r["NgayDang"],
+            NgayCapNhat = r["NgayCapNhat"] as DateTime?,
+            TrangThai = (string)r["TrangThai"]
+        };
+    }
+    private BaiVietListReadModel MapToLiteDTO(SqlDataReader r)
+    {
+        return new BaiVietListReadModel
+        {
+            BaiVietID = (int)r["BaiVietID"],
+            TieuDe = (string)r["TieuDe"],
+            TomTat = r["TomTat"] as string,
+            HinhAnh = r["HinhAnh"] as string,
+            LuotXem = (int)r["LuotXem"],
+            NgayDang = (DateTime)r["NgayDang"]
+        };
+    }
+    private BaiVietReadModel MapToDetailDTO(SqlDataReader r)
+    {
+        return new BaiVietReadModel
+        {
+            BaiVietID = (int)r["BaiVietID"],
+            TieuDe = (string)r["TieuDe"],
+            TomTat = r["TomTat"] as string,
+            NoiDung = r["NoiDung"] as string,
+            HinhAnh = r["HinhAnh"] as string,
+            TacGiaID = r["TacGiaID"] as int?,
+            LoaiBenhID = r["LoaiBenhID"] as int?,
+            LuotXem = (int)r["LuotXem"],
+            NgayDang = (DateTime)r["NgayDang"],
+            NgayCapNhat = r["NgayCapNhat"] as DateTime?,
+            TrangThai = (string)r["TrangThai"]
+        };
     }
 }
