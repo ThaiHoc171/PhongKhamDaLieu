@@ -1,82 +1,86 @@
-﻿namespace Domain.Entities;
-
-public class LieuTrinh_BuoiDieuTri
+﻿using Domain.Enums;
+namespace Domain.Entities;
+public class BuoiDieuTri
 {
-    public int BuoiDieuTriID { get; private set; }
-    public int LieuTrinhID { get; private set; }
-    public int CaKhamID { get; private set; }
-    public int SoBuoi { get; private set; }
-    public DateTime? NgayDuKien { get; private set; }
-    public DateTime? NgayThucHien { get; private set; }
-    public int? NhanVienID { get; private set; }
-    public string TrangThai { get; private set; }
-    public string? GhiChu { get; private set; }
-    public string? HinhAnhJSON { get; private set; }
-
-    // Tạo mới
-    public LieuTrinh_BuoiDieuTri(int lieuTrinhID, int caKhamID, int soBuoi, DateTime? ngayDuKien, DateTime? ngayThucHien, int? nhanVienID)
-    {
-        if (lieuTrinhID <= 0) throw new ArgumentException("LieuTrinhID không hợp lệ");
-        if (caKhamID <= 0) throw new ArgumentException("CaKhamID không hợp lệ");
-        if (soBuoi <= 0) throw new ArgumentException("Số buổi không hợp lệ");
-
-
-        var ngayThuc = ngayThucHien
-        ?? throw new Exception("Chưa có ngày thực hiện");
-
-        var ngayDuKienThuc = ngayDuKien
-            ?? throw new Exception("Chưa có ngày dự kiến");
-
-        if (ngayThuc < ngayDuKienThuc)
-            throw new Exception("Ngày thực hiện không được trước ngày dự kiến");
-
-        LieuTrinhID = lieuTrinhID;
-        CaKhamID = caKhamID;
-        SoBuoi = soBuoi;
-        NgayDuKien = ngayDuKien;
-        NgayThucHien = ngayThucHien;
-        NhanVienID = nhanVienID;
-        TrangThai = "Chờ xử lý";
-    }
-
-    public LieuTrinh_BuoiDieuTri(
-        int buoiDieuTriID,
-        int lieuTrinhID,
-        int caKhamID,
-        int soBuoi,
-        DateTime? ngayDuKien,
-        DateTime? ngayThucHien,
-        int? nhanVienID,
-        string trangThai,
-        string? ghiChu,
-        string? hinhAnhJSON)
-    {
-        BuoiDieuTriID = buoiDieuTriID;
-        LieuTrinhID = lieuTrinhID;
-        CaKhamID = caKhamID;
-        SoBuoi = soBuoi;
-        NgayDuKien = ngayDuKien;
-        NgayThucHien = ngayThucHien;
-        NhanVienID = nhanVienID;
-        TrangThai = trangThai;
-        GhiChu = ghiChu;
-        HinhAnhJSON = hinhAnhJSON;
-    }
-
-    public void CapNhatTrangThai(string trangThai, int? nhanVienID, DateTime? ngayThucHien, string? ghiChu)
-    {
-        TrangThai = trangThai;
-        NhanVienID = nhanVienID;
-        NgayThucHien = ngayThucHien;
-        GhiChu = ghiChu;
-    }
-    public void CapNhatNgayThucHien(DateTime ngayThucHien)
-    {
-        if (ngayThucHien < NgayDuKien)
-            throw new Exception(
-                $"Không thể thực hiện điều trị trước ngày dự kiến ({NgayDuKien:dd/MM/yyyy})"
-            );
-
-        NgayThucHien = ngayThucHien;
-    }
+	public int BuoiDieuTriID { get; private set; }
+	public int LieuTrinhID { get; private set; }
+	public int CaKhamID { get; private set; }
+	public int SoBuoi { get; private set; }
+	public DateTime? NgayDuKien { get; private set; }
+	public DateTime? NgayThucHien { get; private set; }
+	public int? NhanVienID { get; private set; }
+	public TrangThaiBuoiDieuTriEnum TrangThai { get; private set; }
+	public string? GhiChu { get; private set; }
+	public string? HinhAnhJSON { get; private set; }
+	public BuoiDieuTri(
+		int lieuTrinhID,
+		int caKhamID,
+		int soBuoi,
+		DateTime? ngayDuKien)
+	{
+		if (lieuTrinhID <= 0)
+			throw new ArgumentException("LieuTrinhID không hợp lệ");
+		if (caKhamID <= 0)
+			throw new ArgumentException("CaKhamID không hợp lệ");
+		if (soBuoi <= 0)
+			throw new ArgumentException("Số buổi không hợp lệ");
+		LieuTrinhID = lieuTrinhID;
+		CaKhamID = caKhamID;
+		SoBuoi = soBuoi;
+		NgayDuKien = ngayDuKien;
+		TrangThai = TrangThaiBuoiDieuTriEnum.ChoXuLy;
+	}
+	public BuoiDieuTri(
+		int buoiDieuTriID,
+		int lieuTrinhID,
+		int caKhamID,
+		int soBuoi,
+		DateTime? ngayDuKien,
+		DateTime? ngayThucHien,
+		int? nhanVienID,
+		string trangThai,
+		string? ghiChu,
+		string? hinhAnhJSON)
+	{
+		BuoiDieuTriID = buoiDieuTriID;
+		LieuTrinhID = lieuTrinhID;
+		CaKhamID = caKhamID;
+		SoBuoi = soBuoi;
+		NgayDuKien = ngayDuKien;
+		NgayThucHien = ngayThucHien;
+		NhanVienID = nhanVienID;
+		TrangThai = TrangThaiBuoiDieuTriExtensions.FromDb(trangThai);
+		GhiChu = ghiChu;
+		HinhAnhJSON = hinhAnhJSON;
+	}
+	public void BatDauDieuTri(int nhanVienID)
+	{
+		if (TrangThai != TrangThaiBuoiDieuTriEnum.ChoXuLy)
+			throw new InvalidOperationException("Buổi điều trị không thể bắt đầu");
+		NhanVienID = nhanVienID;
+		TrangThai = TrangThaiBuoiDieuTriEnum.DangThucHien;
+	}
+	public void HoanThanh(DateTime ngayThucHien, string? ghiChu)
+	{
+		if (TrangThai != TrangThaiBuoiDieuTriEnum.DangThucHien)
+			throw new InvalidOperationException("Buổi điều trị chưa được bắt đầu");
+		if (NgayDuKien.HasValue && ngayThucHien < NgayDuKien)
+			throw new InvalidOperationException(
+				$"Không thể thực hiện trước ngày dự kiến ({NgayDuKien:dd/MM/yyyy})"
+			);
+		NgayThucHien = ngayThucHien;
+		GhiChu = ghiChu;
+		TrangThai = TrangThaiBuoiDieuTriEnum.HoanThanh;
+	}
+	public void Huy(string? ghiChu)
+	{
+		if (TrangThai == TrangThaiBuoiDieuTriEnum.HoanThanh)
+			throw new InvalidOperationException("Không thể huỷ buổi điều trị đã hoàn thành");
+		GhiChu = ghiChu;
+		TrangThai = TrangThaiBuoiDieuTriEnum.DaHuy;
+	}
+	public void CapNhatHinhAnh(string? hinhAnhJSON)
+	{
+		HinhAnhJSON = hinhAnhJSON;
+	}
 }

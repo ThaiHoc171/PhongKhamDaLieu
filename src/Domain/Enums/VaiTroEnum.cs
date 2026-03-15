@@ -1,7 +1,4 @@
-﻿
-
-namespace Domain.Enums;
-
+﻿namespace Domain.Enums;
 public enum VaiTroEnum
 {
 	Admin,
@@ -18,7 +15,6 @@ public static class VaiTroExtensions
 			VaiTroEnum.BenhNhan => "Bệnh nhân",
 			_ => throw new ArgumentOutOfRangeException()
 		};
-
 	public static VaiTroEnum ToEnum(string value)
 		=> value switch
 		{

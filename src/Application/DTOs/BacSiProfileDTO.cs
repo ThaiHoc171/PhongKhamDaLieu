@@ -1,5 +1,4 @@
 ﻿namespace Application.DTO;
-
 public class BacSiProfileDTO
 {
 	public int BacSiProfileID { get; set; }
@@ -11,7 +10,6 @@ public class BacSiProfileDTO
 	public string? KinhNghiem { get; set; }
 	public DateTime NgayCapNhat { get; set; }
 }
-
 public class BacSiProfileRequestDTO
 {
 	public string? GioiThieu { get; set; }

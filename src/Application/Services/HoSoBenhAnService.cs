@@ -3,17 +3,14 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
-
 namespace Application.Services;
 public class HoSoBenhAnService
 {
     private readonly IHoSoBenhAnRepository _hoSoRepo;
-
     public HoSoBenhAnService(IHoSoBenhAnRepository hoSoRepo)
     {
         _hoSoRepo = hoSoRepo;
     }
-
     public async Task<int> TaoHoSoBenhAn(TaoHoSoBenhAnDTO dto)
     {
         if(dto.BenhNhanID == 0)
@@ -23,7 +20,6 @@ public class HoSoBenhAnService
             throw new Exception("Bệnh nhân đã có hồ sơ bệnh án");
         if (dto.BenhNen?.Length > 500)
             throw new Exception("Bệnh nền quá dài");
-
         if (dto.DiUng?.Length > 500)
             throw new Exception("Thông tin dị ứng quá dài");
         var hs = new HoSoBenhAn(
@@ -36,7 +32,6 @@ public class HoSoBenhAnService
             dto.ThongTinKhac,
             dto.NgayTao,
             dto.NgayCapNhat);
-
         var HoSo = await _hoSoRepo.AddAsync(hs);
         return HoSo;
     }
@@ -54,7 +49,6 @@ public class HoSoBenhAnService
         await _hoSoRepo.UpdateAsync(hoSo);
         return true;
     }
-
     public async Task<HoSoBenhAnResponeDTO?> GetByIdAsync(int hoSoBenhAnID)
     {
         var hs = await _hoSoRepo.GetByIdAsync(hoSoBenhAnID);
@@ -70,10 +64,8 @@ public class HoSoBenhAnService
     public async Task<List<HoSoBenhAnResponeDTO>> GetAllAsync()
     {
         var list = await _hoSoRepo.GetAllAsync();
-
         return list.Select(MapToDto).ToList();
     }
-
     private static HoSoBenhAnResponeDTO MapToDto(HoSoBenhAn hs)
     {
         return new HoSoBenhAnResponeDTO
@@ -91,4 +83,3 @@ public class HoSoBenhAnService
         };
     }
 }
-

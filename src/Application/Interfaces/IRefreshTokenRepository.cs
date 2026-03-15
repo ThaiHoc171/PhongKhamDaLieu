@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-
 namespace Application.Interfaces;
 public interface IRefreshTokenRepository
 {
@@ -8,4 +7,3 @@ public interface IRefreshTokenRepository
     Task RevokeAsync(string tokenHash);
     Task RevokeAllAsync(int taiKhoanId);
 }
-

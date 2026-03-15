@@ -5,7 +5,6 @@ public class PhienKhamThietBiRequestDTO
 	public int ChiTietID { get; set; }
 	public string? GhiChu { get; set; }
 }
-
 public class PhienKhamThietBiReadModel
 {
 	public int PhienKhamThietBiID { get; set; }

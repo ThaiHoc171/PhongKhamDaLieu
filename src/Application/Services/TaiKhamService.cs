@@ -38,11 +38,11 @@ public class TaiKhamService
 		var taiKham = await _taiKhamRepo.GetByIdAsync(id);
 		if (taiKham == null)
 			return ApiResponse<bool>.Fail("Tái khám không tồn tại");
-		if (taiKham.TrangThai == TrangThaiTaiKhamEnum.DaKham)
+		if (taiKham.TrangThai == TaiKhamEnum.DaKham)
 			return ApiResponse<bool>.Fail("Tái khám đã hoàn thành");
 		if (taiKham.CaKhamID != null &&
 			dto.CaKhamID != taiKham.CaKhamID &&
-			taiKham.TrangThai == TrangThaiTaiKhamEnum.ChoKham)
+			taiKham.TrangThai == TaiKhamEnum.ChoKham)
 		{
 			return ApiResponse<bool>.Fail("Không thể thay đổi ca khám khi đã có lịch");
 		}
@@ -68,8 +68,8 @@ public class TaiKhamService
 			return ApiResponse<bool>.Fail("Trạng thái không hợp lệ");
 		try
 		{
-			var status = TrangThaiTaiKhamExtensions.Parse(trangThai);
-			if (taiKham.TrangThai == TrangThaiTaiKhamEnum.DaKham)
+			var status = TaiKhamExtensions.Parse(trangThai);
+			if (taiKham.TrangThai == TaiKhamEnum.DaKham)
 				return ApiResponse<bool>.Fail("Tái khám đã hoàn thành");
 			taiKham.DoiTrangThai(status);
 		}
@@ -131,7 +131,7 @@ public class TaiKhamService
 		var taiKham = await _taiKhamRepo.GetByIdAsync(taiKhamId);
 		if (taiKham == null)
 			return ApiResponse<bool>.Fail("Tái khám không tồn tại");
-		if (taiKham.TrangThai == TrangThaiTaiKhamEnum.DaKham)
+		if (taiKham.TrangThai == TaiKhamEnum.DaKham)
 			return ApiResponse<bool>.Fail("Tái khám đã hoàn thành, không thể gán ca khám");
 		if (taiKham.CaKhamID != null)
 			return ApiResponse<bool>.Fail("Tái khám đã được gán ca khám trước đó");
@@ -161,7 +161,7 @@ public class TaiKhamService
 		var taiKhamDangCho =
 			await _taiKhamRepo.GetTaiKhamDangChoAsync(benhNhanId.Value);
 		if (taiKhamDangCho != null &&
-			taiKhamDangCho.TrangThai == TrangThaiTaiKhamEnum.ChoKham)
+			taiKhamDangCho.TrangThai == TaiKhamEnum.ChoKham)
 		{
 			return ApiResponse<(int, int)>.Fail(
 				"Bệnh nhân còn lịch tái khám chưa xử lý");

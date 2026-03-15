@@ -1,8 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.Data.SqlClient;
-
 namespace Application.Interfaces;
-
 public interface IKhungGioKhamRepository
 {
 	Task<List<KhungGioKham>> GetAllAsync();

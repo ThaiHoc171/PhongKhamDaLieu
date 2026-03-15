@@ -1,18 +1,16 @@
-﻿using Domain.Entities;
-
-
+﻿using Application.DTOs;
+using Domain.Entities;
 namespace Application.Interfaces;
-
 public interface ILieuTrinhDieuTriRepository
 {
-    Task<LieuTrinhDieuTri?> GetByIdAsync(int lieuTrinhID);
-    Task<LieuTrinhDieuTri?> GetByBenhNhanIdAsync(int benhNhanID);
-    Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID);
-    Task<List<LieuTrinhDieuTri>> GetAllAsync();
-    Task<List<LieuTrinhDieuTri>> LocBatDauAsync(DateTime ngay, string trangThai);
-    Task<List<LieuTrinhDieuTri>> LocKetThucAsync(DateTime ngay, string trangThai);
-    Task<List<LieuTrinhDieuTri>> GetListByBenhNhanAsync(int benhNhanID);
-    Task<int> AddAsync(LieuTrinhDieuTri lieuTrinhDieuTri);
-    Task UpdateAsync(LieuTrinhDieuTri lieuTrinhDieuTri);
-    Task UpdateTrangThaiAsync(LieuTrinhDieuTri lieuTrinh);
+	Task<LieuTrinhDieuTri?> GetByIdAsync(int id);
+	Task<LieuTrinhDieuTri?> GetByBenhNhanIdAsync(int benhNhanID);
+	Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID);
+	Task<LieuTrinhDieuTriReadModel?> GetDetailAsync(int id);
+	Task<(List<LieuTrinhDieuTriListReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai);
+	Task<(List<LieuTrinhDieuTriListReadModel>, int)> SearchAsync(string? keyword, int page, int size);
+	Task<(List<LieuTrinhDieuTriListReadModel>, int)> GetBenhNhanPagedAsync(int benhNhanID, int page, int size);
+	Task<int> AddAsync(LieuTrinhDieuTri entity);
+	Task UpdateAsync(LieuTrinhDieuTri entity);
+	Task UpdateTrangThaiAsync(LieuTrinhDieuTri entity);
 }

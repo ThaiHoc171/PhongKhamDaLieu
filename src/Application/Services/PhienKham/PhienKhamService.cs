@@ -40,7 +40,6 @@ public class PhienKhamService
 			return ApiResponse<int>.Fail("Ca khám không tồn tại");
 		if (caKham.TrangThai != "Đã xác nhận")
 			return ApiResponse<int>.Fail("Ca khám chưa được xác nhận hoặc đã kết thúc");
-		
 		var lich = await _lichRepo.GetByIdAsync(caKham.LichLamViecID.Value);
 		if (lich == null)
 			return ApiResponse<int>.Fail("Không tìm thấy lịch làm việc!");

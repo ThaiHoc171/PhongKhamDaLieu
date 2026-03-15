@@ -1,5 +1,4 @@
 ﻿using System;
-
 namespace Domain.Entities
 {
 	public class KhungGioKham
@@ -9,7 +8,6 @@ namespace Domain.Entities
 		public TimeSpan GioBatDau { get; private set; }
 		public TimeSpan GioKetThuc { get; private set; }
 		public string? TenKhung { get; private set; }
-
 		public KhungGioKham(
 			int caLamViec,
 			TimeSpan gioBatDau,
@@ -18,16 +16,13 @@ namespace Domain.Entities
 		{
 			if (caLamViec is not (1 or 2))
 				throw new ArgumentException("Ca làm việc không hợp lệ (1 hoặc 2)");
-
 			if (gioBatDau >= gioKetThuc)
 				throw new ArgumentException("Giờ bắt đầu phải nhỏ hơn giờ kết thúc");
-
 			CaLamViec = caLamViec;
 			GioBatDau = gioBatDau;
 			GioKetThuc = gioKetThuc;
 			TenKhung = tenKhung;
 		}
-
 		public KhungGioKham(
 			int khungGioID,
 			int caLamViec,
@@ -41,7 +36,6 @@ namespace Domain.Entities
 			GioKetThuc = gioKetThuc;
 			TenKhung = tenKhung;
 		}
-
 		public void CapNhat(
 			int caLamViec,
 			TimeSpan gioBatDau,
@@ -50,24 +44,19 @@ namespace Domain.Entities
 		{
 			if (caLamViec is not (1 or 2))
 				throw new ArgumentException("Ca làm việc không hợp lệ");
-
 			if (gioBatDau >= gioKetThuc)
 				throw new ArgumentException("Giờ bắt đầu phải nhỏ hơn giờ kết thúc");
-
 			CaLamViec = caLamViec;
 			GioBatDau = gioBatDau;
 			GioKetThuc = gioKetThuc;
 			TenKhung = tenKhung;
 		}
-
 		public bool KiemTraTrung(KhungGioKham other)
 		{
 			if (other == null)
 				throw new ArgumentNullException(nameof(other));
-
 			if (CaLamViec != other.CaLamViec)
 				return false;
-
 			// (start1 < end2) && (end1 > start2)
 			return GioBatDau < other.GioKetThuc
 				&& GioKetThuc > other.GioBatDau;

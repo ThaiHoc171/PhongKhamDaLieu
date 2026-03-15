@@ -1,5 +1,4 @@
 ﻿namespace Application.DTOs;
-
 public class LoaiBenhRequestDTO
 {
 	public string TenBenh { get; set; } = default!;
