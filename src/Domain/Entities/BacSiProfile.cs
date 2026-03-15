@@ -10,13 +10,8 @@ public class BacSiProfile
     public string? HinhAnh { get; private set; }
     public string? KinhNghiem { get; private set; }
     public DateTime NgayCapNhat { get; private set; }
-    public BacSiProfile(
-        int nhanVienID,
-        string? gioiThieu,
-        string? chuyenMon,
-        string? thanhTuu,
-        string? hinhAnh,
-        string? kinhNghiem)
+
+    public BacSiProfile(int nhanVienID, string? gioiThieu, string? chuyenMon, string? thanhTuu, string? hinhAnh, string? kinhNghiem)
     {
         NhanVienID = nhanVienID;
         GioiThieu = gioiThieu;
@@ -24,17 +19,8 @@ public class BacSiProfile
         ThanhTuu = thanhTuu;
         HinhAnh = hinhAnh;
         KinhNghiem = kinhNghiem;
-        NgayCapNhat = DateTime.Now;
     }
-    public BacSiProfile(
-        int bacSiProfileID,
-        int nhanVienID,
-        string? gioiThieu,
-        string? chuyenMon,
-        string? thanhTuu,
-        string? hinhAnh,
-        string? kinhNghiem,
-        DateTime ngayCapNhat)
+    public BacSiProfile(int bacSiProfileID, int nhanVienID, string? gioiThieu, string? chuyenMon, string? thanhTuu, string? hinhAnh, string? kinhNghiem, DateTime ngayCapNhat)
     {
         BacSiProfileID = bacSiProfileID;
         NhanVienID = nhanVienID;
@@ -45,12 +31,7 @@ public class BacSiProfile
         KinhNghiem = kinhNghiem;
         NgayCapNhat = ngayCapNhat;
     }
-    public void CapNhat(
-        string? gioiThieu,
-        string? chuyenMon,
-        string? thanhTuu,
-        string? hinhAnh,
-        string? kinhNghiem)
+    public void CapNhat(string? gioiThieu, string? chuyenMon, string? thanhTuu, string? hinhAnh, string? kinhNghiem)
     {
         GioiThieu = gioiThieu;
         ChuyenMon = chuyenMon;

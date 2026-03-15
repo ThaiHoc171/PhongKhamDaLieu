@@ -1,11 +1,18 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs;
+using Domain.Entities;
+
 namespace Application.Interfaces;
+
 public interface ICanLamSangRepository
 {
-	Task<(List<CanLamSang> Data, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize);
-	Task<CanLamSang?> GetByIdAsync(int id);
-	Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
-    Task AddAsync(CanLamSang cls);
-	Task UpdateAsync(CanLamSang cls);
-	Task<List<CanLamSang>> SearchByTenAsync(string tenCLS);
+    //-- CUD
+    Task<int> AddAsync(CanLamSang entity);
+    Task UpdateAsync(CanLamSang entity);
+
+    //-- R
+    Task<CanLamSang?> GetByIdAsync(int id);
+    Task<(List<CanLamSangListReadModel>, int)>GetPagedAsync(int page, int size, string? loaiXetNghiem, string? trangThai);
+    Task<(List<CanLamSangListReadModel>, int)>SearchPagedAsync(string keyword, int page, int size);
+    Task<List<CanLamSangListReadModel>>GetByLoaiXetNghiemAsync(string loaiXetNghiem);
+    Task<CanLamSangReadModel?>GetDetailAsync(int id);
 }

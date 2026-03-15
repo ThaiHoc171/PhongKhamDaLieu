@@ -6,11 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/baiviet")]
 public class BaiVietController : ControllerBase
 {
     private readonly BaiVietService _service;
-
     public BaiVietController(BaiVietService service)
     {
         _service = service;
@@ -25,10 +24,7 @@ public class BaiVietController : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var result = await _service.GetByIdAsync(id);
-
-        if (!result.Success)
-            return NotFound(result);
-
+        if (!result.Success) return NotFound(result);
         return Ok(result);
     }
     [HttpGet("loaibenh/{id}")]
@@ -47,11 +43,8 @@ public class BaiVietController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ThemBaiVietDTO dto)
     {
-        var result = await _service.ThemBaiVietAsync(dto);
-
-        if (!result.Success)
-            return BadRequest(result);
-
+        var result = await _service.ThemAsync(dto);
+        if (!result.Success) return BadRequest(result);
         return Ok(result);
     }
     [Authorize]
@@ -59,10 +52,7 @@ public class BaiVietController : ControllerBase
     public async Task<IActionResult> Update(int id, [FromBody] CapNhatBaiVietDTO dto)
     {
         var result = await _service.CapNhatAsync(id, dto);
-
-        if (!result.Success)
-            return BadRequest(result);
-
+        if (!result.Success) return BadRequest(result);
         return Ok(result);
     }
     [Authorize]
@@ -70,10 +60,7 @@ public class BaiVietController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.XoaAsync(id);
-
-        if (!result.Success)
-            return NotFound(result);
-
+        if (!result.Success) return NotFound(result);
         return Ok(result);
     }
 }
