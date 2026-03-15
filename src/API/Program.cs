@@ -2,7 +2,6 @@
 using Application.Interfaces;
 using Application.Repository;
 using Application.Services;
-using Domain.Entities;
 using Infrastructure.Repositories;
 using Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,14 +12,9 @@ using Services;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
-
-
 ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
-
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -30,7 +24,6 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Clinic Management API",
         Version = "v1"
     });
-
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -40,7 +33,6 @@ builder.Services.AddSwaggerGen(c =>
         In = ParameterLocation.Header,
         Description = "Nhập: Bearer {token}"
     });
-
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -56,13 +48,11 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
 builder.Services.AddControllers()
 .AddJsonOptions(opt =>
 {
 	opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
-
 builder.Services
 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
@@ -79,26 +69,21 @@ builder.Services
 		),
 		RoleClaimType = ClaimTypes.Role
 	};
-
 	options.Events = new JwtBearerEvents
 	{
 		OnChallenge = async context =>
 		{
 			context.HandleResponse();
-
 			context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 			context.Response.ContentType = "application/json";
-
 			await context.Response.WriteAsJsonAsync(
 				ApiResponse<string>.Fail("Bạn chưa đăng nhập")
 			);
 		},
-
 		OnForbidden = async context =>
 		{
 			context.Response.StatusCode = StatusCodes.Status403Forbidden;
 			context.Response.ContentType = "application/json";
-
 			await context.Response.WriteAsJsonAsync(
 				ApiResponse<string>.Fail("Bạn không có quyền truy cập")
 			);
@@ -110,33 +95,20 @@ builder.Services.AddAuthorization(options =>
 	var permissions = new[]
 	{
 		"USER_VIEW","USER_CREATE","USER_UPDATE","USER_DELETE",
-
 		"ROLE_VIEW","ROLE_CREATE","ROLE_UPDATE","ROLE_DELETE",
-
 		"PERMISSION_VIEW","PERMISSION_ASSIGN",
-
 		"NHANVIEN_VIEW","NHANVIEN_CREATE","NHANVIEN_UPDATE","NHANVIEN_DELETE",
-
 		"BENHNHAN_VIEW","BENHNHAN_CREATE","BENHNHAN_UPDATE","BENHNHAN_DELETE",
-
 		"KHACH_VIEW", "KHACH_CREATE",
-
 		"LICHLAMVIEC_VIEW","LICHLAMVIEC_CREATE","LICHLAMVIEC_UPDATE","LICHLAMVIEC_DELETE",
-
 		"LICHKHAM_VIEW","LICHKHAM_CREATE","LICHKHAM_UPDATE","LICHKHAM_DELETE",
-
 		"PHIENKHAM_VIEW","PHIENKHAM_CREATE","PHIENKHAM_UPDATE",
-
-		"THIETBI_VIEW","THIETBI_CREATE","THIETBI_UPDATE",
-
+		"LIEUTRINH_VIEW","LIEUTRINH_CREATE","LIEUTRINH_UPDATE",
+		"CSVC_VIEW","CSVC_CREATE","CSVC_UPDATE", //cơ sở vật chất
 		"THUOC_VIEW","THUOC_CREATE","THUOC_UPDATE",
-		
-
 		"HOSO_VIEW","HOSO_CREATE","HOSO_UPDATE",
-
 		"HOADON_VIEW","HOADON_CREATE","HOADON_UPDATE"
 	};
-
 	foreach (var permission in permissions)
 	{
 		options.AddPolicy(permission, policy =>
@@ -148,7 +120,6 @@ builder.Services.AddAuthorization(options =>
 		});
 	}
 });
-
 builder.Services.AddScoped<ITaiKhoanRepository, TaiKhoanRepository>();
 builder.Services.AddScoped<TaiKhoanService>();
 builder.Services.AddScoped<IChucVuRepository, ChucVuRepository>();
@@ -200,8 +171,8 @@ builder.Services.AddScoped<ITaiKhamRepository, TaiKhamRepository>();
 builder.Services.AddScoped<TaiKhamService>();
 builder.Services.AddScoped<ILieuTrinhDieuTriRepository, LieuTrinhDieuTriRepository>();
 builder.Services.AddScoped<LieuTrinhDieuTriService>();
-builder.Services.AddScoped<ILieuTrinh_BuoiDieuTriRepository, LieuTrinh_BuoiDieuTriRepository>();
-builder.Services.AddScoped<LieuTrinh_BuoiDieuTriService>();
+builder.Services.AddScoped<IBuoiDieuTriRepository, BuoiDieuTriRepository>();
+builder.Services.AddScoped<BuoiDieuTriService>();
 builder.Services.AddScoped<IBaiVietRepository, BaiVietRepository>();
 builder.Services.AddScoped<BaiVietService>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
@@ -209,23 +180,16 @@ builder.Services.AddScoped<RefreshTokenService>();
 builder.Services.AddScoped<IQuyenRepository, QuyenRepository>();
 builder.Services.AddScoped<IChucVuQuyenRepository, ChucVuQuyenRepository>();
 builder.Services.AddScoped<ChucVuQuyenService>();
-
 var app = builder.Build();
-
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Clinic API v1");
     c.RoutePrefix = "swagger"; // truy cập /swagger
 });
-
 app.MapGet("/", () => Results.Redirect("/swagger"));
-
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

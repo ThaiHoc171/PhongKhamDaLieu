@@ -11,11 +11,9 @@ public class HoSoBenhAn
     public string? ThongTinKhac { get; set; }
     public DateTime NgayTao { get; set; }
     public DateTime NgayCapNhat { get; set; }
-
     public HoSoBenhAn(int benhNhanID, string? benhNen, string? diUng, string? tienSuBenh, string? tienSuGiaDinh, string? thoiQuenSong, string? thongTinKhac, DateTime ngayTao, DateTime ngayCapNhat)
     {
         if (benhNhanID <= 0) throw new ArgumentException("benhNhanID không hợp lệ");
-
         BenhNhanID = benhNhanID;
         BenhNen = benhNen;
         DiUng = diUng;
@@ -26,7 +24,6 @@ public class HoSoBenhAn
         NgayTao = ngayTao;
         NgayCapNhat = ngayCapNhat;
     }
-
     public HoSoBenhAn(int hoSoBenhAnID, int benhNhanID, string? benhNen, string? diUng, string? tienSuBenh, string? tienSuGiaDinh, string? thoiQuenSong, string? thongTinKhac, DateTime ngayTao, DateTime ngayCapNhat)
     {
         HoSoBenhAnID = hoSoBenhAnID;
@@ -40,7 +37,6 @@ public class HoSoBenhAn
         NgayTao = ngayTao;
         NgayCapNhat = ngayCapNhat;
     }
-
     public void CapNhatThongTin(string? benhNen, string? diUng, string? tienSuBenh, string? tienSuGiaDinh, string? thoiQuenSong, string? thongTinKhac, DateTime ngayCapNhat)
     {
         BenhNen = benhNen;
@@ -52,4 +48,3 @@ public class HoSoBenhAn
         NgayCapNhat = ngayCapNhat;
     }
 }
-

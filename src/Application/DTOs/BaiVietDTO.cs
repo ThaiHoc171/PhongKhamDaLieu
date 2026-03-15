@@ -1,5 +1,4 @@
-﻿
-namespace Application.DTOs;
+﻿namespace Application.DTOs;
 public class ThemBaiVietDTO
 {
     public string TieuDe { get; set; }
@@ -9,7 +8,6 @@ public class ThemBaiVietDTO
     public int TacGiaID { get; set; }
     public int LoaiBenhID { get; set; }
 }
-
 public class CapNhatBaiVietDTO
 {
     public string TieuDe { get; set; }
@@ -18,7 +16,6 @@ public class CapNhatBaiVietDTO
     public string HinhAnh { get; set; }
     public int LoaiBenhID { get; set; }
 }
-
 public class BaiVietResponseDTO
 {
     public int BaiVietID { get; set; }
@@ -31,5 +28,4 @@ public class BaiVietResponseDTO
     public int LuotXem { get; set; }
     public DateTime NgayDang { get; set; }
     public DateTime NgayCapNhat { get; set; }
-
 }

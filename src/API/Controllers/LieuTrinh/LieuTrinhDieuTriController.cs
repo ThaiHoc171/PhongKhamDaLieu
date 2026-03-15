@@ -1,79 +1,98 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Application.Common;
 using Application.DTOs;
 using Application.Services;
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
-
 [ApiController]
-[Route("api/[controller]")]
-[Authorize] 
+[Route("api/lieutrinh")]
+[Authorize]
 public class LieuTrinhDieuTriController : ControllerBase
 {
 	private readonly LieuTrinhDieuTriService _service;
-
 	public LieuTrinhDieuTriController(LieuTrinhDieuTriService service)
 	{
 		_service = service;
 	}
-
-	[Authorize(Roles = "Admin")]
-	[HttpGet]
-	public async Task<IActionResult> LayDanhSach()
-	{
-		return Ok(await _service.DanhSachAsync());
-	}
-
-	[Authorize(Policy = "BacSiOnly")]
-	[HttpGet("{id:int}")]
-	public async Task<IActionResult> LayTheoId(int id)
-	{
-		var result = await _service.LayTheoIdAsync(id);
-		return result == null
-			? NotFound(new { message = "Liệu trình không tồn tại." })
-			: Ok(result);
-	}
-
-	[Authorize]
-	[HttpGet("benhnhan/{benhNhanId:int}")]
-	public async Task<IActionResult> LayTheoBenhNhan(int benhNhanId)
-	{
-		var result = await _service.LayTheoBenhNhanAsync(benhNhanId);
-		return result == null
-			? NotFound(new { message = "Bệnh nhân chưa có liệu trình." })
-			: Ok(result);
-	}
-
-	[Authorize(Policy = "BacSiOnly")]
+	[Authorize(Policy = "LIEUTRINH_CREATE")]
 	[HttpPost]
-	public async Task<IActionResult> Them([FromBody] TaoLieuTrinhDieuTriDTO dto)
+	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] LieuTrinhDieuTriRequestDTO dto)
 	{
-		await _service.TaoLieuTrinhAsync(dto);
-		return Ok(new { message = "Thêm liệu trình thành công." });
+		var result = await _service.CreateAsync(dto);
+		if (!result.Success)
+			return BadRequest(result);
+		return CreatedAtAction(
+			nameof(GetById),
+			new { id = result.Data },
+			result);
 	}
-
-	[Authorize(Policy = "BacSiOnly")]
+	[Authorize(Policy = "LIEUTRINH_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id,
-		[FromBody] CapNhatLieuTrinhDieuTriDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Update( int id, [FromBody] LieuTrinhDieuTriUpdateDTO dto)
 	{
-		var result = await _service.CapNhatAsync(id, dto);
-
-		return result
-			? Ok(new { message = "Cập nhật liệu trình thành công" })
-			: NotFound(new { message = "Liệu trình không tồn tại" });
+		var result = await _service.UpdateAsync(id, dto);	
+		if (!result.Success)
+			return NotFound(result);
+		return Ok(result);
 	}
-
-	[Authorize(Policy = "BacSiOnly")]
-	[HttpPut("TrangThai/{id}")]
-	public async Task<IActionResult> CapNhatTrangThai(
-		int id,
-		[FromBody] CapNhatTrangThaiLieuTrinhDieuTriDTO dto)
+	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[HttpPut("{id}/complete")]
+	public async Task<ActionResult<ApiResponse<bool>>> Complete(int id)
 	{
-		var result = await _service.CapNhatTrangThaiAsync(id, dto);
-
-		return result
-			? Ok(new { message = "Cập nhật trạng thái liệu trình thành công" })
-			: NotFound(new { message = "Liệu trình không tồn tại" });
+		var result = await _service.CompleteAsync(id);
+		if (!result.Success)
+			return BadRequest(result);
+		return Ok(result);
+	}
+	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[HttpPut("{id}/cancel")]
+	public async Task<ActionResult<ApiResponse<bool>>> Cancel( int id, [FromBody] string? ghiChu)
+	{
+		var result = await _service.CancelAsync(id, ghiChu);
+		if (!result.Success)
+			return BadRequest(result);
+		return Ok(result);
+	}
+	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[HttpPut("{id}/status")]
+	public async Task<ActionResult<ApiResponse<bool>>> UpdateStatus( int id, [FromBody] LieuTrinhStatusDTO dto)
+	{
+		var result = await _service.UpdateStatusAsync(id, dto.GhiChu);
+		if (!result.Success)
+			return NotFound(result);
+		return Ok(result);
+	}
+	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[HttpGet("{id}")]
+	public async Task<ActionResult<ApiResponse<LieuTrinhDieuTriReadModel>>> GetById(int id)
+	{
+		var result = await _service.GetByIdAsync(id);
+		if (!result.Success)
+			return NotFound(result);
+		return Ok(result);
+	}
+	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[HttpGet]
+	public async Task<ActionResult<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>>> 
+		GetPaged( [FromQuery] int page = 1, [FromQuery] int size = 15, [FromQuery] string? trangThai = null)
+	{
+		var result = await _service.GetPagedAsync(page, size, trangThai);
+		return Ok(result);
+	}
+	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[HttpGet("search")]
+	public async Task<ActionResult<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>>> 
+		Search( [FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 15)
+	{
+		var result = await _service.SearchAsync(keyword, page, size);
+		return Ok(result);
+	}
+	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[HttpGet("benhnhan/{benhNhanId}")]
+	public async Task<ActionResult<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>>> 
+		GetByBenhNhan( int benhNhanId, [FromQuery] int page = 1, [FromQuery] int size = 15)
+	{
+		var result = await _service.GetByBenhNhanAsync(benhNhanId, page, size);
+		return Ok(result);
 	}
 }

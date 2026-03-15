@@ -11,10 +11,8 @@ public class PhienKham
 	public string? GhiChu { get; private set; }
 	public string? HinhAnh { get; private set; }
 	public string? ChanDoanCuoi { get; private set; }
-
 	public DateTime NgayKham { get; private set; }
 	public TrangThaiKhamEnum TrangThai { get; private set; }
-
 	// Tạo mới
 	public PhienKham( int caKhamID, int benhNhanID, int nhanVienID, int phongChucNangID)
 	{
@@ -23,7 +21,6 @@ public class PhienKham
 		NhanVienID = nhanVienID;
 		PhongChucNangID = phongChucNangID;
 	}
-
 	// Map DB
 	public PhienKham( int phienKhamID, int caKhamID, int benhNhanID, int nhanVienID, int phongChucNangID,
 		string? trieuChung,	string? ghiChu,	string? hinhAnh, string? chanDoanCuoi, DateTime ngayKham,string trangThai)
@@ -40,7 +37,6 @@ public class PhienKham
 		NgayKham = ngayKham;
 		TrangThai = TrangThaiKhamExtensions.FromDb(trangThai);
 	}
-
 	public void CapNhat(string? trieuChung, string? ghiChu, string? hinhAnh)
 	{
 		if (TrangThai != TrangThaiKhamEnum.DangKham)
@@ -49,21 +45,17 @@ public class PhienKham
 		GhiChu = ghiChu;
 		HinhAnh = hinhAnh;
 	}
-
 	public void KetThuc(string chanDoanCuoi)
 	{
 		if (TrangThai != TrangThaiKhamEnum.DangKham)
 			throw new InvalidOperationException("Không thể kết thúc");
-
 		ChanDoanCuoi = chanDoanCuoi;
 		TrangThai = TrangThaiKhamEnum.HoanThanh;
 	}
-
 	public void Huy()
 	{
 		if (TrangThai == TrangThaiKhamEnum.HoanThanh)
 			throw new InvalidOperationException("Không thể huỷ");
-
 		TrangThai = TrangThaiKhamEnum.HuyKham;
 	}
 }

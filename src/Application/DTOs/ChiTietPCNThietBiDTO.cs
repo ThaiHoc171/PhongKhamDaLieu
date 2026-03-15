@@ -1,5 +1,4 @@
 ﻿using Domain.Enums;
-
 namespace Application.DTOs;
 public class ChiTietPCNThietBiResponseDTO
 {
@@ -9,7 +8,6 @@ public class ChiTietPCNThietBiResponseDTO
 	public TinhTrang TinhTrang { get; set; }
 	public string? GhiChu { get; set; }
 }
-
 public class ChiTietPCNThietBiCreateDTO
 {
 	public int PhongChucNangID { get; set; }
@@ -17,7 +15,6 @@ public class ChiTietPCNThietBiCreateDTO
 	public string MaTaiSan { get; set; } = default!;
 	public string? GhiChu { get; set; }
 }
-
 public class ChiTietPCNThietBiUpdateDTO
 {
 	public TinhTrang TinhTrang { get; set; }

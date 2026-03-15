@@ -1,5 +1,4 @@
 ﻿namespace Application.DTOs;
-
 public class ChucVuQuyenDTO
 {
 	public int ChucVuID { get; set; }

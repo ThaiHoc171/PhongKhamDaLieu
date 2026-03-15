@@ -1,7 +1,5 @@
 ﻿using Domain.Entities;
-
 namespace Application.Interfaces;
-
 public interface ITaiKhoanRepository
 {
 	Task<TaiKhoan?> GetByEmailAsync(string email);
@@ -9,6 +7,4 @@ public interface ITaiKhoanRepository
 	Task<List<TaiKhoan>> GetAllAsync();
 	Task AddAsync(TaiKhoan taiKhoan);
 	Task UpdateAsync(TaiKhoan taiKhoan);
-
 }
-

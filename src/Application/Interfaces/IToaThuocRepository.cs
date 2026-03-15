@@ -3,13 +3,13 @@ using Domain.Entities;
 namespace Application.Interfaces;
 public interface IToaThuocRepository
 {
-	Task<bool> IsToaThuocExits(int phienKhamID);
+	Task<ToaThuoc?> GetByIdAsync(int toaThuocID);
+	Task<bool> ExistsByPhienKhamAsync(int phienKhamID);
 	Task<int> AddAsync(ToaThuoc toaThuoc);
-	Task<ToaThuocReadModel> GetByPhienKhamAsync(int phienKhamID);
-	Task<(List<ToaThuocReadModel>, int)> GetPagedAsync(int page, int size);
+	Task<ToaThuocReadModel?> GetByPhienKhamAsync(int phienKhamID);
+	Task<(List<ToaThuocListReadModel>, int)> GetPagedAsync(int page, int size);
 	Task DeleteAsync(int toaThuocID);
 }
-
 public interface IChiTietToaThuocRepository
 {
 	Task<List<int>> GetThuocIdsAsync(int toaThuocID);

@@ -2,37 +2,28 @@
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-
 namespace Infrastructure.Repositories;
-
 public class HoSoBenhAnRepository : IHoSoBenhAnRepository
 {
     private readonly string _connectionString;
-
     public HoSoBenhAnRepository(IConfiguration config)
     {
         _connectionString = config.GetConnectionString("DefaultConnection")
             ?? throw new ArgumentNullException("Connection string not found");
     }
-
     public async Task<List<HoSoBenhAn>> GetAllAsync()
     {
         const string sql = @"SELECT HoSoBenhAnID, BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac, NgayTao, NgayCapNhat
                             FROM HoSoBenhAn";
-
         var list = new List<HoSoBenhAn>();
-
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
-
         await conn.OpenAsync();
         await using var reader = await cmd.ExecuteReaderAsync();
-
         while (await reader.ReadAsync())
         {
             list.Add(MapToEntity(reader));
         }
-
         return list;
     }
     public async Task<HoSoBenhAn?> GetByIdAsync(int hoSoBenhAnID)
@@ -42,10 +33,8 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("@hoSoBenhAnID", hoSoBenhAnID);
-
         await conn.OpenAsync();
         await using var reader = await cmd.ExecuteReaderAsync();
-
         return await reader.ReadAsync() ? MapToEntity(reader) : null;
     }
     public async Task<HoSoBenhAn?> GetByBenhNhanIdAsync(int benhNhanID)
@@ -55,10 +44,8 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("@benhNhanID", benhNhanID);
-
         await conn.OpenAsync();
         await using var reader = await cmd.ExecuteReaderAsync();
-
         return await reader.ReadAsync() ? MapToEntity(reader) : null;
     }
     public async Task<int> AddAsync(HoSoBenhAn hs)
@@ -77,11 +64,9 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
         cmd.Parameters.AddWithValue("@thongTinKhac", hs.ThongTinKhac ?? "");
         cmd.Parameters.AddWithValue("@ngayTao", hs.NgayTao);
         cmd.Parameters.AddWithValue("@ngayCapNhat", hs.NgayCapNhat);
-
         await conn.OpenAsync();
         return (int)await cmd.ExecuteScalarAsync();
     }
-
     public async Task UpdateAsync(HoSoBenhAn hs)
     {
         const string sql = @"UPDATE HoSoBenhAn
@@ -89,7 +74,6 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
                             WHERE HoSoBenhAnID =  @hoSoBenhAnID";
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
-
         cmd.Parameters.AddWithValue("@hoSoBenhAnID", hs.HoSoBenhAnID);
         cmd.Parameters.AddWithValue("@benhNen", hs.BenhNen ?? "");
         cmd.Parameters.AddWithValue("@diUng", hs.DiUng ?? "");
@@ -99,7 +83,6 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
         cmd.Parameters.AddWithValue("@thongTinKhac", hs.ThongTinKhac ?? "");
         cmd.Parameters.AddWithValue("@ngayTao", hs.NgayTao);
         cmd.Parameters.AddWithValue("@ngayCapNhat", hs.NgayCapNhat);
-
         await conn.OpenAsync();
         await cmd.ExecuteNonQueryAsync();
     }
@@ -119,4 +102,3 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
         );
     }
 }
-

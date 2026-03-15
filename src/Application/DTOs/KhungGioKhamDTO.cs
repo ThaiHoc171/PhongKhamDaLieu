@@ -7,7 +7,6 @@
 		public TimeSpan GioKetThuc { get; set; }
 		public string? TenKhung { get; set; }
 	}
-
 	public class KhungGioKhamResponseDTO
 	{
 		public int KhungGioID { get; set; }

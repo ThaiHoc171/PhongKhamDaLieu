@@ -12,7 +12,6 @@ public class HoSoBenhAnResponeDTO
     public DateTime NgayTao { get; set; }
     public DateTime NgayCapNhat { get; set; }
 }
-
 public class TaoHoSoBenhAnDTO
 {
     public int BenhNhanID { get; set; }
@@ -25,7 +24,6 @@ public class TaoHoSoBenhAnDTO
     public DateTime NgayTao { get; set; }
     public DateTime NgayCapNhat { get; set; }
 }
-
 public class HoSoBenhAnUpdateDTO
 {
     public string? BenhNen { get; set; }

@@ -1,5 +1,4 @@
 ﻿namespace Application.DTOs;
-
 public class ChucVuResponseDTO
 {
 	public int ChucVuID { get; set; }
@@ -8,7 +7,6 @@ public class ChucVuResponseDTO
 	public DateTime NgayTao { get; set; }
 	public string TrangThai { get; set; } = default!;
 }
-
 public class ChucVuRequestDTO
 {
 	public string TenChucVu { get; set; } = default!;

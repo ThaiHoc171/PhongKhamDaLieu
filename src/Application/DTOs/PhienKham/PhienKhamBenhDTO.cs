@@ -1,5 +1,4 @@
 ﻿namespace Application.DTOs;
-
 public class PhienKhamBenhRequestDTO
 {
 	public int PhienKhamID { get; set; }
@@ -15,7 +14,6 @@ public class PhienKhamBenhResponseDTO
 	public string LoaiChanDoan { get; init; } = default!;
 	public string? GhiChu { get; init; }
 }
-
 public class PhienKhamBenhReadModel
 {
 	public int Id { get; init; }
