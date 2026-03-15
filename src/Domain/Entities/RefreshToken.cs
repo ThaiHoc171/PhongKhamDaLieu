@@ -1,5 +1,4 @@
 ﻿namespace Domain.Entities;
-
 public class RefreshToken
 {
     public int RefreshTokenId { get; private set; }
@@ -8,7 +7,6 @@ public class RefreshToken
     public DateTime ExpiryDate { get; private set; }
     public bool IsRevoked { get; private set; }
     public DateTime CreatedAt { get; private set; }
-
     public RefreshToken(
         int taiKhoanId,
         string tokenHash,
@@ -39,7 +37,6 @@ public class RefreshToken
     {
         IsRevoked = true;
     }
-
     public bool IsActive()
         => !IsRevoked && ExpiryDate > DateTime.UtcNow;
 }

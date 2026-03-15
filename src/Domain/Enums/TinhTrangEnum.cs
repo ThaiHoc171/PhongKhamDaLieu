@@ -1,15 +1,11 @@
-﻿
-using System.Threading.Tasks;
-
+﻿using System.Threading.Tasks;
 namespace Domain.Enums;
-
 public enum TinhTrang
 {
 	HoatDong,
 	Hong,
 	BaoTri
 }
-
 public static class TinhTrangExtensions
 {
 	public static string ToDbValue(this TinhTrang tt)
@@ -20,7 +16,6 @@ public static class TinhTrangExtensions
 			TinhTrang.BaoTri => "Bảo trì",
 			_ => throw new ArgumentOutOfRangeException()
 		};
-
 	public static TinhTrang FromDb(string value)
 		=> value switch
 		{

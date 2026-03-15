@@ -1,141 +1,132 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-
+using Domain.Enums;
 namespace Application.Services;
-
-public class LieuTrinh_BuoiDieuTriService
+public class BuoiDieuTriService
 {
-    private readonly ILieuTrinh_BuoiDieuTriRepository _repo;
-    private readonly ICaKhamRepository _caKhamRepo;
-    private readonly ILieuTrinhDieuTriRepository _lieuTrinhRepo;
-    private readonly ILichLamViecRepository _lichLamViecRepo;
-
-    public LieuTrinh_BuoiDieuTriService(ILieuTrinh_BuoiDieuTriRepository repo, ICaKhamRepository caKhamRepo, ILieuTrinhDieuTriRepository lieuTrinhRepo, ILichLamViecRepository lichLamViecRepo)
-    {
-        _repo = repo;
-        _caKhamRepo = caKhamRepo;
-        _lieuTrinhRepo = lieuTrinhRepo;
-        _lichLamViecRepo = lichLamViecRepo;
-    }
-
-    public async Task TaoBuoiDieuTriAsync(TaoBuoiDieuTriDTO dto)
-    {
-        var caKham = await _caKhamRepo.GetByIdAsync(dto.CaKhamID);
-        if (caKham == null || caKham.LichLamViecID == null)
-            throw new Exception("Ca khám không hợp lệ");
-
-        var lich = await _lichLamViecRepo.GetByIdAsync(caKham.LichLamViecID.Value);
-        if (lich == null)
-            throw new Exception("Lịch làm việc không tồn tại");
-
-        var lieuTrinh = await _lieuTrinhRepo.GetByIdAsync(dto.LieuTrinhID);
-        if (lieuTrinh == null)
-            throw new Exception("Không tìm thấy liệu trình");
-
-        if (lieuTrinh.TrangThai != "Đang điều trị")
-            throw new Exception("Liệu trình không ở trạng thái đang điều trị");
-
-        int maxSoBuoi = await _repo.GetMaxSoBuoiAsync(lieuTrinh.LieuTrinhID);
-        int soBuoi = maxSoBuoi + 1;
-
-        if (soBuoi > lieuTrinh.TongSoBuoi)
-            throw new Exception("Liệu trình đã đủ số buổi");
-
-        DateTime ngayDuKien =
-            lieuTrinh.NgayBatDau.AddDays((soBuoi - 1) * 7);
-
-        var buoi = new LieuTrinh_BuoiDieuTri(
-            lieuTrinh.LieuTrinhID,
-            dto.CaKhamID,
-            soBuoi,
-            ngayDuKien,
-            caKham.NgayKham,
-            lich.NhanVienID
-        );
-
-        await _repo.AddAsync(buoi);
-    }
-
-    public async Task<bool> CapNhatTrangThaiAsync(
-    int buoiDieuTriID,
-    CapNhatTrangThaiBuoiDieuTriDTO dto)
-    {
-        var buoi = await _repo.GetByIdAsync(buoiDieuTriID);
-        if (buoi == null) return false;
-
-        if (buoi.TrangThai == "Hoàn thành" || buoi.TrangThai == "Đã hủy")
-            throw new Exception("Buổi điều trị đã kết thúc");
-
-        var hopLe = new[] { "Chờ xử lý", "Đang xử lý", "Hoàn thành", "Đã hủy" };
-        if (!hopLe.Contains(dto.TrangThai))
-            throw new Exception("Trạng thái không hợp lệ");
-
-        buoi.CapNhatTrangThai(
-            dto.TrangThai,
-            dto.NhanVienID,
-            dto.NgayThucHien,
-            dto.GhiChu
-        );
-
-        await _repo.UpdateTrangThaiAsync(buoi);
-
-        if (dto.TrangThai == "Hoàn thành")
-        {
-            var lieuTrinh = await _lieuTrinhRepo.GetByIdAsync(buoi.LieuTrinhID);
-            if (lieuTrinh == null)
-                throw new Exception("Liệu trình không tồn tại");
-
-            int soBuoiHoanThanh =
-                await _repo.CountBySoBuoiAsync(buoi.LieuTrinhID);
-
-            if (soBuoiHoanThanh >= lieuTrinh.TongSoBuoi)
-            {
-                lieuTrinh.CapNhatTrangThai("Hoàn thành", "Đã hoàn tất đủ số buổi");
-                await _lieuTrinhRepo.UpdateTrangThaiAsync(lieuTrinh);
-            }
-        }
-
-        return true;
-    }
-
-
-    public async Task<List<BuoiDieuTriResponeDTO>> LayTheoLieuTrinhAsync(int lieuTrinhID)
-    {
-        var list = await _repo.GetByLieuTrinhAsync(lieuTrinhID);
-
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<List<BuoiDieuTriResponeDTO>> LocDuKienAsync(DateTime ngay, string trangThai)
-    {
-        var list = await _repo.LocDuKienAsync(ngay, trangThai);
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<List<BuoiDieuTriResponeDTO>> LocBatDauAsync(DateTime ngay, string trangThai)
-    {
-        var list = await _repo.LocBatDauAsync(ngay, trangThai);
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<List<BuoiDieuTriResponeDTO>> GetAllAsync()
-    {
-        var list = await _repo.GetAllAsync();
-        return list.Select(MapToDto).ToList();
-    }
-
-    private static BuoiDieuTriResponeDTO MapToDto(LieuTrinh_BuoiDieuTri buoi)
-    {
-        return new BuoiDieuTriResponeDTO
-        {
-            BuoiDieuTriID = buoi.BuoiDieuTriID,
-            LieuTrinhID = buoi.LieuTrinhID,
-            CaKhamID = buoi.CaKhamID,
-            SoBuoi = buoi.SoBuoi,
-            NgayDuKien = buoi.NgayDuKien,
-            NgayThucHien = buoi.NgayThucHien,
-            NhanVienID = buoi.NhanVienID,
-            TrangThai = buoi.TrangThai,
-            GhiChu = buoi.GhiChu,
-            HinhAnhJSON = buoi.HinhAnhJSON
-        };
-    }
+	private readonly IBuoiDieuTriRepository _repo;
+	public BuoiDieuTriService(IBuoiDieuTriRepository repo)
+	{
+		_repo = repo;
+	}
+	public async Task<ApiResponse<int>> CreateAsync(BuoiDieuTriRequestDTO dto)
+	{
+		if (dto.LieuTrinhID <= 0)
+			return ApiResponse<int>.Fail("Liệu trình không hợp lệ");
+		if (dto.CaKhamID <= 0)
+			return ApiResponse<int>.Fail("Ca khám không hợp lệ");
+		if (dto.SoBuoi <= 0)
+			return ApiResponse<int>.Fail("Số buổi không hợp lệ");
+		if (await _repo.ExistsByCaKhamAsync(dto.CaKhamID))
+			return ApiResponse<int>.Fail("Ca khám này đã có buổi điều trị");
+		var maxSoBuoi = await _repo.GetMaxSoBuoiAsync(dto.LieuTrinhID);
+		if (dto.SoBuoi <= maxSoBuoi)
+			return ApiResponse<int>.Fail("Số buổi phải lớn hơn buổi hiện tại");
+		// validate lịch dự kiến dựa trên buổi trước
+		var last = await _repo.GetLastAsync(dto.LieuTrinhID);
+		if (last != null && dto.NgayDuKien.HasValue && last.NgayThucHien.HasValue)
+		{
+			if (dto.NgayDuKien <= last.NgayThucHien)
+				return ApiResponse<int>.Fail("Ngày dự kiến phải sau buổi trước");
+		}
+		BuoiDieuTri entity;
+		try
+		{
+			entity = new BuoiDieuTri(
+				dto.LieuTrinhID,
+				dto.CaKhamID,
+				dto.SoBuoi,
+				dto.NgayDuKien);
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<int>.Fail(ex.Message);
+		}
+		var id = await _repo.AddAsync(entity);
+		return ApiResponse<int>.SuccessResponse(id);
+	}
+	public async Task<ApiResponse<bool>> StartAsync(int id, int nhanVienID)
+	{
+		if (nhanVienID <= 0)
+			return ApiResponse<bool>.Fail("Nhân viên không hợp lệ");
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Buổi điều trị không tồn tại");
+		try
+		{
+			entity.BatDauDieuTri(nhanVienID);
+		}
+		catch (InvalidOperationException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		await _repo.UpdateAsync(entity);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<bool>> CompleteAsync(int id, BuoiDieuTriUpdateDTO dto)
+	{
+		if (dto.NgayThucHien == null)
+			return ApiResponse<bool>.Fail("Ngày thực hiện không hợp lệ");
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Buổi điều trị không tồn tại");
+		try
+		{
+			entity.HoanThanh(dto.NgayThucHien.Value, dto.GhiChu);
+		}
+		catch (InvalidOperationException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		await _repo.UpdateAsync(entity);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<bool>> CancleAsync(int id, string? ghiChu)
+	{
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Buổi điều trị không tồn tại");
+		try
+		{
+			entity.Huy(ghiChu);
+		}
+		catch (InvalidOperationException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		await _repo.UpdateAsync(entity);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<bool>> UpdateImageAsync(int id, string? hinhAnhJson)
+	{
+		var entity = await _repo.GetByIdAsync(id);
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Buổi điều trị không tồn tại");
+		entity.CapNhatHinhAnh(hinhAnhJson);
+		await _repo.UpdateAsync(entity);
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+	public async Task<ApiResponse<BuoiDieuTriReadModel>> GetByIdAsync(int id)
+	{
+		var result = await _repo.GetDetailAsync(id);
+		if (result == null)
+			return ApiResponse<BuoiDieuTriReadModel>.Fail("Buổi điều trị không tồn tại");
+		return ApiResponse<BuoiDieuTriReadModel>.SuccessResponse(result);
+	}
+	public async Task<ApiResponse<List<BuoiDieuTriListReadModel>>> GetByLieuTrinhAsync(int lieuTrinhID)
+	{
+		if (lieuTrinhID <= 0)
+			return ApiResponse<List<BuoiDieuTriListReadModel>>.Fail("Liệu trình không hợp lệ");
+		var result = await _repo.GetByLieuTrinhAsync(lieuTrinhID);
+		return ApiResponse<List<BuoiDieuTriListReadModel>>.SuccessResponse(result);
+	}
+	public async Task<ApiResponse<int>> CountCompleteAsync(int lieuTrinhID)
+	{
+		if (lieuTrinhID <= 0)
+			return ApiResponse<int>.Fail("Liệu trình không hợp lệ");
+		var count = await _repo.CountHoanThanhAsync(lieuTrinhID);
+		return ApiResponse<int>.SuccessResponse(count);
+	}
 }

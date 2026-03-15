@@ -3,7 +3,6 @@ using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
-
 namespace Presentation.Controllers
 {
 	[ApiController]
@@ -12,12 +11,10 @@ namespace Presentation.Controllers
 	public class KhungGioKhamController : ControllerBase
 	{
 		private readonly KhungGioKhamService _khungGioService;
-
 		public KhungGioKhamController(KhungGioKhamService khungGioService)
 		{
 			_khungGioService = khungGioService;
 		}
-
 		// GET: api/KhungGioKham
 		[HttpGet]
 		public async Task<IActionResult> LayDanhSachKhungGio()
@@ -25,19 +22,15 @@ namespace Presentation.Controllers
 			var result = await _khungGioService.DanhSachKhungGioAsync();
 			return Ok(result);
 		}
-
 		// GET: api/KhungGioKham/{id}
 		[HttpGet("{id}")]
 		public async Task<IActionResult> LayKhungGioTheoId(int id)
 		{
 			var result = await _khungGioService.LayKhungGioTheoIdAsync(id);
-
 			if (result == null)
 				return NotFound(new { message = "Khung giờ khám không tồn tại." });
-
 			return Ok(result);
 		}
-
 		// POST: api/KhungGioKham
 		[Authorize(Roles = "Admin")]
 		[HttpPost]
@@ -56,7 +49,6 @@ namespace Presentation.Controllers
 				return BadRequest(new { message = ex.Message });
 			}
 		}
-
 		// PUT: api/KhungGioKham/{id}
 		[Authorize(Roles = "Admin")]
 		[HttpPut("{id}")]
@@ -65,10 +57,8 @@ namespace Presentation.Controllers
 			try
 			{
 				var result = await _khungGioService.CapNhatKhungGioAsync(id, dto);
-
 				if (!result)
 					return NotFound(new { message = "Khung giờ khám không tồn tại." });
-
 				return Ok(new
 				{
 					message = "Cập nhật khung giờ khám thành công."

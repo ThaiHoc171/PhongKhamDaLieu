@@ -1,5 +1,4 @@
 ﻿namespace Application.DTOs;
-
 public class ThongTinRequestDTO
 {
     public int? TaiKhoanID { get; set; }
@@ -11,7 +10,6 @@ public class ThongTinRequestDTO
 	public string? DiaChi { get; set; }
 	public string? Avatar { get; set; }
 }
-
 public class ThongTinUpdateRequestDTO
 {
 	public string HoTen { get; set; } = null!;
@@ -22,7 +20,6 @@ public class ThongTinUpdateRequestDTO
 	public string? DiaChi { get; set; }
 	public string? Avatar { get; set; }
 }
-
 public class ThongTinCaNhanResponseDTO
 {
 	public int ThongTinID { get; set; }
@@ -47,7 +44,6 @@ public class ThongTinLiteReadModel
 	public DateTime NgayTao { get; set; }
 	public DateTime? NgayCapNhat { get; set; }
 }
-
 public class ThongTinFullReadModel
 {
 	public int ThongTinID { get; set; }

@@ -1,9 +1,7 @@
 ﻿using Application.DTOs;
 using Domain.Entities;
 using Domain.Enums;
-
 namespace Application.Interfaces;
-
 public interface IThongTinCaNhanRepository
 {
 	Task<ThongTinCaNhan?> GetByIdAsync(int thongTinId);

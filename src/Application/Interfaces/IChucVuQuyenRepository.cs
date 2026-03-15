@@ -1,5 +1,4 @@
 ﻿namespace Application.Interfaces;
-
 public interface IChucVuQuyenRepository
 {
 	Task<List<int>> GetByChucVuAsync(int chucVuId);

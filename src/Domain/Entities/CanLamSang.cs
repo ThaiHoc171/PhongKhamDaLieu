@@ -1,5 +1,4 @@
 ﻿namespace Domain.Entities;
-
 public class CanLamSang
 {
 	public int CanLamSangID { get; private set; }
@@ -8,7 +7,6 @@ public class CanLamSang
 	public string LoaiXetNghiem { get; private set; }
 	public DateTime NgayTao { get; private set; }
 	public string TrangThai { get; private set; }
-
 	// Tạo mới
 	public CanLamSang(string tenCLS, string? moTa, string loaiXetNghiem)
 	{
@@ -20,7 +18,6 @@ public class CanLamSang
 		TrangThai = "Hoạt động";
 		NgayTao = DateTime.UtcNow;
 	}
-
 	// Map DB
 	public CanLamSang(
 		int id, string tenCLS, string? moTa, string loaiXetNghiem, DateTime ngayTao, string trangThai)
@@ -32,14 +29,12 @@ public class CanLamSang
 		NgayTao = ngayTao;
 		TrangThai = trangThai;
 	}
-
 	public void CapNhat(string tenCLS, string? moTa, string loaiXetNghiem)
 	{
 		TenCLS = tenCLS;
 		MoTa = moTa;
 		LoaiXetNghiem = loaiXetNghiem;
 	}
-
 	public void CapNhatTrangThai(string trangThai)
 	{
 		TrangThai = trangThai;

@@ -1,5 +1,4 @@
 ﻿namespace Domain.Entities;
-
 public class BaiViet
 {
     public int BaiVietID { get; set; }
@@ -12,7 +11,6 @@ public class BaiViet
     public int LuotXem { get; set; }
     public DateTime NgayDang { get; set; }
     public DateTime NgayCapNhat { get; set; }
-
     public BaiViet(string tieuDe, string tomTat, string noiDung, string hinhAnh, int tacGiaID, int loaiBenhID)
     {
         TieuDe = tieuDe;
@@ -25,7 +23,6 @@ public class BaiViet
         NgayDang = DateTime.Now;
         NgayCapNhat = DateTime.Now;
     }
-
     // Map từ DB
     public BaiViet(int baiVietID, string tieuDe, string tomTat, string noiDung, string hinhAnh, int tacGiaID, int loaiBenhID, int luotXem, DateTime ngayDang, DateTime ngayCapNhat)
     {
@@ -40,7 +37,6 @@ public class BaiViet
         NgayDang = ngayDang;
         NgayCapNhat = ngayCapNhat;
     }
-
     public void CapNhat(string tieuDe, string tomTat, string noiDung, string hinhAnh, int loaiBenhID)
     {
         TieuDe = tieuDe;
@@ -50,7 +46,6 @@ public class BaiViet
         LoaiBenhID = loaiBenhID;
         NgayCapNhat = DateTime.Now;
     }
-
     public void TangLuotXem()
     {
         LuotXem++;

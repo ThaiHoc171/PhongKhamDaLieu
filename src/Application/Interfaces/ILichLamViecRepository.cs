@@ -1,8 +1,6 @@
 ﻿using Application.DTOs;
 using Domain.Entities;
-
 namespace Application.Interfaces;
-
 public interface ILichLamViecRepository
 {
 	Task<int> AddAsync(LichLamViec entity);

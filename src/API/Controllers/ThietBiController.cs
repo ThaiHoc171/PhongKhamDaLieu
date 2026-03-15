@@ -14,7 +14,7 @@ public class ThietBiController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "THIETBI_CREATE")]
+	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost]
 	public async Task<IActionResult> Create(ThietBiRequestDTO dto)
 	{
@@ -23,7 +23,7 @@ public class ThietBiController : ControllerBase
 			return BadRequest(response);
 		return CreatedAtAction(nameof(Detail), new { id = response.Data }, response);
 	}
-	[Authorize(Policy = "THIETBI_UPDATE")]
+	[Authorize(Policy = "CSVC_UPDATE")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> Update(int id, ThietBiUpdateDTO dto)
 	{
@@ -32,7 +32,7 @@ public class ThietBiController : ControllerBase
 			return NotFound(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "THIETBI_DELETE")]
+	[Authorize(Policy = "CSVC_DELETE")]
 	[HttpDelete("{id}")]
 	public async Task<IActionResult> Delete(int id)
 	{
@@ -41,7 +41,7 @@ public class ThietBiController : ControllerBase
 			return NotFound(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "THIETBI_VIEW")]
+	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> Detail(int id)
 	{
@@ -50,7 +50,7 @@ public class ThietBiController : ControllerBase
 			return NotFound(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "THIETBI_VIEW")]
+	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet]
 	public async Task<IActionResult> List(
 		[FromQuery] int page = 1,
@@ -61,7 +61,7 @@ public class ThietBiController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "THIETBI_VIEW")]
+	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("search")]
 	public async Task<IActionResult> Search(
 		[FromQuery] string keyword,
@@ -73,7 +73,7 @@ public class ThietBiController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "THIETBI_CREATE")]
+	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost("import")]
 	public async Task<IActionResult> ImportExcel(IFormFile file)
 	{

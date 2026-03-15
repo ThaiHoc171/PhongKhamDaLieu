@@ -1,5 +1,4 @@
 ﻿namespace Domain.Entities;
-
 public class BacSiProfile
 {
 	public int BacSiProfileID { get; private set; }
@@ -10,7 +9,6 @@ public class BacSiProfile
 	public string? HinhAnh { get; private set; }
 	public string? KinhNghiem { get; private set; }
 	public DateTime NgayCapNhat { get; private set; }
-
 	// tạo mới
 	public BacSiProfile(
 		int nhanVienID,
@@ -28,7 +26,6 @@ public class BacSiProfile
 		KinhNghiem = kinhNghiem;
 		NgayCapNhat = DateTime.Now;
 	}
-
 	// map DB
 	public BacSiProfile(
 		int bacSiProfileID,
@@ -49,7 +46,6 @@ public class BacSiProfile
 		KinhNghiem = kinhNghiem;
 		NgayCapNhat = ngayCapNhat;
 	}
-
 	public void CapNhat(
 		string? gioiThieu,
 		string? chuyenMon,
