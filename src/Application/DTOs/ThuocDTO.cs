@@ -18,7 +18,6 @@ public class ThuocReadModel
     public string TenThuoc { get; set; } = default!;
     public string? HoatChat { get; set; }
 }
-<<<<<<< HEAD
 
 public class ThuocListReadModel
 {
@@ -26,5 +25,5 @@ public class ThuocListReadModel
     public string TenThuoc { get; set; } = default!;
     public string? HoatChat { get; set; }
 }
-=======
->>>>>>> b6fe134a0932485c4184e88bdd2f4a2d06609a6a
+
+
