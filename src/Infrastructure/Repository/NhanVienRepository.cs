@@ -207,7 +207,12 @@ public class NhanVienRepository : INhanVienRepository
 		cmd.Parameters.AddWithValue("@TaiKhoanID", taiKhoanId);
 		await conn.OpenAsync();
 		using var reader = await cmd.ExecuteReaderAsync();
-		return reader.GetInt32(0);
+		if (await reader.ReadAsync())
+		{
+			return reader.GetInt32(0);
+		}
+
+		return 0;
 	}
 	private static NhanVienListReadModel MapList(SqlDataReader r)
 	{
