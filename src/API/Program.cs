@@ -1,6 +1,5 @@
 ﻿using Application.Common;
 using Application.Interfaces;
-using Application.Repository;
 using Application.Services;
 using Infrastructure.Repositories;
 using Infrastructure.Repository;
@@ -107,7 +106,8 @@ builder.Services.AddAuthorization(options =>
 		"CSVC_VIEW","CSVC_CREATE","CSVC_UPDATE", //cơ sở vật chất
 		"THUOC_VIEW","THUOC_CREATE","THUOC_UPDATE",
 		"HOSO_VIEW","HOSO_CREATE","HOSO_UPDATE",
-		"HOADON_VIEW","HOADON_CREATE","HOADON_UPDATE"
+		"HOADON_VIEW","HOADON_CREATE","HOADON_UPDATE",
+		"BACSI_VIEW","BACSI_CREATE","BACSI_UPDATE"
 	};
 	foreach (var permission in permissions)
 	{
@@ -180,6 +180,7 @@ builder.Services.AddScoped<RefreshTokenService>();
 builder.Services.AddScoped<IQuyenRepository, QuyenRepository>();
 builder.Services.AddScoped<IChucVuQuyenRepository, ChucVuQuyenRepository>();
 builder.Services.AddScoped<ChucVuQuyenService>();
+builder.Services.AddScoped<AuthService>();
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
