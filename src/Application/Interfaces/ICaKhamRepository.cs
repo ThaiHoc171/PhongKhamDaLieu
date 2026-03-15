@@ -1,6 +1,5 @@
 ﻿using Application.DTOs;
 using Domain.Entities;
-
 namespace Application.Interfaces;
 public interface ICaKhamRepository
 {
@@ -12,7 +11,6 @@ public interface ICaKhamRepository
 		DateTime ngayKham, string trangThai, string loaiCaKham, int pageNumber, int pageSize);
 	Task<int> AssignAsync(DateTime tuNgay, DateTime denNgay);
 	Task<int> CountNotAssignedAsync(DateTime tuNgay, DateTime denNgay);
-
 	//Xuất danh sách theo ThongTinID
 	Task<(List<CaKhamListReadModel>, int)> GetByThongTinAsync(int thongTinID, int pageNumber, int pageSize);
 	//Đếm số ca đã có trong ngày

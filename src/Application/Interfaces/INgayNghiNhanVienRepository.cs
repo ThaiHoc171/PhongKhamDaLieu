@@ -1,8 +1,6 @@
 ﻿	using Application.DTOs;
 	using Domain.Entities;
-
 	namespace Application.Interfaces;
-
 	public interface INgayNghiNhanVienRepository
 	{
 		Task AddAsync(NgayNghiNhanVien entity);

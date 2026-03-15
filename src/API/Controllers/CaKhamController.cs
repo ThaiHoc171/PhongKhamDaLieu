@@ -14,7 +14,6 @@ public class CaKhamController : ControllerBase
 	{
 		_service = service;
 	}
-
 	[HttpPost]
 	[Authorize(Policy = "LICHKHAM_CREATE")]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CaKhamRequestDTO request)
@@ -24,7 +23,6 @@ public class CaKhamController : ControllerBase
 			return BadRequest(response);
 		return CreatedAtAction(nameof(GetDetail),new { id = response.Data },response);
 	}
-
 	[HttpPut("{id}")]
 	[Authorize(Policy = "LICHKHAM_UPDATE")]
 	public async Task<ActionResult<ApiResponse<bool>>>
@@ -35,7 +33,6 @@ public class CaKhamController : ControllerBase
 			return NotFound(response);
 		return Ok(response);
 	}
-
 	[HttpGet("{id}")]
 	[Authorize(Policy = "LICHKHAM_VIEW")]
 	public async Task<ActionResult<ApiResponse<CaKhamReadModel>>> GetDetail(int id)
@@ -45,7 +42,6 @@ public class CaKhamController : ControllerBase
 			return NotFound(response);
 		return Ok(response);
 	}
-
 	[HttpGet]
 	[Authorize(Policy = "LICHKHAM_VIEW")]
 	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> 
@@ -55,7 +51,6 @@ public class CaKhamController : ControllerBase
 		var response = await _service.GetPagedAsync( ngayKham,trangThai, loaiCaKham, pageNumber,	pageSize);
 		return Ok(response);
 	}
-
 	[HttpGet("search/by-thongtin/{thongTinId}")]
 	[Authorize(Policy = "LICHKHAM_VIEW")]
 	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> 
@@ -66,7 +61,6 @@ public class CaKhamController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-
 	[HttpPut("{id}/register")]
 	[Authorize(Policy = "LICHKHAM_CREATE")]
 	public async Task<ActionResult<ApiResponse<bool>>> Register(int id, [FromBody] CaKhamRegisterDTO request)
@@ -76,7 +70,6 @@ public class CaKhamController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-
 	[HttpPut("{id}/cancel")]
 	[Authorize(Policy = "LICHKHAM_UPDATE")]
 	public async Task<ActionResult<ApiResponse<bool>>> Cancel(int id)
@@ -86,7 +79,6 @@ public class CaKhamController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-
 	[HttpPost("assign-lich")]
 	[Authorize(Policy = "LICHKHAM_UPDATE")]
 	public async Task<ActionResult<ApiResponse<AssignLichLamViecReport>>> 

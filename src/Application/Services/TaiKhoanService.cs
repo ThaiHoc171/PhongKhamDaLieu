@@ -7,9 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-
 namespace Services;
-
 public class TaiKhoanService
 {
 	private readonly ITaiKhoanRepository _repo;
@@ -19,7 +17,6 @@ public class TaiKhoanService
 	private readonly IConfiguration _configuration;
     private readonly IRefreshTokenRepository _refreshRepo;
 	private readonly IChucVuQuyenRepository _chucVuQuyenRepo;
-
 	public TaiKhoanService(ITaiKhoanRepository repo, IConfiguration configuration, INhanVienRepository nhanVienRepo, 
 		IBenhNhanRepository benhNhanRepo, IChucVuRepository chucVuRepo, IRefreshTokenRepository refreshRepo,
 		IChucVuQuyenRepository chucVuQuyenRepo)
@@ -43,13 +40,10 @@ public class TaiKhoanService
 	};
         if (thongTinId.HasValue)
             claims.Add(new Claim("ThongTinID", thongTinId.Value.ToString()));
-
         if (nhanVienId.HasValue)
 			claims.Add(new Claim("NhanVienID", nhanVienId.Value.ToString()));
-
 		if (benhNhanId.HasValue)
 			claims.Add(new Claim("BenhNhanID", benhNhanId.Value.ToString()));
-
 		if (quyen != null)
 		{
 			foreach (var p in quyen)
@@ -57,20 +51,16 @@ public class TaiKhoanService
 		}
 		if (!string.IsNullOrEmpty(chucVu))
 			claims.Add(new Claim("ChucVu", chucVu));
-
 		var key = new SymmetricSecurityKey(
 			Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)
 		);
-
 		var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
 		var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             expires: DateTime.UtcNow.AddMinutes(30),
 			claims: claims,
 			signingCredentials: creds
 		);
-
 		return new JwtSecurityTokenHandler().WriteToken(token);
 	}
     private string GenerateRefreshToken()
@@ -78,15 +68,12 @@ public class TaiKhoanService
         var randomBytes = new byte[64];
         using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
-
         return Convert.ToBase64String(randomBytes);
     }
-
     public async Task<LoginResponseDTO?> DangNhapAsync(LoginRequestDTO dto)
 	{
 		var tk = await _repo.GetByEmailAsync(dto.Email);
 		if (tk == null) return null;
-
 		if (!Helper.Password.VerifyPassword(dto.MatKhau, tk.MatKhau))
 			return null;
 		int? thongTinId = null;
@@ -124,12 +111,10 @@ public class TaiKhoanService
 			quyen.Add("DatLichKham");
 			quyen.Add("XemHoSo");
 		}
-
 		var accessToken = TaoAccessToken(tk, thongTinId, nhanVienId, benhNhanId, chucVu, quyen);
         var refreshToken = GenerateRefreshToken();
 		var token = new RefreshToken(tk.Id, refreshToken, DateTime.UtcNow.AddDays(7));
         await _refreshRepo.SaveAsync(token);	
-
         return new LoginResponseDTO
 		{
             Id = tk.Id,
@@ -144,8 +129,6 @@ public class TaiKhoanService
 			HoTen = hoTen
 		};
 	}
-
-
 	public async Task DangKyAsync(ThemTaiKhoanDTO dto)
 	{
 		var hash = Helper.Password.PassWordHash(dto.MatKhau);
@@ -153,15 +136,12 @@ public class TaiKhoanService
 		var tk = new TaiKhoan(dto.Email, hash, vaiTro);
 		await _repo.AddAsync(tk);
 	}
-
 	public async Task<bool> DoiMatKhauAsync(int id, DoiMatKhauDTO dto)
 	{
 		var tk = await _repo.GetByIdAsync(id);
 		if (tk == null) return false;
-
 		if (!Helper.Password.VerifyPassword(dto.MatKhauCu, tk.MatKhau))
 			return false;
-
 		tk.DoiMatKhau(Helper.Password.PassWordHash(dto.MatKhauMoi));
 		await _repo.UpdateAsync(tk);
 		return true;
@@ -171,14 +151,11 @@ public class TaiKhoanService
 		var tk = await _repo.GetByIdAsync(taiKhoanId);
 		if (tk == null)
 			return false;
-
 		var defaultPassword = _configuration["DefaultPassword"];
 		if (string.IsNullOrWhiteSpace(defaultPassword))
 			throw new Exception("DefaultPassword chưa được cấu hình.");
-
 		var hash = Helper.Password.PassWordHash(defaultPassword);
 		tk.DoiMatKhau(hash);
-
 		await _repo.UpdateAsync(tk);
 		return true;
 	}
@@ -192,10 +169,8 @@ public class TaiKhoanService
 		var tk = await _repo.GetByIdAsync(taiKhoanId);
 		if (tk == null)
 			return false;
-
 		tk.CapNhatTrangThai(trangThaiMoi);
 		await _repo.UpdateAsync(tk);
-
 		return true;
 	}
 	public async Task<TaiKhoanResponseDTO?> LayTaiKhoanTheoIdAsync(int id)
@@ -203,19 +178,16 @@ public class TaiKhoanService
 		var tk = await _repo.GetByIdAsync(id);
 		if (tk == null)
 			return null;
-
 		return MapToResponse(tk);
 	}
     public async Task<LoginResponseDTO?> RefreshTokenAsync(string refreshToken)	
     {	
-
         var storedToken = await _refreshRepo.GetAsync(refreshToken);
 		List<string> quyen = new();
 		if (storedToken == null ||
             storedToken.IsRevoked ||
             storedToken.ExpiryDate < DateTime.UtcNow)
             return null;
-
         var taiKhoan = await _repo.GetByIdAsync(storedToken.TaiKhoanId);
         if (taiKhoan == null) return null;
         int? thongTinId = null;
@@ -223,7 +195,6 @@ public class TaiKhoanService
         int? benhNhanId = null;
         string? chucVu = null;
         string? hoTen = null;
-
         if (taiKhoan.VaiTro == "Nhân viên")
         {
 			int nvId = await _nhanVienRepo.GetIdAsync(taiKhoan.Id);
@@ -251,15 +222,11 @@ public class TaiKhoanService
         {
             hoTen = "Admin";
         }
-
         await _refreshRepo.RevokeAsync(refreshToken);
-        
         var newRefreshToken = GenerateRefreshToken();
         var token = new RefreshToken(taiKhoan.Id, newRefreshToken, DateTime.UtcNow.AddDays(7));
         await _refreshRepo.SaveAsync(token);
-       
         var accessToken = TaoAccessToken(taiKhoan, thongTinId, nhanVienId, benhNhanId, chucVu,quyen);
-
         return new LoginResponseDTO
         {
             Id = taiKhoan.Id,
@@ -278,7 +245,6 @@ public class TaiKhoanService
     {
         await _refreshRepo.RevokeAsync(refreshToken);
     }
-
     private static TaiKhoanResponseDTO MapToResponse(TaiKhoan tk)
 		=> new()
 		{

@@ -2,35 +2,27 @@
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-
 namespace Infrastructure.Repositories;
 public class LoaiBenhRepository : ILoaiBenhRepository
 {
 	private readonly string _connectionString;
-
 	public LoaiBenhRepository(IConfiguration config)
 	{
 		_connectionString = config.GetConnectionString("DefaultConnection")!;
 	}
-
 	public async Task<List<LoaiBenh>> GetAllAsync()
 	{
 		const string sql = @"
 			SELECT LoaiBenhID, TenBenh, TenKhoaHoc, NhomBenh,
 			       MoTa, DoPhoBien, MucDoNghiemTrong, NgayTao
 			FROM LoaiBenh";
-
 		var list = new List<LoaiBenh>();
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		await conn.OpenAsync();
 		await using var r = await cmd.ExecuteReaderAsync();
-
 		while (await r.ReadAsync())
 			list.Add(MapToEntity(r));
-
 		return list;
 	}
 	public async Task<(List<LoaiBenh> Data, int TotalCount)> GetPageAsync(int pageNumber, int pageSize)
@@ -42,30 +34,22 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 			FROM LoaiBenh
 			ORDER BY LoaiBenhID
 			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-
 			SELECT COUNT(*) FROM LoaiBenh;
 		";
-
 		var list = new List<LoaiBenh>();
 		int totalCount = 0;
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		int offset = (pageNumber - 1) * pageSize;
-
 		cmd.Parameters.AddWithValue("@Offset", offset);
 		cmd.Parameters.AddWithValue("@PageSize", pageSize);
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		// Result 1: Data
 		while (await reader.ReadAsync())
 		{
 			list.Add(MapToEntity(reader));
 		}
-
 		// Result 2: TotalCount
 		if (await reader.NextResultAsync())
 		{
@@ -74,7 +58,6 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 				totalCount = reader.GetInt32(0);
 			}
 		}
-
 		return (list, totalCount);
 	}
 	public async Task<LoaiBenh?> GetByIdAsync(int id)
@@ -84,17 +67,13 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 			       MoTa, DoPhoBien, MucDoNghiemTrong, NgayTao
 			FROM LoaiBenh
 			WHERE LoaiBenhID = @id";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@id", id);
-
 		await conn.OpenAsync();
 		await using var r = await cmd.ExecuteReaderAsync();
-
 		return await r.ReadAsync() ? MapToEntity(r) : null;
 	}
-
 	public async Task<List<LoaiBenh>> SearchByTenAsync(string keyword)
 	{
 		const string sql = @"
@@ -102,37 +81,27 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 			       MoTa, DoPhoBien, MucDoNghiemTrong, NgayTao
 			FROM LoaiBenh
 			WHERE TenBenh LIKE @kw OR TenKhoaHoc LIKE @kw";
-
 		var list = new List<LoaiBenh>();
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@kw", "%" + keyword + "%");
-
 		await conn.OpenAsync();
 		await using var r = await cmd.ExecuteReaderAsync();
-
 		while (await r.ReadAsync())
 			list.Add(MapToEntity(r));
-
 		return list;
 	}
-
     public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
     {
         const string sql = @"
 			SELECT LoaiBenhID, TenBenh
 			FROM LoaiBenh
 			ORDER BY TenBenh";
-
         var list = new List<(int, string)>();
-
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
-
         await conn.OpenAsync();
         await using var reader = await cmd.ExecuteReaderAsync();
-
         while (await reader.ReadAsync())
         {
             list.Add((
@@ -140,10 +109,8 @@ public class LoaiBenhRepository : ILoaiBenhRepository
                 reader.GetString(reader.GetOrdinal("TenBenh"))
             ));
         }
-
         return list;
     }
-
     public async Task AddAsync(LoaiBenh lb)
 	{
 		const string sql = @"
@@ -151,21 +118,17 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 			(TenBenh, TenKhoaHoc, NhomBenh, MoTa, DoPhoBien, MucDoNghiemTrong)
 			VALUES
 			(@TenBenh, @TenKhoaHoc, @NhomBenh, @MoTa, @DoPhoBien, @MucDoNghiemTrong)";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.AddWithValue("@TenBenh", lb.TenBenh);
 		cmd.Parameters.AddWithValue("@TenKhoaHoc", (object?)lb.TenKhoaHoc ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@NhomBenh", (object?)lb.NhomBenh ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@MoTa", (object?)lb.MoTa ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@DoPhoBien", (object?)lb.DoPhoBien ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@MucDoNghiemTrong", (object?)lb.MucDoNghiemTrong ?? DBNull.Value);
-
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-
 	public async Task UpdateAsync(LoaiBenh lb)
 	{
 		const string sql = @"
@@ -177,10 +140,8 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 				DoPhoBien = @DoPhoBien,
 				MucDoNghiemTrong = @MucDoNghiemTrong
 			WHERE LoaiBenhID = @Id";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.AddWithValue("@Id", lb.LoaiBenhID);
 		cmd.Parameters.AddWithValue("@TenBenh", lb.TenBenh);
 		cmd.Parameters.AddWithValue("@TenKhoaHoc", (object?)lb.TenKhoaHoc ?? DBNull.Value);
@@ -188,7 +149,6 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 		cmd.Parameters.AddWithValue("@MoTa", (object?)lb.MoTa ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@DoPhoBien", (object?)lb.DoPhoBien ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@MucDoNghiemTrong", (object?)lb.MucDoNghiemTrong ?? DBNull.Value);
-
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
@@ -198,11 +158,9 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 			SELECT TenBenh
 			FROM LoaiBenh
 			WHERE LoaiBenhID = @Id";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@Id", id);
-
 		await conn.OpenAsync();
 		return await cmd.ExecuteScalarAsync() as string;
 	}

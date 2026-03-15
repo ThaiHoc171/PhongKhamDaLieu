@@ -2,18 +2,14 @@
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-
 namespace Infrastructure.Repositories;
-
 public class CanLamSangRepository : ICanLamSangRepository
 {
 	private readonly string _connectionString;
-
 	public CanLamSangRepository(IConfiguration config)
 	{
 		_connectionString = config.GetConnectionString("DefaultConnection")!;
 	}
-
 	public async Task<(List<CanLamSang> Data, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize)
 	{
 		const string sql = @"
@@ -22,30 +18,22 @@ public class CanLamSangRepository : ICanLamSangRepository
 		FROM CanLamSang
 		ORDER BY CanLamSangID
 		OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-
 		SELECT COUNT(*) FROM CanLamSang;
 	";
-
 		var list = new List<CanLamSang>();
 		int totalCount = 0;
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		int offset = (pageNumber - 1) * pageSize;
-
 		cmd.Parameters.AddWithValue("@Offset", offset);
 		cmd.Parameters.AddWithValue("@PageSize", pageSize);
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		// Result 1: Data
 		while (await reader.ReadAsync())
 		{
 			list.Add(MapToEntity(reader));
 		}
-
 		// Result 2: TotalCount
 		if (await reader.NextResultAsync())
 		{
@@ -54,57 +42,44 @@ public class CanLamSangRepository : ICanLamSangRepository
 				totalCount = reader.GetInt32(0);
 			}
 		}
-
 		return (list, totalCount);
 	}
-
 	public async Task<CanLamSang?> GetByIdAsync(int id)
 	{
 		const string sql = @"SELECT CanLamSangID, TenCLS, MoTa, LoaiXetNghiem, NgayTao,TrangThai
 							FROM CanLamSang
 							WHERE CanLamSangID = @id";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@id", id);
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-
 	public async Task AddAsync(CanLamSang cls)
 	{
 		const string sql = @"INSERT INTO CanLamSang (TenCLS, MoTa, LoaiXetNghiem)
 							 VALUES (@TenCLS, @MoTa, @LoaiXetNghiem)";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.AddWithValue("@TenCLS", cls.TenCLS);
 		cmd.Parameters.AddWithValue("@MoTa", (object?)cls.MoTa ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@LoaiXetNghiem", cls.LoaiXetNghiem);
-
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-
 	public async Task UpdateAsync(CanLamSang cls)
 	{
 		const string sql = @"UPDATE CanLamSang 
 							 SET TenCLS=@TenCLS, MoTa=@MoTa, LoaiXetNghiem=@LoaiXetNghiem, TrangThai=@TrangThai
 							 WHERE CanLamSangID=@Id";
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.AddWithValue("@Id", cls.CanLamSangID);
 		cmd.Parameters.AddWithValue("@TenCLS", cls.TenCLS);
 		cmd.Parameters.AddWithValue("@MoTa", (object?)cls.MoTa ?? DBNull.Value);
 		cmd.Parameters.AddWithValue("@LoaiXetNghiem", cls.LoaiXetNghiem);
 		cmd.Parameters.AddWithValue("@TrangThai", cls.TrangThai);
-
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
@@ -114,15 +89,11 @@ public class CanLamSangRepository : ICanLamSangRepository
 			SELECT CanLamSangID, TenCLS
 			FROM CanLamSang
 			ORDER BY TenCLS";
-
         var list = new List<(int, string)>();
-
         await using var conn = new SqlConnection(_connectionString);
         await using var cmd = new SqlCommand(sql, conn);
-
         await conn.OpenAsync();
         await using var reader = await cmd.ExecuteReaderAsync();
-
         while (await reader.ReadAsync())
         {
             list.Add((
@@ -130,7 +101,6 @@ public class CanLamSangRepository : ICanLamSangRepository
                 reader.GetString(reader.GetOrdinal("TenCLS"))
             ));
         }
-
         return list;
     }
 	public async Task<List<CanLamSang>> SearchByTenAsync(string tenCLS)
@@ -139,19 +109,14 @@ public class CanLamSangRepository : ICanLamSangRepository
 			SELECT CanLamSangID, TenCLS, MoTa, LoaiXetNghiem, NgayTao, TrangThai 
 			FROM CanLamSang
 			WHERE TenCLS LIKE @TenCLS";
-
 		var list = new List<CanLamSang>();
-
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.AddWithValue("@TenCLS", $"%{tenCLS}%");
-
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
-
 		while (await reader.ReadAsync())
 			list.Add(MapToEntity(reader));
-
 		return list;
 	}
 	private static CanLamSang MapToEntity(SqlDataReader r)

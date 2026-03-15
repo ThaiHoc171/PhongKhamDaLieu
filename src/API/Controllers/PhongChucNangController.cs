@@ -1,95 +1,101 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 namespace API.Controllers;
-[Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/phongchucnang")]
+[Authorize]
 public class PhongChucNangController : ControllerBase
 {
 	private readonly PhongChucNangService _service;
-
 	public PhongChucNangController(PhongChucNangService service)
 	{
 		_service = service;
 	}
-
-	// GET: api/PhongChucNang
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet]
-	public async Task<IActionResult> LayDanhSach()
-	{
-		var result = await _service.LayTatCaAsync();
-		return Ok(result);
-	}
-
-	// GET: api/PhongChucNang/{id}
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("{id}")]
-	public async Task<IActionResult> LayTheoId(int id)
-	{
-		var result = await _service.LayTheoIdAsync(id);
-		if (result == null)
-			return NotFound(new { message = "Phòng chức năng không tồn tại." });
-
-		return Ok(result);
-	}
-
-	// GET: api/PhongChucNang/timkiem?keyword=...
-	[Authorize(Roles = "Admin,Nhân viên")]
-	[HttpGet("timkiem")]
-	public async Task<IActionResult> TimKiem([FromQuery] string keyword)
-	{
-		if (string.IsNullOrWhiteSpace(keyword))
-			return BadRequest(new { message = "Từ khóa tìm kiếm không hợp lệ." });
-
-		var result = await _service.TimKiemAsync(keyword);
-		return Ok(result);
-	}
-
-	// POST: api/PhongChucNang
-	[Authorize(Roles = "Admin")]
+	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost]
-	public async Task<IActionResult> Them([FromBody] PhongChucNangRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] PhongChucNangRequestDTO dto)
 	{
-		await _service.ThemAsync(dto);
-		return Ok(new { message = "Thêm phòng chức năng thành công." });
+		var result = await _service.TaoMoiAsync(dto);
+		if (!result.Success)
+			return BadRequest(result);
+		return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
 	}
-
-	// PUT: api/PhongChucNang/{id}
-	[Authorize(Roles = "Admin")]
+	[Authorize(Policy = "CSVC_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id, [FromBody] PhongChucNangRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] PhongChucNangRequestDTO dto)
 	{
-		var success = await _service.CapNhatAsync(id, dto);
-		if (!success)
-			return NotFound(new { message = "Phòng chức năng không tồn tại." });
-
-		return Ok(new { message = "Cập nhật phòng chức năng thành công." });
+		var result = await _service.CapNhatAsync(id, dto);
+		if (!result.Success)
+		{
+			if (result.Message.Contains("không tồn tại"))
+				return NotFound(result);
+			return BadRequest(result);
+		}
+		return Ok(result);
 	}
-
-	// PUT: api/PhongChucNang/{id}/trangthai
-	[Authorize(Roles = "Admin")]
-	[HttpPut("{id}/trangthai")]
-	public async Task<IActionResult> ChuyenTrangThai(int id, [FromBody] TinhTrang trangThaiMoi)
+	[Authorize(Policy = "CSVC_UPDATE")]
+	[HttpPut("{id}/status")]
+	public async Task<ActionResult<ApiResponse<bool>>> ChangeStatus(
+		int id,
+		[FromBody] TinhTrang trangThaiMoi)
 	{
-		if (!Enum.IsDefined(typeof(TinhTrang), trangThaiMoi))
-			return BadRequest(new { message = "Trạng thái không hợp lệ." });
-
-		var success = await _service.ChuyenTrangThaiAsync(id, trangThaiMoi);
-		if (!success)
-			return NotFound(new { message = "Phòng chức năng không tồn tại." });
-
-		return Ok(new { message = "Chuyển trạng thái phòng chức năng thành công." });
+		var result = await _service.ChuyenTrangThaiAsync(id, trangThaiMoi);
+		if (!result.Success)
+		{
+			if (result.Message.Contains("không tồn tại"))
+				return NotFound(result);
+			return BadRequest(result);
+		}
+		return Ok(result);
 	}
-	[Authorize(Roles = "Admin,Nhân viên")]
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet("{id}")]
+	public async Task<ActionResult<ApiResponse<PhongChucNangReadModel>>> GetById(int id)
+	{
+		var result = await _service.GetByIdAsync(id);
+		if (!result.Success)
+			return NotFound(result);
+		return Ok(result);
+	}
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet]
+	public async Task<ActionResult<ApiResponse<PagedResult<PhongChucNangListReadModel>>>> GetPaged(
+		[FromQuery] int page = 1,
+		[FromQuery] int size = 15,
+		[FromQuery] string? trangThai = null)
+	{
+		var result = await _service.GetPagedAsync(page, size, trangThai);
+		return Ok(result);
+	}
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet("search")]
+	public async Task<ActionResult<ApiResponse<PagedResult<PhongChucNangListReadModel>>>> Search(
+		[FromQuery] string? keyword,
+		[FromQuery] int page = 1,
+		[FromQuery] int size = 15)
+	{
+		var result = await _service.SearchAsync(keyword, page, size);
+		return Ok(result);
+	}
+	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("combobox")]
-	public async Task<IActionResult> GetIdAndName()
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
 	{
-		var result = await _service.GetIdAndNameAsync();
+		var result = await _service.GetComboboxAsync();
+		return Ok(result);
+	}
+	[Authorize(Policy = "CSVC_CREATE")]
+	[HttpPost("import")]
+	public async Task<ActionResult<ApiResponse<ImportResult>>> ImportExcel(IFormFile file)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest(ApiResponse<ImportResult>.Fail("File không hợp lệ"));
+		using var stream = file.OpenReadStream();
+		var result = await _service.ImportExcelAsync(stream);
 		return Ok(result);
 	}
 }

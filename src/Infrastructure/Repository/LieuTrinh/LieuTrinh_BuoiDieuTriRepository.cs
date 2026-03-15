@@ -1,229 +1,206 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-
-namespace Infrastructure.Repository;
-
-public class LieuTrinh_BuoiDieuTriRepository : ILieuTrinh_BuoiDieuTriRepository
+using System.Data;
+namespace Infrastructure.Repositories;
+public class BuoiDieuTriRepository : IBuoiDieuTriRepository
 {
-    private readonly string _connectionString;
-
-    public LieuTrinh_BuoiDieuTriRepository(IConfiguration config)
-    {
-        _connectionString = config.GetConnectionString("DefaultConnection")
-            ?? throw new ArgumentNullException("Connection string not found");
-    }
-
-    public async Task<LieuTrinh_BuoiDieuTri?> GetByIdAsync(int buoiDieuTriID)
-    {
-        const string sql = @"SELECT BuoiDieuTriID, LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID, TrangThai, GhiChu, HinhAnhJSON FROM LieuTrinh_BuoiDieuTri WHERE BuoiDieuTriID = @id";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@id", buoiDieuTriID);
-
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? Map(reader) : null;
-    }
-    public async Task<List<LieuTrinh_BuoiDieuTri>> GetAllAsync()
-    {
-        const string sql = @"
-            SELECT BuoiDieuTriID, LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID, TrangThai, GhiChu, HinhAnhJSON FROM LieuTrinh_BuoiDieuTri";
-
-        var list = new List<LieuTrinh_BuoiDieuTri>();
-
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        while (await reader.ReadAsync())
-        {
-            list.Add(Map(reader));
-        }
-
-        return list;
-    }
-    public async Task<List<LieuTrinh_BuoiDieuTri>> GetByLieuTrinhAsync(int lieuTrinhID)
-    {
-        const string sql = @"SELECT BuoiDieuTriID, LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID, TrangThai, GhiChu, HinhAnhJSON FROM LieuTrinh_BuoiDieuTri WHERE LieuTrinhID = @id";
-        var list = new List<LieuTrinh_BuoiDieuTri>();
-
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@id", lieuTrinhID);
-
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-            list.Add(Map(reader));
-
-        return list;
-    }
-    public async Task<List<LieuTrinh_BuoiDieuTri>> LocDuKienAsync(DateTime ngay, string trangThai)
-    {
-        const string sql = @"
-            SELECT BuoiDieuTriID, LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID, TrangThai, GhiChu, HinhAnhJSON
-            FROM LieuTrinh_BuoiDieuTri
-            WHERE NgayDuKien = @Ngay
-              AND TrangThai = @TrangThai";
-
-        var list = new List<LieuTrinh_BuoiDieuTri>();
-
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Ngay", ngay);
-        cmd.Parameters.AddWithValue("@TrangThai", trangThai);
-
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        while (await reader.ReadAsync())
-        {
-            list.Add(Map(reader));
-        }
-
-        return list;
-    }
-    public async Task<List<LieuTrinh_BuoiDieuTri>> LocBatDauAsync(DateTime ngay, string trangThai)
-    {
-        const string sql = @"
-            SELECT BuoiDieuTriID, LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID, TrangThai, GhiChu, HinhAnhJSON
-            FROM LieuTrinh_BuoiDieuTri
-            WHERE NgayThucHien = @Ngay
-              AND TrangThai = @TrangThai";
-
-        var list = new List<LieuTrinh_BuoiDieuTri>();
-
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Ngay", ngay);
-        cmd.Parameters.AddWithValue("@TrangThai", trangThai);
-
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        while (await reader.ReadAsync())
-        {
-            list.Add(Map(reader));
-        }
-
-        return list;
-    }
-
-    public async Task<LieuTrinh_BuoiDieuTri?> GetBuoiGanNhatAsync(int lieuTrinhID)
-    {
-        const string sql = @"SELECT TOP 1 BuoiDieuTriID, LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID, TrangThai, GhiChu, HinhAnhJSON
-            FROM LieuTrinh_BuoiDieuTri
-            WHERE LieuTrinhID = @LieuTrinhID
-              AND NgayThucHien IS NOT NULL
-            ORDER BY NgayThucHien DESC";
-
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@LieuTrinhID", lieuTrinhID);
-
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? Map(reader) : null;
-    }
-
-    public async Task<bool> ExistsByCaKhamAsync(int caKhamID)
-    {
-        const string sql = @"SELECT 1 FROM LieuTrinh_BuoiDieuTri WHERE CaKhamID = @id";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@id", caKhamID);
-
-        await conn.OpenAsync();
-        return await cmd.ExecuteScalarAsync() != null;
-    }
-    public async Task<int> CountBySoBuoiAsync(int lieuTrinhID)
-    {
-        const string sql = @"SELECT COUNT(*) FROM LieuTrinh_BuoiDieuTri WHERE LieuTrinhID = @id AND TrangThai = N'Hoàn thành'";
-        var list = new List<CaKham>();
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@id", lieuTrinhID);    
-        await conn.OpenAsync();
-        return (int)await cmd.ExecuteScalarAsync();
-    }
-
-    public async Task<int> GetMaxSoBuoiAsync(int lieuTrinhID)
-    {
-        const string sql = @"
-        SELECT ISNULL(MAX(SoBuoi), 0)
-        FROM LieuTrinh_BuoiDieuTri
-        WHERE LieuTrinhID = @id";
-
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-
-        cmd.Parameters.AddWithValue("@id", lieuTrinhID);
-
-        await conn.OpenAsync();
-
-        return (int)await cmd.ExecuteScalarAsync();
-    }
-    public async Task<int> AddAsync(LieuTrinh_BuoiDieuTri buoi)
-    {
-        const string sql = @"
-            INSERT INTO LieuTrinh_BuoiDieuTri
-            (LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, NgayThucHien, NhanVienID)
-            OUTPUT INSERTED.BuoiDieuTriID
-            VALUES (@LieuTrinhID, @CaKhamID, @SoBuoi, @NgayDuKien, @NgayThucHien, @NhanVienID)";
-
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-
-        cmd.Parameters.AddWithValue("@LieuTrinhID", buoi.LieuTrinhID);
-        cmd.Parameters.AddWithValue("@CaKhamID", buoi.CaKhamID);
-        cmd.Parameters.AddWithValue("@SoBuoi", buoi.SoBuoi);
-        cmd.Parameters.AddWithValue("@NgayDuKien", (object?)buoi.NgayDuKien ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@NgayThucHien", (object?)buoi.NgayThucHien ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@NhanVienID", (object?)buoi.NhanVienID ?? DBNull.Value);
-        await conn.OpenAsync();
-        return (int)await cmd.ExecuteScalarAsync();
-    }
-
-    public async Task UpdateTrangThaiAsync(LieuTrinh_BuoiDieuTri buoi)
-    {
-        const string sql = @"
-            UPDATE LieuTrinh_BuoiDieuTri
-            SET TrangThai = @TrangThai,
-                NhanVienID = @NhanVienID,
-                NgayThucHien = @NgayThucHien,
-                GhiChu = @GhiChu
-            WHERE BuoiDieuTriID = @Id";
-
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-
-        cmd.Parameters.AddWithValue("@TrangThai", buoi.TrangThai);
-        cmd.Parameters.AddWithValue("@NhanVienID", (object?)buoi.NhanVienID ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@NgayThucHien", (object?)buoi.NgayThucHien ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@GhiChu", (object?)buoi.GhiChu ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@Id", buoi.BuoiDieuTriID);
-
-        await conn.OpenAsync();
-        await cmd.ExecuteNonQueryAsync();
-    }
-
-    private static LieuTrinh_BuoiDieuTri Map(SqlDataReader r)
-    {
-        return new LieuTrinh_BuoiDieuTri(
-            buoiDieuTriID: r.GetInt32(0),
-            lieuTrinhID: r.GetInt32(1),
-            caKhamID: r.GetInt32(2),
-            soBuoi: r.GetInt32(3),
-            ngayDuKien: r.IsDBNull(4) ? null : r.GetDateTime(4),
-            ngayThucHien: r.IsDBNull(5) ? null : r.GetDateTime(5),
-            nhanVienID: r.IsDBNull(6) ? null : r.GetInt32(6),
-            trangThai: r.GetString(7),
-            ghiChu: r.IsDBNull(8) ? null : r.GetString(8),
-            hinhAnhJSON: r.IsDBNull(9) ? null : r.GetString(9)
-        );
-    }
+	private readonly string _connectionString;
+	public BuoiDieuTriRepository(IConfiguration config)
+	{
+		_connectionString = config.GetConnectionString("DefaultConnection")
+			?? throw new InvalidOperationException("Connection string not found.");
+	}
+	private SqlConnection CreateConnection() => new(_connectionString);
+	private const string BaseSelect = @"
+		SELECT BuoiDieuTriID, LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien,
+			NgayThucHien, NhanVienID, TrangThai, GhiChu, HinhAnh";
+	public async Task<BuoiDieuTri?> GetByIdAsync(int id)
+	{
+		var sql =$@"
+			{BaseSelect}
+			FROM LieuTrinh_BuoiDieuTri
+			WHERE BuoiDieuTriID=@Id
+		";
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+		return await reader.ReadAsync() ? MapEntity(reader) : null;
+	}
+	public async Task<BuoiDieuTriReadModel?> GetDetailAsync(int id)
+	{
+		var sql =$@"
+			{BaseSelect}
+			FROM LieuTrinh_BuoiDieuTri
+			WHERE BuoiDieuTriID=@Id
+		";
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+		return await reader.ReadAsync() ? MapDetail(reader) : null;
+	}
+	public async Task<List<BuoiDieuTriListReadModel>> GetByLieuTrinhAsync(int lieuTrinhID)
+	{
+		var sql =@"
+			SELECT BuoiDieuTriID, LieuTrinhID, CaKhamID, SoBuoi, NgayDuKien, TrangThai
+			FROM LieuTrinh_BuoiDieuTri
+			WHERE LieuTrinhID=@LieuTrinhID
+			ORDER BY SoBuoi
+		";
+		var list = new List<BuoiDieuTriListReadModel>();
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@LieuTrinhID", SqlDbType.Int).Value = lieuTrinhID;
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+		while (await reader.ReadAsync())
+			list.Add(MapList(reader));
+		return list;
+	}
+	public async Task<bool> ExistsByCaKhamAsync(int caKhamID)
+	{
+		const string sql =@"
+			SELECT 1
+			FROM LieuTrinh_BuoiDieuTri
+			WHERE CaKhamID=@CaKhamID
+		";
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@CaKhamID", SqlDbType.Int).Value = caKhamID;
+		await conn.OpenAsync();
+		return await cmd.ExecuteScalarAsync() != null;
+	}
+	public async Task<int> CountHoanThanhAsync(int lieuTrinhID)
+	{
+		const string sql =@"
+			SELECT COUNT(*)
+			FROM LieuTrinh_BuoiDieuTri
+			WHERE LieuTrinhID=@LieuTrinhID AND TrangThai=N'Hoàn thành'
+		";
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@LieuTrinhID", SqlDbType.Int).Value = lieuTrinhID;
+		await conn.OpenAsync();
+		return (int)await cmd.ExecuteScalarAsync();
+	}
+	public async Task<int> GetMaxSoBuoiAsync(int lieuTrinhID)
+	{
+		const string sql =@"
+			SELECT ISNULL(MAX(SoBuoi),0)
+			FROM LieuTrinh_BuoiDieuTri
+			WHERE LieuTrinhID=@LieuTrinhID
+		";
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@LieuTrinhID", SqlDbType.Int).Value = lieuTrinhID;
+		await conn.OpenAsync();
+		return (int)await cmd.ExecuteScalarAsync();
+	}
+	public async Task<BuoiDieuTri?> GetLastAsync(int lieuTrinhID)
+	{
+		var sql =$@"
+			{BaseSelect}
+			FROM LieuTrinh_BuoiDieuTri
+			WHERE LieuTrinhID=@LieuTrinhID AND NgayThucHien IS NOT NULL
+			ORDER BY NgayThucHien DESC
+		";
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@LieuTrinhID", SqlDbType.Int).Value = lieuTrinhID;
+		await conn.OpenAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
+		return await reader.ReadAsync() ? MapEntity(reader) : null;
+	}
+	public async Task<int> AddAsync(BuoiDieuTri buoi)
+	{
+		const string sql =@"
+			INSERT INTO LieuTrinh_BuoiDieuTri (LieuTrinhID,CaKhamID,SoBuoi,NgayDuKien)
+			OUTPUT INSERTED.BuoiDieuTriID VALUES (@LieuTrinhID,@CaKhamID,@SoBuoi,@NgayDuKien)
+		";
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@LieuTrinhID", SqlDbType.Int).Value = buoi.LieuTrinhID;
+		cmd.Parameters.Add("@CaKhamID", SqlDbType.Int).Value = buoi.CaKhamID;
+		cmd.Parameters.Add("@SoBuoi", SqlDbType.Int).Value = buoi.SoBuoi;
+		cmd.Parameters.Add("@NgayDuKien", SqlDbType.DateTime).Value =
+			(object?)buoi.NgayDuKien ?? DBNull.Value;
+		await conn.OpenAsync();
+		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
+	}
+	public async Task UpdateAsync(BuoiDieuTri buoi)
+	{
+		const string sql =@"
+			UPDATE LieuTrinh_BuoiDieuTri
+			SET TrangThai=@TrangThai,
+				NhanVienID=@NhanVienID,
+				NgayThucHien=@NgayThucHien,
+				GhiChu=@GhiChu,
+				HinhAnh=@HinhAnh
+			WHERE BuoiDieuTriID=@Id
+		";
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = buoi.TrangThai.ToDb();
+		cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value =
+			(object?)buoi.NhanVienID ?? DBNull.Value;
+		cmd.Parameters.Add("@NgayThucHien", SqlDbType.DateTime).Value =
+			(object?)buoi.NgayThucHien ?? DBNull.Value;
+		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar).Value =
+			(object?)buoi.GhiChu ?? DBNull.Value;
+		cmd.Parameters.Add("@HinhAnh", SqlDbType.NVarChar).Value =
+			(object?)buoi.HinhAnhJSON ?? DBNull.Value;
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = buoi.BuoiDieuTriID;
+		await conn.OpenAsync();
+		await cmd.ExecuteNonQueryAsync();
+	}
+	private static BuoiDieuTri MapEntity(SqlDataReader r)
+	{
+		return new BuoiDieuTri(
+			r.GetInt32(r.GetOrdinal("BuoiDieuTriID")),
+			r.GetInt32(r.GetOrdinal("LieuTrinhID")),
+			r.GetInt32(r.GetOrdinal("CaKhamID")),
+			r.GetInt32(r.GetOrdinal("SoBuoi")),
+			r.IsDBNull(r.GetOrdinal("NgayDuKien")) ? null : r.GetDateTime(r.GetOrdinal("NgayDuKien")),
+			r.IsDBNull(r.GetOrdinal("NgayThucHien")) ? null : r.GetDateTime(r.GetOrdinal("NgayThucHien")),
+			r.IsDBNull(r.GetOrdinal("NhanVienID")) ? null : r.GetInt32(r.GetOrdinal("NhanVienID")),
+			r.GetString(r.GetOrdinal("TrangThai")),
+			r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu")),
+			r.IsDBNull(r.GetOrdinal("HinhAnh")) ? null : r.GetString(r.GetOrdinal("HinhAnh"))
+		);
+	}
+	private static BuoiDieuTriListReadModel MapList(SqlDataReader r)
+	{
+		return new BuoiDieuTriListReadModel
+		{
+			BuoiDieuTriID = r.GetInt32(r.GetOrdinal("BuoiDieuTriID")),
+			LieuTrinhID = r.GetInt32(r.GetOrdinal("LieuTrinhID")),
+			CaKhamID = r.GetInt32(r.GetOrdinal("CaKhamID")),
+			SoBuoi = r.GetInt32(r.GetOrdinal("SoBuoi")),
+			NgayDuKien = r.IsDBNull(r.GetOrdinal("NgayDuKien")) ? null : r.GetDateTime(r.GetOrdinal("NgayDuKien")),
+			TrangThai = r.GetString(r.GetOrdinal("TrangThai"))
+		};
+	}
+	private static BuoiDieuTriReadModel MapDetail(SqlDataReader r)
+	{
+		return new BuoiDieuTriReadModel
+		{
+			BuoiDieuTriID = r.GetInt32(r.GetOrdinal("BuoiDieuTriID")),
+			LieuTrinhID = r.GetInt32(r.GetOrdinal("LieuTrinhID")),
+			CaKhamID = r.GetInt32(r.GetOrdinal("CaKhamID")),
+			SoBuoi = r.GetInt32(r.GetOrdinal("SoBuoi")),
+			NgayDuKien = r.IsDBNull(r.GetOrdinal("NgayDuKien")) ? null : r.GetDateTime(r.GetOrdinal("NgayDuKien")),
+			NgayThucHien = r.IsDBNull(r.GetOrdinal("NgayThucHien")) ? null : r.GetDateTime(r.GetOrdinal("NgayThucHien")),
+			NhanVienID = r.IsDBNull(r.GetOrdinal("NhanVienID")) ? null : r.GetInt32(r.GetOrdinal("NhanVienID")),
+			TrangThai = r.GetString(r.GetOrdinal("TrangThai")),
+			GhiChu = r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu")),
+			HinhAnhJSON = r.IsDBNull(r.GetOrdinal("HinhAnh")) ? null : r.GetString(r.GetOrdinal("HinhAnh"))
+		};
+	}
 }

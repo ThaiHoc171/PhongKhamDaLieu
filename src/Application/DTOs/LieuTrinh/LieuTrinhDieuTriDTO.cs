@@ -1,6 +1,5 @@
 ﻿namespace Application.DTOs;
-
-public class TaoLieuTrinhDieuTriDTO
+public class LieuTrinhDieuTriRequestDTO
 {
     public int PhienKhamID { get; set; }
     public string TenLieuTrinh { get; set; }
@@ -8,26 +7,36 @@ public class TaoLieuTrinhDieuTriDTO
     public string? GhiChu { get; set; }
     public DateTime NgayBatDau { get; set; }
 }
-public class CapNhatLieuTrinhDieuTriDTO
+public class LieuTrinhDieuTriUpdateDTO
 {
     public string TenLieuTrinh { get; set; }
     public int TongSoBuoi { get; set; }
     public DateTime NgayKetThuc { get; set; }
 }
-public class CapNhatTrangThaiLieuTrinhDieuTriDTO
+public class LieuTrinhStatusDTO
 {
     public string? TrangThai { get; set; }
     public string? GhiChu { get; set; }
 }
-public class LieuTrinhDieuTriResponeDTO
+public class LieuTrinhDieuTriReadModel
 {
-    public int LieuTrinhID { get; set; }
-    public int BenhNhanID { get; set; }
-    public int PhienKhamID { get; set; }
-    public string TenLieuTrinh { get; set; }
-    public int TongSoBuoi { get; set; }
-    public string? TrangThai { get; set; }
-    public string? GhiChu { get; set; }
-    public DateTime NgayBatDau { get; set; }
-    public DateTime NgayKetThuc { get; set; }
+	public int LieuTrinhID { get; set; }
+	public NameResponseDTO BenhNhan { get; init; } = default!;
+	public int PhienKhamID { get; set; }
+	public string TenLieuTrinh { get; set; } = default!;
+	public int TongSoBuoi { get; set; }
+	public string? TrangThai { get; set; }
+	public string? GhiChu { get; set; }
+	public DateTime? NgayBatDau { get; set; }
+	public DateTime? NgayKetThuc { get; set; }
+}
+public class LieuTrinhDieuTriListReadModel
+{
+	public int LieuTrinhID { get; set; }
+	public string TenLieuTrinh { get; set; } = default!;
+	public string BenhNhan { get; set; }
+	public int TongSoBuoi { get; set; }
+	public string? TrangThai { get; set; }
+	public DateTime? NgayBatDau { get; set; }
+	public DateTime? NgayKetThuc { get; set; }
 }
