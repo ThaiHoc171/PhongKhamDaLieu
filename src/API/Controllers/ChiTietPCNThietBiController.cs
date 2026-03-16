@@ -3,7 +3,6 @@ using Application.Services;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services;
 [ApiController]
 [Route("api/chitiet-pcntb")]
 [Authorize]

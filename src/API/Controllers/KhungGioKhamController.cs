@@ -1,84 +1,74 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services;
-namespace Presentation.Controllers
+
+[ApiController]
+[Route("api/khunggiokham")]
+[Authorize]
+public class KhungGioKhamController : ControllerBase
 {
-	[ApiController]
-	[Authorize]
-	[Route("api/[controller]")]
-	public class KhungGioKhamController : ControllerBase
-	{
-		private readonly KhungGioKhamService _khungGioService;
-		public KhungGioKhamController(KhungGioKhamService khungGioService)
-		{
-			_khungGioService = khungGioService;
-		}
-		// GET: api/KhungGioKham
-		[HttpGet]
-		public async Task<IActionResult> LayDanhSachKhungGio()
-		{
-			var result = await _khungGioService.DanhSachKhungGioAsync();
-			return Ok(result);
-		}
-		// GET: api/KhungGioKham/{id}
-		[HttpGet("{id}")]
-		public async Task<IActionResult> LayKhungGioTheoId(int id)
-		{
-			var result = await _khungGioService.LayKhungGioTheoIdAsync(id);
-			if (result == null)
-				return NotFound(new { message = "Khung giờ khám không tồn tại." });
-			return Ok(result);
-		}
-		// POST: api/KhungGioKham
-		[Authorize(Roles = "Admin")]
-		[HttpPost]
-		public async Task<IActionResult> ThemKhungGio([FromBody] KhungGioKhamRequestDTO dto)
-		{
-			try
-			{
-				await _khungGioService.ThemKhungGioAsync(dto);
-				return CreatedAtAction(nameof(LayKhungGioTheoId), new { id = dto }, new
-				{
-					message = "Thêm khung giờ khám thành công."
-				});
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(new { message = ex.Message });
-			}
-		}
-		// PUT: api/KhungGioKham/{id}
-		[Authorize(Roles = "Admin")]
-		[HttpPut("{id}")]
-		public async Task<IActionResult> CapNhatKhungGio(int id, [FromBody] KhungGioKhamRequestDTO dto)
-		{
-			try
-			{
-				var result = await _khungGioService.CapNhatKhungGioAsync(id, dto);
-				if (!result)
-					return NotFound(new { message = "Khung giờ khám không tồn tại." });
-				return Ok(new
-				{
-					message = "Cập nhật khung giờ khám thành công."
-				});
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(new
-				{
-					message = ex.Message
-				});
-			}
-		}
-		//Get combobox
-		[Authorize(Roles = "Admin,Nhân viên")]
-		[HttpGet("combobox")]
-		public async Task<IActionResult> GetIdAndName()
-		{
-			var result = await _khungGioService.GetComboboxAsync();
-			return Ok(result);
-		}
-	}
+    private readonly KhungGioKhamService _service;
+
+    public KhungGioKhamController(KhungGioKhamService service)
+    {
+        _service = service;
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] KhungGioKhamRequestDTO dto)
+    {
+        var result = await _service.TaoAsync(dto);
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] KhungGioKhamRequestDTO dto)
+    {
+        var result = await _service.CapNhatAsync(id, dto);
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<List<KhungGioKhamListReadModel>>>> GetAll()
+    {
+        var result = await _service.GetAllAsync();
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiResponse<KhungGioKhamReadModel>>> GetById(int id)
+    {
+        var result = await _service.GetByIdAsync(id);
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpGet("combobox")]
+    public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
+    {
+        var result = await _service.GetComboboxAsync();
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpGet("count")]
+    public async Task<ActionResult<ApiResponse<int>>> Count()
+    {
+        var result = await _service.CountAsync();
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpGet("calamviec/{caLamViec}")]
+    public async Task<ActionResult<ApiResponse<List<int>>>> GetByCaLamViec(int caLamViec)
+    {
+        var result = await _service.GetByCaLamViecAsync(caLamViec);
+        return Ok(result);
+    }
 }

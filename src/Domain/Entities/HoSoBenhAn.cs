@@ -1,50 +1,51 @@
 ﻿namespace Domain.Entities;
+
 public class HoSoBenhAn
 {
-    public int HoSoBenhAnID { get; set; }
-    public int BenhNhanID { get; set; }
-    public string? BenhNen { get; set; }
-    public string? DiUng { get; set; }
-    public string? TienSuBenh { get; set; }
-    public string? TienSuGiaDinh { get; set; }
-    public string? ThoiQuenSong { get; set; }
-    public string? ThongTinKhac { get; set; }
-    public DateTime NgayTao { get; set; }
-    public DateTime NgayCapNhat { get; set; }
+    public int HoSoBenhAnID { get; private set; }
+    public int BenhNhanID { get; private set; }
+    public string? BenhNen { get; private set; }
+    public string? DiUng { get; private set; }
+    public string? TienSuBenh { get; private set; }
+    public string? TienSuGiaDinh { get; private set; }
+    public string? ThoiQuenSong { get; private set; }
+    public string? ThongTinKhac { get; private set; }
+    public DateTime NgayTao { get; private set; }
+    public DateTime NgayCapNhat { get; private set; }
     public HoSoBenhAn(int benhNhanID, string? benhNen, string? diUng, string? tienSuBenh, string? tienSuGiaDinh, string? thoiQuenSong, string? thongTinKhac, DateTime ngayTao, DateTime ngayCapNhat)
     {
         if (benhNhanID <= 0) throw new ArgumentException("benhNhanID không hợp lệ");
-        BenhNhanID = benhNhanID;
-        BenhNen = benhNen;
-        DiUng = diUng;
-        TienSuBenh = tienSuBenh;
-        TienSuGiaDinh = tienSuGiaDinh;
-        ThoiQuenSong = thoiQuenSong;
-        ThongTinKhac = thongTinKhac;
-        NgayTao = ngayTao;
+        BenhNhanID = benhNhanID; 
+        BenhNen = benhNen; 
+        DiUng = diUng; 
+        TienSuBenh = tienSuBenh; 
+        TienSuGiaDinh = tienSuGiaDinh; 
+        ThoiQuenSong = thoiQuenSong; 
+        ThongTinKhac = thongTinKhac; 
+        NgayTao = ngayTao; 
         NgayCapNhat = ngayCapNhat;
     }
     public HoSoBenhAn(int hoSoBenhAnID, int benhNhanID, string? benhNen, string? diUng, string? tienSuBenh, string? tienSuGiaDinh, string? thoiQuenSong, string? thongTinKhac, DateTime ngayTao, DateTime ngayCapNhat)
     {
-        HoSoBenhAnID = hoSoBenhAnID;
-        BenhNhanID = benhNhanID;
-        BenhNen = benhNen;
-        DiUng = diUng;
-        TienSuBenh = tienSuBenh;
-        TienSuGiaDinh = tienSuGiaDinh;
-        ThoiQuenSong = thoiQuenSong;
-        ThongTinKhac = thongTinKhac;
-        NgayTao = ngayTao;
+        HoSoBenhAnID = hoSoBenhAnID; 
+        BenhNhanID = benhNhanID; 
+        BenhNen = benhNen; 
+        DiUng = diUng; 
+        TienSuBenh = tienSuBenh; 
+        TienSuGiaDinh = tienSuGiaDinh; 
+        ThoiQuenSong = thoiQuenSong; 
+        ThongTinKhac = thongTinKhac; 
+        NgayTao = ngayTao; 
         NgayCapNhat = ngayCapNhat;
     }
     public void CapNhatThongTin(string? benhNen, string? diUng, string? tienSuBenh, string? tienSuGiaDinh, string? thoiQuenSong, string? thongTinKhac, DateTime ngayCapNhat)
     {
-        BenhNen = benhNen;
-        DiUng = diUng;
-        TienSuBenh = tienSuBenh;
-        TienSuGiaDinh = tienSuGiaDinh;
+        BenhNen = benhNen; 
+        DiUng = diUng; 
+        TienSuBenh = tienSuBenh; 
+        TienSuGiaDinh = tienSuGiaDinh; 
         ThoiQuenSong = thoiQuenSong;
-        ThongTinKhac = thongTinKhac;
+        ThongTinKhac = thongTinKhac; 
         NgayCapNhat = ngayCapNhat;
     }
 }
