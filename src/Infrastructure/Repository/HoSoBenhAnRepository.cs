@@ -1,104 +1,194 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+
 namespace Infrastructure.Repositories;
+
 public class HoSoBenhAnRepository : IHoSoBenhAnRepository
 {
     private readonly string _connectionString;
-    public HoSoBenhAnRepository(IConfiguration config)
+
+    public HoSoBenhAnRepository(IConfiguration configuration)
     {
-        _connectionString = config.GetConnectionString("DefaultConnection")
-            ?? throw new ArgumentNullException("Connection string not found");
+        _connectionString = configuration.GetConnectionString("DefaultConnection")!;
     }
-    public async Task<List<HoSoBenhAn>> GetAllAsync()
+
+    private const string BaseSelectList = @"
+        SELECT HoSoBenhAnID,BenhNhanID,NgayTao
+        FROM HoSoBenhAn";
+    private const string BaseSelectDetail = @"
+        SELECT HoSoBenhAnID,BenhNhanID,BenhNen,DiUng,TienSuBenh,TienSuGiaDinh,ThoiQuenSong,ThongTinKhac,NgayTao,NgayCapNhat
+        FROM HoSoBenhAn";
+    public async Task<(List<HoSoBenhAnListReadModel>, int)> GetPagedAsync(int page, int size)
     {
-        const string sql = @"SELECT HoSoBenhAnID, BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac, NgayTao, NgayCapNhat
-                            FROM HoSoBenhAn";
-        var list = new List<HoSoBenhAn>();
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
+        var list = new List<HoSoBenhAnListReadModel>();
+        int total = 0;
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
+        int offset = (page - 1) * size;
+        var sql = $@"
+        {BaseSelectList}
+        ORDER BY NgayCapNhat DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+        SELECT COUNT(*) FROM HoSoBenhAn";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Offset", offset);
+        cmd.Parameters.AddWithValue("@Size", size);
+        using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
-        {
-            list.Add(MapToEntity(reader));
-        }
-        return list;
+            list.Add(MapToListDTO(reader));
+        await reader.NextResultAsync();
+        if (await reader.ReadAsync())
+            total = reader.GetInt32(0);
+        return (list, total);
     }
-    public async Task<HoSoBenhAn?> GetByIdAsync(int hoSoBenhAnID)
+    public async Task<(List<HoSoBenhAnListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size)
     {
-        const string sql = @"SELECT HoSoBenhAnID, BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac, NgayTao, NgayCapNhat
-                            FROM HoSoBenhAn WHERE HoSoBenhAnID = @hoSoBenhAnID";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@hoSoBenhAnID", hoSoBenhAnID);
+        var list = new List<HoSoBenhAnListReadModel>();
+        int total = 0;
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? MapToEntity(reader) : null;
+        int offset = (page - 1) * size;
+        var sql = $@"
+        {BaseSelectList}
+        WHERE BenhNen LIKE @Keyword OR DiUng LIKE @Keyword
+        ORDER BY NgayCapNhat DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+        SELECT COUNT(*)
+        FROM HoSoBenhAn
+        WHERE BenhNen LIKE @Keyword OR DiUng LIKE @Keyword";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+        cmd.Parameters.AddWithValue("@Offset", offset);
+        cmd.Parameters.AddWithValue("@Size", size);
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+            list.Add(MapToListDTO(reader));
+        await reader.NextResultAsync();
+        if (await reader.ReadAsync())
+            total = reader.GetInt32(0);
+        return (list, total);
     }
-    public async Task<HoSoBenhAn?> GetByBenhNhanIdAsync(int benhNhanID)
+    public async Task<HoSoBenhAnReadModel?> GetDetailAsync(int id)
     {
-        const string sql = @"SELECT HoSoBenhAnID, BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac, NgayTao, NgayCapNhat
-                            FROM HoSoBenhAn WHERE BenhNhanID = @benhNhanID";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@benhNhanID", benhNhanID);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? MapToEntity(reader) : null;
+        var sql = BaseSelectDetail + " WHERE HoSoBenhAnID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToDetailDTO(reader);
+        return null;
     }
-    public async Task<int> AddAsync(HoSoBenhAn hs)
+    public async Task<HoSoBenhAn?> GetByIdAsync(int id)
     {
-        const string sql = @"INSERT INTO HoSoBenhAn(BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong, ThongTinKhac, NgayTao, NgayCapNhat) 
-                            OUTPUT INSERTED.HoSoBenhAnID
-                            VALUES (@benhNhanID, @benhNen, @diUng, @tienSuBenh, @tienSuGiaDinh, @thoiQuenSong, @thongTinKhac, @ngayTao, @ngayCapNhat)";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@benhNhanID", hs.BenhNhanID);
-        cmd.Parameters.AddWithValue("@benhNen", hs.BenhNen ?? "");
-        cmd.Parameters.AddWithValue("@diUng", hs.DiUng ?? "");
-        cmd.Parameters.AddWithValue("@tienSuBenh", hs.TienSuBenh ?? "");
-        cmd.Parameters.AddWithValue("@tienSuGiaDinh", hs.TienSuGiaDinh ?? "");
-        cmd.Parameters.AddWithValue("@thoiQuenSong", hs.ThoiQuenSong ?? "");
-        cmd.Parameters.AddWithValue("@thongTinKhac", hs.ThongTinKhac ?? "");
-        cmd.Parameters.AddWithValue("@ngayTao", hs.NgayTao);
-        cmd.Parameters.AddWithValue("@ngayCapNhat", hs.NgayCapNhat);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        return (int)await cmd.ExecuteScalarAsync();
+        var sql = BaseSelectDetail + " WHERE HoSoBenhAnID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", id);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToEntity(reader);
+        return null;
+    }
+    public async Task<HoSoBenhAnReadModel?> GetByBenhNhanIdAsync(int benhNhanId)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = BaseSelectDetail + " WHERE BenhNhanID=@BenhNhanID";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@BenhNhanID", benhNhanId);
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToDetailDTO(reader);
+        return null;
+    }
+    public async Task AddAsync(HoSoBenhAn hs)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = @"INSERT INTO HoSoBenhAn
+        (BenhNhanID,BenhNen,DiUng,TienSuBenh,TienSuGiaDinh,ThoiQuenSong,ThongTinKhac,NgayTao,NgayCapNhat)
+        VALUES
+        (@BenhNhanID,@BenhNen,@DiUng,@TienSuBenh,@TienSuGiaDinh,@ThoiQuenSong,@ThongTinKhac,@NgayTao,@NgayCapNhat)";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@BenhNhanID", hs.BenhNhanID);
+        cmd.Parameters.AddWithValue("@BenhNen", (object?)hs.BenhNen ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@DiUng", (object?)hs.DiUng ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@TienSuBenh", (object?)hs.TienSuBenh ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@TienSuGiaDinh", (object?)hs.TienSuGiaDinh ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ThoiQuenSong", (object?)hs.ThoiQuenSong ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ThongTinKhac", (object?)hs.ThongTinKhac ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@NgayTao", hs.NgayTao);
+        cmd.Parameters.AddWithValue("@NgayCapNhat", hs.NgayCapNhat);
+        await cmd.ExecuteNonQueryAsync();
     }
     public async Task UpdateAsync(HoSoBenhAn hs)
     {
-        const string sql = @"UPDATE HoSoBenhAn
-                            SET BenhNen = @benhNen, DiUng = @diUng, TienSuBenh = @tienSuBenh, TienSuGiaDinh = @tienSuGiaDinh, ThoiQuenSong = @thoiQuenSong, ThongTinKhac = @thongTinKhac, NgayTao = @ngayTao, NgayCapNhat = @ngayCapNhat
-                            WHERE HoSoBenhAnID =  @hoSoBenhAnID";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@hoSoBenhAnID", hs.HoSoBenhAnID);
-        cmd.Parameters.AddWithValue("@benhNen", hs.BenhNen ?? "");
-        cmd.Parameters.AddWithValue("@diUng", hs.DiUng ?? "");
-        cmd.Parameters.AddWithValue("@tienSuBenh", hs.TienSuBenh ?? "");
-        cmd.Parameters.AddWithValue("@tienSuGiaDinh", hs.TienSuGiaDinh ?? "");
-        cmd.Parameters.AddWithValue("@thoiQuenSong", hs.ThoiQuenSong ?? "");
-        cmd.Parameters.AddWithValue("@thongTinKhac", hs.ThongTinKhac ?? "");
-        cmd.Parameters.AddWithValue("@ngayTao", hs.NgayTao);
-        cmd.Parameters.AddWithValue("@ngayCapNhat", hs.NgayCapNhat);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
+        var sql = @"UPDATE HoSoBenhAn
+                    SET BenhNen=@BenhNen,
+                        DiUng=@DiUng,
+                        TienSuBenh=@TienSuBenh,
+                        TienSuGiaDinh=@TienSuGiaDinh,
+                        ThoiQuenSong=@ThoiQuenSong,
+                        ThongTinKhac=@ThongTinKhac,
+                        NgayCapNhat=@NgayCapNhat
+                    WHERE HoSoBenhAnID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@Id", hs.HoSoBenhAnID);
+        cmd.Parameters.AddWithValue("@BenhNen", (object?)hs.BenhNen ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@DiUng", (object?)hs.DiUng ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@TienSuBenh", (object?)hs.TienSuBenh ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@TienSuGiaDinh", (object?)hs.TienSuGiaDinh ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ThoiQuenSong", (object?)hs.ThoiQuenSong ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@ThongTinKhac", (object?)hs.ThongTinKhac ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@NgayCapNhat", hs.NgayCapNhat);
         await cmd.ExecuteNonQueryAsync();
     }
-    private static HoSoBenhAn MapToEntity(SqlDataReader reader)
+    private HoSoBenhAn MapToEntity(SqlDataReader r)
     {
         return new HoSoBenhAn(
-            hoSoBenhAnID: reader.GetInt32(0),
-            benhNhanID: reader.GetInt32(1),
-            benhNen: reader.IsDBNull(2) ? null : reader.GetString(2),
-            diUng: reader.IsDBNull(3) ? null : reader.GetString(3),
-            tienSuBenh: reader.IsDBNull(4) ? null : reader.GetString(4),
-            tienSuGiaDinh: reader.IsDBNull(5) ? null : reader.GetString(5),
-            thoiQuenSong: reader.IsDBNull(6) ? null : reader.GetString(6),
-            thongTinKhac: reader.IsDBNull(7) ? null : reader.GetString(7),
-            ngayTao: reader.GetDateTime(8),
-            ngayCapNhat: reader.GetDateTime(9)
+            (int)r["HoSoBenhAnID"],
+            (int)r["BenhNhanID"],
+            r["BenhNen"] as string,
+            r["DiUng"] as string,
+            r["TienSuBenh"] as string,
+            r["TienSuGiaDinh"] as string,
+            r["ThoiQuenSong"] as string,
+            r["ThongTinKhac"] as string,
+            (DateTime)r["NgayTao"],
+            (DateTime)r["NgayCapNhat"]
         );
+    }
+    private HoSoBenhAnListReadModel MapToListDTO(SqlDataReader r)
+    {
+        return new HoSoBenhAnListReadModel
+        {
+            HoSoBenhAnID = (int)r["HoSoBenhAnID"],
+            BenhNhanID = (int)r["BenhNhanID"],
+            NgayTao = (DateTime)r["NgayTao"]
+        };
+    }
+    private HoSoBenhAnReadModel MapToDetailDTO(SqlDataReader r)
+    {
+        return new HoSoBenhAnReadModel
+        {
+            HoSoBenhAnID = (int)r["HoSoBenhAnID"],
+            BenhNhanID = (int)r["BenhNhanID"],
+            BenhNen = r["BenhNen"] as string,
+            DiUng = r["DiUng"] as string,
+            TienSuBenh = r["TienSuBenh"] as string,
+            TienSuGiaDinh = r["TienSuGiaDinh"] as string,
+            ThoiQuenSong = r["ThoiQuenSong"] as string,
+            ThongTinKhac = r["ThongTinKhac"] as string,
+            NgayTao = (DateTime)r["NgayTao"],
+            NgayCapNhat = (DateTime)r["NgayCapNhat"]
+        };
     }
 }

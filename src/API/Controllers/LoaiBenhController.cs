@@ -1,80 +1,74 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 namespace API.Controllers;
+
 [ApiController]
+[Route("api/loaibenh")]
 [Authorize]
-[Route("api/[controller]")]
 public class LoaiBenhController : ControllerBase
 {
-	private readonly LoaiBenhService _service;
-	public LoaiBenhController(LoaiBenhService service)
-	{
-		_service = service;
-	}
-    [Authorize(Policy = "BacSiOnly")]
-    [HttpGet("combobox")]
-    public async Task<IActionResult> GetComboboxAsync()
+    private readonly LoaiBenhService _service;
+
+    public LoaiBenhController(LoaiBenhService service)
     {
-        return Ok(await _service.GetComboboxAsync());
+        _service = service;
     }
     [Authorize]
-	[HttpGet("paged")]
-	public async Task<IActionResult> LayDanhSachPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
-	{
-		var result = await _service.DanhSachPagedAsync(pageNumber, pageSize);
-		return Ok(result);
-	}
-	[Authorize]
-	[HttpGet("{id}")]
-	public async Task<IActionResult> LayTheoId(int id)
-	{
-		var result = await _service.LayTheoIdAsync(id);
-		if (result == null)
-			return NotFound(new { message = "Loại bệnh không tồn tại." });
-		return Ok(result);
-	}
-	[Authorize]
-	[HttpGet("timkiem")]
-	public async Task<IActionResult> TimTheoTen([FromQuery] string ten)
-		=> Ok(await _service.TimTheoTenAsync(ten));
-	[Authorize(Roles = "Admin")]
-	[HttpPost]
-	public async Task<IActionResult> Them([FromBody] LoaiBenhRequestDTO dto)
-	{
-		try
-		{
-			await _service.ThemAsync(dto);
-			return Ok(new { message = "Thêm loại bệnh thành công." });
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-	}
-	[Authorize(Roles = "Admin")]
-	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id, [FromBody] LoaiBenhRequestDTO dto)
-	{
-		try
-		{
-			var result = await _service.CapNhatAsync(id, dto);
-			if (!result)
-				return NotFound(new { message = "Loại bệnh không tồn tại." });
-			return Ok(new { message = "Cập nhật loại bệnh thành công." });
-		}
-		catch (ArgumentException ex)
-		{
-			return BadRequest(new { message = ex.Message });
-		}
-	}
-	// GET: api/LoaiBenh/combo?kw=viem
-	[Authorize]
-	[HttpGet("combo")]
-	public async Task<IActionResult> Combo([FromQuery] string? kw)
-	{
-		var result = await _service.DanhSachComboAsync(kw);
-		return Ok(result);
-	}
+    [HttpGet("combobox")]
+    public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
+    {
+        var result = await _service.GetComboboxAsync();
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<PagedResult<LoaiBenhListReadModel>>>> GetPaged(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 15)
+    {
+        var result = await _service.GetPagedAsync(pageNumber, pageSize);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpGet("search")]
+    public async Task<ActionResult<ApiResponse<PagedResult<LoaiBenhListReadModel>>>> Search(
+        [FromQuery] string keyword,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 15)
+    {
+        var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiResponse<LoaiBenhReadModel>>> GetById(int id)
+    {
+        var result = await _service.GetByIdAsync(id);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] LoaiBenhRequestDTO dto)
+    {
+        var result = await _service.TaoMoiAsync(dto);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] LoaiBenhUpdateDTO dto)
+    {
+        var result = await _service.CapNhatAsync(id, dto);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpGet("{id}/ten")]
+    public async Task<ActionResult<ApiResponse<string>>> GetTenBenh(int id)
+    {
+        var result = await _service.GetTenBenhAsync(id);
+        return Ok(result);
+    }
 }
