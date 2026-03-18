@@ -2,72 +2,64 @@
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services;
+
 namespace API.Controllers;
+
 [ApiController]
-[Authorize]
-[Route("api/[controller]")]
+[Route("api/hosobenhan")]
 public class HoSoBenhAnController : ControllerBase
 {
-    private readonly HoSoBenhAnService _hoSoBenhAnService;
-    public HoSoBenhAnController(HoSoBenhAnService hoSoBenhAnService)
+    private readonly HoSoBenhAnService _service;
+
+    public HoSoBenhAnController(HoSoBenhAnService service)
     {
-        _hoSoBenhAnService = hoSoBenhAnService;
+        _service = service;
     }
-	// POST: api/HoSoBenhAn
-	[Authorize(Policy = "BacSiOnly")]
-	[HttpPost]
-    public async Task<IActionResult> TaoHoSoBenhAn([FromBody] TaoHoSoBenhAnDTO dto)
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetPaged([FromQuery] int page = 1, [FromQuery] int size = 10)
     {
-        try
-        {
-            var Hoso = await _hoSoBenhAnService.TaoHoSoBenhAn(dto);
-            return Ok(new
-            {
-                Message = "Tạo hồ sơ bệnh án thành công",
-                HoSoBenhAnID = Hoso
-            });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new
-            {
-                Message = "Tạo hồ sơ bệnh án thất bại",
-                Error = ex.Message
-            });
-        }
+        var result = await _service.GetPagedAsync(page, size);
+        return Ok(result);
     }
-	// GET: api/HoSoBenhAn
-	[Authorize(Policy = "BacSiOnly")]
-	[HttpGet]
-    public async Task<IActionResult> TatCa()
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
     {
-        var list = await _hoSoBenhAnService.GetAllAsync();
-        return Ok(list);
+        var result = await _service.GetByIdAsync(id);
+        if (!result.Success) return NotFound(result);
+        return Ok(result);
     }
-	// GET: api/HoSoBenhAn/benhnhan/{benhNhanID}
-	[Authorize(Roles = "Admin,Nhân viên,Bệnh nhân")]
-	[HttpGet("benhnhan/{benhNhanID:int}")]
-    public async Task<IActionResult> GetByBenhNhan(int benhNhanID)
+    [Authorize]
+    [HttpGet("benhnhan/{id}")]
+    public async Task<IActionResult> GetByBenhNhanId(int id)
     {
-        var hs = await _hoSoBenhAnService.GetByBenhNhanIdAsync(benhNhanID);
-        return hs == null ? NotFound() : Ok(hs);
+        var result = await _service.GetByBenhNhanIdAsync(id);
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
     }
-    // GET: api/HoSoBenhAn/{hoSoBenhAnID}
-    [HttpGet("{hoSoBenhAnID}")]
-    public async Task<IActionResult> LocTheoID(int hoSoBenhAnID)
+    [Authorize]
+    [HttpGet("search")]
+    public async Task<IActionResult> Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10)
     {
-        var list = await _hoSoBenhAnService.GetByIdAsync(hoSoBenhAnID);
-        return Ok(list);
+        var result = await _service.SearchAsync(keyword, page, size);
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
     }
-	// PUT: api/HoSoBenhAn/{id}
-	[Authorize(Policy = "BacSiOnly")]
-	[HttpPut("{id}")]
-    public async Task<IActionResult> CapNhatHoSo(int id,[FromBody] HoSoBenhAnUpdateDTO dto)
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] HoSoBenhAnRequestDTO dto)
     {
-        var result = await _hoSoBenhAnService.CapNhatThongTinAsync(id, dto);
-        if (!result)
-            return NotFound(new { Message = "Hồ sơ không tồn tại" });
-        return Ok(new { Message = "Bổ sung hồ sơ thành công" });
+        var result = await _service.TaoAsync(dto);
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] HoSoBenhAnUpdateDTO dto)
+    {
+        var result = await _service.CapNhatAsync(id, dto);
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
     }
 }

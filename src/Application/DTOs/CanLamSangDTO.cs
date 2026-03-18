@@ -1,21 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-namespace Application.DTOs;
+﻿namespace Application.DTOs;
 public class CanLamSangRequestDTO
 {
-	public string TenCLS { get; set; } = default!;
-	public string? MoTa { get; set; }
-	public string LoaiXetNghiem { get; set; } = default!;
+    public string TenCLS { get; set; } = "";
+    public string? MoTa { get; set; }
+    public string LoaiXetNghiem { get; set; } = "";
 }
-public class CanLamSangResponseDTO
+public class CanLamSangUpdateDTO
 {
-	public int CanLamSangID { get; set; }
-	public string TenCLS { get; set; } = default!;
-	public string? MoTa { get; set; }
-	public string LoaiXetNghiem { get; set; } = default!;
-	public DateTime NgayTao { get; set; }
-	public string TrangThai { get; set; } = default!;
+    public string TenCLS { get; set; } = "";
+    public string? MoTa { get; set; }
+    public string LoaiXetNghiem { get; set; } = "";
+    public string TrangThai { get; set; } = "";
+}
+public class CanLamSangReadModel
+{
+    public int CanLamSangID { get; set; }
+    public string TenCLS { get; set; } = "";
+    public string? MoTa { get; set; }
+    public string LoaiXetNghiem { get; set; } = "";
+    public DateTime NgayTao { get; set; }
+    public string TrangThai { get; set; } = "";
+}
+public class CanLamSangListReadModel
+{
+    public int CanLamSangID { get; set; }
+    public string TenCLS { get; set; } = "";
+    public string LoaiXetNghiem { get; set; } = "";
+    public string TrangThai { get; set; } = "";
 }

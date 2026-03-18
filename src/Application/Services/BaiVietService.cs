@@ -1,7 +1,10 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+
 namespace Application.Services;
+
 public class BaiVietService
 {
     private readonly IBaiVietRepository _repo;
@@ -9,97 +12,75 @@ public class BaiVietService
     {
         _repo = repo;
     }
-    public async Task<int> ThemBaiVietAsync(ThemBaiVietDTO dto)
+    public async Task<ApiResponse<int>> ThemAsync(ThemBaiVietDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.TieuDe))
-            throw new Exception("Tiêu đề bài viết không được để trống");
+            return ApiResponse<int>.Fail("Tiêu đề không hợp lệ");
         if (string.IsNullOrWhiteSpace(dto.NoiDung))
-            throw new Exception("Nội dung bài viết không được để trống");
-        if (dto.TacGiaID <= 0)
-            throw new Exception("Tác giả không hợp lệ");
-        if (dto.LoaiBenhID <= 0)
-            throw new Exception("Loại bệnh không hợp lệ");
-        var bv = new BaiViet(
+            return ApiResponse<int>.Fail("Nội dung không được để trống");
+        var entity = new BaiViet(
             dto.TieuDe.Trim(),
-            dto.TomTat?.Trim() ?? "",
-            dto.NoiDung.Trim(),
-            dto.HinhAnh ?? "",
+            dto.TomTat,
+            dto.NoiDung,
+            dto.HinhAnh,
             dto.TacGiaID,
-            dto.LoaiBenhID
-        );
-        return await _repo.AddAsync(bv);
+            dto.LoaiBenhID);
+        var id = await _repo.AddAsync(entity);
+        return ApiResponse<int>.SuccessResponse(id);
     }
-    public async Task<List<BaiVietResponseDTO>> DanhSachAsync()
-    {
-        var list = await _repo.GetAllAsync();
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<BaiVietResponseDTO?> GetByIdAsync(int id)
+    public async Task<ApiResponse<bool>> CapNhatAsync(int id, CapNhatBaiVietDTO dto)
     {
         if (id <= 0)
-            throw new Exception("ID bài viết không hợp lệ");
-        var bv = await _repo.GetByIdAsync(id);
-        if (bv == null) return null;
-        return MapToDto(bv);
+            return ApiResponse<bool>.Fail("ID không hợp lệ");
+        var entity = await _repo.GetByIdAsync(id);
+        if (entity == null)
+            return ApiResponse<bool>.Fail("Bài viết không tồn tại");
+        entity.CapNhat(
+            dto.TieuDe,
+            dto.TomTat,
+            dto.NoiDung,
+            dto.HinhAnh,
+            dto.LoaiBenhID);
+        await _repo.UpdateAsync(entity);
+        return ApiResponse<bool>.SuccessResponse(true);
     }
-    public async Task<List<BaiVietResponseDTO>> GetByLuotXemAsync()
-    {
-        var list = await _repo.GetByLuotXemAsync();
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<List<BaiVietResponseDTO>> GetByLoaiBenhAsync(int loaiBenhID)
-    {
-        if (loaiBenhID <= 0)
-            throw new Exception("Loại bệnh không hợp lệ");
-        var list = await _repo.GetByLoaiBenhAsync(loaiBenhID);
-        return list.Select(MapToDto).ToList();
-    }
-    public async Task<bool> CapNhatBaiVietAsync(int id, CapNhatBaiVietDTO dto)
+    public async Task<ApiResponse<bool>> XoaAsync(int id)
     {
         if (id <= 0)
-            throw new Exception("ID bài viết không hợp lệ");
-        if (string.IsNullOrWhiteSpace(dto.TieuDe))
-            throw new Exception("Tiêu đề không được để trống");
-        if (string.IsNullOrWhiteSpace(dto.NoiDung))
-            throw new Exception("Nội dung không được để trống");
-        if (dto.LoaiBenhID <= 0)
-            throw new Exception("Loại bệnh không hợp lệ");
-        var bv = await _repo.GetByIdAsync(id);
-        if (bv == null) return false;
-        bv.CapNhat(
-            dto.TieuDe.Trim(),
-            dto.TomTat?.Trim() ?? "",
-            dto.NoiDung.Trim(),
-            dto.HinhAnh ?? "",
-            dto.LoaiBenhID
-        );
-        await _repo.UpdateAsync(bv);
-        return true;
+            return ApiResponse<bool>.Fail("ID không hợp lệ");
+        var entity = await _repo.GetByIdAsync(id);
+        if (entity == null)
+            return ApiResponse<bool>.Fail("Bài viết không tồn tại");
+        await _repo.DeleteAsync(id);
+        return ApiResponse<bool>.SuccessResponse(true);
     }
-    public async Task<bool> TangLuotXemAsync(int id)
+    public async Task<ApiResponse<BaiVietReadModel>> GetByIdAsync(int id)
     {
-        if (id <= 0)
-            throw new Exception("ID bài viết không hợp lệ");
-        var bv = await _repo.GetByIdAsync(id);
-        if (bv == null) return false;
-        bv.TangLuotXem();
-        await _repo.UpdateAsync(bv);
-        return true;
+        var result = await _repo.GetDetailAsync(id);
+        if (result == null)
+            return ApiResponse<BaiVietReadModel>.Fail("Bài viết không tồn tại");
+        return ApiResponse<BaiVietReadModel>.SuccessResponse(result);
     }
-    private static BaiVietResponseDTO MapToDto(BaiViet bv)
+    public async Task<ApiResponse<PagedResult<BaiVietListReadModel>>> GetPagedAsync(int page, int size)
     {
-        return new BaiVietResponseDTO
-        {
-            BaiVietID = bv.BaiVietID,
-            TieuDe = bv.TieuDe,
-            TomTat = bv.TomTat,
-            NoiDung = bv.NoiDung,
-            HinhAnh = bv.HinhAnh,
-            TacGiaID = bv.TacGiaID,
-            LoaiBenhID = bv.LoaiBenhID,
-            LuotXem = bv.LuotXem,
-            NgayDang = bv.NgayDang,
-            NgayCapNhat = bv.NgayCapNhat
-        };
+        var (items, total) = await _repo.GetPagedAsync(page, size);
+        return ApiResponse<PagedResult<BaiVietListReadModel>>.SuccessResponse(
+            new PagedResult<BaiVietListReadModel>
+            {
+                Items = items,
+                TotalCount = total,
+                PageNumber = page,
+                PageSize = size
+            });
+    }
+    public async Task<ApiResponse<List<BaiVietListReadModel>>> GetByLoaiBenhAsync(int loaiBenhID)
+    {
+        var result = await _repo.GetByLoaiBenhAsync(loaiBenhID);
+        return ApiResponse<List<BaiVietListReadModel>>.SuccessResponse(result);
+    }
+    public async Task<ApiResponse<List<BaiVietListReadModel>>> GetTopLuotXemAsync(int top)
+    {
+        var result = await _repo.GetTopLuotXemAsync(top);
+        return ApiResponse<List<BaiVietListReadModel>>.SuccessResponse(result);
     }
 }
