@@ -1,8 +1,8 @@
 ﻿using Application.Common;
 using Application.DTOs;
+using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services;
 
 namespace API.Controllers;
 
@@ -12,69 +12,104 @@ namespace API.Controllers;
 public class CanLamSangController : ControllerBase
 {
 	private readonly CanLamSangService _service;
+
 	public CanLamSangController(CanLamSangService service)
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "BacSiOrKyThuatVien")]
-	[HttpGet("combobox")]
-	public async Task<IActionResult> GetComboboxAsync()
-	{
-		return Ok(await _service.GetComboboxAsync());
-	}
-	[Authorize(Policy = "BacSiOrKyThuatVien")]
-	[HttpGet("paged")]
-	public async Task<IActionResult> LayDanhSach([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
-		=> Ok(await _service.DanhSachCanLamSangAsync(pageNumber,pageSize));
-	[Authorize(Policy = "BacSiOrKyThuatVien")]
-	[HttpGet("{id}")]
-	public async Task<IActionResult> LayTheoId(int id)
-	{
-		var result = await _service.LayCanLamSangTheoIdAsync(id);
-		return result == null
-			? NotFound(new { message = "Cận lâm sàng không tồn tại." })
-			: Ok(result);
-	}
-	[Authorize(Roles = "Admin")]
+
+	// ==================== CREATE ====================
+	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost]
-	public async Task<IActionResult> Them([FromBody] CanLamSangRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CanLamSangRequestDTO dto)
 	{
-		await _service.ThemCanLamSangAsync(dto);
-		return Ok(new { message = "Thêm cận lâm sàng thành công." });
+		var result = await _service.TaoMoiAsync(dto);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return CreatedAtAction(
+			nameof(GetById),
+			new { id = result.Data },
+			result
+		);
 	}
-	[Authorize(Roles = "Admin")]
+
+	// ==================== UPDATE ====================
+	[Authorize(Policy = "CSVC_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(int id, [FromBody] CanLamSangRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] CanLamSangUpdateDTO dto)
 	{
-		var result = await _service.CapNhatCanLamSangAsync(id, dto);
-		return result
-			? Ok(new { message = "Cập nhật thành công." })
-			: NotFound(new { message = "Cận lâm sàng không tồn tại." });
+		var result = await _service.CapNhatAsync(id, dto);
+
+		if (!result.Success)
+			return NotFound(result);
+
+		return Ok(result);
 	}
-	[Authorize(Roles = "Admin")]
-	[HttpPut("{id}/ngungsudung")]
-	public async Task<IActionResult> NgungSuDung(int id)
+
+
+	// ==================== GET DETAIL ====================
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet("{id}")]
+	public async Task<ActionResult<ApiResponse<CanLamSangReadModel>>> GetById(int id)
 	{
-		var result = await _service.CapNhatTrangThaiAsync(id, "Ngưng sử dụng");
-		return result
-			? Ok(new { message = "Ngưng sử dụng thành công." })
-			: NotFound(new { message = "Cận lâm sàng không tồn tại." });
+		var result = await _service.GetByIdAsync(id);
+
+		if (!result.Success)
+			return NotFound(result);
+
+		return Ok(result);
 	}
-	[Authorize(Roles = "Admin")]
-	[HttpPut("{id}/kichhoat")]
-	public async Task<IActionResult> KichHoat(int id)
+
+	// ==================== GET LIST ====================
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet]
+	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> GetPaged(
+		[FromQuery] int pageNumber = 1,
+		[FromQuery] int pageSize = 15,
+		[FromQuery] string? loaiXetNghiem = null,
+		[FromQuery] string? trangThai = null)
 	{
-		var result = await _service.CapNhatTrangThaiAsync(id, "Hoạt động");
-		return result
-			? Ok(new { message = "Kích hoạt thành công." })
-			: NotFound(new { message = "Cận lâm sàng không tồn tại." });
+		var result = await _service.GetPagedAsync(pageNumber, pageSize, loaiXetNghiem, trangThai);
+
+		return Ok(result);
 	}
-	[HttpGet("timkiem")]
-	public async Task<IActionResult> TimTheoTen([FromQuery] string tenCLS)
+
+	// ==================== SEARCH ====================
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet("search")]
+	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> Search(
+		[FromQuery] string keyword,
+		[FromQuery] int pageNumber = 1,
+		[FromQuery] int pageSize = 15)
 	{
-		if (string.IsNullOrWhiteSpace(tenCLS))
-			return BadRequest(new { message = "Tên thiết bị không hợp lệ." });
-		var result = await _service.TimTheoTenAsync(tenCLS);
+		if (string.IsNullOrWhiteSpace(keyword))
+			return BadRequest(ApiResponse<PagedResult<CanLamSangListReadModel>>.Fail("Keyword không hợp lệ"));
+
+		var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
+
+		return Ok(result);
+	}
+
+	// ==================== FILTER BY LOAI ====================
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet("loai")]
+	public async Task<ActionResult<ApiResponse<List<CanLamSangListReadModel>>>> GetByLoai(
+		[FromQuery] string loai)
+	{
+		var result = await _service.GetByLoaiXetNghiemAsync(loai);
+
+		return Ok(result);
+	}
+
+	// ==================== COMBOBOX ====================
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet("combobox")]
+	public async Task<ActionResult<ApiResponse<List<CanLamSangListReadModel>>>> GetCombobox()
+	{
+		var result = await _service.GetByLoaiXetNghiemAsync(""); // hoặc service riêng nếu có
+
 		return Ok(result);
 	}
 }
