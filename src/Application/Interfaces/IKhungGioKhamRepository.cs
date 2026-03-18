@@ -1,13 +1,18 @@
-﻿using Domain.Entities;
-using Microsoft.Data.SqlClient;
+﻿using Application.DTOs;
+using Domain.Entities;
+
 namespace Application.Interfaces;
+
 public interface IKhungGioKhamRepository
 {
-	Task<List<KhungGioKham>> GetAllAsync();
-	Task<KhungGioKham?> GetByIdAsync(int id);
-	Task<int> CountKhungGioKhamAsync();
+    //-- CUD
+    Task<int> AddAsync(KhungGioKham khungGio);
+    Task UpdateAsync(KhungGioKham entity);
+    //-- READ
+    Task<KhungGioKham?> GetByIdAsync(int id);
+    Task<List<KhungGioKhamListReadModel>> GetAllAsync();
+    Task<KhungGioKhamReadModel?> GetDetailAsync(int id);
     Task<List<int>> GetKhungGioIdsByCaLamViecAsync(int caLamViec);
-    Task AddAsync(KhungGioKham khungGio);
-	Task UpdateAsync(KhungGioKham khungGio);
-	Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
+    Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
+    Task<int> CountKhungGioKhamAsync();
 }

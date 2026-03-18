@@ -1,73 +1,72 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Application.Common;
 using Application.DTOs;
 using Application.Services;
-namespace Presentation.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace API.Controllers;
+
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/baiviet")]
+[Authorize]
 public class BaiVietController : ControllerBase
 {
-	private readonly BaiVietService _service;
-	public BaiVietController(BaiVietService service)
-	{
-		_service = service;
-	}
-	[Authorize(Roles = "Admin")]
-	[HttpPost]
-	public async Task<IActionResult> Tao([FromBody] ThemBaiVietDTO dto)
-	{
-		var id = await _service.ThemBaiVietAsync(dto);
-		return Ok(new
-		{
-			Message = "Tạo bài viết thành công",
-			BaiVietID = id
-		});
-	}
-	[Authorize(Roles = "Admin")]
-	[HttpPut("{id}")]
-	public async Task<IActionResult> CapNhat(
-		int id,
-		[FromBody] CapNhatBaiVietDTO dto)
-	{
-		var result = await _service.CapNhatBaiVietAsync(id, dto);
-		return result
-			? Ok(new { Message = "Cập nhật bài viết thành công" })
-			: NotFound(new { Message = "Bài viết không tồn tại" });
-	}
-	// =========================
-	// PUBLIC
-	// =========================
-	[AllowAnonymous]
-	[HttpGet]
-	public async Task<IActionResult> DanhSach()
-		=> Ok(await _service.DanhSachAsync());
-	[AllowAnonymous]
-	[HttpGet("{id:int}")]
-	public async Task<IActionResult> LayTheoId(int id)
-	{
-		var result = await _service.GetByIdAsync(id);
-		return result == null
-			? NotFound(new { message = "Bài viết không tồn tại." })
-			: Ok(result);
-	}
-	[AllowAnonymous]
-	[HttpGet("Luotxem")]
-	public async Task<IActionResult> SapXepTheoLuotXem()
-		=> Ok(await _service.GetByLuotXemAsync());
-	[AllowAnonymous]
-	[HttpGet("LoaiBenh/{loaiBenhID:int}")]
-	public async Task<IActionResult> LayTheoLoaiBenh(int loaiBenhID)
-	{
-		var result = await _service.GetByLoaiBenhAsync(loaiBenhID);
-		return result == null
-			? NotFound(new { message = "Không có bài viết cho loại bệnh này." })
-			: Ok(result);
-	}
-	[AllowAnonymous]
-	[HttpPut("{id}/luotxem")]
-	public async Task<IActionResult> TangLuotXem(int id)
-	{
-		var ok = await _service.TangLuotXemAsync(id);
-		return ok ? Ok() : NotFound();
-	}
+    private readonly BaiVietService _service;
+
+    public BaiVietController(BaiVietService service)
+    {
+        _service = service;
+    }
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<PagedResult<BaiVietListReadModel>>>> GetPaged(
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10)
+    {
+        var result = await _service.GetPagedAsync(page, size);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiResponse<BaiVietReadModel>>> GetById(int id)
+    {
+        var result = await _service.GetByIdAsync(id);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpGet("loaibenh/{id}")]
+    public async Task<ActionResult<ApiResponse<List<BaiVietListReadModel>>>> GetByLoaiBenh(int id)
+    {
+        var result = await _service.GetByLoaiBenhAsync(id);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpGet("top")]
+    public async Task<ActionResult<ApiResponse<List<BaiVietListReadModel>>>> GetTopLuotXem(
+        [FromQuery] int top = 5)
+    {
+        var result = await _service.GetTopLuotXemAsync(top);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ThemBaiVietDTO dto)
+    {
+        var result = await _service.ThemAsync(dto);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] CapNhatBaiVietDTO dto)
+    {
+        var result = await _service.CapNhatAsync(id, dto);
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
+    {
+        var result = await _service.XoaAsync(id);
+        return Ok(result);
+    }
 }
