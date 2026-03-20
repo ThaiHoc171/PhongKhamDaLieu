@@ -110,20 +110,6 @@ CREATE TABLE NhanVien (
         FOREIGN KEY (PhongChucNangID) 
         REFERENCES PhongChucNang(PhongChucNangID)
 );
-CREATE TABLE BacSiProfile (
-    BacSiProfileID INT IDENTITY(1,1) PRIMARY KEY,
-    NhanVienID INT NOT NULL UNIQUE,
-    GioiThieu NVARCHAR(MAX),
-    ChuyenMon NVARCHAR(300),
-    ThanhTuu NVARCHAR(MAX),
-    HinhAnh NVARCHAR(500),
-    KinhNghiem NVARCHAR(MAX),
-    NgayCapNhat DATETIME NOT NULL DEFAULT GETDATE(),
-    CONSTRAINT FK_BacSiProfile_NhanVien
-        FOREIGN KEY (NhanVienID)
-        REFERENCES NhanVien(NhanVienID)
-        ON DELETE CASCADE
-);
 --- CƠ SỞ VẬT CHẤT ---
 CREATE TABLE PhongKham (
     PhongKhamID INT IDENTITY(1,1) PRIMARY KEY,

@@ -12,17 +12,29 @@ class StorageService {
     await prefs.setString('refreshToken', user.refreshToken);
     await prefs.setString('chucVu', user.chucVu ?? '');
     await prefs.setString('hoTen', user.hoTen ?? '');
-    await prefs.setInt(
-      'thongTinId',
-      user.thongTinId == null ? 0 : user.thongTinId as int,
-    );
-    await prefs.setInt(
-      'nhanVienId',
-      user.nhanVienId == null ? 0 : user.nhanVienId as int,
-    );
-    await prefs.setInt(
-      'benhNhanId',
-      user.benhNhanId == null ? 0 : user.benhNhanId as int,
-    );
+    await prefs.setInt('thongTinId', user.thongTinId ?? 0);
+    await prefs.setInt('nhanVienId', user.nhanVienId ?? 0);
+    await prefs.setInt('benhNhanId', user.benhNhanId ?? 0);
+  }
+
+  static Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('accessToken');
+  }
+
+  static Future<String?> getRefreshToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('refreshToken');
+  }
+
+  static Future<void> saveTokens(String access, String refresh) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('accessToken', access);
+    await prefs.setString('refreshToken', refresh);
+  }
+
+  static Future<void> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 }

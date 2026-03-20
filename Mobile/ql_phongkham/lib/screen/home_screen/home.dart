@@ -55,10 +55,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> checkTaiKham() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken')!;
       final benhNhanId = prefs.getInt('benhNhanId')!;
       final repo = LichKhamRepository();
-      final check = await repo.checkTaiKhamPending(benhNhanId, token);
+      final check = await repo.checkTaiKhamPending(benhNhanId);
       if (check != null) {
         if (!duocDangKyTaiKham(check.ngayDuKien)) {
           DialogHelper.showSnacFailed(
@@ -87,10 +86,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> checkDieuTri() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken')!;
       final benhNhanId = prefs.getInt('benhNhanId')!;
       final repo = LichKhamRepository();
-      final check = await repo.checkDieuTriPending(benhNhanId, token);
+      final check = await repo.checkDieuTriPending(benhNhanId);
       if (check != null) {
         Navigator.push(
           context,

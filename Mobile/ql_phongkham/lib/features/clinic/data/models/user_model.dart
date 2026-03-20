@@ -24,17 +24,19 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final hoTenObj = json['hoTen'];
+
     return UserModel(
       id: json['id'] ?? 0,
       email: json['email'] ?? '',
       vaiTro: json['vaiTro'] ?? '',
       accessToken: json['accessToken'] ?? '',
       refreshToken: json['refreshToken'] ?? '',
-      thongTinId: json['thongTinID'],
+      thongTinId: hoTenObj != null ? hoTenObj['id'] : null,
       nhanVienId: json['nhanVienId'],
       benhNhanId: json['benhNhanId'],
       chucVu: json['chucVu'],
-      hoTen: json['hoTen'],
+      hoTen: hoTenObj != null ? hoTenObj['name'] : null,
     );
   }
 }

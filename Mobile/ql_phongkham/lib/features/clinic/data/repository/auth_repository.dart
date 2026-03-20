@@ -3,12 +3,12 @@ import 'package:ql_phongkham/features/clinic/data/models/user_model.dart';
 
 class AuthRepository {
   Future<UserModel> login(String email, String password) async {
-    final response = await ApiClient.post('/TaiKhoan/dangnhap', {
+    final response = await ApiClient.post('auth/login', {
       "email": email,
       "matKhau": password,
     });
 
-    return UserModel.fromJson(response);
+    return UserModel.fromJson(response['data']);
   }
 
   Future<void> signup(String email, String password, String vaitro) async {

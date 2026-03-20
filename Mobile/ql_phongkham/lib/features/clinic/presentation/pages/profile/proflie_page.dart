@@ -24,12 +24,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> loadProfile() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
       final thongTinId = prefs.getInt('thongTinId');
 
-      if (token == null || thongTinId == null) return;
+      if (thongTinId == null) return;
 
-      final data = await ProfileRepository().getProfile(token, thongTinId);
+      final data = await ProfileRepository().getProfile(thongTinId);
       setState(() {
         profile = data;
       });

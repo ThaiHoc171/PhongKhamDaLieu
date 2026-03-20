@@ -162,10 +162,7 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
       if (token == null) return;
-      final data = await _repository.getKhungGioConTrongDieuTri(
-        _currentDay,
-        token,
-      );
+      final data = await _repository.getKhungGioConTrongDieuTri(_currentDay);
 
       setState(() {
         khungGioConTrong = data;
@@ -186,7 +183,6 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
       final id = await _repository.getCaKhamIdDieuTri(
         _currentDay,
         selectedKhungGioId!,
-        token,
       );
 
       setState(() {
@@ -216,18 +212,13 @@ class _LichDieuTriScreenState extends State<LichDieuTriScreen> {
       final id = await _repository.getCaKhamIdDieuTri(
         _currentDay,
         selectedKhungGioId!,
-        token,
       );
 
       caKhamId = id;
       if (widget.lieuTrinhID != null) {
-        await _repository.addBuoiDieuTri(widget.lieuTrinhID!, caKhamId!, token);
+        await _repository.addBuoiDieuTri(widget.lieuTrinhID!, caKhamId!);
       }
-      final message = await _repository.dangKyKham(
-        caKhamId!,
-        thongTinId,
-        token,
-      );
+      final message = await _repository.dangKyKham(caKhamId!, thongTinId);
 
       await Future.delayed(const Duration(milliseconds: 300));
 
