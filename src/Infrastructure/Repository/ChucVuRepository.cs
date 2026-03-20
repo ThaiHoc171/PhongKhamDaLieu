@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace Infrastructure.Repositories;
 
@@ -36,10 +37,10 @@ public class ChucVuRepository : IChucVuRepository
         FROM ChucVu
         WHERE (@TrangThai IS NULL OR TrangThai = @TrangThai)";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@TrangThai", (object?)trangThai ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@Offset", offset);
-        cmd.Parameters.AddWithValue("@Size", size);
-        using var reader = await cmd.ExecuteReaderAsync();
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = (object?)trangThai ?? DBNull.Value;
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
+		using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
             list.Add(MapToListDTO(reader));
         await reader.NextResultAsync();
@@ -64,10 +65,11 @@ public class ChucVuRepository : IChucVuRepository
         FROM ChucVu
         WHERE TenChucVu LIKE @Keyword";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
-        cmd.Parameters.AddWithValue("@Offset", offset);
-        cmd.Parameters.AddWithValue("@Size", size);
-        using var reader = await cmd.ExecuteReaderAsync();
+		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = $"%{keyword}%";
+
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
+		using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
             list.Add(MapToListDTO(reader));
         await reader.NextResultAsync();
@@ -81,8 +83,8 @@ public class ChucVuRepository : IChucVuRepository
         await conn.OpenAsync();
         var sql = BaseSelectDetail + " WHERE ChucVuID=@Id";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
-        using var reader = await cmd.ExecuteReaderAsync();
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+		using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
             return MapToDetailDTO(reader);
         return null;
@@ -93,8 +95,8 @@ public class ChucVuRepository : IChucVuRepository
         await conn.OpenAsync();
         var sql = BaseSelectDetail + " WHERE ChucVuID=@Id";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
-        using var reader = await cmd.ExecuteReaderAsync();
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+		using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
             return MapToEntity(reader);
         return null;
@@ -106,9 +108,9 @@ public class ChucVuRepository : IChucVuRepository
         var sql = @"INSERT INTO ChucVu(TenChucVu,MoTa)
                     VALUES(@TenChucVu,@MoTa)";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@TenChucVu", chucVu.TenChucVu);
-        cmd.Parameters.AddWithValue("@MoTa", (object?)chucVu.MoTa ?? DBNull.Value);
-        await cmd.ExecuteNonQueryAsync();
+		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar).Value = chucVu.TenChucVu;
+		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)chucVu.MoTa ?? DBNull.Value;
+		await cmd.ExecuteNonQueryAsync();
     }
     public async Task UpdateAsync(ChucVu chucVu)
     {
@@ -120,11 +122,12 @@ public class ChucVuRepository : IChucVuRepository
                         TrangThai=@TrangThai
                     WHERE ChucVuID=@Id";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", chucVu.ChucVuID);
-        cmd.Parameters.AddWithValue("@TenChucVu", chucVu.TenChucVu);
-        cmd.Parameters.AddWithValue("@MoTa", (object?)chucVu.MoTa ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@TrangThai", chucVu.TrangThai);
-        await cmd.ExecuteNonQueryAsync();
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = chucVu.ChucVuID;
+		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar).Value = chucVu.TenChucVu;
+		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)chucVu.MoTa ?? DBNull.Value;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar)
+			.Value = chucVu.TrangThai;
+		await cmd.ExecuteNonQueryAsync();
     }
     public async Task<string?> GetNameByIdAsync(int id)
     {
@@ -134,7 +137,7 @@ public class ChucVuRepository : IChucVuRepository
                     FROM ChucVu
                     WHERE ChucVuID=@Id";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         return await cmd.ExecuteScalarAsync() as string;
     }
     public async Task<string?> GetByNhanVienIdAsync(int nhanVienId)
@@ -147,8 +150,8 @@ public class ChucVuRepository : IChucVuRepository
         INNER JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID
         WHERE nv.NhanVienID=@NhanVienID";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@NhanVienID", nhanVienId);
-        using var reader = await cmd.ExecuteReaderAsync();
+		cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId;
+		using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
             return reader.GetString(0);
         return null;
