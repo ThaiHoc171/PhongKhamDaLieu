@@ -1,90 +1,123 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 namespace Application.Services;
 public class ChiTietPCNThietBiService
 {
-	private readonly IChiTietPCNThietBiRepository _chiTietRepo;
-	private readonly IPCNThietBiRepository _pcnRepo;
-	public ChiTietPCNThietBiService(
-		IChiTietPCNThietBiRepository chiTietRepo,
-		IPCNThietBiRepository pcnRepo)
-	{
-		_chiTietRepo = chiTietRepo;
-		_pcnRepo = pcnRepo;
-	}
-	public async Task<List<NameResponseDTO>> GetComboboxAsync(int pcnId)
-	{
-		var list = await _chiTietRepo.GetComboboxAsync(pcnId);
-		return list.Select(x => new NameResponseDTO
-		{
-			Id = x.Id,
-			Name = x.Ten
-		}).ToList();
-	}
-	public async Task<IEnumerable<ChiTietPCNThietBi>> LayTheoPCNTBAsync(int pcnTbId)
-	{
-		return await _chiTietRepo.GetByPCNTBIdAsync(pcnTbId);
-	}
-	public async Task ThemChiTietAsync(ChiTietPCNThietBiCreateDTO dto)
-	{
-		// 1. Tìm PCNThietBi
-		var pcn = await _pcnRepo.GetByPhongAndThietBiAsync(
-			dto.PhongChucNangID,
-			dto.ThietBiID);
-		// 2. Nếu chưa có → tạo mới
-		if (pcn == null)
-		{
-			pcn = new PCNThietBi(dto.PhongChucNangID, dto.ThietBiID);
-			await _pcnRepo.AddAsync(pcn);
-			// lấy lại ID (vì identity)
-			pcn = await _pcnRepo.GetByPhongAndThietBiAsync(
-				dto.PhongChucNangID,
-				dto.ThietBiID)
-				?? throw new InvalidOperationException("Không thể tạo PCN thiết bị");
-		}
-		// 3. Tạo chi tiết
-		var chiTiet = new ChiTietPCNThietBi(
-			pcn.PCN_TB_ID,
-			dto.MaTaiSan,
-			dto.GhiChu);
-		await _chiTietRepo.AddAsync(chiTiet);
-		// 4. Tăng tổng số lượng
-		pcn.CapNhatSoLuong(pcn.TongSoLuong + 1);
-		await _pcnRepo.UpdateAsync(pcn);
-	}
-	public async Task<bool> XoaChiTietAsync(int chiTietId)
-	{
-		var chiTiet = await _chiTietRepo.GetByIdAsync(chiTietId);
-		if (chiTiet == null) return false;
-		if (chiTiet.TinhTrang == TinhTrang.HoatDong)
-			throw new InvalidOperationException("Không thể xóa thiết bị đang hoạt động");
-		await _chiTietRepo.DeleteAsync(chiTietId);
-		var pcn = await _pcnRepo.GetByIdAsync(chiTiet.PCN_TB_ID)
-			?? throw new InvalidOperationException("PCN thiết bị không tồn tại");
-		pcn.CapNhatSoLuong(pcn.TongSoLuong - 1);
-		// 5. Nếu hết → xóa PCN
-		if (pcn.CoTheXoa())
-			await _pcnRepo.DeleteAsync(pcn.PCN_TB_ID);
-		else
-			await _pcnRepo.UpdateAsync(pcn);
-		return true;
-	}
-	public async Task<bool> CapNhatChiTietAsync(int chiTietId, ChiTietPCNThietBiUpdateDTO dto)
-	{
-		var chiTiet = await _chiTietRepo.GetByIdAsync(chiTietId);
-		if (chiTiet == null) return false;
-		chiTiet.CapNhatGhiChu(dto.GhiChu);
-		await _chiTietRepo.UpdateAsync(chiTiet);
-		return true;
-	}
-	public async Task<bool> CapNhatTrangThaiAsync(int chiTietId, TinhTrang tinhTrang)
-	{
-		var chiTiet = await _chiTietRepo.GetByIdAsync(chiTietId);
-		if (chiTiet == null) return false;
-		chiTiet.ChuyenTinhTrang(tinhTrang);
-		await _chiTietRepo.UpdateAsync(chiTiet);
-		return true;
-	}
+    private readonly IChiTietPCNThietBiRepository _repo;
+    private readonly IPCNThietBiRepository _pcnRepo;
+    public ChiTietPCNThietBiService(
+        IChiTietPCNThietBiRepository repo,
+        IPCNThietBiRepository pcnRepo)
+    {
+        _repo = repo;
+        _pcnRepo = pcnRepo;
+    }
+    public async Task<ApiResponse<int>> TaoMoiAsync(ChiTietPCNThietBiRequestDTO dto)
+    {
+        var pcn = await _pcnRepo.GetByPhongAndThietBiAsync(
+            dto.PhongChucNangID,
+            dto.ThietBiID);
+        if (pcn == null)
+        {
+            pcn = new PCNThietBi(dto.PhongChucNangID, dto.ThietBiID);
+            await _pcnRepo.AddAsync(pcn);
+            pcn = await _pcnRepo.GetByPhongAndThietBiAsync(
+                dto.PhongChucNangID,
+                dto.ThietBiID);
+            if (pcn == null)
+                return ApiResponse<int>.Fail("Không thể tạo PCN thiết bị");
+        }
+        var entity = new ChiTietPCNThietBi(
+            pcn.PCN_TB_ID,
+            dto.MaTaiSan,
+            dto.GhiChu);
+        var id = await _repo.AddAsync(entity);
+        pcn.CapNhatSoLuong(pcn.TongSoLuong + 1);
+        await _pcnRepo.UpdateAsync(pcn);
+        return ApiResponse<int>.SuccessResponse(id);
+    }
+    public async Task<ApiResponse<bool>> CapNhatAsync(int id, ChiTietPCNThietBiUpdateDTO dto)
+    {
+        var entity = await _repo.GetByIdAsync(id);
+
+        if (entity == null)
+            return ApiResponse<bool>.Fail("Chi tiết thiết bị không tồn tại");
+        try
+        {
+            entity.CapNhatGhiChu(dto.GhiChu);
+            entity.ChuyenTinhTrang(dto.TinhTrang);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return ApiResponse<bool>.Fail(ex.Message);
+        }
+        await _repo.UpdateAsync(entity);
+        return ApiResponse<bool>.SuccessResponse(true);
+    }
+    public async Task<ApiResponse<bool>> XoaAsync(int id)
+    {
+        var entity = await _repo.GetByIdAsync(id);
+        if (entity == null)
+            return ApiResponse<bool>.Fail("Chi tiết thiết bị không tồn tại");
+        if (entity.TinhTrang == TinhTrang.HoatDong)
+            return ApiResponse<bool>.Fail("Không thể xoá thiết bị đang hoạt động");
+        await _repo.DeleteAsync(id);
+        var pcn = await _pcnRepo.GetByIdAsync(entity.PCN_TB_ID);
+        if (pcn == null)
+            return ApiResponse<bool>.Fail("PCN thiết bị không tồn tại");
+        pcn.CapNhatSoLuong(pcn.TongSoLuong - 1);
+        if (pcn.CoTheXoa())
+            await _pcnRepo.DeleteAsync(pcn.PCN_TB_ID);
+        else
+            await _pcnRepo.UpdateAsync(pcn);
+        return ApiResponse<bool>.SuccessResponse(true);
+    }
+    public async Task<ApiResponse<ChiTietPCNThietBiReadModel>> GetByIdAsync(int id)
+    {
+        var result = await _repo.GetDetailAsync(id);
+        if (result == null)
+            return ApiResponse<ChiTietPCNThietBiReadModel>.Fail("Không tồn tại");
+        return ApiResponse<ChiTietPCNThietBiReadModel>.SuccessResponse(result);
+    }
+    public async Task<ApiResponse<PagedResult<ChiTietPCNThietBiListReadModel>>> GetPagedAsync(int pcnTbId, int pageNumber, int pageSize)
+    {
+        var (items, totalCount) =
+            await _repo.GetPagedAsync(pcnTbId, pageNumber, pageSize);
+        return ApiResponse<PagedResult<ChiTietPCNThietBiListReadModel>>.SuccessResponse(
+            new PagedResult<ChiTietPCNThietBiListReadModel>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            });
+    }
+    public async Task<ApiResponse<PagedResult<ChiTietPCNThietBiListReadModel>>> SearchAsync(int pcnTbId, string keyword, int pageNumber, int pageSize)
+    {
+        var (items, totalCount) =
+            await _repo.SearchPagedAsync(pcnTbId, keyword, pageNumber, pageSize);
+        return ApiResponse<PagedResult<ChiTietPCNThietBiListReadModel>>.SuccessResponse(
+            new PagedResult<ChiTietPCNThietBiListReadModel>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            });
+    }
+    public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync(int pcnTbId)
+    {
+        var list = await _repo.GetComboboxAsync(pcnTbId);
+
+        return ApiResponse<List<NameResponseDTO>>.SuccessResponse(
+            list.Select(x => new NameResponseDTO
+            {
+                Id = x.Id,
+                Name = x.Ten
+            }).ToList()
+        );
+    }
 }

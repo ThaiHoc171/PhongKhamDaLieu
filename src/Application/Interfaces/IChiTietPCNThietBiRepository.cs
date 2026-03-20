@@ -1,11 +1,18 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs;
+using Domain.Entities;
+
 namespace Application.Interfaces;
+
 public interface IChiTietPCNThietBiRepository
 {
-	Task<List<ChiTietPCNThietBi>> GetByPCNTBIdAsync(int pcnTbId);
-	Task<ChiTietPCNThietBi?> GetByIdAsync(int chiTietId);
-	Task<List<(int Id, string Ten)>> GetComboboxAsync(int pcnId);
-	Task AddAsync(ChiTietPCNThietBi chiTiet);
-	Task UpdateAsync(ChiTietPCNThietBi chiTiet);
-	Task DeleteAsync(int chiTietId);
+    //CUD
+    Task<int> AddAsync(ChiTietPCNThietBi entity);
+    Task UpdateAsync(ChiTietPCNThietBi entity);
+    Task DeleteAsync(int chiTietId);
+    //READ
+    Task<ChiTietPCNThietBi?> GetByIdAsync(int chiTietId);
+    Task<ChiTietPCNThietBiReadModel?> GetDetailAsync(int chiTietId);
+    Task<(List<ChiTietPCNThietBiListReadModel>, int)> GetPagedAsync(int pcnTbId, int page, int size);
+    Task<(List<ChiTietPCNThietBiListReadModel>, int)> SearchPagedAsync(int pcnTbId, string keyword, int page, int size);
+    Task<List<(int Id, string Ten)>> GetComboboxAsync(int pcnTbId);
 }
