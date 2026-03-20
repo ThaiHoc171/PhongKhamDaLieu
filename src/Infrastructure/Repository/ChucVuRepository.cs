@@ -39,7 +39,7 @@ public class ChucVuRepository : IChucVuRepository
         using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = (object?)trangThai ?? DBNull.Value;
 		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
-		cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
 		using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
             list.Add(MapToListDTO(reader));
@@ -68,7 +68,7 @@ public class ChucVuRepository : IChucVuRepository
 		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = $"%{keyword}%";
 
 		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
-		cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
 		using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
             list.Add(MapToListDTO(reader));
