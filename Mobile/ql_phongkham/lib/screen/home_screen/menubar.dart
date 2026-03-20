@@ -31,7 +31,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
 
       if (token == null || thongTinId == null) return;
 
-      final data = await ProfileRepository().getProfile(token, thongTinId);
+      final data = await ProfileRepository().getProfile(thongTinId);
 
       setState(() {
         hoTen = data.hoTen;

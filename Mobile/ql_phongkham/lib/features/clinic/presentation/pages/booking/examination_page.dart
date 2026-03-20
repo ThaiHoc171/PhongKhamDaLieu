@@ -164,7 +164,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
       if (token == null) return;
-      final data = await _repository.getKhungGioConTrong(_currentDay, token);
+      final data = await _repository.getKhungGioConTrong(_currentDay);
 
       setState(() {
         khungGioConTrong = data;
@@ -185,7 +185,6 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       final id = await _repository.getCaKhamId(
         _currentDay,
         selectedKhungGioId!,
-        token,
       );
 
       setState(() {
@@ -199,15 +198,11 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
   Future<bool> checkDangKy() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-
-      final token = prefs.getString('accessToken');
       final thongTinId = prefs.getInt('thongTinId');
-
       final daDangKy = await _repository.checkDangKy(
         _currentDay,
         selectedKhungGioId!,
         thongTinId!,
-        token!,
       );
 
       if (daDangKy) {
@@ -244,18 +239,13 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       final id = await _repository.getCaKhamId(
         _currentDay,
         selectedKhungGioId!,
-        token,
       );
 
       caKhamId = id;
 
-      final message = await _repository.dangKyKham(
-        caKhamId!,
-        thongTinId,
-        token,
-      );
+      final message = await _repository.dangKyKham(caKhamId!, thongTinId);
       if (widget.taiKhamId != null) {
-        await _repository.updateTaiKham(widget.taiKhamId!, caKhamId!, token);
+        await _repository.updateTaiKham(widget.taiKhamId!, caKhamId!);
       }
       DialogHelper.showSnackSuccess(context, message);
     } catch (e) {

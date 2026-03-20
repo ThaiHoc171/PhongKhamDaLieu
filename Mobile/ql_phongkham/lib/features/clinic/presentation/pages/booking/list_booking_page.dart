@@ -30,7 +30,7 @@ class _DanhSachCaKhamPageState extends State<DanhSachCaKhamPage> {
       final thongTinId = prefs.getInt('thongTinId')!;
 
       final repo = LichKhamRepository();
-      final data = await repo.getCaKhamBenhNhan(token, thongTinId, 1, 10);
+      final data = await repo.getCaKhamBenhNhan(thongTinId, 1, 10);
 
       setState(() {
         caKhamList = data;

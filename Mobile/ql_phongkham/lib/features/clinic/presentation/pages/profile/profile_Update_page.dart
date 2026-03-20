@@ -53,7 +53,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       final thongTinId = prefs.getInt('thongTinId');
       if (token == null || thongTinId == null) return;
 
-      final data = await ProfileRepository().getProfile(token, thongTinId);
+      final data = await ProfileRepository().getProfile(thongTinId);
 
       setState(() {
         hoTenController.text = data.hoTen;

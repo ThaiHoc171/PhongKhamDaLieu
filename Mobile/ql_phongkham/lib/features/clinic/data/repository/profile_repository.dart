@@ -2,11 +2,8 @@ import 'package:ql_phongkham/core/network/api_client.dart';
 import 'package:ql_phongkham/features/clinic/data/models/profile_model.dart';
 
 class ProfileRepository {
-  Future<ProfileModel> getProfile(String token, int thongTinId) async {
-    final response = await ApiClient.get(
-      '/ThongTinCaNhan/$thongTinId',
-      token: token,
-    );
+  Future<ProfileModel> getProfile(int thongTinId) async {
+    final response = await ApiClient.get('ThongTinCaNhan/$thongTinId');
     return ProfileModel.fromJson(response['data']);
   }
 
@@ -32,7 +29,7 @@ class ProfileRepository {
       "diaChi": diaChi,
       "avatar": avatar,
       "ghiChu": ghichu,
-    }, token: token);
+    });
     return response['benhNhanID'];
   }
 
@@ -55,6 +52,6 @@ class ProfileRepository {
       "emailLienHe": emailLienHe,
       "diaChi": diaChi,
       "avatar": avatar,
-    }, token: token);
+    });
   }
 }
