@@ -158,7 +158,39 @@ public class BenhNhanRepository : IBenhNhanRepository
 			NgayCapNhat = reader.IsDBNull(11) ? reader.GetDateTime(10) : reader.GetDateTime(11)
 		};
 	}
-	public async Task<int> AddAsync(BenhNhan benhNhan)
+    public async Task<BenhNhanDetailReadModel?> GetByThongTinIDAsync(int thongTinId)
+    {
+        const string sql = @"
+			SELECT bn.BenhNhanID,bn.ThongTinID,tt.HoTen,tt.NgaySinh,tt.GioiTinh,
+				   tt.SDT,tt.EmailLienHe,tt.DiaChi,tt.Avatar,
+				   bn.GhiChu,bn.NgayTao,bn.NgayCapNhat
+			FROM BenhNhan bn
+			JOIN ThongTinCaNhan tt ON bn.ThongTinID=tt.ThongTinID
+			WHERE bn.ThongTinID=@Id
+		";
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = thongTinId;
+        await conn.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+        if (!await reader.ReadAsync()) return null;
+        return new BenhNhanDetailReadModel
+        {
+            BenhNhanID = reader.GetInt32(0),
+            ThongTinID = reader.GetInt32(1),
+            HoTen = reader.IsDBNull(2) ? null : reader.GetString(2),
+            NgaySinh = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
+            GioiTinh = reader.IsDBNull(4) ? null : reader.GetString(4),
+            SDT = reader.IsDBNull(5) ? null : reader.GetString(5),
+            EmailLienHe = reader.IsDBNull(6) ? null : reader.GetString(6),
+            DiaChi = reader.IsDBNull(7) ? null : reader.GetString(7),
+            Avatar = reader.IsDBNull(8) ? null : reader.GetString(8),
+            GhiChu = reader.IsDBNull(9) ? null : reader.GetString(9),
+            NgayTao = reader.GetDateTime(10),
+            NgayCapNhat = reader.IsDBNull(11) ? reader.GetDateTime(10) : reader.GetDateTime(11)
+        };
+    }
+    public async Task<int> AddAsync(BenhNhan benhNhan)
 	{
 		const string sql = @"INSERT INTO BenhNhan(ThongTinID,GhiChu) 
 			OUTPUT INSERTED.BenhNhanID VALUES(@ThongTinID,@GhiChu)";

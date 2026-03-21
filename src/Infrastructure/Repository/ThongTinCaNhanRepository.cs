@@ -28,7 +28,17 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<ThongTinFullReadModel?> GetDetailAsync(int id)
+    public async Task<int> GetIdByTaiKhoanId(int taiKhoanId)
+    {
+        const string sql =
+        @"SELECT ThongTinID FROM ThongTinCaNhan WHERE TaiKhoanID=@Id";
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = taiKhoanId });
+        await conn.OpenAsync();
+        return Convert.ToInt32(await cmd.ExecuteScalarAsync());
+    }
+    public async Task<ThongTinFullReadModel?> GetDetailAsync(int id)
 	{
 		const string sql = @"
 			SELECT ThongTinID,TaiKhoanID,HoTen,NgaySinh,GioiTinh,SDT,

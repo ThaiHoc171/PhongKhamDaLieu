@@ -16,13 +16,15 @@ public class AuthService
 	private readonly IRefreshTokenRepository _refreshRepo;
 	private readonly IChucVuQuyenRepository _chucVuQuyenRepo;
 	private readonly IConfiguration _configuration;
+	private readonly IThongTinCaNhanRepository _thongTinCaNhanRepo;
 	public AuthService(
 		ITaiKhoanRepository repo,
 		INhanVienRepository nhanVienRepo,
 		IBenhNhanRepository benhNhanRepo,
 		IRefreshTokenRepository refreshRepo,
 		IChucVuQuyenRepository chucVuQuyenRepo,
-		IConfiguration configuration)
+		IConfiguration configuration,
+		IThongTinCaNhanRepository thongTinCaNhanRepo)
 	{
 		_repo = repo;
 		_nhanVienRepo = nhanVienRepo;
@@ -30,7 +32,8 @@ public class AuthService
 		_refreshRepo = refreshRepo;
 		_chucVuQuyenRepo = chucVuQuyenRepo;
 		_configuration = configuration;
-	}
+        _thongTinCaNhanRepo = thongTinCaNhanRepo;
+    }
 	public async Task<ApiResponse<LoginResponseDTO>> DangNhapAsync(LoginRequestDTO dto)
 	{
 		if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.MatKhau))
@@ -129,7 +132,8 @@ public class AuthService
 		}
 		if (tk.VaiTro == "Bệnh nhân")
 		{
-			var bn = await _benhNhanRepo.GetDetailAsync(tk.TaiKhoanID);
+			var thongTinId = await _thongTinCaNhanRepo.GetIdByTaiKhoanId(tk.TaiKhoanID);
+			var bn = await _benhNhanRepo.GetByThongTinIDAsync(thongTinId);
 			if (bn != null)
 			{
 				info.BenhNhanID = bn.BenhNhanID;
