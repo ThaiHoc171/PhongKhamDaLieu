@@ -105,11 +105,10 @@ public class CanLamSangController : ControllerBase
 
 	// ==================== COMBOBOX ====================
 	[Authorize(Policy = "CSVC_VIEW")]
-	[HttpGet("combobox")]
-	public async Task<ActionResult<ApiResponse<List<CanLamSangListReadModel>>>> GetCombobox()
-	{
-		var result = await _service.GetByLoaiXetNghiemAsync(""); // hoặc service riêng nếu có
-
-		return Ok(result);
-	}
+    [HttpGet("combobox")]
+    public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
+    {
+        var result = await _service.GetIdAndNameAsync();
+        return Ok(result);
+    }
 }

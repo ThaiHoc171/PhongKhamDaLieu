@@ -6,7 +6,7 @@ namespace Application.Interfaces;
 public interface IBaiVietRepository
 {
     //--CUD
-    Task<int> AddAsync(BaiViet entity);
+    Task AddAsync(BaiViet entity);
     Task UpdateAsync(BaiViet entity);
     Task DeleteAsync(int id);
     //--R

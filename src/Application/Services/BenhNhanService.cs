@@ -24,7 +24,10 @@ public class BenhNhanService
 			return ApiResponse<int>.Fail("Phải cung cấp số điện thoại");
 		if (string.IsNullOrWhiteSpace(dto.DiaChi))
 			return ApiResponse<int>.Fail("Phải cung địa chỉ");
-		var thongTin = new ThongTinCaNhan(
+        var isExist = await _thongTinRepo.ExistsByEmailAsync(dto.EmailLienHe, dto.SDT);
+        if (isExist)
+            return ApiResponse<int>.Fail("Email hoặc số điện thoại đã tồn tại");
+        var thongTin = new ThongTinCaNhan(
 			taiKhoanID: dto.TaiKhoanID,
 			hoTen: dto.HoTen,
 			ngaySinh: dto.NgaySinh,
@@ -43,8 +46,8 @@ public class BenhNhanService
 			thongTinID: thongTinID,
 			ghiChu: dto.GhiChu
 		);
-		var id = await _benhNhanRepo.AddAsync(entity);
-		return ApiResponse<int>.SuccessResponse(id);
+		await _benhNhanRepo.AddAsync(entity);
+		return ApiResponse<int>.SuccessResponse(1);
 	}
 	public async Task<ApiResponse<bool>> UpdateAsync(int id, BenhNhanUpdateRequestDTO dto)
 	{
