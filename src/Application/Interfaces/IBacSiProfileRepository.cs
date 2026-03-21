@@ -6,7 +6,7 @@ namespace Application.Interfaces;
 public interface IBacSiProfileRepository
 {
     //CUD 
-    Task<int> AddAsync(BacSiProfile entity);
+    Task AddAsync(BacSiProfile entity);
     Task UpdateAsync(BacSiProfile entity);
     //READ
     Task<BacSiProfile?> GetByIdAsync(int id);

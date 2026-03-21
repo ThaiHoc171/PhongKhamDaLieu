@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Domain.Entities;
+using Microsoft.Data.SqlClient;
 
 namespace Application.Interfaces;
 
@@ -15,4 +16,6 @@ public interface ICanLamSangRepository
     Task<(List<CanLamSangListReadModel>, int)>SearchPagedAsync(string keyword, int page, int size);
     Task<List<CanLamSangListReadModel>>GetByLoaiXetNghiemAsync(string loaiXetNghiem);
     Task<CanLamSangReadModel?>GetDetailAsync(int id);
+    Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
+  
 }

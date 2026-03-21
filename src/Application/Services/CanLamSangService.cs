@@ -81,6 +81,16 @@ public class CanLamSangService
 
         return ApiResponse<List<CanLamSangListReadModel>>.SuccessResponse(result);
     }
+    public async Task<ApiResponse<List<NameResponseDTO>>> GetIdAndNameAsync()
+    {
+        var list = await _repo.GetIdAndNameAsync();
+        var result = list.Select(x => new NameResponseDTO
+        {
+            Id = x.Id,
+            Name = x.Ten
+        }).ToList();
+        return ApiResponse<List<NameResponseDTO>>.SuccessResponse(result);
+    }
     public async Task<ApiResponse<int>> ImportExcelAsync(Stream stream)
     {
         ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");

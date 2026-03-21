@@ -3,6 +3,8 @@ using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
+
 namespace Infrastructure.Repository;
 
 public class BacSiProfileRepository : IBacSiProfileRepository
@@ -10,7 +12,7 @@ public class BacSiProfileRepository : IBacSiProfileRepository
     private readonly string _connectionString;
     public BacSiProfileRepository(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
+        _connectionString = configuration.GetConnectionString("DefaultConnection")!;
     }
     private const string BaseSelectLite = @"
         SELECT BacSiProfileID, NhanVienID, ChuyenMon, HinhAnh, NgayCapNhat
@@ -24,7 +26,7 @@ public class BacSiProfileRepository : IBacSiProfileRepository
         await conn.OpenAsync();
         var sql = BaseSelectDetail + " WHERE BacSiProfileID = @Id";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
             return MapToEntity(reader);
@@ -36,7 +38,7 @@ public class BacSiProfileRepository : IBacSiProfileRepository
         await conn.OpenAsync();
         var sql = BaseSelectDetail + " WHERE BacSiProfileID = @Id";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
             return MapToDetailDTO(reader);
@@ -48,7 +50,7 @@ public class BacSiProfileRepository : IBacSiProfileRepository
         await conn.OpenAsync();
         var sql = BaseSelectDetail + " WHERE NhanVienID = @NhanVienID";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@NhanVienID", nhanVienId);
+        cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId;
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
             return MapToDetailDTO(reader);
@@ -65,18 +67,14 @@ public class BacSiProfileRepository : IBacSiProfileRepository
             {BaseSelectLite}
             ORDER BY BacSiProfileID
             OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-            SELECT COUNT(*) FROM BacSiProfile
-        ";
+            SELECT COUNT(*) FROM BacSiProfile";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Offset", offset);
-        cmd.Parameters.AddWithValue("@PageSize", size);
+        cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+        cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
-        {
             list.Add(MapToLiteDTO(reader));
-        }
         await reader.NextResultAsync();
-
         if (await reader.ReadAsync())
             total = reader.GetInt32(0);
         return (list, total);
@@ -93,24 +91,21 @@ public class BacSiProfileRepository : IBacSiProfileRepository
             WHERE ChuyenMon LIKE @Keyword
             ORDER BY BacSiProfileID
             OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-
             SELECT COUNT(*) FROM BacSiProfile
             WHERE ChuyenMon LIKE @Keyword";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
-        cmd.Parameters.AddWithValue("@Offset", offset);
-        cmd.Parameters.AddWithValue("@PageSize", size);
+        cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = $"%{keyword}%";
+        cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+        cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
-        {
             list.Add(MapToLiteDTO(reader));
-        }
         await reader.NextResultAsync();
         if (await reader.ReadAsync())
             total = reader.GetInt32(0);
         return (list, total);
     }
-    public async Task<int> AddAsync(BacSiProfile entity)
+    public async Task AddAsync(BacSiProfile entity)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
@@ -120,15 +115,14 @@ public class BacSiProfileRepository : IBacSiProfileRepository
         VALUES (@NhanVienID, @GioiThieu, @ChuyenMon, @ThanhTuu, @HinhAnh, @KinhNghiem, @NgayCapNhat);
         SELECT SCOPE_IDENTITY();";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@NhanVienID", entity.NhanVienID);
-        cmd.Parameters.AddWithValue("@GioiThieu", (object?)entity.GioiThieu ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@ChuyenMon", (object?)entity.ChuyenMon ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@ThanhTuu", (object?)entity.ThanhTuu ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@HinhAnh", (object?)entity.HinhAnh ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@KinhNghiem", (object?)entity.KinhNghiem ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@NgayCapNhat", entity.NgayCapNhat);
-        var result = await cmd.ExecuteScalarAsync();
-        return Convert.ToInt32(result);
+        cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = entity.NhanVienID;
+        cmd.Parameters.Add("@GioiThieu", SqlDbType.NVarChar).Value = (object?)entity.GioiThieu ?? DBNull.Value;
+        cmd.Parameters.Add("@ChuyenMon", SqlDbType.NVarChar).Value = (object?)entity.ChuyenMon ?? DBNull.Value;
+        cmd.Parameters.Add("@ThanhTuu", SqlDbType.NVarChar).Value = (object?)entity.ThanhTuu ?? DBNull.Value;
+        cmd.Parameters.Add("@HinhAnh", SqlDbType.NVarChar).Value = (object?)entity.HinhAnh ?? DBNull.Value;
+        cmd.Parameters.Add("@KinhNghiem", SqlDbType.NVarChar).Value = (object?)entity.KinhNghiem ?? DBNull.Value;
+        cmd.Parameters.Add("@NgayCapNhat", SqlDbType.DateTime).Value = entity.NgayCapNhat == default ? DateTime.Now : entity.NgayCapNhat;
+        await cmd.ExecuteNonQueryAsync();
     }
     public async Task UpdateAsync(BacSiProfile entity)
     {
@@ -143,16 +137,16 @@ public class BacSiProfileRepository : IBacSiProfileRepository
             HinhAnh = @HinhAnh,
             KinhNghiem = @KinhNghiem,
             NgayCapNhat = @NgayCapNhat
-        WHERE BacSiProfileID = @Id
-        ";
+        WHERE BacSiProfileID = @Id";
         using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", entity.BacSiProfileID);
-        cmd.Parameters.AddWithValue("@GioiThieu", (object?)entity.GioiThieu ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@ChuyenMon", (object?)entity.ChuyenMon ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@ThanhTuu", (object?)entity.ThanhTuu ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@HinhAnh", (object?)entity.HinhAnh ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@KinhNghiem", (object?)entity.KinhNghiem ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@NgayCapNhat", entity.NgayCapNhat);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = entity.BacSiProfileID;
+        cmd.Parameters.Add("@GioiThieu", SqlDbType.NVarChar).Value = (object?)entity.GioiThieu ?? DBNull.Value;
+        cmd.Parameters.Add("@ChuyenMon", SqlDbType.NVarChar).Value = (object?)entity.ChuyenMon ?? DBNull.Value;
+        cmd.Parameters.Add("@ThanhTuu", SqlDbType.NVarChar).Value = (object?)entity.ThanhTuu ?? DBNull.Value;
+        cmd.Parameters.Add("@HinhAnh", SqlDbType.NVarChar).Value = (object?)entity.HinhAnh ?? DBNull.Value;
+        cmd.Parameters.Add("@KinhNghiem", SqlDbType.NVarChar).Value = (object?)entity.KinhNghiem ?? DBNull.Value;
+        cmd.Parameters.Add("@NgayCapNhat", SqlDbType.DateTime).Value = entity.NgayCapNhat;
+
         await cmd.ExecuteNonQueryAsync();
     }
     private BacSiProfile MapToEntity(SqlDataReader r)

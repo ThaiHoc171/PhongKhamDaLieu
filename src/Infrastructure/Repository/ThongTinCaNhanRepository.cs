@@ -38,6 +38,16 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
         await conn.OpenAsync();
         return Convert.ToInt32(await cmd.ExecuteScalarAsync());
     }
+    public async Task<bool> ExistsByEmailAsync(string email, string sdt)
+    {
+        const string sql = "SELECT COUNT(1) FROM ThongTinCaNhan WHERE EmailLienHe = @Email OR SDT = @SDT";
+        using var conn = new SqlConnection(_connectionString);
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = email;
+        cmd.Parameters.Add("@SDT", SqlDbType.NVarChar).Value = sdt;
+        await conn.OpenAsync();
+        return Convert.ToInt32(await cmd.ExecuteScalarAsync()) > 0;
+    }
     public async Task<ThongTinFullReadModel?> GetDetailAsync(int id)
 	{
 		const string sql = @"

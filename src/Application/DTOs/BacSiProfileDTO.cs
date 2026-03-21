@@ -11,7 +11,6 @@ public class BacSiProfileRequestDTO
 }
 public class BacSiProfileUpdateDTO
 {
-    public int BacSiProfileID { get; set; }
     public string? GioiThieu { get; set; }
     public string? ChuyenMon { get; set; }
     public string? ThanhTuu { get; set; }

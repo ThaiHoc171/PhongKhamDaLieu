@@ -25,8 +25,8 @@ public class BaiVietService
             dto.HinhAnh,
             dto.TacGiaID,
             dto.LoaiBenhID);
-        var id = await _repo.AddAsync(entity);
-        return ApiResponse<int>.SuccessResponse(id);
+        await _repo.AddAsync(entity);
+        return ApiResponse<int>.SuccessResponse(1);
     }
     public async Task<ApiResponse<bool>> CapNhatAsync(int id, CapNhatBaiVietDTO dto)
     {
