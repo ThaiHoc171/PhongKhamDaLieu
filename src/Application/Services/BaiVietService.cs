@@ -25,8 +25,8 @@ public class BaiVietService
             dto.HinhAnh,
             dto.TacGiaID,
             dto.LoaiBenhID);
-        await _repo.AddAsync(entity);
-        return ApiResponse<int>.SuccessResponse(1);
+        var id = await _repo.AddAsync(entity);
+        return ApiResponse<int>.SuccessResponse(id, "Tạo bài viết thành công");
     }
     public async Task<ApiResponse<bool>> CapNhatAsync(int id, CapNhatBaiVietDTO dto)
     {
@@ -42,7 +42,7 @@ public class BaiVietService
             dto.HinhAnh,
             dto.LoaiBenhID);
         await _repo.UpdateAsync(entity);
-        return ApiResponse<bool>.SuccessResponse(true);
+        return ApiResponse<bool>.SuccessResponse(true, "Cập nhật bài viết thành công");
     }
     public async Task<ApiResponse<bool>> XoaAsync(int id)
     {
@@ -52,7 +52,7 @@ public class BaiVietService
         if (entity == null)
             return ApiResponse<bool>.Fail("Bài viết không tồn tại");
         await _repo.DeleteAsync(id);
-        return ApiResponse<bool>.SuccessResponse(true);
+        return ApiResponse<bool>.SuccessResponse(true, "Xóa bài viết thành công");
     }
     public async Task<ApiResponse<BaiVietReadModel>> GetByIdAsync(int id)
     {

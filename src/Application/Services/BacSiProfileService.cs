@@ -28,8 +28,8 @@ public class BacSiProfileService
             dto.HinhAnh,
             dto.KinhNghiem
         );
-        await _repository.AddAsync(entity);
-        return ApiResponse<int>.SuccessResponse(1);
+        var id = await _repository.AddAsync(entity);
+        return ApiResponse<int>.SuccessResponse(id, "Tạo profile thành công");
     }
     public async Task<ApiResponse<bool>> CapNhatAsync(int id, BacSiProfileUpdateDTO dto)
     {

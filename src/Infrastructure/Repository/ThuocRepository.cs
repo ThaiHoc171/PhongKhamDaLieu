@@ -1,151 +1,176 @@
 ﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-namespace Infrastructure.Repository;
+using System.Data;
+namespace Infrastructure.Repositories;
 public class ThuocRepository : IThuocRepository
 {
     private readonly string _connectionString;
-    public ThuocRepository(IConfiguration config)
+    public ThuocRepository(IConfiguration configuration)
     {
-        _connectionString = config.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string not found.");
+        _connectionString = configuration.GetConnectionString("DefaultConnection")!;
     }
-    private SqlConnection CreateConnection() => new(_connectionString);
-    private const string BaseSelect =
-        @"SELECT ThuocID, TenThuoc, HoatChat FROM Thuoc";
-    public async Task<Thuoc?> GetByIdAsync(int id)
-    {
-        const string sql =
-        @"SELECT ThuocID, TenThuoc, HoatChat
-          FROM Thuoc
-          WHERE ThuocID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? MapToEntity(reader) : null;
-    }
+    private const string BaseSelectList = @"
+        SELECT ThuocID, TenThuoc, HoatChat
+        FROM Thuoc";
+    private const string BaseSelectDetail = @"
+        SELECT ThuocID, TenThuoc, HoatChat
+        FROM Thuoc";
     public async Task<(List<ThuocListReadModel>, int)> GetPagedAsync(int page, int size)
     {
-        var sql =
-        $@"{BaseSelect}
-           ORDER BY ThuocID DESC
-           OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-           SELECT COUNT(*) FROM Thuoc";
         var list = new List<ThuocListReadModel>();
         int total = 0;
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
-        cmd.Parameters.AddWithValue("@PageSize", size);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
+        int offset = (page - 1) * size;
+        var sql = $@"
+        {BaseSelectList}
+        ORDER BY ThuocID DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+        SELECT COUNT(*) FROM Thuoc";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+        cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+        using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
-            list.Add(MapToLiteDTO(reader));
-        if (await reader.NextResultAsync() && await reader.ReadAsync())
+            list.Add(MapToListDTO(reader));
+        await reader.NextResultAsync();
+        if (await reader.ReadAsync())
             total = reader.GetInt32(0);
         return (list, total);
     }
     public async Task<(List<ThuocListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size)
     {
-        var sql =
-        $@"{BaseSelect}
-           WHERE TenThuoc LIKE @Keyword
-           ORDER BY ThuocID DESC
-           OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-           SELECT COUNT(*) FROM Thuoc
-           WHERE TenThuoc LIKE @Keyword";
         var list = new List<ThuocListReadModel>();
         int total = 0;
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
-        cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
-        cmd.Parameters.AddWithValue("@PageSize", size);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
+        int offset = (page - 1) * size;
+        var sql = $@"
+        {BaseSelectList}
+        WHERE TenThuoc LIKE @Keyword
+        ORDER BY ThuocID DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+        SELECT COUNT(*)
+        FROM Thuoc
+        WHERE TenThuoc LIKE @Keyword";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = $"%{keyword}%";
+        cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+        cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+        using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
-            list.Add(MapToLiteDTO(reader));
-        if (await reader.NextResultAsync() && await reader.ReadAsync())
+            list.Add(MapToListDTO(reader));
+        await reader.NextResultAsync();
+        if (await reader.ReadAsync())
             total = reader.GetInt32(0);
         return (list, total);
     }
+    public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
+    {
+        var list = new List<(int Id, string Ten)>();
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = @"SELECT ThuocID, TenThuoc
+                    FROM Thuoc
+                    ORDER BY TenThuoc";
+        using var cmd = new SqlCommand(sql, conn);
+        using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            list.Add((reader.GetInt32(0), reader.GetString(1)));
+        }
+        return list;
+    }
     public async Task<ThuocReadModel?> GetDetailAsync(int id)
     {
-        const string sql =
-        @"SELECT ThuocID, TenThuoc, HoatChat
-          FROM Thuoc
-          WHERE ThuocID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? MapToDetailDTO(reader) : null;
+        var sql = BaseSelectDetail + " WHERE ThuocID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToDetailDTO(reader);
+        return null;
+    }
+    public async Task<Thuoc?> GetByIdAsync(int id)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = BaseSelectDetail + " WHERE ThuocID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToEntity(reader);
+        return null;
     }
     public async Task<int> AddAsync(Thuoc entity)
     {
-        const string sql =
-        @"INSERT INTO Thuoc (TenThuoc,HoatChat)
-          OUTPUT INSERTED.ThuocID
-          VALUES (@TenThuoc,@HoatChat)";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@TenThuoc", entity.TenThuoc);
-        cmd.Parameters.AddWithValue("@HoatChat", (object?)entity.HoatChat ?? DBNull.Value);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
+        var sql = @"
+        INSERT INTO Thuoc (TenThuoc, HoatChat)
+        OUTPUT INSERTED.ThuocID
+        VALUES (@TenThuoc, @HoatChat)";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@TenThuoc", SqlDbType.NVarChar).Value = entity.TenThuoc;
+        cmd.Parameters.Add("@HoatChat", SqlDbType.NVarChar)
+            .Value = (object?)entity.HoatChat ?? DBNull.Value;
         return Convert.ToInt32(await cmd.ExecuteScalarAsync());
     }
     public async Task UpdateAsync(Thuoc entity)
     {
-        const string sql =
-        @"UPDATE Thuoc
-          SET TenThuoc=@TenThuoc,
-              HoatChat=@HoatChat
-          WHERE ThuocID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@TenThuoc", entity.TenThuoc);
-        cmd.Parameters.AddWithValue("@HoatChat", (object?)entity.HoatChat ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@Id", entity.ThuocID);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
+        var sql = @"
+        UPDATE Thuoc
+        SET TenThuoc=@TenThuoc,
+            HoatChat=@HoatChat
+        WHERE ThuocID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = entity.ThuocID;
+        cmd.Parameters.Add("@TenThuoc", SqlDbType.NVarChar).Value = entity.TenThuoc;
+        cmd.Parameters.Add("@HoatChat", SqlDbType.NVarChar)
+            .Value = (object?)entity.HoatChat ?? DBNull.Value;
         await cmd.ExecuteNonQueryAsync();
     }
     public async Task DeleteAsync(int id)
     {
-        const string sql = @"DELETE FROM Thuoc WHERE ThuocID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
+        var sql = @"DELETE FROM Thuoc WHERE ThuocID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         await cmd.ExecuteNonQueryAsync();
     }
-    private static Thuoc MapToEntity(SqlDataReader r)
+    private Thuoc MapToEntity(SqlDataReader r)
     {
         return new Thuoc(
-            r.GetInt32(r.GetOrdinal("ThuocID")),
-            r.GetString(r.GetOrdinal("TenThuoc")),
-            r.IsDBNull(r.GetOrdinal("HoatChat")) ? null : r.GetString(r.GetOrdinal("HoatChat"))
+            (int)r["ThuocID"],
+            (string)r["TenThuoc"],
+            r["HoatChat"] as string
         );
     }
-    private static ThuocListReadModel MapToLiteDTO(SqlDataReader r)
+    private ThuocListReadModel MapToListDTO(SqlDataReader r)
     {
         return new ThuocListReadModel
         {
-            ThuocID = r.GetInt32(r.GetOrdinal("ThuocID")),
-            TenThuoc = r.GetString(r.GetOrdinal("TenThuoc")),
-            HoatChat = r.IsDBNull(r.GetOrdinal("HoatChat")) ? null : r.GetString(r.GetOrdinal("HoatChat"))
+            ThuocID = (int)r["ThuocID"],
+            TenThuoc = (string)r["TenThuoc"],
+            HoatChat = r["HoatChat"] as string
         };
     }
-    private static ThuocReadModel MapToDetailDTO(SqlDataReader r)
+    private ThuocReadModel MapToDetailDTO(SqlDataReader r)
     {
         return new ThuocReadModel
         {
-            ThuocID = r.GetInt32(r.GetOrdinal("ThuocID")),
-            TenThuoc = r.GetString(r.GetOrdinal("TenThuoc")),
-            HoatChat = r.IsDBNull(r.GetOrdinal("HoatChat")) ? null : r.GetString(r.GetOrdinal("HoatChat"))
+            ThuocID = (int)r["ThuocID"],
+            TenThuoc = (string)r["TenThuoc"],
+            HoatChat = r["HoatChat"] as string
         };
     }
 }

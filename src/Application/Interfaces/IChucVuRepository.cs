@@ -5,7 +5,7 @@ namespace Application.Interfaces
 	public interface IChucVuRepository
 	{
         //CUD
-        Task AddAsync(ChucVu chucVu);
+        Task<int> AddAsync(ChucVu chucVu);
         Task UpdateAsync(ChucVu chucVu);
         //Read
         Task<(List<ChucVuListReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai);

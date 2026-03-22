@@ -29,7 +29,16 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<TaiKhoan?> GetByIdAsync(int id)
+    public async Task<bool> ExistsByEmailAsync(string email)
+    {
+        const string sql = "SELECT COUNT(1) FROM TaiKhoan WHERE Email = @Email";
+        using var conn = new SqlConnection(_connectionString);
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = email;
+        await conn.OpenAsync();
+        return Convert.ToInt32(await cmd.ExecuteScalarAsync()) > 0;
+    }
+    public async Task<TaiKhoan?> GetByIdAsync(int id)
 	{
 		const string sql =
 		@"SELECT TaiKhoanID, Email, MatKhau, VaiTro, TrangThai, NgayTao FROM TaiKhoan WHERE TaiKhoanID=@Id";

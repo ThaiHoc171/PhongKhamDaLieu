@@ -1,148 +1,160 @@
 ﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-namespace Infrastructure.Repository;
+using System.Data;
+namespace Infrastructure.Repositories;
 public class ThietBiRepository : IThietBiRepository
 {
     private readonly string _connectionString;
-    public ThietBiRepository(IConfiguration config)
+    public ThietBiRepository(IConfiguration configuration)
     {
-        _connectionString = config.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string not found.");
+        _connectionString = configuration.GetConnectionString("DefaultConnection")!;
     }
-    private SqlConnection CreateConnection() => new(_connectionString);
-    private const string BaseSelect =
-        @"SELECT ThietBiID, TenTB, LoaiTB FROM ThietBi";
-    public async Task<ThietBi?> GetByIdAsync(int id)
-    {
-        const string sql = @"SELECT * FROM ThietBi WHERE ThietBiID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? MapToEntity(reader) : null;
-    }
+    private const string BaseSelectList = @"
+        SELECT ThietBiID, TenTB, LoaiTB
+        FROM ThietBi";
+    private const string BaseSelectDetail = @"
+        SELECT ThietBiID, TenTB, LoaiTB
+        FROM ThietBi";
     public async Task<(List<ThietBiListReadModel>, int)> GetPagedAsync(int page, int size)
     {
-        var sql =
-        $@"{BaseSelect}
-           ORDER BY ThietBiID DESC
-           OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-           SELECT COUNT(*) FROM ThietBi";
         var list = new List<ThietBiListReadModel>();
         int total = 0;
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
-        cmd.Parameters.AddWithValue("@PageSize", size);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
+        int offset = (page - 1) * size;
+        var sql = $@"
+        {BaseSelectList}
+        ORDER BY ThietBiID DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+        SELECT COUNT(*) FROM ThietBi";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+        cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+        using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
-            list.Add(MapToLiteDTO(reader));
-        if (await reader.NextResultAsync() && await reader.ReadAsync())
+            list.Add(MapToListDTO(reader));
+        await reader.NextResultAsync();
+        if (await reader.ReadAsync())
             total = reader.GetInt32(0);
         return (list, total);
     }
     public async Task<(List<ThietBiListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size)
     {
-        var sql =
-        $@"{BaseSelect}
-           WHERE TenTB LIKE @Keyword
-           ORDER BY ThietBiID DESC
-           OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-           SELECT COUNT(*) FROM ThietBi
-           WHERE TenTB LIKE @Keyword";
         var list = new List<ThietBiListReadModel>();
         int total = 0;
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
-        cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
-        cmd.Parameters.AddWithValue("@PageSize", size);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
+        int offset = (page - 1) * size;
+        var sql = $@"
+        {BaseSelectList}
+        WHERE TenTB LIKE @Keyword
+        ORDER BY ThietBiID DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+        SELECT COUNT(*)
+        FROM ThietBi
+        WHERE TenTB LIKE @Keyword";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = $"%{keyword}%";
+        cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+        cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+        using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
-            list.Add(MapToLiteDTO(reader));
-        if (await reader.NextResultAsync() && await reader.ReadAsync())
+            list.Add(MapToListDTO(reader));
+        await reader.NextResultAsync();
+        if (await reader.ReadAsync())
             total = reader.GetInt32(0);
         return (list, total);
     }
     public async Task<ThietBiReadModel?> GetDetailAsync(int id)
     {
-        const string sql =
-        @"SELECT ThietBiID, TenTB, LoaiTB
-          FROM ThietBi
-          WHERE ThietBiID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? MapToDetailDTO(reader) : null;
+        var sql = BaseSelectDetail + " WHERE ThietBiID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToDetailDTO(reader);
+        return null;
+    }
+    public async Task<ThietBi?> GetByIdAsync(int id)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = BaseSelectDetail + " WHERE ThietBiID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+            return MapToEntity(reader);
+        return null;
     }
     public async Task<int> AddAsync(ThietBi entity)
     {
-        const string sql =
-        @"INSERT INTO ThietBi (TenTB,LoaiTB)
-          OUTPUT INSERTED.ThietBiID
-          VALUES (@TenTB,@LoaiTB)";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@TenTB", entity.TenTB);
-        cmd.Parameters.AddWithValue("@LoaiTB", (object?)entity.LoaiTB ?? DBNull.Value);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
+        var sql = @"
+        INSERT INTO ThietBi (TenTB, LoaiTB)
+        OUTPUT INSERTED.ThietBiID
+        VALUES (@TenTB, @LoaiTB)";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@TenTB", SqlDbType.NVarChar).Value = entity.TenTB;
+        cmd.Parameters.Add("@LoaiTB", SqlDbType.NVarChar)
+            .Value = (object?)entity.LoaiTB ?? DBNull.Value;
         return Convert.ToInt32(await cmd.ExecuteScalarAsync());
     }
     public async Task UpdateAsync(ThietBi entity)
     {
-        const string sql =
-        @"UPDATE ThietBi
-          SET TenTB=@TenTB,
-              LoaiTB=@LoaiTB
-          WHERE ThietBiID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@TenTB", entity.TenTB);
-        cmd.Parameters.AddWithValue("@LoaiTB", (object?)entity.LoaiTB ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@Id", entity.ThietBiID);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
+        var sql = @"
+        UPDATE ThietBi
+        SET TenTB=@TenTB,
+            LoaiTB=@LoaiTB
+        WHERE ThietBiID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = entity.ThietBiID;
+        cmd.Parameters.Add("@TenTB", SqlDbType.NVarChar).Value = entity.TenTB;
+        cmd.Parameters.Add("@LoaiTB", SqlDbType.NVarChar)
+            .Value = (object?)entity.LoaiTB ?? DBNull.Value;
         await cmd.ExecuteNonQueryAsync();
     }
     public async Task DeleteAsync(int id)
     {
-        const string sql = @"DELETE FROM ThietBi WHERE ThietBiID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
+        using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
+        var sql = @"DELETE FROM ThietBi WHERE ThietBiID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         await cmd.ExecuteNonQueryAsync();
     }
-    private static ThietBi MapToEntity(SqlDataReader r)
+    private ThietBi MapToEntity(SqlDataReader r)
     {
         return new ThietBi(
-            r.GetInt32(r.GetOrdinal("ThietBiID")),
-            r.GetString(r.GetOrdinal("TenTB")),
-            r.IsDBNull(r.GetOrdinal("LoaiTB")) ? null : r.GetString(r.GetOrdinal("LoaiTB"))
+            (int)r["ThietBiID"],
+            (string)r["TenTB"],
+            r["LoaiTB"] as string
         );
     }
-    private static ThietBiListReadModel MapToLiteDTO(SqlDataReader r)
+    private ThietBiListReadModel MapToListDTO(SqlDataReader r)
     {
         return new ThietBiListReadModel
         {
-            ThietBiID = r.GetInt32(r.GetOrdinal("ThietBiID")),
-            TenTB = r.GetString(r.GetOrdinal("TenTB")),
-            LoaiTB = r.IsDBNull(r.GetOrdinal("LoaiTB")) ? null : r.GetString(r.GetOrdinal("LoaiTB"))
+            ThietBiID = (int)r["ThietBiID"],
+            TenTB = (string)r["TenTB"],
+            LoaiTB = r["LoaiTB"] as string
         };
     }
-    private static ThietBiReadModel MapToDetailDTO(SqlDataReader r)
+    private ThietBiReadModel MapToDetailDTO(SqlDataReader r)
     {
         return new ThietBiReadModel
         {
-            ThietBiID = r.GetInt32(r.GetOrdinal("ThietBiID")),
-            TenTB = r.GetString(r.GetOrdinal("TenTB")),
-            LoaiTB = r.IsDBNull(r.GetOrdinal("LoaiTB")) ? null : r.GetString(r.GetOrdinal("LoaiTB"))
+            ThietBiID = (int)r["ThietBiID"],
+            TenTB = (string)r["TenTB"],
+            LoaiTB = r["LoaiTB"] as string
         };
     }
 }

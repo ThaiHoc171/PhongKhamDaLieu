@@ -41,7 +41,9 @@ public class AuthService
 		var tk = await _repo.GetByEmailAsync(dto.Email);
 		if (tk == null)
 			return ApiResponse<LoginResponseDTO>.Fail("Tài khoản không tồn tại");
-		if (!Helper.Password.VerifyPassword(dto.MatKhau, tk.MatKhau))
+		if (tk.TrangThai == "Bị khóa")
+            return ApiResponse<LoginResponseDTO>.Fail("Tài khoản đã bị khóa");
+        if (!Helper.Password.VerifyPassword(dto.MatKhau, tk.MatKhau))
 			return ApiResponse<LoginResponseDTO>.Fail("Sai mật khẩu");
 		var info = await BuildUserInfoAsync(tk);
 		var accessToken = GenerateAccessToken(tk, info);

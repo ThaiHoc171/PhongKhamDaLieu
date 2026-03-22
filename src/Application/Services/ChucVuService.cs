@@ -21,8 +21,8 @@ public class ChucVuService
             dto.TenChucVu.Trim(),
             dto.MoTa
         );
-        await _repo.AddAsync(entity);
-        return ApiResponse<int>.SuccessResponse(1);
+        var id = await _repo.AddAsync(entity);
+        return ApiResponse<int>.SuccessResponse(id);
     }
     public async Task<ApiResponse<bool>> CapNhatAsync(int id, ChucVuRequestDTO dto)
     {

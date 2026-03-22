@@ -129,7 +129,7 @@ public class BenhNhanRepository : IBenhNhanRepository
             return MapToDetailDTO(reader);
         return null;
     }
-    public async Task AddAsync(BenhNhan benhNhan)
+    public async Task<int> AddAsync(BenhNhan benhNhan)
     {
         const string sql = @"
             INSERT INTO BenhNhan(ThongTinID, GhiChu)
@@ -141,7 +141,7 @@ public class BenhNhanRepository : IBenhNhanRepository
         cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar, -1)
             .Value = (object?)benhNhan.GhiChu ?? DBNull.Value;
         await conn.OpenAsync();
-        await cmd.ExecuteNonQueryAsync();
+        return Convert.ToInt32(await cmd.ExecuteScalarAsync());
     }
     public async Task UpdateAsync(BenhNhan benhNhan)
     {

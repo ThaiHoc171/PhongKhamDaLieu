@@ -19,6 +19,8 @@ public class ThongTinUpdateRequestDTO
 	public string EmailLienHe { get; set; } = null!;
 	public string? DiaChi { get; set; }
 	public string? Avatar { get; set; }
+    public string Loai { get; set; } = null!;
+
 }
 public class ThongTinCaNhanResponseDTO
 {

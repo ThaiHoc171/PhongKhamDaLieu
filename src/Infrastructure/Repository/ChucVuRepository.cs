@@ -101,7 +101,7 @@ public class ChucVuRepository : IChucVuRepository
             return MapToEntity(reader);
         return null;
     }
-    public async Task AddAsync(ChucVu chucVu)
+    public async Task<int> AddAsync(ChucVu chucVu)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
@@ -110,7 +110,7 @@ public class ChucVuRepository : IChucVuRepository
         using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar).Value = chucVu.TenChucVu;
 		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)chucVu.MoTa ?? DBNull.Value;
-		await cmd.ExecuteNonQueryAsync();
+        return Convert.ToInt32(await cmd.ExecuteScalarAsync());
     }
     public async Task UpdateAsync(ChucVu chucVu)
     {
