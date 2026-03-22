@@ -18,7 +18,7 @@ public class BaiVietRepository : IBaiVietRepository
     private const string BaseSelectDetail = @"
         SELECT BaiVietID,TieuDe,TomTat,NoiDung,HinhAnh,TacGiaID,LoaiBenhID,LuotXem,NgayDang,NgayCapNhat,TrangThai
         FROM BaiViet";
-    public async Task AddAsync(BaiViet entity)
+    public async Task<int> AddAsync(BaiViet entity)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
@@ -33,7 +33,7 @@ public class BaiVietRepository : IBaiVietRepository
         cmd.Parameters.Add("@HinhAnh", SqlDbType.NVarChar).Value = (object?)entity.HinhAnh ?? DBNull.Value;
         cmd.Parameters.Add("@TacGiaID", SqlDbType.Int).Value = (object?)entity.TacGiaID ?? DBNull.Value;
         cmd.Parameters.Add("@LoaiBenhID", SqlDbType.Int).Value = (object?)entity.LoaiBenhID ?? DBNull.Value;
-        await cmd.ExecuteNonQueryAsync();
+        return Convert.ToInt32(await cmd.ExecuteScalarAsync());
     }
     public async Task UpdateAsync(BaiViet entity)
     {

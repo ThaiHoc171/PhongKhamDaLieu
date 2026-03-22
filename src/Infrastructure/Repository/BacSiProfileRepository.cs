@@ -105,7 +105,7 @@ public class BacSiProfileRepository : IBacSiProfileRepository
             total = reader.GetInt32(0);
         return (list, total);
     }
-    public async Task AddAsync(BacSiProfile entity)
+    public async Task<int> AddAsync(BacSiProfile entity)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
@@ -122,7 +122,7 @@ public class BacSiProfileRepository : IBacSiProfileRepository
         cmd.Parameters.Add("@HinhAnh", SqlDbType.NVarChar).Value = (object?)entity.HinhAnh ?? DBNull.Value;
         cmd.Parameters.Add("@KinhNghiem", SqlDbType.NVarChar).Value = (object?)entity.KinhNghiem ?? DBNull.Value;
         cmd.Parameters.Add("@NgayCapNhat", SqlDbType.DateTime).Value = entity.NgayCapNhat == default ? DateTime.Now : entity.NgayCapNhat;
-        await cmd.ExecuteNonQueryAsync();
+        return Convert.ToInt32(await cmd.ExecuteScalarAsync());
     }
     public async Task UpdateAsync(BacSiProfile entity)
     {

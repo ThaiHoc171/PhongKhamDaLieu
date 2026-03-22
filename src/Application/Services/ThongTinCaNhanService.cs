@@ -17,9 +17,18 @@ public class ThongTinCaNhanService
 			return GioiTinhEnum.Khac;
 		return GioiTinhExtensions.ToEnum(value);
 	}
-	public async Task<ApiResponse<int>> AddKhachAsync(ThongTinRequestDTO dto)
+    private static LoaiThongTinEnum ParseLoai(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return LoaiThongTinEnum.Khach;
+        return LoaiThongTinExtensions.ToEnum(value);
+    }
+    public async Task<ApiResponse<int>> AddKhachAsync(ThongTinRequestDTO dto)
 	{
-		var entity = new ThongTinCaNhan(
+        var isExist = await _repo.ExistsByEmailAsync(dto.EmailLienHe, dto.SDT);
+        if (isExist)
+            return ApiResponse<int>.Fail("Email hoặc số điện thoại đã tồn tại");
+        var entity = new ThongTinCaNhan(
 			dto.HoTen,
 			dto.NgaySinh,
 			ParseGioiTinh(dto.GioiTinh),
@@ -31,7 +40,7 @@ public class ThongTinCaNhanService
 			dto.TaiKhoanID
 		);
 		var id = await _repo.AddAsync(entity);
-		return ApiResponse<int>.SuccessResponse(id);
+		return ApiResponse<int>.SuccessResponse(id, "Tạo thông tin thành công");
 	}
 	public async Task<ApiResponse<List<ThongTinCaNhanResponseDTO>>> DanhSachKhachAsync()
 	{
@@ -79,10 +88,11 @@ public class ThongTinCaNhanService
 			dto.SDT,
 			dto.EmailLienHe,
 			dto.DiaChi,
-			dto.Avatar
+			dto.Avatar,
+			ParseLoai(dto.Loai)
 		);
 		await _repo.UpdateAsync(entity);
-		return ApiResponse<bool>.SuccessResponse(true);
+		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thông tin thành công");
 	}
 	public async Task<ApiResponse<List<NameResponseDTO>>> GetCombobox()
 	{

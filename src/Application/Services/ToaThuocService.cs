@@ -64,7 +64,7 @@ public class ToaThuocService
 			return ApiResponse<int>.Fail(ex.Message);
 		}
 		await _chiTietRepo.AddAsync(toaThuocID, chiTiet);
-		return ApiResponse<int>.SuccessResponse(toaThuocID);
+		return ApiResponse<int>.SuccessResponse(toaThuocID, "Tạo toa thuốc thành công");
 	}
 	public async Task<ApiResponse<ToaThuocReadModel>> GetByPhienKhamAsync(int phienKhamID)
 	{
@@ -131,6 +131,7 @@ public class ToaThuocService
 		var count = await _chiTietRepo.CountAsync(toaThuocID);
 		if (count == 0)
 			await _toaThuocRepo.DeleteAsync(toaThuocID);
-		return ApiResponse<bool>.SuccessResponse(true);
+		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật toa thuốc thành công");
 	}
+
 }

@@ -17,8 +17,6 @@ public class CanLamSangController : ControllerBase
 	{
 		_service = service;
 	}
-
-	// ==================== CREATE ====================
 	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CanLamSangRequestDTO dto)
@@ -34,8 +32,6 @@ public class CanLamSangController : ControllerBase
 			result
 		);
 	}
-
-	// ==================== UPDATE ====================
 	[Authorize(Policy = "CSVC_UPDATE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] CanLamSangUpdateDTO dto)
@@ -47,9 +43,6 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-
-
-	// ==================== GET DETAIL ====================
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<CanLamSangReadModel>>> GetById(int id)
@@ -61,8 +54,6 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-
-	// ==================== GET LIST ====================
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> GetPaged(
@@ -75,8 +66,6 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-
-	// ==================== SEARCH ====================
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> Search(
@@ -91,8 +80,6 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-
-	// ==================== FILTER BY LOAI ====================
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("loai")]
 	public async Task<ActionResult<ApiResponse<List<CanLamSangListReadModel>>>> GetByLoai(
@@ -102,8 +89,6 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-
-	// ==================== COMBOBOX ====================
 	[Authorize(Policy = "CSVC_VIEW")]
     [HttpGet("combobox")]
     public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()

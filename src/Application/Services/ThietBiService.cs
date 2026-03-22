@@ -29,7 +29,7 @@ public class ThietBiService
 			return ApiResponse<bool>.Fail("Không tìm thấy thiết bị");
 		entity.CapNhat(dto.TenTB, dto.LoaiTB);
 		await _repo.UpdateAsync(entity);
-		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thành công");
+		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thiết bị thành công");
 	}
 	public async Task<ApiResponse<bool>> DeleteAsync(int id)
 	{
@@ -37,7 +37,7 @@ public class ThietBiService
 		if (entity == null)
 			return ApiResponse<bool>.Fail("Không tìm thấy thiết bị");
 		await _repo.DeleteAsync(id);
-		return ApiResponse<bool>.SuccessResponse(true, "Xóa thành công");
+		return ApiResponse<bool>.SuccessResponse(true, "Xóa thiết bị thành công");
 	}
 	public async Task<ApiResponse<PagedResult<ThietBiListReadModel>>> GetPagedAsync(int page, int size)
 	{

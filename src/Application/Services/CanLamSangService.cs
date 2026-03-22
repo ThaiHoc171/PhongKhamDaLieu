@@ -25,7 +25,7 @@ public class CanLamSangService
 
         var id = await _repo.AddAsync(entity);
 
-        return ApiResponse<int>.SuccessResponse(id);
+        return ApiResponse<int>.SuccessResponse(id, "Tạo cận lâm sàng thành công");
     }
     public async Task<ApiResponse<bool>> CapNhatAsync(int id, CanLamSangUpdateDTO dto)
     {
@@ -38,7 +38,7 @@ public class CanLamSangService
 
         await _repo.UpdateAsync(cls);
 
-        return ApiResponse<bool>.SuccessResponse(true);
+        return ApiResponse<bool>.SuccessResponse(true, "Cập nhật cận lâm sàng thành công");
     }
     public async Task<ApiResponse<CanLamSangReadModel>> GetByIdAsync(int id)
     {

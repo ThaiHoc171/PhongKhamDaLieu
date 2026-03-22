@@ -84,8 +84,16 @@ public class ThuocController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	// IMPORT EXCEL
-	[HttpPost("import")]
+	// COMBOBOX
+    [HttpGet("combobox")]
+    [Authorize(Policy = "THUOC_VIEW")]
+    public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
+    {
+        var result = await _service.GetIdAndNameAsync();
+        return Ok(result);
+    }
+    // IMPORT EXCEL
+    [HttpPost("import")]
 	[Authorize(Policy = "THUOC_CREATE")]
 	public async Task<ActionResult<ApiResponse<int>>> ImportExcel(IFormFile file)
 	{

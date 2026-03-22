@@ -5,7 +5,9 @@ public interface ITaiKhoanRepository
 {
 	Task<TaiKhoan?> GetByEmailAsync(string email);
 	Task<TaiKhoan?> GetByIdAsync(int id);
-	Task<TaiKhoanReadModel?> GetDetailAsync(int id);
+	Task<bool> ExistsByEmailAsync(string email);
+
+    Task<TaiKhoanReadModel?> GetDetailAsync(int id);
 	Task<(List<TaiKhoanListReadModel>, int)>
 		GetPagedAsync(int page, int size, string? vaiTro, string? trangThai);
 	Task<int> AddAsync(TaiKhoan taiKhoan);

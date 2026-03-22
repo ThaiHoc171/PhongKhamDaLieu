@@ -28,6 +28,33 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
+    public async Task<ThongTinCaNhan?> GetByEmailOrSDTAsync(string? email, string? sdt)
+    {
+        const string sql = @"
+        SELECT TOP 1 
+            ThongTinID,TaiKhoanID,HoTen,NgaySinh,GioiTinh,SDT,
+            EmailLienHe,DiaChi,Avatar,Loai,NgayTao,NgayCapNhat
+        FROM ThongTinCaNhan
+        WHERE 
+			(@Email IS NOT NULL AND EmailLienHe = @Email)
+			OR
+			(@SDT IS NOT NULL AND SDT = @SDT)";
+
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.Add("@Email", SqlDbType.NVarChar)
+            .Value = (object?)email ?? DBNull.Value;
+
+        cmd.Parameters.Add("@SDT", SqlDbType.NVarChar)
+            .Value = (object?)sdt ?? DBNull.Value;
+
+        await conn.OpenAsync();
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        return await reader.ReadAsync() ? MapToEntity(reader) : null;
+    }
     public async Task<int> GetIdByTaiKhoanId(int taiKhoanId)
     {
         const string sql =
@@ -134,7 +161,7 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		const string sql = @"
 			UPDATE ThongTinCaNhan
 			SET HoTen=@HoTen,NgaySinh=@NgaySinh,GioiTinh=@GioiTinh,SDT=@SDT,
-				EmailLienHe=@Email,DiaChi=@DiaChi,Avatar=@Avatar,NgayCapNhat=GETDATE()
+				EmailLienHe=@Email,DiaChi=@DiaChi,Avatar=@Avatar,Loai=@Loai,NgayCapNhat=GETDATE()
 			WHERE ThongTinID=@Id";	 
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
@@ -145,7 +172,8 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		cmd.Parameters.Add(new SqlParameter("@Email", SqlDbType.NVarChar) { Value = tt.EmailLienHe });
 		cmd.Parameters.Add(new SqlParameter("@DiaChi", SqlDbType.NVarChar) { Value = (object?)tt.DiaChi ?? DBNull.Value });
 		cmd.Parameters.Add(new SqlParameter("@Avatar", SqlDbType.NVarChar) { Value = (object?)tt.Avatar ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = tt.ThongTinID });
+        cmd.Parameters.Add("@Loai", SqlDbType.NVarChar).Value = tt.Loai;
+        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = tt.ThongTinID });
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}

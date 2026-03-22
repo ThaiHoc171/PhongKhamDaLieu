@@ -56,7 +56,7 @@ public class ThongTinCaNhan
 		return LoaiThongTinExtensions.ToEnum(Loai);
 	}
 	public void CapNhat(string hoTen, DateTime? ngaySinh, GioiTinhEnum gioiTinh,
-		string sdt, string emailLienHe, string? diaChi, string? avatar)
+		string sdt, string emailLienHe, string? diaChi, string? avatar, LoaiThongTinEnum loai)
 	{
 		if (string.IsNullOrWhiteSpace(hoTen))
 			throw new ArgumentException("Họ tên không hợp lệ");
@@ -69,5 +69,6 @@ public class ThongTinCaNhan
 		EmailLienHe = Email.Create(emailLienHe).Value;
 		DiaChi = diaChi;
 		Avatar = avatar;
+		Loai = loai.ToDbValue();
 	}
 }

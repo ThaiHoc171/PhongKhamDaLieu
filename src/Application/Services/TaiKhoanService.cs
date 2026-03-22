@@ -22,11 +22,14 @@ public class TaiKhoanService
 			return ApiResponse<int>.Fail("Email không hợp lệ");
 		if (string.IsNullOrWhiteSpace(dto.MatKhau))
 			return ApiResponse<int>.Fail("Mật khẩu không hợp lệ");
-		var hash = Helper.Password.PassWordHash(dto.MatKhau);
+        var isExist = await _repo.ExistsByEmailAsync(dto.Email);
+        if (isExist)
+            return ApiResponse<int>.Fail("Email đã tồn tại");
+        var hash = Helper.Password.PassWordHash(dto.MatKhau);
 		var vaiTro = VaiTroExtensions.ToEnum(dto.VaiTro);
 		var entity = new TaiKhoan(dto.Email, hash, vaiTro);
 		var id = await _repo.AddAsync(entity);
-		return ApiResponse<int>.SuccessResponse(id);
+		return ApiResponse<int>.SuccessResponse(id, "Tạo tài khoản thành công");
 	}
 	public async Task<ApiResponse<bool>> ChangePasswordAsync(
 		int id,
@@ -39,7 +42,7 @@ public class TaiKhoanService
 			return ApiResponse<bool>.Fail("Mật khẩu cũ không đúng");
 		tk.ChangePassword(Helper.Password.PassWordHash(dto.MatKhauMoi));
 		await _repo.UpdateAsync(tk);
-		return ApiResponse<bool>.SuccessResponse(true);
+		return ApiResponse<bool>.SuccessResponse(true, "Đổi mật khẩu thành công");
 	}
 	public async Task<ApiResponse<bool>> ResetPasswordAsync(int taiKhoanId)
 	{
@@ -97,6 +100,6 @@ public class TaiKhoanService
 			return ApiResponse<bool>.Fail(ex.Message);
 		}
 		await _repo.UpdateAsync(tk);
-		return ApiResponse<bool>.SuccessResponse(true);
+		return ApiResponse<bool>.SuccessResponse(true, "Thay đổi trạng thái tài khoản thành công");
 	}
 }

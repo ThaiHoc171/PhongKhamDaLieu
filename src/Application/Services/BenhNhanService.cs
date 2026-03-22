@@ -17,38 +17,59 @@ public class BenhNhanService
 	}
 	public async Task<ApiResponse<int>> AddAsync(BenhNhanRequestDTO dto)
 	{
-		int thongTinID;
-		if (string.IsNullOrWhiteSpace(dto.HoTen))
-			return ApiResponse<int>.Fail("Phải cung cấp họ tên");
-		if (string.IsNullOrWhiteSpace(dto.SDT))
-			return ApiResponse<int>.Fail("Phải cung cấp số điện thoại");
-		if (string.IsNullOrWhiteSpace(dto.DiaChi))
-			return ApiResponse<int>.Fail("Phải cung địa chỉ");
-        var isExist = await _thongTinRepo.ExistsByEmailAsync(dto.EmailLienHe, dto.SDT);
-        if (isExist)
-            return ApiResponse<int>.Fail("Email hoặc số điện thoại đã tồn tại");
-        var thongTin = new ThongTinCaNhan(
-			taiKhoanID: dto.TaiKhoanID,
-			hoTen: dto.HoTen,
-			ngaySinh: dto.NgaySinh,
-			gioiTinh: GioiTinhExtensions.ParseGioiTinhOrDefault(dto.GioiTinh),
-			sdt: dto.SDT,
-			emailLienHe: dto.EmailLienHe,
-			diaChi: dto.DiaChi,
-			avatar: dto.Avatar,
-			loai: LoaiThongTinEnum.BenhNhan
-		);
-		thongTinID = await _thongTinRepo.AddAsync(thongTin);
-		var exists = await _benhNhanRepo.ExistsByThongTinIdAsync(thongTinID);
-		if (exists)
-			return ApiResponse<int>.Fail("Thông tin cá nhân này đã là bệnh nhân");
-		var entity = new BenhNhan(
-			thongTinID: thongTinID,
-			ghiChu: dto.GhiChu
-		);
-		await _benhNhanRepo.AddAsync(entity);
-		return ApiResponse<int>.SuccessResponse(1);
-	}
+        if (string.IsNullOrWhiteSpace(dto.HoTen))
+            return ApiResponse<int>.Fail("Phải cung cấp họ tên");
+
+        if (string.IsNullOrWhiteSpace(dto.SDT))
+            return ApiResponse<int>.Fail("Phải cung cấp số điện thoại");
+
+        if (string.IsNullOrWhiteSpace(dto.DiaChi))
+            return ApiResponse<int>.Fail("Phải cung cấp địa chỉ");
+
+        var thongTin = await _thongTinRepo.GetByEmailOrSDTAsync(dto.EmailLienHe, dto.SDT);
+        int thongTinID;
+
+        if (thongTin != null)
+        {
+            thongTin.CapNhat(
+                hoTen: dto.HoTen,
+                ngaySinh: dto.NgaySinh,
+                gioiTinh: GioiTinhExtensions.ParseGioiTinhOrDefault(dto.GioiTinh),
+                sdt: dto.SDT,
+                emailLienHe: dto.EmailLienHe,
+                diaChi: dto.DiaChi,
+                avatar: dto.Avatar,
+				loai: LoaiThongTinEnum.BenhNhan
+            );
+            await _thongTinRepo.UpdateAsync(thongTin);
+            thongTinID = thongTin.ThongTinID;
+        }
+        else
+        {
+            var newThongTin = new ThongTinCaNhan(
+                taiKhoanID: dto.TaiKhoanID,
+                hoTen: dto.HoTen,
+                ngaySinh: dto.NgaySinh,
+                gioiTinh: GioiTinhExtensions.ParseGioiTinhOrDefault(dto.GioiTinh),
+                sdt: dto.SDT,
+                emailLienHe: dto.EmailLienHe,
+                diaChi: dto.DiaChi,
+                avatar: dto.Avatar,
+                loai: LoaiThongTinEnum.BenhNhan
+            );
+
+            thongTinID = await _thongTinRepo.AddAsync(newThongTin);
+        }
+        var exists = await _benhNhanRepo.ExistsByThongTinIdAsync(thongTinID);
+        if (exists)
+            return ApiResponse<int>.Fail("Bệnh nhân đã tồn tại");
+        var entity = new BenhNhan(
+            thongTinID: thongTinID,
+            ghiChu: dto.GhiChu
+        );
+        var id = await _benhNhanRepo.AddAsync(entity);
+        return ApiResponse<int>.SuccessResponse(id, "Tạo bệnh nhân thành công");
+    }
 	public async Task<ApiResponse<bool>> UpdateAsync(int id, BenhNhanUpdateRequestDTO dto)
 	{
 		var entity = await _benhNhanRepo.GetByIdAsync(id);
@@ -56,7 +77,7 @@ public class BenhNhanService
 			return ApiResponse<bool>.Fail("Bệnh nhân không tồn tại");
 		entity.CapNhatGhiChu(dto.GhiChu);
 		await _benhNhanRepo.UpdateAsync(entity);
-		return ApiResponse<bool>.SuccessResponse(true);
+		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thành công");
 	}
 	public async Task<ApiResponse<BenhNhanDetailReadModel>> GetDetailAsync(int id)
 	{
