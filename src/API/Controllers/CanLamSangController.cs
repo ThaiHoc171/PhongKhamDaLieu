@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/can-lam-sang")]
+[Route("api/canlamsang")]
 [Authorize]
 public class CanLamSangController : ControllerBase
 {
@@ -19,24 +19,20 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CanLamSangRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] CanLamSangRequestDTO dto)
 	{
-		var result = await _service.TaoMoiAsync(dto);
+		var result = await _service.CreateAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
 
-		return CreatedAtAction(
-			nameof(GetById),
-			new { id = result.Data },
-			result
-		);
+		return Ok(result);
 	}
 	[Authorize(Policy = "CSVC_UPDATE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] CanLamSangUpdateDTO dto)
 	{
-		var result = await _service.CapNhatAsync(id, dto);
+		var result = await _service.UpdateAsync(id, dto);
 
 		if (!result.Success)
 			return NotFound(result);
@@ -56,22 +52,15 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> GetPaged(
-		[FromQuery] int pageNumber = 1,
-		[FromQuery] int pageSize = 15,
-		[FromQuery] string? loaiXetNghiem = null,
-		[FromQuery] string? trangThai = null)
+	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> GetPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 	{
-		var result = await _service.GetPagedAsync(pageNumber, pageSize, loaiXetNghiem, trangThai);
+		var result = await _service.GetPagedAsync(pageNumber, pageSize);
 
 		return Ok(result);
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("search")]
-	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> Search(
-		[FromQuery] string keyword,
-		[FromQuery] int pageNumber = 1,
-		[FromQuery] int pageSize = 15)
+	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> Search([FromQuery] string keyword, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
 	{
 		if (string.IsNullOrWhiteSpace(keyword))
 			return BadRequest(ApiResponse<PagedResult<CanLamSangListReadModel>>.Fail("Keyword không hợp lệ"));
@@ -82,8 +71,7 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("loai")]
-	public async Task<ActionResult<ApiResponse<List<CanLamSangListReadModel>>>> GetByLoai(
-		[FromQuery] string loai)
+	public async Task<ActionResult<ApiResponse<List<CanLamSangListReadModel>>>> GetByLoai([FromQuery] string loai)
 	{
 		var result = await _service.GetByLoaiXetNghiemAsync(loai);
 
@@ -93,7 +81,17 @@ public class CanLamSangController : ControllerBase
     [HttpGet("combobox")]
     public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
     {
-        var result = await _service.GetIdAndNameAsync();
+        var result = await _service.GetComboboxAsync();
         return Ok(result);
     }
+	[Authorize(Policy = "CSVC_CREATE")]
+	[HttpPost("import")]
+	public async Task<ActionResult<ApiResponse<ImportResult>>> ImportExcel(IFormFile file)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest(ApiResponse<ImportResult>.Fail("File không hợp lệ"));
+		using var stream = file.OpenReadStream();
+		var result = await _service.ImportExcelAsync(stream);
+		return Ok(result);
+	}
 }

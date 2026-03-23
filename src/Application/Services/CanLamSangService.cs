@@ -13,21 +13,19 @@ public class CanLamSangService
     {
         _repo = repo;
     }
-    public async Task<ApiResponse<int>> TaoMoiAsync(CanLamSangRequestDTO dto)
+    public async Task<ApiResponse<bool>> CreateAsync(CanLamSangRequestDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.TenCLS))
-            return ApiResponse<int>.Fail("Tên cận lâm sàng không được để trống");
+            return ApiResponse<bool>.Fail("Tên cận lâm sàng không được để trống");
 
         if (string.IsNullOrWhiteSpace(dto.LoaiXetNghiem))
-            return ApiResponse<int>.Fail("Loại xét nghiệm không hợp lệ");
+            return ApiResponse<bool>.Fail("Loại xét nghiệm không hợp lệ");
 
         var entity = new CanLamSang(dto.TenCLS, dto.MoTa, dto.LoaiXetNghiem);
-
-        var id = await _repo.AddAsync(entity);
-
-        return ApiResponse<int>.SuccessResponse(id, "Tạo cận lâm sàng thành công");
-    }
-    public async Task<ApiResponse<bool>> CapNhatAsync(int id, CanLamSangUpdateDTO dto)
+        await _repo.AddAsync(entity);
+		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật cận lâm sàng thành công");
+	}
+    public async Task<ApiResponse<bool>> UpdateAsync(int id, CanLamSangUpdateDTO dto)
     {
         var cls = await _repo.GetByIdAsync(id);
 
@@ -49,9 +47,9 @@ public class CanLamSangService
 
         return ApiResponse<CanLamSangReadModel>.SuccessResponse(result);
     }
-    public async Task<ApiResponse<PagedResult<CanLamSangListReadModel>>> GetPagedAsync(int pageNumber, int pageSize, string? loaiXetNghiem, string? trangThai)
+    public async Task<ApiResponse<PagedResult<CanLamSangListReadModel>>> GetPagedAsync(int pageNumber, int pageSize)
     {
-        var (items, totalCount) = await _repo.GetPagedAsync(pageNumber, pageSize, loaiXetNghiem, trangThai);
+        var (items, totalCount) = await _repo.GetPagedAsync(pageNumber, pageSize);
 
         return ApiResponse<PagedResult<CanLamSangListReadModel>>.SuccessResponse(
             new PagedResult<CanLamSangListReadModel>
@@ -81,16 +79,11 @@ public class CanLamSangService
 
         return ApiResponse<List<CanLamSangListReadModel>>.SuccessResponse(result);
     }
-    public async Task<ApiResponse<List<NameResponseDTO>>> GetIdAndNameAsync()
+    public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync()
     {
-        var list = await _repo.GetIdAndNameAsync();
-        var result = list.Select(x => new NameResponseDTO
-        {
-            Id = x.Id,
-            Name = x.Ten
-        }).ToList();
-        return ApiResponse<List<NameResponseDTO>>.SuccessResponse(result);
-    }
+		var data = await _repo.GetComboboxAsync();
+		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
+	}
     public async Task<ApiResponse<int>> ImportExcelAsync(Stream stream)
     {
         ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");
