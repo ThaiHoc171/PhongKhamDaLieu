@@ -2,10 +2,9 @@
 
 public interface IPhongKhamRepository
 {
-    Task<int> AddAsync(PhongKham entity);
+    //CUD
     Task UpdateAsync(PhongKham entity);
-
+    //Read
     Task<PhongKham?> GetByIdAsync(int id);
-    Task<PhongKhamReadModel?> GetDetailAsync(int id);
-    Task<(List<PhongKhamListReadModel>, int)> GetPagedAsync(int page, int size);
+    Task<PhongKhamReadModel?> GetDetailAsync();
 }

@@ -5,14 +5,12 @@
         public int CaLamViec { get; set; }
         public TimeSpan GioBatDau { get; set; }
         public TimeSpan GioKetThuc { get; set; }
-        public string? TenKhung { get; set; }
     }
     public class KhungGioKhamUpdateDTO
     {
         public int CaLamViec { get; set; }
         public TimeSpan GioBatDau { get; set; }
         public TimeSpan GioKetThuc { get; set; }
-        public string? TenKhung { get; set; }
     }
     public class KhungGioKhamReadModel
     {

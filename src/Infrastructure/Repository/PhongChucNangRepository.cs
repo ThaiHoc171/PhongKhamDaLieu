@@ -30,8 +30,7 @@ public class PhongChucNangRepository : IPhongChucNangRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<(List<PhongChucNangListReadModel>, int)>
-	GetPagedAsync(int page, int size, string? trangThai)
+	public async Task<(List<PhongChucNangListReadModel>, int)>	GetPagedAsync(int page, int size, string? trangThai)
 	{
 		var sql =$@"
 			{BaseSelectLite}
@@ -59,8 +58,7 @@ public class PhongChucNangRepository : IPhongChucNangRepository
 			total = reader.GetInt32(0);
 		return (list, total);
 	}
-	public async Task<(List<PhongChucNangListReadModel>, int)>
-	SearchPagedAsync(string? keyword, int page, int size)
+	public async Task<(List<PhongChucNangListReadModel>, int)>	SearchPagedAsync(string? keyword, int page, int size)
 	{
 		var sql =$@"
 			{BaseSelectLite}

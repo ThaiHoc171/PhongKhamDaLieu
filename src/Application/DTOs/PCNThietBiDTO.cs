@@ -12,7 +12,7 @@ public class PCNThietBiRequestDTO
 public class PCNThietBiReadModel
 {
     public int PCN_TB_ID { get; set; }
-    public int PhongChucNangID { get; set; }
+    public NameResponseDTO PhongChucNang { get; set; }
     public NameResponseDTO ThietBi { get; init; } = default!;
     public int TongSoLuong { get; set; }
 }

@@ -43,9 +43,17 @@ public class KhungGioKhamController : ControllerBase
 
 		return Ok(result);
 	}
-
-	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "HETHONG_VIEW")]
+    [Authorize(Policy = "HETHONG_DELETE")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var response = await _service.DeleteAsync(id);
+        if (!response.Success)
+            return NotFound(response);
+        return Ok(response);
+    }
+    // ==================== GET DETAIL ====================
+    [Authorize(Policy = "HETHONG_VIEW")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<KhungGioKhamReadModel>>> GetById(int id)
 	{

@@ -10,7 +10,10 @@
 }
 
 public class PhongKhamUpdateDTO : PhongKhamRequestDTO { }
-
+public class PhongKhamUpdateTrangThaiDTO
+{
+    public string TrangThai { get; set; } = default!;
+}
 public class PhongKhamReadModel
 {
     public int PhongKhamID { get; set; }

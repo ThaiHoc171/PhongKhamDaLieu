@@ -7,7 +7,7 @@ public class KhungGioKham
     public TimeSpan GioKetThuc { get; private set; }
     public string? TenKhung { get; private set; }
 
-    public KhungGioKham(int caLamViec, TimeSpan gioBatDau, TimeSpan gioKetThuc, string? tenKhung)
+    public KhungGioKham(int caLamViec, TimeSpan gioBatDau, TimeSpan gioKetThuc)
     {
         if (caLamViec is not (1 or 2))
             throw new ArgumentException("Ca làm việc không hợp lệ (1 hoặc 2)");
@@ -16,7 +16,6 @@ public class KhungGioKham
         CaLamViec = caLamViec;
         GioBatDau = gioBatDau;
         GioKetThuc = gioKetThuc;
-        TenKhung = tenKhung;
     }
     public KhungGioKham(int khungGioID, int caLamViec, TimeSpan gioBatDau, TimeSpan gioKetThuc, string? tenKhung)
     {
@@ -26,7 +25,7 @@ public class KhungGioKham
         GioKetThuc = gioKetThuc;
         TenKhung = tenKhung;
     }
-    public void CapNhat(int caLamViec, TimeSpan gioBatDau, TimeSpan gioKetThuc, string? tenKhung)
+    public void CapNhat(int caLamViec, TimeSpan gioBatDau, TimeSpan gioKetThuc)
     {
         if (caLamViec is not (1 or 2))
             throw new ArgumentException("Ca làm việc không hợp lệ");
@@ -35,7 +34,6 @@ public class KhungGioKham
         CaLamViec = caLamViec;
         GioBatDau = gioBatDau;
         GioKetThuc = gioKetThuc;
-        TenKhung = tenKhung;
     }
     public bool KiemTraTrung(KhungGioKham other)
     {
