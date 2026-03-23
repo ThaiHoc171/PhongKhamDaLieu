@@ -19,9 +19,10 @@ public class ChucVuQuyenService
 		var selected = await _repo.GetByChucVuAsync(chucVuId);
 		var result = allQuyen.Select(q => new QuyenChecklistDTO
 		{
-			QuyenID = q.Id,
-			TenQuyen = q.Name,
-			Checked = selected.Contains(q.Id)
+			QuyenID = q.QuyenID,
+			TenQuyen = q.TenQuyen,
+			Module = q.Module,
+			Checked = selected.Contains(q.QuyenID)
 		}).ToList();
 		return ApiResponse<List<QuyenChecklistDTO>>.SuccessResponse(result);
 	}
