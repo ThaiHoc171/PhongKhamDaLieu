@@ -45,42 +45,42 @@ public class ChucVuQuyenRepository : IChucVuQuyenRepository
 			list.Add(reader.GetString(0));
 		return list;
 	}
-	public async Task AddAsync(int chucVuId, int quyenId)
+	public async Task AddRangeAsync(int chucVuId, IEnumerable<int> quyenIds)
 	{
-		const string sql = """
-            INSERT INTO ChucVuQuyen (ChucVuID, QuyenID)
-            VALUES (@ChucVuID, @QuyenID)
-        """;
+		var ids = quyenIds.ToList();
+		if (!ids.Any()) return;
+
+		var values = string.Join(",", ids.Select(id => $"({chucVuId},{id})"));
+
+		var sql = $@"
+			INSERT INTO ChucVuQuyen (ChucVuID, QuyenID)
+			VALUES {values}
+		";
+
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@ChucVuID", SqlDbType.Int).Value = chucVuId;
-		cmd.Parameters.Add("@QuyenID", SqlDbType.Int).Value = quyenId;
+
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-	public async Task DeleteAsync(int chucVuId, int quyenId)
+	public async Task DeleteRangeAsync(int chucVuId, IEnumerable<int> quyenIds)
 	{
-		const string sql = """
-            DELETE FROM ChucVuQuyen
-            WHERE ChucVuID = @ChucVuID
-            AND QuyenID = @QuyenID
-        """;
+		var ids = quyenIds.ToList();
+		if (!ids.Any()) return;
+
+		var idList = string.Join(",", ids);
+
+		var sql = $@"
+			DELETE FROM ChucVuQuyen
+			WHERE ChucVuID = @ChucVuID
+			AND QuyenID IN ({idList})
+		";
+
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
+
 		cmd.Parameters.Add("@ChucVuID", SqlDbType.Int).Value = chucVuId;
-		cmd.Parameters.Add("@QuyenID", SqlDbType.Int).Value = quyenId;
-		await conn.OpenAsync();
-		await cmd.ExecuteNonQueryAsync();
-	}
-	public async Task DeleteAllAsync(int chucVuId)
-	{
-		const string sql = """
-            DELETE FROM ChucVuQuyen
-            WHERE ChucVuID = @ChucVuID
-        """;
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@ChucVuID", SqlDbType.Int).Value = chucVuId;
+
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}

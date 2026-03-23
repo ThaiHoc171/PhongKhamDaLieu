@@ -30,19 +30,15 @@ public class ChucVuQuyenService
 	{
 		if (dto.QuyenIDs == null)
 			return ApiResponse<bool>.Fail("Danh sách quyền không hợp lệ");
-		await _repo.DeleteAllAsync(dto.ChucVuID);
-		foreach (var id in dto.QuyenIDs)
-			await _repo.AddAsync(dto.ChucVuID, id);
+
+		var current = await _repo.GetByChucVuAsync(dto.ChucVuID);
+
+		var toDelete = current.Except(dto.QuyenIDs).ToList();
+		var toAdd = dto.QuyenIDs.Except(current).ToList();
+
+		await _repo.DeleteRangeAsync(dto.ChucVuID, toDelete);
+		await _repo.AddRangeAsync(dto.ChucVuID, toAdd);
+
 		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật quyền thành công");
-	}
-	public async Task<ApiResponse<bool>> AddAsync(int chucVuId, int quyenId)
-	{
-		await _repo.AddAsync(chucVuId, quyenId);
-		return ApiResponse<bool>.SuccessResponse(true, "Thêm quyền thành công");
-	}
-	public async Task<ApiResponse<bool>> DeleteAsync(int chucVuId, int quyenId)
-	{
-		await _repo.DeleteAsync(chucVuId, quyenId);
-		return ApiResponse<bool>.SuccessResponse(true, "Xóa quyền thành công");
 	}
 }
