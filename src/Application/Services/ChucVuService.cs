@@ -13,18 +13,18 @@ public class ChucVuService
     {
         _repo = repo;
     }
-    public async Task<ApiResponse<int>> ThemAsync(ChucVuRequestDTO dto)
+    public async Task<ApiResponse<bool>> CreateAsync(ChucVuRequestDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.TenChucVu))
-            return ApiResponse<int>.Fail("Tên chức vụ không hợp lệ");
+            return ApiResponse<bool>.Fail("Tên chức vụ không hợp lệ");
         var entity = new ChucVu(
             dto.TenChucVu.Trim(),
             dto.MoTa
         );
-        var id = await _repo.AddAsync(entity);
-        return ApiResponse<int>.SuccessResponse(id);
+        await _repo.AddAsync(entity);
+        return ApiResponse<bool>.SuccessResponse(true, "Thêm chức vụ thành công!");
     }
-    public async Task<ApiResponse<bool>> CapNhatAsync(int id, ChucVuRequestDTO dto)
+    public async Task<ApiResponse<bool>> UpdateAsync(int id, ChucVuRequestDTO dto)
     {
         if (id <= 0)
             return ApiResponse<bool>.Fail("ID không hợp lệ");
@@ -35,9 +35,9 @@ public class ChucVuService
             return ApiResponse<bool>.Fail("Chức vụ không tồn tại");
         entity.CapNhat(dto.TenChucVu, dto.MoTa);
         await _repo.UpdateAsync(entity);
-        return ApiResponse<bool>.SuccessResponse(true);
+        return ApiResponse<bool>.SuccessResponse(true, "Cập nhật chức vụ thành công!");
     }
-    public async Task<ApiResponse<bool>> CapNhatTrangThaiAsync(int id, string trangThai)
+    public async Task<ApiResponse<bool>> UpdateStatusAsync(int id, string trangThai)
     {
         if (id <= 0)
             return ApiResponse<bool>.Fail("ID không hợp lệ");
@@ -98,12 +98,7 @@ public class ChucVuService
     }
     public async Task<ApiResponse<List<NameResponseDTO>>> GetIdAndNameAsync()
     {
-        var list = await _repo.GetIdAndNameAsync();
-        var result = list.Select(x => new NameResponseDTO
-        {
-            Id = x.Id,
-            Name = x.Ten
-        }).ToList();
-        return ApiResponse<List<NameResponseDTO>>.SuccessResponse(result);
+        var data = await _repo.GetComboboxAsync();
+        return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
     }
 }
