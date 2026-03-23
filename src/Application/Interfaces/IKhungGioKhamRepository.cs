@@ -8,6 +8,7 @@ public interface IKhungGioKhamRepository
     //-- CUD
     Task<int> AddAsync(KhungGioKham khungGio);
     Task UpdateAsync(KhungGioKham entity);
+    Task DeleteAsync(int id);
     //-- READ
     Task<KhungGioKham?> GetByIdAsync(int id);
     Task<List<KhungGioKhamListReadModel>> GetAllAsync();

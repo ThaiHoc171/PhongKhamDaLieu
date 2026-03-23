@@ -3,40 +3,30 @@ using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-
+using System.Data;
 namespace Infrastructure.Repository;
-
 public class KhungGioKhamRepository : IKhungGioKhamRepository
 {
     private readonly string _connectionString;
-
     public KhungGioKhamRepository(IConfiguration config)
     {
         _connectionString = config.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string not found.");
     }
     private SqlConnection CreateConnection() => new(_connectionString);
-    private const string BaseFrom =
-    @"FROM KhungGioKham";
-
-    private const string BaseSelectList =
-    @"SELECT KhungGioID,
-             CaLamViec,
-             GioBatDau,
-             GioKetThuc,
-             TenKhung";
-    private const string BaseSelectEntity =
-    @"SELECT KhungGioID,
-             CaLamViec,
-             GioBatDau,
-             GioKetThuc,
-             TenKhung";
+    private const string BaseFrom = @"FROM KhungGioKham";
+    private const string BaseSelect = @"
+        SELECT KhungGioID,
+               CaLamViec,
+               GioBatDau,
+               GioKetThuc,
+               TenKhung";
     public async Task<List<KhungGioKhamListReadModel>> GetAllAsync()
     {
         var sql = $@"
-        {BaseSelectList}
-        {BaseFrom}
-        ORDER BY CaLamViec, GioBatDau";
+            {BaseSelect}
+            {BaseFrom}
+            ORDER BY CaLamViec, GioBatDau";
         var list = new List<KhungGioKhamListReadModel>();
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
@@ -49,23 +39,32 @@ public class KhungGioKhamRepository : IKhungGioKhamRepository
     public async Task<KhungGioKham?> GetByIdAsync(int id)
     {
         var sql = $@"
-        {BaseSelectEntity}
-        {BaseFrom}
-        WHERE KhungGioID = @Id";
+            {BaseSelect}
+            {BaseFrom}
+            WHERE KhungGioID = @Id";
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         await conn.OpenAsync();
         await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync()
-            ? MapToEntity(reader)
-            : null;
+        return await reader.ReadAsync() ? MapToEntity(reader) : null;
+    }
+    public async Task<KhungGioKhamReadModel?> GetDetailAsync(int id)
+    {
+        var sql = $@"
+            {BaseSelect}
+            {BaseFrom}
+            WHERE KhungGioID = @Id";
+        await using var conn = CreateConnection();
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        await conn.OpenAsync();
+        await using var reader = await cmd.ExecuteReaderAsync();
+        return await reader.ReadAsync() ? MapToDetailDTO(reader) : null;
     }
     public async Task<int> CountKhungGioKhamAsync()
     {
-        var sql = $@"
-        SELECT COUNT(*)
-        {BaseFrom}";
+        var sql = $@"SELECT COUNT(*) {BaseFrom}";
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
         await conn.OpenAsync();
@@ -74,77 +73,66 @@ public class KhungGioKhamRepository : IKhungGioKhamRepository
     public async Task<List<int>> GetKhungGioIdsByCaLamViecAsync(int caLamViec)
     {
         var sql = $@"
-        SELECT KhungGioID
-        {BaseFrom}
-        WHERE CaLamViec = @CaLamViec
-        ORDER BY GioBatDau";
+            SELECT KhungGioID
+            {BaseFrom}
+            WHERE CaLamViec = @CaLamViec
+            ORDER BY GioBatDau";
         var list = new List<int>();
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@CaLamViec", caLamViec);
+        cmd.Parameters.Add("@CaLamViec", SqlDbType.Int).Value = caLamViec;
         await conn.OpenAsync();
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
             list.Add(reader.GetInt32(0));
-
         return list;
-    }
-    public async Task<KhungGioKhamReadModel?> GetDetailAsync(int id)
-    {
-        var sql = $@"
-        {BaseSelectList}
-        {BaseFrom}
-        WHERE KhungGioID = @Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync()
-            ? MapToDetailDTO(reader)
-            : null;
     }
     public async Task<int> AddAsync(KhungGioKham kg)
     {
-        const string sql =
-        @"INSERT INTO KhungGioKham
-          (CaLamViec, GioBatDau, GioKetThuc, TenKhung)
-          VALUES (@CaLamViec, @GioBatDau, @GioKetThuc, @TenKhung);
-          SELECT SCOPE_IDENTITY();";
+        const string sql = @"
+            INSERT INTO KhungGioKham (CaLamViec, GioBatDau, GioKetThuc)
+            OUTPUT INSERTED.KhungGioID
+            VALUES (@CaLamViec, @GioBatDau, @GioKetThuc)";
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@CaLamViec", kg.CaLamViec);
-        cmd.Parameters.AddWithValue("@GioBatDau", kg.GioBatDau);
-        cmd.Parameters.AddWithValue("@GioKetThuc", kg.GioKetThuc);
-        cmd.Parameters.AddWithValue("@TenKhung", (object?)kg.TenKhung ?? DBNull.Value);
+        cmd.Parameters.Add("@CaLamViec", SqlDbType.Int).Value = kg.CaLamViec;
+        cmd.Parameters.Add("@GioBatDau", SqlDbType.Time).Value = kg.GioBatDau;
+        cmd.Parameters.Add("@GioKetThuc", SqlDbType.Time).Value = kg.GioKetThuc;
         await conn.OpenAsync();
         return Convert.ToInt32(await cmd.ExecuteScalarAsync());
     }
     public async Task UpdateAsync(KhungGioKham kg)
     {
-        const string sql =
-        @"UPDATE KhungGioKham
-          SET CaLamViec = @CaLamViec,
-              GioBatDau = @GioBatDau,
-              GioKetThuc = @GioKetThuc,
-              TenKhung = @TenKhung
-          WHERE KhungGioID = @Id";
+        const string sql = @"
+            UPDATE KhungGioKham
+            SET CaLamViec = @CaLamViec,
+                GioBatDau = @GioBatDau,
+                GioKetThuc = @GioKetThuc
+            WHERE KhungGioID = @Id";
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", kg.KhungGioID);
-        cmd.Parameters.AddWithValue("@CaLamViec", kg.CaLamViec);
-        cmd.Parameters.AddWithValue("@GioBatDau", kg.GioBatDau);
-        cmd.Parameters.AddWithValue("@GioKetThuc", kg.GioKetThuc);
-        cmd.Parameters.AddWithValue("@TenKhung", (object?)kg.TenKhung ?? DBNull.Value);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = kg.KhungGioID;
+        cmd.Parameters.Add("@CaLamViec", SqlDbType.Int).Value = kg.CaLamViec;
+        cmd.Parameters.Add("@GioBatDau", SqlDbType.Time).Value = kg.GioBatDau;
+        cmd.Parameters.Add("@GioKetThuc", SqlDbType.Time).Value = kg.GioKetThuc;
         await conn.OpenAsync();
+        await cmd.ExecuteNonQueryAsync();
+    }
+    public async Task DeleteAsync(int id)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var sql = @"DELETE FROM KhungGioKham WHERE KhungGioID=@Id";
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         await cmd.ExecuteNonQueryAsync();
     }
     public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
     {
         var sql = $@"
-        SELECT KhungGioID, TenKhung
-        {BaseFrom}
-        ORDER BY TenKhung";
+            SELECT KhungGioID, TenKhung
+            {BaseFrom}
+            ORDER BY TenKhung";
         var list = new List<(int, string)>();
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
@@ -153,58 +141,42 @@ public class KhungGioKhamRepository : IKhungGioKhamRepository
         while (await reader.ReadAsync())
         {
             list.Add((
-                reader.GetInt32(reader.GetOrdinal("KhungGioID")),
-                reader.GetString(reader.GetOrdinal("TenKhung"))
+                reader.GetInt32(0),
+                reader.GetString(1)
             ));
         }
         return list;
     }
     private static KhungGioKham MapToEntity(SqlDataReader r)
     {
-        var id = r.GetOrdinal("KhungGioID");
-        var ca = r.GetOrdinal("CaLamViec");
-        var batDau = r.GetOrdinal("GioBatDau");
-        var ketThuc = r.GetOrdinal("GioKetThuc");
-        var ten = r.GetOrdinal("TenKhung");
         return new KhungGioKham(
-            r.GetInt32(id),
-            r.GetInt32(ca),
-            r.GetTimeSpan(batDau),
-            r.GetTimeSpan(ketThuc),
-            r.IsDBNull(ten) ? null : r.GetString(ten)
+            r.GetInt32(r.GetOrdinal("KhungGioID")),
+            r.GetInt32(r.GetOrdinal("CaLamViec")),
+            r.GetTimeSpan(r.GetOrdinal("GioBatDau")),
+            r.GetTimeSpan(r.GetOrdinal("GioKetThuc")),
+            r.IsDBNull(r.GetOrdinal("TenKhung")) ? null : r.GetString(r.GetOrdinal("TenKhung"))
         );
     }
     private static KhungGioKhamListReadModel MapToListDTO(SqlDataReader r)
     {
-        var khungGioID = r.GetOrdinal("KhungGioID");
-        var caLamViec = r.GetOrdinal("CaLamViec");
-        var gioBatDau = r.GetOrdinal("GioBatDau");
-        var gioKetThuc = r.GetOrdinal("GioKetThuc");
-        var tenKhung = r.GetOrdinal("TenKhung");
         return new KhungGioKhamListReadModel
         {
-            KhungGioID = r.GetInt32(khungGioID),
-            CaLamViec = r.GetInt32(caLamViec),
-            GioBatDau = r.GetTimeSpan(gioBatDau),
-            GioKetThuc = r.GetTimeSpan(gioKetThuc),
-            TenKhung = r.IsDBNull(tenKhung) ? null : r.GetString(tenKhung)
+            KhungGioID = r.GetInt32(r.GetOrdinal("KhungGioID")),
+            CaLamViec = r.GetInt32(r.GetOrdinal("CaLamViec")),
+            GioBatDau = r.GetTimeSpan(r.GetOrdinal("GioBatDau")),
+            GioKetThuc = r.GetTimeSpan(r.GetOrdinal("GioKetThuc")),
+            TenKhung = r.IsDBNull(r.GetOrdinal("TenKhung")) ? null : r.GetString(r.GetOrdinal("TenKhung"))
         };
     }
     private static KhungGioKhamReadModel MapToDetailDTO(SqlDataReader r)
     {
-        var khungGioID = r.GetOrdinal("KhungGioID");
-        var caLamViec = r.GetOrdinal("CaLamViec");
-        var gioBatDau = r.GetOrdinal("GioBatDau");
-        var gioKetThuc = r.GetOrdinal("GioKetThuc");
-        var tenKhung = r.GetOrdinal("TenKhung");
-
         return new KhungGioKhamReadModel
         {
-            KhungGioID = r.GetInt32(khungGioID),
-            CaLamViec = r.GetInt32(caLamViec),
-            GioBatDau = r.GetTimeSpan(gioBatDau),
-            GioKetThuc = r.GetTimeSpan(gioKetThuc),
-            TenKhung = r.IsDBNull(tenKhung) ? null : r.GetString(tenKhung)
+            KhungGioID = r.GetInt32(r.GetOrdinal("KhungGioID")),
+            CaLamViec = r.GetInt32(r.GetOrdinal("CaLamViec")),
+            GioBatDau = r.GetTimeSpan(r.GetOrdinal("GioBatDau")),
+            GioKetThuc = r.GetTimeSpan(r.GetOrdinal("GioKetThuc")),
+            TenKhung = r.IsDBNull(r.GetOrdinal("TenKhung")) ? null : r.GetString(r.GetOrdinal("TenKhung"))
         };
     }
 }

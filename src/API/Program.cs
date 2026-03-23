@@ -109,7 +109,7 @@ builder.Services.AddAuthorization(options =>
 		"BACSI_VIEW","BACSI_CREATE","BACSI_UPDATE",
 		"BAIVIET_VIEW","BAIVIET_CREATE","BAIVIET_UPDATE",
 		"BENHAN_VIEW","BENHAN_CREATE","BENHAN_UPDATE",
-		"HETHONG_VIEW","HETHONG_CREATE","HETHONG_UPDATE",
+		"HETHONG_VIEW","HETHONG_CREATE","HETHONG_UPDATE","HETHONG_DELETE",
 		"BENH_VIEW","BENH_CREATE","BENH_UPDATE"
 	};
 	foreach (var permission in permissions)
@@ -184,6 +184,8 @@ builder.Services.AddScoped<IQuyenRepository, QuyenRepository>();
 builder.Services.AddScoped<IChucVuQuyenRepository, ChucVuQuyenRepository>();
 builder.Services.AddScoped<ChucVuQuyenService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
+builder.Services.AddScoped<PhongKhamService>();
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>

@@ -34,8 +34,7 @@
             var entity = new KhungGioKham(
                 dto.CaLamViec,
                 dto.GioBatDau,
-                dto.GioKetThuc,
-                dto.TenKhung
+                dto.GioKetThuc
             );
             var danhSach = await _repo.GetAllAsync();
             if (danhSach.Any(x =>
@@ -60,8 +59,7 @@
             entity.CapNhat(
                 dto.CaLamViec,
                 dto.GioBatDau,
-                dto.GioKetThuc,
-                dto.TenKhung
+                dto.GioKetThuc
             );
             var danhSach = await _repo.GetAllAsync();
             if (danhSach.Any(x =>
@@ -75,7 +73,15 @@
             await _repo.UpdateAsync(entity);
             return ApiResponse<bool>.SuccessResponse(true);
         }
-        public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync()
+        public async Task<ApiResponse<bool>> DeleteAsync(int id)
+        {
+            var entity = await _repo.GetByIdAsync(id);
+            if (entity == null)
+                return ApiResponse<bool>.Fail("Không tìm thấy khung giờ");
+            await _repo.DeleteAsync(id);
+            return ApiResponse<bool>.SuccessResponse(true, "Xóa khung giờ thành công");
+        }
+    public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync()
         {
             var list = await _repo.GetIdAndNameAsync();
             var result = list.Select(x => new NameResponseDTO

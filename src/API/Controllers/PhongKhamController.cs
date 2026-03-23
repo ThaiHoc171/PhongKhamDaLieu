@@ -18,13 +18,6 @@ public class PhongKhamController : ControllerBase
         _service = service;
     }
     [Authorize]
-    [HttpPost]
-    public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] PhongKhamRequestDTO dto)
-    {
-        var result = await _service.TaoMoiAsync(dto);
-        return Ok(result);
-    }
-    [Authorize]
     [HttpPut("{id}")]
     public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] PhongKhamUpdateDTO dto)
     {
@@ -35,25 +28,16 @@ public class PhongKhamController : ControllerBase
     [HttpPut("{id}/trangthai")]
     public async Task<ActionResult<ApiResponse<bool>>> ChangeStatus(
         int id,
-        [FromBody] string trangThai)
+        [FromBody] PhongKhamUpdateTrangThaiDTO dto)
     {
-        var result = await _service.DoiTrangThaiAsync(id, trangThai);
+        var result = await _service.DoiTrangThaiAsync(id, dto);
         return Ok(result);
     }
     [Authorize]
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<PhongKhamReadModel>>> GetById(int id)
+    [HttpGet("chitiet")]
+    public async Task<ActionResult<ApiResponse<PhongKhamReadModel>>> GetDetail()
     {
-        var result = await _service.GetByIdAsync(id);
-        return Ok(result);
-    }
-    [Authorize]
-    [HttpGet]
-    public async Task<ActionResult<ApiResponse<PagedResult<PhongKhamListReadModel>>>> GetPaged(
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 10)
-    {
-        var result = await _service.GetPagedAsync(pageNumber, pageSize);
+        var result = await _service.GetDetailAsync();
         return Ok(result);
     }
 }
