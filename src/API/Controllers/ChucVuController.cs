@@ -21,12 +21,11 @@ public class ChucVuController : ControllerBase
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ChucVuRequestDTO dto)
 	{
-		var result = await _service.ThemAsync(dto);
+		var result = await _service.CreateAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
-
-		return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
+		return Ok(result);
 	}
 
 	// ==================== UPDATE ====================
@@ -34,7 +33,7 @@ public class ChucVuController : ControllerBase
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] ChucVuRequestDTO dto)
 	{
-		var result = await _service.CapNhatAsync(id, dto);
+		var result = await _service.UpdateAsync(id, dto);
 
 		if (!result.Success)
 			return result.Message.Contains("không tồn tại")
@@ -47,9 +46,9 @@ public class ChucVuController : ControllerBase
 	// ==================== UPDATE TRANG THAI ====================
 	[Authorize(Policy = "CHUCVU_UPDATE")]
 	[HttpPut("{id}/trang-thai")]
-	public async Task<ActionResult<ApiResponse<bool>>> UpdateTrangThai(int id, [FromBody] string trangThai)
+	public async Task<ActionResult<ApiResponse<bool>>> Status(int id, [FromBody] string trangThai)
 	{
-		var result = await _service.CapNhatTrangThaiAsync(id, trangThai);
+		var result = await _service.UpdateStatusAsync(id, trangThai);
 
 		if (!result.Success)
 			return result.Message.Contains("không tồn tại")
