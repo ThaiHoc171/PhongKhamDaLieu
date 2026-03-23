@@ -5,7 +5,7 @@ namespace Application.Interfaces
 	public interface IChucVuRepository
 	{
         //CUD
-        Task<int> AddAsync(ChucVu chucVu);
+        Task AddAsync(ChucVu chucVu);
         Task UpdateAsync(ChucVu chucVu);
         //Read
         Task<(List<ChucVuListReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai);
@@ -14,6 +14,6 @@ namespace Application.Interfaces
         Task<ChucVu?> GetByIdAsync(int id);
 		Task<string?> GetNameByIdAsync(int id);
 		Task<string?> GetByNhanVienIdAsync(int nhanVienId);
-		Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
+		Task<List<NameResponseDTO>> GetComboboxAsync();
 	}
 }

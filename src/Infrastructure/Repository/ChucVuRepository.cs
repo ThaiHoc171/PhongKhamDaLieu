@@ -15,13 +15,15 @@ public class ChucVuRepository : IChucVuRepository
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection")!;
     }
-    private const string BaseSelectList = @"
+	#region Queries
+	private const string BaseSelectList = @"
         SELECT ChucVuID,TenChucVu,TrangThai
         FROM ChucVu";
     private const string BaseSelectDetail = @"
         SELECT ChucVuID,TenChucVu,MoTa,NgayTao,TrangThai
         FROM ChucVu";
-    public async Task<(List<ChucVuListReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai)
+	#endregion
+	public async Task<(List<ChucVuListReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai)
     {
         var list = new List<ChucVuListReadModel>();
         int total = 0;
@@ -101,7 +103,7 @@ public class ChucVuRepository : IChucVuRepository
             return MapToEntity(reader);
         return null;
     }
-    public async Task<int> AddAsync(ChucVu chucVu)
+    public async Task AddAsync(ChucVu chucVu)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
@@ -110,7 +112,7 @@ public class ChucVuRepository : IChucVuRepository
         using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar).Value = chucVu.TenChucVu;
 		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)chucVu.MoTa ?? DBNull.Value;
-        return Convert.ToInt32(await cmd.ExecuteScalarAsync());
+        await cmd.ExecuteScalarAsync();
     }
     public async Task UpdateAsync(ChucVu chucVu)
     {
@@ -156,9 +158,9 @@ public class ChucVuRepository : IChucVuRepository
             return reader.GetString(0);
         return null;
     }
-    public async Task<List<(int Id, string Ten)>> GetIdAndNameAsync()
+    public async Task<List<NameResponseDTO>> GetComboboxAsync()
     {
-        var list = new List<(int Id, string Ten)>();
+        var list = new List<NameResponseDTO>();
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         var sql = @"SELECT ChucVuID,TenChucVu
@@ -168,11 +170,16 @@ public class ChucVuRepository : IChucVuRepository
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
-            list.Add((reader.GetInt32(0), reader.GetString(1)));
+            list.Add(new NameResponseDTO
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("PhongChucNangID")),
+				Name = reader.GetString(reader.GetOrdinal("TenPhong"))
+			});
         }
         return list;
     }
-    private ChucVu MapToEntity(SqlDataReader r)
+	#region Mapping
+	private ChucVu MapToEntity(SqlDataReader r)
     {
         return new ChucVu(
             (int)r["ChucVuID"],
@@ -202,4 +209,5 @@ public class ChucVuRepository : IChucVuRepository
             TrangThai = (string)r["TrangThai"]
         };
     }
+	#endregion
 }
