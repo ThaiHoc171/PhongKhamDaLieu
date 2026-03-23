@@ -17,7 +17,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "CHUCVU_CREATE")]
+	[Authorize(Policy = "ROLE_CREATE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] ChucVuRequestDTO dto)
 	{
@@ -29,7 +29,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== UPDATE ====================
-	[Authorize(Policy = "CHUCVU_UPDATE")]
+	[Authorize(Policy = "ROLE_UPDATE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] ChucVuRequestDTO dto)
 	{
@@ -44,7 +44,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== UPDATE TRANG THAI ====================
-	[Authorize(Policy = "CHUCVU_UPDATE")]
+	[Authorize(Policy = "ROLE_UPDATE")]
 	[HttpPut("{id}/trang-thai")]
 	public async Task<ActionResult<ApiResponse<bool>>> Status(int id, [FromBody] string trangThai)
 	{
@@ -59,7 +59,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "CHUCVU_VIEW")]
+	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<ChucVuReadModel>>> GetById(int id)
 	{
@@ -72,7 +72,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "CHUCVU_VIEW")]
+	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<ChucVuListReadModel>>>> GetPaged(
 		[FromQuery] int page = 1,
@@ -84,7 +84,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== SEARCH ====================
-	[Authorize(Policy = "CHUCVU_VIEW")]
+	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<ChucVuListReadModel>>>> Search(
 		[FromQuery] string keyword,
@@ -100,7 +100,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== GET NAME ====================
-	[Authorize(Policy = "CHUCVU_VIEW")]
+	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet("{id}/name")]
 	public async Task<ActionResult<ApiResponse<string?>>> GetNameById(int id)
 	{
@@ -113,7 +113,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== GET BY NHAN VIEN ====================
-	[Authorize(Policy = "CHUCVU_VIEW")]
+	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet("nhanvien/{nhanVienId}")]
 	public async Task<ActionResult<ApiResponse<string?>>> GetByNhanVienId(int nhanVienId)
 	{
@@ -126,7 +126,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== COMBOBOX ====================
-	[Authorize(Policy = "CHUCVU_VIEW")]
+	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet("combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
 	{
