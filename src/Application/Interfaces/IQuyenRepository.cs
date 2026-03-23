@@ -2,5 +2,5 @@
 namespace Application.Interfaces;
 public interface IQuyenRepository
 {
-	Task<List<NameResponseDTO>> GetAllAsync();
+	Task<List<QuyenReadModel>> GetAllAsync();
 }
