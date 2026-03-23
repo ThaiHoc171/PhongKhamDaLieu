@@ -19,7 +19,7 @@ public class ChucVuController : ControllerBase
 	// ==================== CREATE ====================
 	[Authorize(Policy = "CHUCVU_CREATE")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ChucVuRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] ChucVuRequestDTO dto)
 	{
 		var result = await _service.CreateAsync(dto);
 
