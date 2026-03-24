@@ -9,7 +9,7 @@ public class CanLamSang
     public DateTime NgayTao { get; private set; }
     public string TrangThai { get; private set; }
 
-    public CanLamSang(string tenCLS, string? moTa, string loaiXetNghiem)
+    public CanLamSang(string tenCLS, string moTa, string loaiXetNghiem, string trangThai)
     {
         if (string.IsNullOrWhiteSpace(tenCLS))
             throw new ArgumentException("Tên cận lâm sàng không hợp lệ");
@@ -17,7 +17,7 @@ public class CanLamSang
         MoTa = moTa;
         LoaiXetNghiem = loaiXetNghiem;
         NgayTao = DateTime.UtcNow;
-        TrangThai = "Hoạt động";
+        TrangThai = trangThai;
     }
     public CanLamSang(int canLamSangID, string tenCLS, string? moTa, string loaiXetNghiem, DateTime ngayTao, string trangThai)
     {
@@ -30,25 +30,11 @@ public class CanLamSang
     }
     public void CapNhat(string tenCLS, string? moTa, string loaiXetNghiem, string trangThai)
     {
-        if (TrangThai == "Ngừng sử dụng")
-            throw new InvalidOperationException("CLS đã ngừng sử dụng");
         if (string.IsNullOrWhiteSpace(tenCLS))
-            throw new ArgumentException("Tên CLS không hợp lệ");
+            throw new ArgumentException("Tên cận lâm sàng không hợp lệ");
         TenCLS = tenCLS;
         MoTa = moTa;
         LoaiXetNghiem = loaiXetNghiem;
         TrangThai = trangThai;
-    }
-    public void NgungSuDung()
-    {
-        if (TrangThai == "Ngừng sử dụng")
-            throw new InvalidOperationException("CLS đã ngừng");
-        TrangThai = "Ngừng sử dụng";
-    }
-    public void KichHoat()
-    {
-        if (TrangThai == "Hoạt động")
-            throw new InvalidOperationException("CLS đã hoạt động");
-        TrangThai = "Hoạt động";
     }
 }
