@@ -1,11 +1,6 @@
 ﻿namespace Application.DTOs;
-public class CanLamSangRequestDTO
-{
-    public string TenCLS { get; set; } = "";
-    public string? MoTa { get; set; }
-    public string LoaiXetNghiem { get; set; } = "";
-}
-public class CanLamSangUpdateDTO
+
+public class CanLamSangRequest
 {
     public string TenCLS { get; set; } = "";
     public string? MoTa { get; set; }
