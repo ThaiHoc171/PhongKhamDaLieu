@@ -130,6 +130,8 @@ public class ThietBiService
 			return ApiResponse<bool>.Fail("Tên thiết bị không hợp lệ");
 		if (string.IsNullOrWhiteSpace(dto.LoaiTB))
 			return ApiResponse<bool>.Fail("Loại thiết bị không hợp lệ");
+		if (dto.TrangThai != "Hoạt động" && dto.TrangThai != "Vô hiệu")
+			return ApiResponse<bool>.Fail("Trạng thái không hợp lệ");
 		return ApiResponse<bool>.SuccessResponse(true);
 	}
 }
