@@ -21,7 +21,7 @@ public class ThietBiRepository : IThietBiRepository
         var sql = @"
             SELECT ThietBiID, TenTB, LoaiTB, TrangThai
             FROM ThietBi
-            ORDER BY ThietBiID ASC
+            ORDER BY TenTB ASC
             OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
             SELECT COUNT(*) FROM ThietBi
         ";
@@ -47,7 +47,7 @@ public class ThietBiRepository : IThietBiRepository
             SELECT ThietBiID, TenTB, LoaiTB, TrangThai
             FROM ThietBi
             WHERE TenTB LIKE @Keyword
-            ORDER BY ThietBiID ASC
+            ORDER BY TenTB ASC
             OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
             SELECT COUNT(*)
             FROM ThietBi
