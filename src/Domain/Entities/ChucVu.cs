@@ -8,15 +8,15 @@ public class ChucVu
     public DateTime NgayTao { get; private set; }
     public string TrangThai { get; private set; }
 
-    public ChucVu(string tenChucVu, string? moTa)
+    public ChucVu(string tenChucVu, string? moTa, string trangThai)
     {
         if (string.IsNullOrWhiteSpace(tenChucVu))
             throw new ArgumentException("Tên chức vụ không hợp lệ");
         TenChucVu = tenChucVu;
         MoTa = moTa;
         NgayTao = DateTime.UtcNow;
-        TrangThai = "Hoạt động";
-    }
+		TrangThai = trangThai;
+	}
     public ChucVu(int chucVuID, string tenChucVu, string? moTa, DateTime ngayTao, string trangThai)
     {
         ChucVuID = chucVuID;
@@ -25,17 +25,12 @@ public class ChucVu
         NgayTao = ngayTao;
         TrangThai = trangThai;
     }
-    public void CapNhat(string tenChucVu, string? moTa)
+    public void CapNhat(string tenChucVu, string? moTa, string trangThai)
     {
         if (string.IsNullOrWhiteSpace(tenChucVu))
             throw new ArgumentException("Tên chức vụ không hợp lệ");
         TenChucVu = tenChucVu;
         MoTa = moTa;
-    }
-    public void CapNhatTrangThai(string trangThai)
-    {
-        if (string.IsNullOrWhiteSpace(trangThai))
-            throw new ArgumentException("Trạng thái không hợp lệ");
-        TrangThai = trangThai;
-    }
+		TrangThai = trangThai;
+	}
 }

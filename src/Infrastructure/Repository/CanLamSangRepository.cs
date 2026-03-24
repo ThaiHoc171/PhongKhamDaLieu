@@ -36,7 +36,7 @@ public class CanLamSangRepository : ICanLamSangRepository
     {
         var sql =$@"
             {BaseSelectLite}
-            ORDER BY CanLamSangID
+            ORDER BY TenCLS
             OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
             SELECT COUNT(*)
             FROM CanLamSang
@@ -60,7 +60,7 @@ public class CanLamSangRepository : ICanLamSangRepository
         var sql = $@"
             {BaseSelectLite}
             WHERE TenCLS LIKE @Keyword
-            ORDER BY CanLamSangID
+            ORDER BY TenCLS
             OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
             SELECT COUNT(*)
             FROM CanLamSang
@@ -106,12 +106,11 @@ public class CanLamSangRepository : ICanLamSangRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         return await reader.ReadAsync() ? MapToDetailDTO(reader) : null;
     }
-    public async Task AddAsync(CanLamSang cls)
+    public async Task<int> AddAsync(CanLamSang cls)
     {
-        const string sql =
-        @"INSERT INTO CanLamSang
-          (TenCLS, MoTa, LoaiXetNghiem, TrangThai)
-          VALUES (@TenCLS, @MoTa, @LoaiXetNghiem, @TrangThai)";
+        const string sql = @"
+            INSERT INTO CanLamSang (TenCLS, MoTa, LoaiXetNghiem, TrangThai)
+            VALUES (@TenCLS, @MoTa, @LoaiXetNghiem, @TrangThai)";
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@TenCLS", SqlDbType.NVarChar).Value = cls.TenCLS;
@@ -119,9 +118,10 @@ public class CanLamSangRepository : ICanLamSangRepository
 		cmd.Parameters.Add("@LoaiXetNghiem", SqlDbType.NVarChar).Value = cls.LoaiXetNghiem;
 		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = cls.TrangThai;
 		await conn.OpenAsync();
-        await cmd.ExecuteScalarAsync();
+        int row = await cmd.ExecuteNonQueryAsync();
+        return row;
     }
-    public async Task UpdateAsync(CanLamSang cls)
+    public async Task<int> UpdateAsync(CanLamSang cls)
     {
         const string sql =
         @"UPDATE CanLamSang
@@ -138,8 +138,9 @@ public class CanLamSangRepository : ICanLamSangRepository
 		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = cls.TrangThai;
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = cls.CanLamSangID;
 		await conn.OpenAsync();
-        await cmd.ExecuteNonQueryAsync();
-    }
+		int row = await cmd.ExecuteNonQueryAsync();
+		return row;
+	}
     public async Task<List<NameResponseDTO>> GetComboboxAsync()
     {
         var list = new List<NameResponseDTO>();
@@ -147,6 +148,7 @@ public class CanLamSangRepository : ICanLamSangRepository
         await conn.OpenAsync();
         var sql = @"SELECT CanLamSangID, TenCLS
                     FROM CanLamSang
+                    WHERE TrangThai = N'Hoạt động'
                     ORDER BY TenCLS";
         using var cmd = new SqlCommand(sql, conn);
         using var reader = await cmd.ExecuteReaderAsync();
