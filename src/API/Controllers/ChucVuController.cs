@@ -19,9 +19,9 @@ public class ChucVuController : ControllerBase
 	// ==================== CREATE ====================
 	[Authorize(Policy = "ROLE_CREATE")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] ChucVuRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] ChucVuRequest dto)
 	{
-		var result = await _service.CreateAsync(dto);
+		var result = await _service.AddAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
@@ -31,7 +31,7 @@ public class ChucVuController : ControllerBase
 	// ==================== UPDATE ====================
 	[Authorize(Policy = "ROLE_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] ChucVuRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] ChucVuRequest dto)
 	{
 		var result = await _service.UpdateAsync(id, dto);
 
@@ -43,27 +43,13 @@ public class ChucVuController : ControllerBase
 		return Ok(result);
 	}
 
-	// ==================== UPDATE TRANG THAI ====================
-	[Authorize(Policy = "ROLE_UPDATE")]
-	[HttpPut("{id}/trang-thai")]
-	public async Task<ActionResult<ApiResponse<bool>>> Status(int id, [FromBody] string trangThai)
-	{
-		var result = await _service.UpdateStatusAsync(id, trangThai);
-
-		if (!result.Success)
-			return result.Message.Contains("không tồn tại")
-				? NotFound(result)
-				: BadRequest(result);
-
-		return Ok(result);
-	}
 
 	// ==================== GET DETAIL ====================
 	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet("{id}")]
-	public async Task<ActionResult<ApiResponse<ChucVuReadModel>>> GetById(int id)
+	public async Task<ActionResult<ApiResponse<ChucVuReadModel>>> Detail(int id)
 	{
-		var result = await _service.GetByIdAsync(id);
+		var result = await _service.GetDetailAsync(id);
 
 		if (!result.Success)
 			return NotFound(result);
@@ -74,37 +60,18 @@ public class ChucVuController : ControllerBase
 	// ==================== GET LIST ====================
 	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<ChucVuListReadModel>>>> GetPaged(
-		[FromQuery] int page = 1,
-		[FromQuery] int size = 10,
-		[FromQuery] string? trangThai = null)
+	public async Task<ActionResult<ApiResponse<PagedResult<ChucVuListReadModel>>>> Paged([FromQuery] int page = 1, [FromQuery] int size = 10)
 	{
-		var result = await _service.GetPagedAsync(page, size, trangThai);
+		var result = await _service.GetPagedAsync(page, size);
 		return Ok(result);
 	}
 
 	// ==================== SEARCH ====================
 	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet("search")]
-	public async Task<ActionResult<ApiResponse<PagedResult<ChucVuListReadModel>>>> Search(
-		[FromQuery] string keyword,
-		[FromQuery] int page = 1,
-		[FromQuery] int size = 10)
+	public async Task<ActionResult<ApiResponse<PagedResult<ChucVuListReadModel>>>> Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10)
 	{
 		var result = await _service.SearchAsync(keyword, page, size);
-
-		if (!result.Success)
-			return BadRequest(result);
-
-		return Ok(result);
-	}
-
-	// ==================== GET NAME ====================
-	[Authorize(Policy = "ROLE_VIEW")]
-	[HttpGet("{id}/name")]
-	public async Task<ActionResult<ApiResponse<string?>>> GetNameById(int id)
-	{
-		var result = await _service.GetNameByIdAsync(id);
 
 		if (!result.Success)
 			return BadRequest(result);
@@ -128,9 +95,9 @@ public class ChucVuController : ControllerBase
 	// ==================== COMBOBOX ====================
 	[Authorize(Policy = "ROLE_VIEW")]
 	[HttpGet("combobox")]
-	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
 	{
-		var result = await _service.GetIdAndNameAsync();
+		var result = await _service.GetComboboxAsync();
 		return Ok(result);
 	}
 }

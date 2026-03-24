@@ -23,7 +23,7 @@ public class ChucVuRepository : IChucVuRepository
         SELECT ChucVuID,TenChucVu,MoTa,NgayTao,TrangThai
         FROM ChucVu";
 	#endregion
-	public async Task<(List<ChucVuListReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai)
+	public async Task<(List<ChucVuListReadModel>, int)> GetPagedAsync(int page, int size)
     {
         var list = new List<ChucVuListReadModel>();
         int total = 0;
@@ -32,14 +32,11 @@ public class ChucVuRepository : IChucVuRepository
         int offset = (page - 1) * size;
         var sql = $@"
         {BaseSelectList}
-        WHERE (@TrangThai IS NULL OR TrangThai = @TrangThai)
         ORDER BY TenChucVu
         OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
         SELECT COUNT(*)
-        FROM ChucVu
-        WHERE (@TrangThai IS NULL OR TrangThai = @TrangThai)";
+        FROM ChucVu";
         using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = (object?)trangThai ?? DBNull.Value;
 		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
 		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
 		using var reader = await cmd.ExecuteReaderAsync();
@@ -103,18 +100,20 @@ public class ChucVuRepository : IChucVuRepository
             return MapToEntity(reader);
         return null;
     }
-    public async Task AddAsync(ChucVu chucVu)
+    public async Task<int> AddAsync(ChucVu chucVu)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        var sql = @"INSERT INTO ChucVu(TenChucVu,MoTa)
-                    VALUES(@TenChucVu,@MoTa)";
+        var sql = @"INSERT INTO ChucVu(TenChucVu,MoTa,TrangThai)
+                    VALUES(@TenChucVu,@MoTa,@TrangThai)";
         using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar).Value = chucVu.TenChucVu;
 		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)chucVu.MoTa ?? DBNull.Value;
-        await cmd.ExecuteScalarAsync();
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = chucVu.TrangThai;
+		int row = await cmd.ExecuteNonQueryAsync();
+        return row;
     }
-    public async Task UpdateAsync(ChucVu chucVu)
+    public async Task<int> UpdateAsync(ChucVu chucVu)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
@@ -127,21 +126,10 @@ public class ChucVuRepository : IChucVuRepository
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = chucVu.ChucVuID;
 		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar).Value = chucVu.TenChucVu;
 		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)chucVu.MoTa ?? DBNull.Value;
-		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar)
-			.Value = chucVu.TrangThai;
-		await cmd.ExecuteNonQueryAsync();
-    }
-    public async Task<string?> GetNameByIdAsync(int id)
-    {
-        using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync();
-        var sql = @"SELECT TenChucVu
-                    FROM ChucVu
-                    WHERE ChucVuID=@Id";
-        using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-        return await cmd.ExecuteScalarAsync() as string;
-    }
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = chucVu.TrangThai;
+		int row = await cmd.ExecuteNonQueryAsync();
+		return row;
+	}
     public async Task<string?> GetByNhanVienIdAsync(int nhanVienId)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -165,6 +153,7 @@ public class ChucVuRepository : IChucVuRepository
         await conn.OpenAsync();
         var sql = @"SELECT ChucVuID,TenChucVu
                     FROM ChucVu
+                    WHERE TrangThai = N'Hoạt động'
                     ORDER BY TenChucVu";
         using var cmd = new SqlCommand(sql, conn);
         using var reader = await cmd.ExecuteReaderAsync();
@@ -172,8 +161,8 @@ public class ChucVuRepository : IChucVuRepository
         {
             list.Add(new NameResponseDTO
             {
-                Id = reader.GetInt32(reader.GetOrdinal("PhongChucNangID")),
-				Name = reader.GetString(reader.GetOrdinal("TenPhong"))
+                Id = reader.GetInt32(reader.GetOrdinal("ChucVuID")),
+				Name = reader.GetString(reader.GetOrdinal("TenChucVu"))
 			});
         }
         return list;

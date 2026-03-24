@@ -19,9 +19,9 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] CanLamSangRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] CanLamSangRequest dto)
 	{
-		var result = await _service.CreateAsync(dto);
+		var result = await _service.AddAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
@@ -30,7 +30,7 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] CanLamSangUpdateDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] CanLamSangRequest dto)
 	{
 		var result = await _service.UpdateAsync(id, dto);
 
@@ -41,9 +41,9 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("{id}")]
-	public async Task<ActionResult<ApiResponse<CanLamSangReadModel>>> GetById(int id)
+	public async Task<ActionResult<ApiResponse<CanLamSangReadModel>>> Detail(int id)
 	{
-		var result = await _service.GetByIdAsync(id);
+		var result = await _service.GetDetailAsync(id);
 
 		if (!result.Success)
 			return NotFound(result);
@@ -52,7 +52,7 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> GetPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> Paged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 	{
 		var result = await _service.GetPagedAsync(pageNumber, pageSize);
 
