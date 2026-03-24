@@ -1,5 +1,4 @@
 ﻿namespace Application.DTOs;
-
 public class BacSiProfileRequestDTO
 {
     public int NhanVienID { get; set; }
