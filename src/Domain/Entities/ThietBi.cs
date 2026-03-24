@@ -24,6 +24,6 @@ public class ThietBi
     {
         TenTB = tenTB;
         LoaiTB = loaiTB;
-        TrangThai = TrangThai;
+        TrangThai = trangThai;
     }
 }
