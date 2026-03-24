@@ -2,22 +2,13 @@
 public class ThietBiRequestDTO
 {
     public string TenTB { get; set; } = default!;
-    public string? LoaiTB { get; set; }
-}
-public class ThietBiUpdateDTO
-{
-    public string TenTB { get; set; } = default!;
-    public string? LoaiTB { get; set; }
+    public string LoaiTB { get; set; } = default!;
+	public string TrangThai { get; set; } = default!;
 }
 public class ThietBiReadModel
 {
     public int ThietBiID { get; set; }
     public string TenTB { get; set; } = default!;
-    public string? LoaiTB { get; set; }
-}
-public class ThietBiListReadModel
-{
-    public int ThietBiID { get; set; }
-    public string TenTB { get; set; } = default!;
-    public string? LoaiTB { get; set; }
+    public string LoaiTB { get; set; } = default!;
+    public string TrangThai { get; set; } = default!;
 }
