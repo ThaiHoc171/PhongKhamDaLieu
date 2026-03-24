@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 [ApiController]
-[Route("api/thiet-bi")]
+[Route("api/thietbi")]
 [Authorize]
 public class ThietBiController : ControllerBase
 {
@@ -25,18 +25,9 @@ public class ThietBiController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<IActionResult> Update(int id, ThietBiUpdateDTO dto)
+	public async Task<IActionResult> Update(int id, ThietBiRequestDTO dto)
 	{
 		var response = await _service.UpdateAsync(id, dto);
-		if (!response.Success)
-			return NotFound(response);
-		return Ok(response);
-	}
-	[Authorize(Policy = "CSVC_DELETE")]
-	[HttpDelete("{id}")]
-	public async Task<IActionResult> Delete(int id)
-	{
-		var response = await _service.DeleteAsync(id);
 		if (!response.Success)
 			return NotFound(response);
 		return Ok(response);
