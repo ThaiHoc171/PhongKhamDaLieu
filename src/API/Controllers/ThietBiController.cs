@@ -3,6 +3,7 @@ using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 namespace API.Controllers;
 [ApiController]
 [Route("api/thietbi")]
@@ -65,15 +66,54 @@ public class ThietBiController : ControllerBase
 		return Ok(response);
 	}
 	[Authorize(Policy = "CSVC_CREATE")]
-	[HttpPost("import")]
-	public async Task<IActionResult> ImportExcel(IFormFile file)
+	[HttpPost("import/sheets")]
+	public IActionResult GetSheets(IFormFile file)
 	{
 		if (file == null || file.Length == 0)
 			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
+
 		using var stream = file.OpenReadStream();
-		var response = await _service.ImportExcelAsync(stream);
+		using var package = new ExcelPackage(stream);
+
+		var sheets = package.Workbook.Worksheets
+			.Select(x => x.Name)
+			.ToList();
+
+		return Ok(ApiResponse<List<string>>.SuccessResponse(sheets));
+	}
+	[Authorize(Policy = "CSVC_CREATE")]
+	[HttpPost("import/preview")]
+	public async Task<IActionResult> PreviewImport(
+	IFormFile file,
+	[FromQuery] string sheet)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
+
+		if (string.IsNullOrWhiteSpace(sheet))
+			return BadRequest(ApiResponse<string>.Fail("Sheet không hợp lệ"));
+
+		using var stream = file.OpenReadStream();
+
+		var response = await _service.PreviewImport(stream, sheet);
+
 		if (!response.Success)
 			return BadRequest(response);
+		return Ok(response);
+	}
+	[Authorize(Policy = "CSVC_CREATE")]
+	[HttpPost("import/confirm")]
+	public async Task<IActionResult> Import(
+	[FromBody] List<ThietBiImportDTO> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
+
+		var response = await _service.Import(list);
+
+		if (!response.Success)
+			return BadRequest(response);
+
 		return Ok(response);
 	}
 }
