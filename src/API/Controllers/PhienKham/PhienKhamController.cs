@@ -39,6 +39,12 @@ public class PhienKhamController : ControllerBase
 	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamListReadModel>>>> GetByPatient(
 		int benhNhanId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 	{
+		if (User.IsInRole("Bệnh nhân"))
+		{
+			var id = int.Parse(User.FindFirst("BenhNhanID")!.Value);
+			if (benhNhanId != id)
+				return Forbid();
+		}
 		var result = await _service.GetByBenhNhanAsync(benhNhanId, pageNumber, pageSize);
 		return Ok(result);
 	}
