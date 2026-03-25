@@ -15,11 +15,30 @@ public class BacSiProfileRepository : IBacSiProfileRepository
         _connectionString = configuration.GetConnectionString("DefaultConnection")!;
     }
     private const string BaseSelectLite = @"
-        SELECT BacSiProfileID, NhanVienID, ChuyenMon, HinhAnh, NgayCapNhat
-        FROM BacSiProfile";
+    SELECT 
+        bs.BacSiProfileID,
+        bs.NhanVienID,
+        tt.HoTen,
+        bs.ChuyenMon,
+        bs.HinhAnh,
+        bs.NgayCapNhat
+    FROM BacSiProfile bs
+    JOIN NhanVien nv ON bs.NhanVienID = nv.NhanVienID
+    JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID";
     private const string BaseSelectDetail = @"
-        SELECT BacSiProfileID, NhanVienID, GioiThieu, ChuyenMon, ThanhTuu, HinhAnh, KinhNghiem, NgayCapNhat
-        FROM BacSiProfile";
+    SELECT 
+        bs.BacSiProfileID,
+        bs.NhanVienID,
+        tt.HoTen,
+        bs.GioiThieu,
+        bs.ChuyenMon,
+        bs.ThanhTuu,
+        bs.HinhAnh,
+        bs.KinhNghiem,
+        bs.NgayCapNhat
+    FROM BacSiProfile bs
+    JOIN NhanVien nv ON bs.NhanVienID = nv.NhanVienID
+    JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID";
     public async Task<BacSiProfile?> GetByIdAsync(int id)
     {
         using var conn = new SqlConnection(_connectionString);
@@ -168,6 +187,7 @@ public class BacSiProfileRepository : IBacSiProfileRepository
         {
             BacSiProfileID = (int)r["BacSiProfileID"],
             NhanVienID = (int)r["NhanVienID"],
+            HoTen = r["HoTen"] as string,
             ChuyenMon = r["ChuyenMon"] as string,
             HinhAnh = r["HinhAnh"] as string,
             NgayCapNhat = (DateTime)r["NgayCapNhat"]
@@ -179,6 +199,7 @@ public class BacSiProfileRepository : IBacSiProfileRepository
         {
             BacSiProfileID = (int)r["BacSiProfileID"],
             NhanVienID = (int)r["NhanVienID"],
+            HoTen = r["HoTen"] as string,
             GioiThieu = r["GioiThieu"] as string,
             ChuyenMon = r["ChuyenMon"] as string,
             ThanhTuu = r["ThanhTuu"] as string,

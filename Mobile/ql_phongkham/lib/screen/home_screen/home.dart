@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final repo = BacsiProfileRepository();
 
-      final data = await repo.getBacSiProfile(widget.token);
+      final data = await repo.getBacSiProfile();
 
       setState(() {
         bacSiList = data;
@@ -336,7 +336,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPressed: () {
                           checkTaiKham();
                         },
-
                         child: const Text(
                           'Đặt lịch tái khám',
                           style: TextStyle(fontSize: 15),
@@ -430,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         const SizedBox(height: 5),
 
                                         Text(
-                                          bacSi.kinhNghiem,
+                                          bacSi.ngayCapNhat.toString(),
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
                                             fontSize: 12,

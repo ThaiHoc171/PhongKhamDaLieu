@@ -12,7 +12,7 @@ class AuthRepository {
   }
 
   Future<void> signup(String email, String password, String vaitro) async {
-    final response = await ApiClient.post('/TaiKhoan/dangky', {
+    final response = await ApiClient.post('taiKhoan', {
       "email": email,
       "matKhau": password,
       "vaiTro": vaitro,
