@@ -120,6 +120,32 @@ public class ThietBiRepository : IThietBiRepository
 		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = entity.TrangThai;
 		return await cmd.ExecuteNonQueryAsync();
 	}
+	public async Task BulkInsertAsync(List<ThietBi> list)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		var table = new DataTable();
+
+		table.Columns.Add("TenTB");
+		table.Columns.Add("LoaiTB");
+		table.Columns.Add("TrangThai");
+
+		foreach (var item in list)
+		{
+			table.Rows.Add(item.TenTB, item.LoaiTB, item.TrangThai);
+		}
+
+		using var bulk = new SqlBulkCopy(conn);
+
+		bulk.DestinationTableName = "ThietBi";
+
+		bulk.ColumnMappings.Add("TenTB", "TenTB");
+		bulk.ColumnMappings.Add("LoaiTB", "LoaiTB");
+		bulk.ColumnMappings.Add("TrangThai", "TrangThai");
+
+		await conn.OpenAsync();
+
+		await bulk.WriteToServerAsync(table);
+	}
 	#region Mapping
 	private ThietBi MapToEntity(SqlDataReader r)
     {

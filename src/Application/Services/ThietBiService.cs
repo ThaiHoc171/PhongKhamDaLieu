@@ -1,7 +1,6 @@
 ﻿using Application.Common;
 using Application.DTOs;
 using Domain.Entities;
-using OfficeOpenXml;
 namespace Application.Services;
 public class ThietBiService
 {
@@ -74,53 +73,36 @@ public class ThietBiService
 		};
 		return ApiResponse<PagedResult<ThietBiReadModel>>.SuccessResponse(result);
 	}
-	public async Task<ApiResponse<int>> ImportExcelAsync(Stream stream)
+	public async Task<ApiResponse<ExcelImportResult<ThietBiImportDTO>>> PreviewImport(Stream stream, string sheet)
 	{
-		using var package = new ExcelPackage(stream);
-		var sheet = package.Workbook.Worksheets.FirstOrDefault();
-		if (sheet == null)
-			return ApiResponse<int>.Fail("File Excel không hợp lệ");
-		if (sheet.Dimension == null)
-			return ApiResponse<int>.Fail("File Excel không có dữ liệu");
-		var rowCount = sheet.Dimension.Rows;
-		int success = 0;
-		int fail = 0;
-		for (int row = 2; row <= rowCount; row++)
+		var result = ExcelImporter.Import<ThietBiImportDTO>(stream, sheet);
+		int row = 2;
+		foreach (var item in result.Data)
 		{
-			try
-			{
-				var tenTB = sheet.Cells[row, 1].Text?.Trim();
-				var loaiTB = sheet.Cells[row, 2].Text?.Trim();
-				var trangThai = sheet.Cells[row, 3].Text?.Trim();
-				var dto = new ThietBiRequestDTO
-				{
-					TenTB = tenTB!,
-					LoaiTB = loaiTB!,
-					TrangThai = trangThai!
-				};
-				var validate = Validate(dto);
-				if (!validate.Success)
-				{
-					fail++;
-					continue;
-				}
-				var entity = new ThietBi(dto.TenTB, dto.LoaiTB, dto.TrangThai);
-				var rows = await _repo.AddAsync(entity);
-				if (rows > 0)
-					success++;
-				else
-					fail++;
-			}
-			catch
-			{
-				fail++;
-				continue;
-			}
+			if (string.IsNullOrWhiteSpace(item.TenTB))
+				result.Errors.Add($"Row {row}: TenTB rỗng");
+
+			if (string.IsNullOrWhiteSpace(item.LoaiTB))
+				result.Errors.Add($"Row {row}: LoaiTB rỗng");
+
+			if (item.TrangThai != "Hoạt động" && item.TrangThai != "Vô hiệu")
+				result.Errors.Add($"Row {row}: TrangThai không hợp lệ");
+
+			row++;
 		}
-		return ApiResponse<int>.SuccessResponse(
-			success,
-			$"Import thành công {success}/{rowCount - 1} thiết bị. Lỗi {fail} dòng"
-		);
+		if (result.Errors.Any())
+			return ApiResponse<ExcelImportResult<ThietBiImportDTO>>.Warning(result,"File Excel có dữ liệu không hợp lệ");
+		return ApiResponse<ExcelImportResult<ThietBiImportDTO>>.SuccessResponse(result);
+	}
+	public async Task<ApiResponse<bool>> Import(List<ThietBiImportDTO> list)
+	{
+		var entities = list.Select(x =>
+			new ThietBi(x.TenTB, x.LoaiTB, x.TrangThai)
+		).ToList();
+
+		await _repo.BulkInsertAsync(entities);
+
+		return ApiResponse<bool>.SuccessResponse(true,"Nhập dữ liệu từ excel thành công!");
 	}
 	private ApiResponse<bool> Validate(ThietBiRequestDTO dto)
 	{

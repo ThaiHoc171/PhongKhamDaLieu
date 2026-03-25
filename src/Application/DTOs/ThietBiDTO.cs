@@ -1,8 +1,18 @@
 ﻿namespace Application.DTOs;
+public class ThietBiImportDTO
+{
+	[ExcelColumn("TenTB")]
+	public string TenTB { get; set; } = default!;
+
+	[ExcelColumn("LoaiTB")]
+	public string LoaiTB { get; set; } = default!;
+	[ExcelColumn("TrangThai")]
+	public string TrangThai { get; set; } = default!;
+}
 public class ThietBiRequestDTO
 {
     public string TenTB { get; set; } = default!;
-    public string LoaiTB { get; set; } = default!;
+    public string LoaiTB { get; set; } = default!;	
 	public string TrangThai { get; set; } = default!;
 }
 public class ThietBiReadModel

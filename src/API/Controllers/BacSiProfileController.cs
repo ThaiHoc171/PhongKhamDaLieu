@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/bacsiprofile")]
+[Route("api/bacsi")]
 [Authorize]
 public class BacSiProfileController : ControllerBase
 {
@@ -36,7 +36,7 @@ public class BacSiProfileController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "BACSI_VIEW")]
+	[Authorize(Policy = "BACSI_LIST")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<BacSiProfileListReadModel>>>> GetPaged(
 		[FromQuery] int pageNumber = 1,
@@ -46,7 +46,7 @@ public class BacSiProfileController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "BACSI_VIEW")]
+	[Authorize(Policy = "BACSI_DETAIL")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<BacSiProfileReadModel>>> GetById(int id)
 	{
@@ -54,7 +54,7 @@ public class BacSiProfileController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "BACSI_VIEW")]
+	[Authorize(Policy = "BACSI_DETAIL")]
 	[HttpGet("nhanvien/{nhanVienId}")]
 	public async Task<ActionResult<ApiResponse<BacSiProfileReadModel>>> GetByNhanVien(int nhanVienId)
 	{
@@ -62,7 +62,7 @@ public class BacSiProfileController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "BACSI_VIEW")]
+	[Authorize(Policy = "BACSI_DETAIL")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<BacSiProfileListReadModel>>>> Search(
 		[FromQuery] string keyword,

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/benhnhan")]
 [Authorize]
 public class BenhNhanController : ControllerBase
 {
@@ -32,16 +32,22 @@ public class BenhNhanController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "BENHNHAN_VIEW")]
+	[Authorize(Policy = "BENHNHAN_DETAIL")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<BenhNhanDetailReadModel>>> Detail(int id)
 	{
+		if (User.IsInRole("Bệnh nhân"))
+		{
+			var benhNhanId = int.Parse(User.FindFirst("BenhNhanID")!.Value);
+			if (benhNhanId != id)
+				return Forbid();
+		}
 		var result = await _service.GetDetailAsync(id);
 		if (!result.Success)
 			return NotFound(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "BENHNHAN_VIEW")]
+	[Authorize(Policy = "BENHNHAN_LIST")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadModel>>>> List(
 		[FromQuery] int pageNumber = 1,
@@ -50,7 +56,7 @@ public class BenhNhanController : ControllerBase
 		var result = await _service.GetPagedAsync(pageNumber, pageSize);
 		return Ok(result);
 	}
-	[Authorize(Policy = "BENHNHAN_VIEW")]
+	[Authorize(Policy = "BENHNHAN_LIST")]
 	[HttpGet("Search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadModel>>>> Search(
 		[FromQuery] string? keyword,
@@ -60,7 +66,7 @@ public class BenhNhanController : ControllerBase
 		var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
 		return Ok(result);
 	}
-	[Authorize(Policy = "BENHNHAN_VIEW")]
+	[Authorize(Policy = "BENHNHAN_LIST")]
 	[HttpGet("Combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
 	{

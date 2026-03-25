@@ -23,8 +23,6 @@ public class ThongTinCaNhanController : ControllerBase
 			return BadRequest(result);
 		return CreatedAtAction(nameof(LayThongTin), new { id = result.Data }, result);
 	}
-	[Authorize(Policy = "NHANVIEN_VIEW")]
-	[HttpGet("NhanVien")]
 	[Authorize(Policy = "KHACH_VIEW")]
 	[HttpGet("Khach")]
 	public async Task<ActionResult<ApiResponse<List<ThongTinCaNhanResponseDTO>>>> DanhSachKhach()
@@ -41,7 +39,7 @@ public class ThongTinCaNhanController : ControllerBase
 			return NotFound(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "BENHNHAN_VIEW")]
+	[Authorize(Policy = "BENHNHAN_LIST")]
 	[HttpGet("BenhNhan/Combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetComboboxAsync()
 	{

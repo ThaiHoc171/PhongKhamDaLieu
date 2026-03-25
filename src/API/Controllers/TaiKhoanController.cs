@@ -24,7 +24,7 @@ public class TaiKhoanController : ControllerBase
 			return BadRequest(result);
 		return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
 	}
-	[Authorize]
+	[Authorize(Policy = "USER_UPDATE")]
 	[HttpPut("{id}/password")]
 	public async Task<ActionResult<ApiResponse<bool>>> ChangePassword(
 		int id,
@@ -59,6 +59,12 @@ public class TaiKhoanController : ControllerBase
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<TaiKhoanReadModel>>> GetById(int id)
 	{
+		if (User.IsInRole("Bệnh nhân"))
+		{
+			var benhNhanId = int.Parse(User.FindFirst("BenhNhanID")!.Value);
+			if (benhNhanId != id)
+				return Forbid();
+		}
 		var result = await _service.GetByIdAsync(id);
 		if (!result.Success)
 			return NotFound(result);

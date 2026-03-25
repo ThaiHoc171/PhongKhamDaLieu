@@ -127,8 +127,7 @@ public class AuthService
 				if (nv.ChucVu != null)
 				{
 					info.ChucVu = nv.ChucVu.Name;
-					info.Quyen = await _chucVuQuyenRepo
-						.GetNameByChucVuAsync(nv.ChucVu.Id);
+					info.Quyen = await _chucVuQuyenRepo.GetNameByChucVuAsync(nv.ChucVu.Id);
 				}
 			}
 		}
@@ -141,8 +140,18 @@ public class AuthService
 				info.BenhNhanID = bn.BenhNhanID;
 				info.ThongTinID = bn.ThongTinID;
 				info.HoTen = bn.HoTen;
-				info.Quyen.Add("DatLichKham");
-				info.Quyen.Add("XemHoSo");
+				info.Quyen.AddRange(new[]
+				{
+					"USER_VIEW","USER_CREATE","USER_UPDATE",
+					"THONGTINCANHAN_LIST","THONGTINCANHAN_CREATE","THONGTINCANHAN_UPDATE",
+					"BENHNHAN_DETAIL","BENHNHAN_UPDATE",
+					"BACSI_DETAIL","BACSI_LIST",
+					"LICHLAMVIEC_VIEW",
+					"LICHKHAM_VIEW","LICHKHAM_UPDATE",
+					"HOSO_DETAIL","PHIENKHAM_VIEW","PHIENKHAM_UPDATE",
+					"THUOC_LIST","LIEUTRINH_VIEW","THUOC_VIEW",
+					"BAIVIET_VIEW"
+				});
 			}
 		}
 		return info;

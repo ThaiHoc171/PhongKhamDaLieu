@@ -97,6 +97,12 @@ public class TaiKhamController : ControllerBase
 		[FromQuery] int page = 1,
 		[FromQuery] int size = 10)
 	{
+		if (User.IsInRole("Bệnh nhân"))
+		{
+			var id = int.Parse(User.FindFirst("BenhNhanID")!.Value);
+			if (benhNhanId != id)
+				return Forbid();
+		}
 		var result =
 			await _service.GetByBenhNhanAsync(benhNhanId, page, size);
 		return Ok(result);
