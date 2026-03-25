@@ -62,7 +62,7 @@ public class CaKhamController : ControllerBase
 		return Ok(response);
 	}
 	[HttpPut("{id}/register")]
-	[Authorize(Policy = "LICHKHAM_CREATE")]
+	[Authorize(Policy = "LICHKHAM_UPDATE")]
 	public async Task<ActionResult<ApiResponse<bool>>> Register(int id, [FromBody] CaKhamRegisterDTO request)
 	{
 		var response = await _service.RegisterAsync(id, request);
