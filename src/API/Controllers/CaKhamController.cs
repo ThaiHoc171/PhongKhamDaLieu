@@ -61,7 +61,36 @@ public class CaKhamController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[HttpPut("{id}/register")]
+    [HttpGet("khunggio-trong")]
+    [Authorize(Policy = "LICHKHAM_VIEW")]
+    public async Task<ActionResult<ApiResponse<List<int>>>>GetKhungGioConTrong([FromQuery] DateTime ngayKham, [FromQuery] string loaiCaKham)
+    {
+        var response = await _service.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
+        if (!response.Success)
+            return BadRequest(response);
+        return Ok(response);
+    }
+    [HttpGet("ca-trong")]
+    [Authorize(Policy = "LICHKHAM_VIEW")]
+    public async Task<ActionResult<ApiResponse<int>>>GetCaKhamTrong([FromQuery] DateTime ngayKham,[FromQuery] int khungGioId,[FromQuery] string loaiCaKham)
+    {
+        var response = await _service.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham);
+        if (!response.Success)
+            return BadRequest(response);
+        return Ok(response);
+    }
+    [HttpGet("check-dadangky")]
+    [Authorize]
+    public async Task<ActionResult<ApiResponse<bool>>>CheckDaDangKy([FromQuery] DateTime ngay, [FromQuery] int khungGioId, [FromQuery] string loaiCaKham, [FromQuery] int thongTinId)
+    {
+        var response = await _service.CheckThongTinDaDangKyAsync(
+            ngay,
+            khungGioId,
+            loaiCaKham,
+            thongTinId);
+        return Ok(response);
+    }
+    [HttpPut("{id}/register")]
 	[Authorize(Policy = "LICHKHAM_UPDATE")]
 	public async Task<ActionResult<ApiResponse<bool>>> Register(int id, [FromBody] CaKhamRegisterDTO request)
 	{
@@ -89,4 +118,5 @@ public class CaKhamController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
+
 }

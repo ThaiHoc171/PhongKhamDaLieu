@@ -245,11 +245,7 @@ public class CaKhamRepository : ICaKhamRepository
 		var result = await cmd.ExecuteScalarAsync();
 		return result != null;
 	}
-	public async Task<bool> CheckThongTinDaDangKyAsync(
-	DateTime ngay,
-	int khungGioId,
-	string loaiCaKham,
-	int thongTinId)
+	public async Task<bool> CheckThongTinDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int thongTinId)
 	{
 		const string sql = @"
 			SELECT 1 
