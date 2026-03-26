@@ -158,4 +158,39 @@ public class CaKhamService
 			return ApiResponse<AssignLichLamViecReport>.Fail(ex.Message);
 		}
 	}
+    public async Task<ApiResponse<List<int>>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham)
+    {
+        if (string.IsNullOrWhiteSpace(loaiCaKham))
+            return ApiResponse<List<int>>.Fail("Loại ca khám không hợp lệ");
+
+        var result = await _repo.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
+
+        return ApiResponse<List<int>>.SuccessResponse(result);
+    }
+    public async Task<ApiResponse<int>> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
+    {
+        if (khungGioId <= 0)
+            return ApiResponse<int>.Fail("Khung giờ không hợp lệ");
+
+        var result = await _repo.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham);
+
+        if (result == 0)
+            return ApiResponse<int>.Fail("Không còn ca trống");
+
+        return ApiResponse<int>.SuccessResponse(result);
+    }
+    public async Task<ApiResponse<bool>> CheckThongTinDaDangKyAsync(
+    DateTime ngay,
+    int khungGioId,
+    string loaiCaKham,
+    int thongTinId)
+    {
+        var result = await _repo.CheckThongTinDaDangKyAsync(
+            ngay,
+            khungGioId,
+            loaiCaKham,
+            thongTinId);
+
+        return ApiResponse<bool>.SuccessResponse(result);
+    }
 }
