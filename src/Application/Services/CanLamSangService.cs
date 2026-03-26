@@ -121,70 +121,29 @@ public class CanLamSangService
 		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
 	}
 
-	public async Task<ApiResponse<int>> ImportExcelAsync(Stream stream)
+	public async Task<ApiResponse<ExcelImportResult<CanLamSangImport>>> PreviewImport(Stream stream, string sheet)
 	{
-		ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");
-
-		using var package = new ExcelPackage(stream);
-
-		var sheet = package.Workbook.Worksheets.FirstOrDefault();
-
-		if (sheet == null)
-			return ApiResponse<int>.Fail("File Excel không hợp lệ");
-
-		if (sheet.Dimension == null)
-			return ApiResponse<int>.Fail("File Excel không có dữ liệu");
-
-		int rowCount = sheet.Dimension.Rows;
-
-		int success = 0;
-		int fail = 0;
-
-		for (int row = 2; row <= rowCount; row++)
+		return ExcelImporter.Preview<CanLamSangImport>(stream, sheet, (item, row) =>
 		{
-			try
-			{
-				var tenCLS = sheet.Cells[row, 1].Text?.Trim();
-				var moTa = sheet.Cells[row, 2].Text?.Trim();
-				var loaiXetNghiem = sheet.Cells[row, 3].Text?.Trim();
-				var trangThai = sheet.Cells[row, 4].Text?.Trim();
-
-				var dto = new CanLamSangRequest
-				{
-					TenCLS = tenCLS!,
-					MoTa = moTa!,
-					LoaiXetNghiem = loaiXetNghiem!,
-					TrangThai = trangThai!
-				};
-
-				var validate = Validate(dto);
-
-				if (!validate.Success)
-				{
-					fail++;
-					continue;
-				}
-
-				var entity = new CanLamSang(dto.TenCLS, dto.MoTa, dto.LoaiXetNghiem, dto.TrangThai);
-
-				var rows = await _repo.AddAsync(entity);
-
-				if (rows > 0)
-					success++;
-				else
-					fail++;
-			}
-			catch
-			{
-				fail++;
-				continue;
-			}
-		}
-
-		return ApiResponse<int>.SuccessResponse(
-			success,
-			$"Import thành công {success}/{rowCount - 1} cận lâm sàng. Lỗi {fail} dòng"
-		);
+			var errors = new List<string>();
+			if (string.IsNullOrWhiteSpace(item.TenCLS))
+				errors.Add($"Dòng {row}: Tên đang rỗng");
+			if (string.IsNullOrWhiteSpace(item.MoTa))
+				errors.Add($"Dòng {row}: Mô tả đang rỗng");
+			if (string.IsNullOrWhiteSpace(item.LoaiXetNghiem))
+				errors.Add($"Dòng {row}: Loại đang rỗng");
+			if (item.TrangThai != "Hoạt động" && item.TrangThai != "Vô hiệu")
+				errors.Add($"Dòng {row}: Trạng thái không hợp lệ");
+			return errors;
+		});
+	}
+	public async Task<ApiResponse<bool>> Import(List<CanLamSangImport> list)
+	{
+		var entities = list.Select(x =>
+			new CanLamSang(x.TenCLS, x.MoTa,x.LoaiXetNghiem, x.TrangThai)
+		).ToList();
+		await _repo.BulkInsertAsync(entities);
+		return ApiResponse<bool>.SuccessResponse(true, "Nhập dữ liệu từ excel thành công!");
 	}
 
 	private ApiResponse<bool> Validate(CanLamSangRequest dto)

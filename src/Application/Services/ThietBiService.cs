@@ -9,7 +9,7 @@ public class ThietBiService
 	{
 		_repo = repo;
 	}
-	public async Task<ApiResponse<bool>> AddAsync(ThietBiRequestDTO dto)
+	public async Task<ApiResponse<bool>> AddAsync(ThietBiRequest dto)
 	{
 		var validate = Validate(dto);
 		if (!validate.Success)
@@ -20,7 +20,7 @@ public class ThietBiService
 			return ApiResponse<bool>.Fail("Tạo thiết bị thất bại");
 		return ApiResponse<bool>.SuccessResponse(true, "Tạo thiết bị thành công");
 	}
-	public async Task<ApiResponse<bool>> UpdateAsync(int id, ThietBiRequestDTO dto)
+	public async Task<ApiResponse<bool>> UpdateAsync(int id, ThietBiRequest dto)
 	{
 		var validate = Validate(dto);
 		if (!validate.Success)
@@ -73,24 +73,24 @@ public class ThietBiService
 		};
 		return ApiResponse<PagedResult<ThietBiReadModel>>.SuccessResponse(result);
 	}
-	public async Task<ApiResponse<ExcelImportResult<ThietBiImportDTO>>> PreviewImport(Stream stream, string sheet)
+	public async Task<ApiResponse<ExcelImportResult<ThietBiImport>>> PreviewImport(Stream stream, string sheet)
 	{
-		return ExcelImporter.Preview<ThietBiImportDTO>(stream, sheet, (item, row) =>
+		return ExcelImporter.Preview<ThietBiImport>(stream, sheet, (item, row) =>
 		{
 			var errors = new List<string>();
 			if (string.IsNullOrWhiteSpace(item.TenTB))
-				errors.Add($"Row {row}: TenTB rỗng");
+				errors.Add($"Dòng {row}: Tên đang rỗng");
 
 			if (string.IsNullOrWhiteSpace(item.LoaiTB))
-				errors.Add($"Row {row}: LoaiTB rỗng");
+				errors.Add($"Dòng {row}: Loại đang rỗng");
 
 			if (item.TrangThai != "Hoạt động" && item.TrangThai != "Vô hiệu")
-				errors.Add($"Row {row}: TrangThai không hợp lệ");
+				errors.Add($"Dòng {row}: Trạng thái không hợp lệ");
 
 			return errors;
 		});
 	}
-	public async Task<ApiResponse<bool>> Import(List<ThietBiImportDTO> list)
+	public async Task<ApiResponse<bool>> Import(List<ThietBiImport> list)
 	{
 		var entities = list.Select(x =>
 			new ThietBi(x.TenTB, x.LoaiTB, x.TrangThai)
@@ -100,7 +100,7 @@ public class ThietBiService
 
 		return ApiResponse<bool>.SuccessResponse(true,"Nhập dữ liệu từ excel thành công!");
 	}
-	private ApiResponse<bool> Validate(ThietBiRequestDTO dto)
+	private ApiResponse<bool> Validate(ThietBiRequest dto)
 	{
 		if (dto == null)
 			return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");

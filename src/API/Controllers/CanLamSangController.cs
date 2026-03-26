@@ -85,13 +85,35 @@ public class CanLamSangController : ControllerBase
         return Ok(result);
     }
 	[Authorize(Policy = "CSVC_CREATE")]
-	[HttpPost("import")]
-	public async Task<ActionResult<ApiResponse<ImportResult>>> ImportExcel(IFormFile file)
+	[HttpPost("import/preview")]
+	public async Task<IActionResult> PreviewImport(IFormFile file,	[FromQuery] string sheet)
 	{
 		if (file == null || file.Length == 0)
-			return BadRequest(ApiResponse<ImportResult>.Fail("File không hợp lệ"));
+			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
+
+		if (string.IsNullOrWhiteSpace(sheet))
+			return BadRequest(ApiResponse<string>.Fail("Sheet không hợp lệ"));
+
 		using var stream = file.OpenReadStream();
-		var result = await _service.ImportExcelAsync(stream);
-		return Ok(result);
+
+		var response = await _service.PreviewImport(stream, sheet);
+
+		if (!response.Success)
+			return BadRequest(response);
+		return Ok(response);
+	}
+	[Authorize(Policy = "CSVC_CREATE")]
+	[HttpPost("import/confirm")]
+	public async Task<IActionResult> Import([FromBody] List<CanLamSangImport> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
+
+		var response = await _service.Import(list);
+
+		if (!response.Success)
+			return BadRequest(response);
+
+		return Ok(response);
 	}
 }

@@ -17,7 +17,7 @@ public class ThietBiController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost]
-	public async Task<IActionResult> Create(ThietBiRequestDTO dto)
+	public async Task<IActionResult> Create(ThietBiRequest dto)
 	{
 		var response = await _service.AddAsync(dto);
 		if (!response.Success)
@@ -26,7 +26,7 @@ public class ThietBiController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<IActionResult> Update(int id, ThietBiRequestDTO dto)
+	public async Task<IActionResult> Update(int id, ThietBiRequest dto)
 	{
 		var response = await _service.UpdateAsync(id, dto);
 		if (!response.Success)
@@ -88,7 +88,7 @@ public class ThietBiController : ControllerBase
 	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost("import/confirm")]
 	public async Task<IActionResult> Import(
-	[FromBody] List<ThietBiImportDTO> list)
+	[FromBody] List<ThietBiImport> list)
 	{
 		if (list == null || !list.Any())
 			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));

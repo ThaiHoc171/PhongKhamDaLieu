@@ -1,5 +1,15 @@
 ﻿namespace Application.DTOs;
-
+public class CanLamSangImport
+{
+    [ExcelColumn("TenCLS")]
+	public string TenCLS { get; set; } = "";
+    [ExcelColumn("MoTa")]
+	public string MoTa { get; set; } = "";
+    [ExcelColumn("LoaiXetNghiem")]
+	public string LoaiXetNghiem { get; set; } = "";
+    [ExcelColumn("TrangThai")]
+	public string TrangThai { get; set; } = "";
+}
 public class CanLamSangRequest
 {
     public string TenCLS { get; set; } = "";
