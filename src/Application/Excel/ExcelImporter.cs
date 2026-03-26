@@ -1,7 +1,26 @@
-﻿using OfficeOpenXml;
+﻿using Application.Common;
+using OfficeOpenXml;
 using System.Reflection;
 public static class ExcelImporter
 {
+	public static ApiResponse<ExcelImportResult<T>> Preview<T>(Stream stream, string sheet,	Func<T, int, List<string>> validator) where T : new()
+	{
+		var result = Import<T>(stream, sheet);
+
+		int row = 2;
+		foreach (var item in result.Data)
+		{
+			var errors = validator(item, row);
+			if (errors != null && errors.Any())
+				result.Errors.AddRange(errors);
+			row++;
+		}
+
+		if (result.Errors.Any())
+			return ApiResponse<ExcelImportResult<T>>.SuccessResponse(result, "File Excel có dữ liệu không hợp lệ");
+
+		return ApiResponse<ExcelImportResult<T>>.SuccessResponse(result);
+	}
 	public static ExcelImportResult<T> Import<T>(Stream stream, string sheetName) where T : new()
 	{
 		var result = new ExcelImportResult<T>();
@@ -41,10 +60,11 @@ public static class ExcelImporter
 					if (!headers.ContainsKey(attr.Name))
 						continue;
 					int col = headers[attr.Name];
-					var value = sheet.Cells[r, col].Text.Trim();
-					if (!string.IsNullOrWhiteSpace(value))
+					var valueText = sheet.Cells[r, col].Text.Trim();
+					if (!string.IsNullOrWhiteSpace(valueText))
 					{
 						hasData = true;
+						object? value = ConvertValue(valueText, prop.PropertyType);
 						prop.SetValue(obj, value);
 					}
 				}
@@ -59,5 +79,24 @@ public static class ExcelImporter
 		}
 		result.SuccessRows = result.Data.Count;
 		return result;
+	}
+	private static object? ConvertValue(string text, Type type)
+	{
+		try
+		{
+			if (type == typeof(string)) return text;
+			if (type == typeof(int) || type == typeof(int?)) return int.TryParse(text, out var v) ? v : null;
+			if (type == typeof(double) || type == typeof(double?)) return double.TryParse(text, out var v) ? v : null;
+			if (type == typeof(decimal) || type == typeof(decimal?)) return decimal.TryParse(text, out var v) ? v : null;
+			if (type == typeof(bool) || type == typeof(bool?))
+				return text.Equals("true", StringComparison.OrdinalIgnoreCase)
+					|| text.Equals("yes", StringComparison.OrdinalIgnoreCase)
+					|| text.Equals("1");
+			return text;
+		}
+		catch
+		{
+			return null;
+		}
 	}
 }

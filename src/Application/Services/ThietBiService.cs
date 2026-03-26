@@ -75,24 +75,20 @@ public class ThietBiService
 	}
 	public async Task<ApiResponse<ExcelImportResult<ThietBiImportDTO>>> PreviewImport(Stream stream, string sheet)
 	{
-		var result = ExcelImporter.Import<ThietBiImportDTO>(stream, sheet);
-		int row = 2;
-		foreach (var item in result.Data)
+		return ExcelImporter.Preview<ThietBiImportDTO>(stream, sheet, (item, row) =>
 		{
+			var errors = new List<string>();
 			if (string.IsNullOrWhiteSpace(item.TenTB))
-				result.Errors.Add($"Row {row}: TenTB rỗng");
+				errors.Add($"Row {row}: TenTB rỗng");
 
 			if (string.IsNullOrWhiteSpace(item.LoaiTB))
-				result.Errors.Add($"Row {row}: LoaiTB rỗng");
+				errors.Add($"Row {row}: LoaiTB rỗng");
 
 			if (item.TrangThai != "Hoạt động" && item.TrangThai != "Vô hiệu")
-				result.Errors.Add($"Row {row}: TrangThai không hợp lệ");
+				errors.Add($"Row {row}: TrangThai không hợp lệ");
 
-			row++;
-		}
-		if (result.Errors.Any())
-			return ApiResponse<ExcelImportResult<ThietBiImportDTO>>.Warning(result,"File Excel có dữ liệu không hợp lệ");
-		return ApiResponse<ExcelImportResult<ThietBiImportDTO>>.SuccessResponse(result);
+			return errors;
+		});
 	}
 	public async Task<ApiResponse<bool>> Import(List<ThietBiImportDTO> list)
 	{
