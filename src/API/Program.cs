@@ -1,4 +1,5 @@
-﻿using Application.Common;
+﻿using Amazon.S3;
+using Application.Common;
 using Application.Interfaces;
 using Application.Services;
 using Infrastructure.Repositories;
@@ -121,6 +122,8 @@ builder.Services.AddAuthorization(options =>
 		});
 	}
 });
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddScoped<FileStorage>();
 builder.Services.AddScoped<ITaiKhoanRepository, TaiKhoanRepository>();
 builder.Services.AddScoped<TaiKhoanService>();
 builder.Services.AddScoped<IChucVuRepository, ChucVuRepository>();
