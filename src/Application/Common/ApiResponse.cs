@@ -13,15 +13,6 @@ public class ApiResponse<T>
 			Data = data
 		};
 	}
-	public static ApiResponse<T> Warning(T? data, string message = "")
-	{
-		return new ApiResponse<T>
-		{
-			Success = false,
-			Message = message,
-			Data = data
-		};
-	}
 	public static ApiResponse<T> Fail(string message)
 	{
 		return new ApiResponse<T>

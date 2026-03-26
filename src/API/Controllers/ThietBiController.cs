@@ -3,7 +3,7 @@ using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OfficeOpenXml;
+
 namespace API.Controllers;
 [ApiController]
 [Route("api/thietbi")]
@@ -64,22 +64,6 @@ public class ThietBiController : ControllerBase
 		if (!response.Success)
 			return BadRequest(response);
 		return Ok(response);
-	}
-	[Authorize(Policy = "CSVC_CREATE")]
-	[HttpPost("import/sheets")]
-	public IActionResult GetSheets(IFormFile file)
-	{
-		if (file == null || file.Length == 0)
-			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
-
-		using var stream = file.OpenReadStream();
-		using var package = new ExcelPackage(stream);
-
-		var sheets = package.Workbook.Worksheets
-			.Select(x => x.Name)
-			.ToList();
-
-		return Ok(ApiResponse<List<string>>.SuccessResponse(sheets));
 	}
 	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost("import/preview")]
