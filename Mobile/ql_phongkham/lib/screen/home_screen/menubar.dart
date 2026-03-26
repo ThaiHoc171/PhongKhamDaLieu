@@ -79,7 +79,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
             currentAccountPicture: CircleAvatar(
               radius: 60,
               backgroundImage: linkAvatar != null && linkAvatar!.isNotEmpty
-                  ? AssetImage("assets/images/$linkAvatar")
+                  ? NetworkImage(linkAvatar!)
                   : const AssetImage("assets/images/user.png"),
             ),
             decoration: BoxDecoration(

@@ -389,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   isLoadingBacSi
                       ? const Center(child: CircularProgressIndicator())
                       : SizedBox(
-                          height: 225,
+                          height: 205,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount: bacSiList.length,
@@ -429,7 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         const SizedBox(height: 5),
 
                                         Text(
-                                          bacSi.ngayCapNhat.toString(),
+                                          bacSi.hoTen,
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
                                             fontSize: 12,

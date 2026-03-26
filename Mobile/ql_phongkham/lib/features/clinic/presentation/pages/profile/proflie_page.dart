@@ -14,7 +14,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   ProfileModel? profile;
-  late final avatar = profile!.avatar;
   @override
   void initState() {
     super.initState();
@@ -68,6 +67,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (profile == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return Scaffold(
       appBar: AppBar(title: const Text("Hồ sơ cá nhân")),
       body: SingleChildScrollView(
@@ -100,13 +102,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget imageProfile() {
+    final avatar = profile?.avatar;
     return Center(
       child: Stack(
         children: [
           CircleAvatar(
             radius: 60,
             backgroundImage: avatar != null && avatar!.isNotEmpty
-                ? AssetImage("assets/images/$avatar")
+                ? NetworkImage(avatar!)
                 : const AssetImage("assets/images/user.png"),
           ),
         ],
