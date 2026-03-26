@@ -141,7 +141,31 @@ public class CanLamSangRepository : ICanLamSangRepository
 		int row = await cmd.ExecuteNonQueryAsync();
 		return row;
 	}
-    public async Task<List<NameResponseDTO>> GetComboboxAsync()
+	public async Task BulkInsertAsync(List<CanLamSang> list)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		var table = new DataTable();
+
+		table.Columns.Add("TenCLS");
+		table.Columns.Add("MoTa");
+        table.Columns.Add("LoaiXetNghiem");
+		table.Columns.Add("TrangThai");
+
+		foreach (var item in list)
+		{
+			table.Rows.Add(item.TenCLS, item.MoTa,item.LoaiXetNghiem, item.TrangThai);
+		}
+
+		using var bulk = new SqlBulkCopy(conn);
+		bulk.DestinationTableName = "CanLamSang";
+		bulk.ColumnMappings.Add("TenCLS", "TenCLS");
+		bulk.ColumnMappings.Add("MoTa", "MoTa");
+        bulk.ColumnMappings.Add("LoaiXetNghiem", "LoaiXetNghiem");
+		bulk.ColumnMappings.Add("TrangThai", "TrangThai");
+		await conn.OpenAsync();
+		await bulk.WriteToServerAsync(table);
+	}
+	public async Task<List<NameResponseDTO>> GetComboboxAsync()
     {
         var list = new List<NameResponseDTO>();
         using var conn = new SqlConnection(_connectionString);
