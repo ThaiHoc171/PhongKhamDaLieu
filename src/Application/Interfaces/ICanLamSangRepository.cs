@@ -4,6 +4,7 @@ namespace Application.Interfaces;
 public interface ICanLamSangRepository
 {
     Task<int> AddAsync(CanLamSang entity);
+	Task BulkInsertAsync(List<CanLamSang> list);
 	Task<int> UpdateAsync(CanLamSang entity);
     Task<CanLamSang?> GetByIdAsync(int id);
     Task<(List<CanLamSangListReadModel>, int)>GetPagedAsync(int page, int size);

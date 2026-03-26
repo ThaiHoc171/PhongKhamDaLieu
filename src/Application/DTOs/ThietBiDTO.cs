@@ -1,5 +1,5 @@
 ﻿namespace Application.DTOs;
-public class ThietBiImportDTO
+public class ThietBiImport
 {
 	[ExcelColumn("TenTB")]
 	public string TenTB { get; set; } = default!;
@@ -9,7 +9,7 @@ public class ThietBiImportDTO
 	[ExcelColumn("TrangThai")]
 	public string TrangThai { get; set; } = default!;
 }
-public class ThietBiRequestDTO
+public class ThietBiRequest
 {
     public string TenTB { get; set; } = default!;
     public string LoaiTB { get; set; } = default!;	
