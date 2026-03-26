@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/profile_repository.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/upload_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/profile/profile_field.dart';
@@ -127,17 +128,15 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       });
 
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
       final thongTinId = prefs.getInt('thongTinId');
-      if (token == null || thongTinId == null) {
+      final vaitro = prefs.getString('vaiTro');
+      if (thongTinId == null) {
         DialogHelper.showSnacFailed(context, "Thiếu thông tin đăng nhập");
         return;
       }
-
       DateTime ngaySinh = DateFormat(
         'dd/MM/yyyy',
       ).parse(ngaySinhController.text);
-
       await ProfileRepository().putProfile(
         thongTinId,
         hoTenController.text,
@@ -147,7 +146,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         emailController.text,
         diaChiController.text,
         linkAvatar ?? "",
-        token,
+        vaitro!,
       );
 
       DialogHelper.showSnackSuccess(context, "Cập nhật thành công");
@@ -279,16 +278,29 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   Widget imageProfile() {
     return Center(
       child: Stack(
+        alignment: Alignment.center,
         children: [
           CircleAvatar(
             radius: 60,
             backgroundImage: _imageFile != null
                 ? FileImage(File(_imageFile!.path))
-                : (linkAvatar != null && linkAvatar!.isNotEmpty
-                          ? AssetImage("assets/images/$linkAvatar")
+                : (linkAvatar != null && linkAvatar!.startsWith("http")
+                          ? NetworkImage(linkAvatar!)
                           : const AssetImage("assets/images/user.png"))
                       as ImageProvider,
           ),
+          if (isLoading)
+            Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.black12,
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            ),
 
           Positioned(
             bottom: 0,
@@ -301,6 +313,8 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
               child: IconButton(
                 icon: const Icon(Icons.camera_alt, color: Colors.white),
                 onPressed: () {
+                  if (isLoading) return;
+
                   showModalBottomSheet(
                     context: context,
                     builder: ((builder) => bottomSheet()),
@@ -327,9 +341,11 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ElevatedButton.icon(
-                onPressed: () {
-                  takePhoto(ImageSource.camera);
-                },
+                onPressed: isLoading
+                    ? null
+                    : () {
+                        takePhoto(ImageSource.camera);
+                      },
                 icon: const Icon(Icons.camera),
                 label: const Text("Camera"),
               ),
@@ -337,9 +353,11 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
               const SizedBox(width: 20),
 
               ElevatedButton.icon(
-                onPressed: () {
-                  takePhoto(ImageSource.gallery);
-                },
+                onPressed: isLoading
+                    ? null
+                    : () {
+                        takePhoto(ImageSource.gallery);
+                      },
                 icon: const Icon(Icons.image),
                 label: const Text("Thư viện"),
               ),
@@ -351,14 +369,36 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   }
 
   void takePhoto(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null) {
+    if (isLoading) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final pickedFile = await _picker.pickImage(source: source);
+
+      if (pickedFile == null) {
+        setState(() => isLoading = false);
+        return;
+      }
+
+      final file = File(pickedFile.path);
+
+      final imageUrl = await UploadRepository().uploadImage(file);
+
       setState(() {
         _imageFile = pickedFile;
-        linkAvatar = pickedFile.name;
+        linkAvatar = imageUrl;
       });
-
+      DialogHelper.showSnackSuccess(context, "Upload ảnh thành công");
       Navigator.pop(context);
+    } catch (e) {
+      DialogHelper.showSnacFailed(context, e.toString());
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 }

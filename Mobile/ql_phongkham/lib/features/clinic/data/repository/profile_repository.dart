@@ -42,7 +42,7 @@ class ProfileRepository {
     String emailLienHe,
     String diaChi,
     String avatar,
-    String token,
+    String loai,
   ) async {
     await ApiClient.put('/ThongTinCaNhan/$thongTinId', {
       "hoTen": hoTen,
@@ -52,6 +52,7 @@ class ProfileRepository {
       "emailLienHe": emailLienHe,
       "diaChi": diaChi,
       "avatar": avatar,
+      "loai": loai,
     });
   }
 }
