@@ -114,4 +114,26 @@ public class ChucVuService
 		var data = await _repo.GetComboboxAsync();
 		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
 	}
+	public async Task<ApiResponse<ExcelImportResult<ChucVuImport>>> PreviewImport(Stream stream, string sheet)
+	{
+		return ExcelImporter.Preview<ChucVuImport>(stream, sheet, (item, row) =>
+		{
+			var errors = new List<string>();
+			if (string.IsNullOrWhiteSpace(item.TenChucVu))
+				errors.Add($"Dòng {row}: Tên đang rỗng");
+			if (string.IsNullOrWhiteSpace(item.MoTa))
+				errors.Add($"Dòng {row}: Mô tả đang rỗng");
+			if (item.TrangThai != "Hoạt động" && item.TrangThai != "Vô hiệu")
+				errors.Add($"Dòng {row}: Trạng thái không hợp lệ");
+			return errors;
+		});
+	}
+	public async Task<ApiResponse<bool>> Import(List<ChucVuImport> list)
+	{
+		var entities = list.Select(x =>
+			new ChucVu(x.TenChucVu, x.MoTa, x.TrangThai)
+		).ToList();
+		await _repo.BulkInsertAsync(entities);
+		return ApiResponse<bool>.SuccessResponse(true, "Nhập dữ liệu từ excel thành công!");
+	}
 }

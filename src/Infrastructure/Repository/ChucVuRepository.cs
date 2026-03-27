@@ -112,7 +112,29 @@ public class ChucVuRepository : IChucVuRepository
 		int row = await cmd.ExecuteNonQueryAsync();
         return row;
     }
-    public async Task<int> UpdateAsync(ChucVu chucVu)
+	public async Task BulkInsertAsync(List<ChucVu> list)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		var table = new DataTable();
+
+		table.Columns.Add("TenChucVu");
+		table.Columns.Add("MoTa");
+		table.Columns.Add("TrangThai");
+
+		foreach (var item in list)
+		{
+			table.Rows.Add(item.TenChucVu, item.MoTa, item.TrangThai);
+		}
+
+		using var bulk = new SqlBulkCopy(conn);
+		bulk.DestinationTableName = "ChucVu";
+		bulk.ColumnMappings.Add("TenChucVu", "TenChucVu");
+		bulk.ColumnMappings.Add("MoTa", "MoTa");
+		bulk.ColumnMappings.Add("TrangThai", "TrangThai");
+		await conn.OpenAsync();
+		await bulk.WriteToServerAsync(table);
+	}
+	public async Task<int> UpdateAsync(ChucVu chucVu)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
