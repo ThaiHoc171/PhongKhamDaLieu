@@ -59,13 +59,6 @@ class _HomeScreenState extends State<HomeScreen> {
       final repo = LichKhamRepository();
       final check = await repo.checkTaiKhamPending(benhNhanId);
       if (check != null) {
-        if (!duocDangKyTaiKham(check.ngayDuKien)) {
-          DialogHelper.showSnacFailed(
-            context,
-            "Chỉ được đặt lịch sau ngày tái khám 7 ngày",
-          );
-          return;
-        }
         Navigator.push(
           context,
           MaterialPageRoute(

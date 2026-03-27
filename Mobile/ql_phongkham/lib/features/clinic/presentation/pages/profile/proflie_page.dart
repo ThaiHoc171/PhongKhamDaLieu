@@ -83,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 20),
               profileField(
                 "Ngày sinh",
-                DateFormat('dd/MM/yyyy').format(profile!.ngaySinh!),
+                DateFormat('dd/MM/yyyy').format(profile!.ngaySinh),
               ),
               const SizedBox(height: 20),
               profileField("Giới tính", profile!.gioiTinh),
@@ -108,8 +108,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           CircleAvatar(
             radius: 60,
-            backgroundImage: avatar != null && avatar!.isNotEmpty
-                ? NetworkImage(avatar!)
+            backgroundImage: avatar != null && avatar.isNotEmpty
+                ? NetworkImage(avatar)
                 : const AssetImage("assets/images/user.png"),
           ),
         ],

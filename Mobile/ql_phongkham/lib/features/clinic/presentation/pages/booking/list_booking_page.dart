@@ -20,13 +20,12 @@ class _DanhSachCaKhamPageState extends State<DanhSachCaKhamPage> {
   @override
   void initState() {
     super.initState();
-    loadBacSi();
+    loadCaKham();
   }
 
-  Future<void> loadBacSi() async {
+  Future<void> loadCaKham() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken')!;
       final thongTinId = prefs.getInt('thongTinId')!;
 
       final repo = LichKhamRepository();
@@ -63,6 +62,9 @@ class _DanhSachCaKhamPageState extends State<DanhSachCaKhamPage> {
           } else if (item.trangThai == 'Đã hủy') {
             statusColor = AppPallete.errorColor;
             statusIcon = Icons.cancel;
+          } else if (item.trangThai == 'Đã xác nhận') {
+            statusColor = AppPallete.backgroundColor;
+            statusIcon = Icons.verified;
           } else {
             statusColor = Colors.orange;
             statusIcon = Icons.schedule;

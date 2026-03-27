@@ -130,7 +130,7 @@ class LichKhamRepository {
     int pageSize,
   ) async {
     final response = await ApiClient.get(
-      "CaKham/benhnhan/$thongTinId?pageNumber=$pageNumber&pageSize=$pageSize",
+      "cakham/search/by-thongtin/$thongTinId?pageNumber=$pageNumber&pageSize=$pageSize",
     );
 
     final List items = response['data']['items'];

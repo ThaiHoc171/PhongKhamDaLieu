@@ -6,7 +6,7 @@ class PhienKhamModel {
   final int phongChucNangID;
   final String trieuChung;
   final String ghiChu;
-  final String hinhAnhJSON;
+  final String hinhAnh;
   final String chanDoanCuoi;
   final DateTime? ngayKham;
   final String trangThai;
@@ -19,7 +19,7 @@ class PhienKhamModel {
     required this.phongChucNangID,
     required this.trieuChung,
     required this.ghiChu,
-    required this.hinhAnhJSON,
+    required this.hinhAnh,
     required this.chanDoanCuoi,
     this.ngayKham,
     required this.trangThai,
@@ -34,7 +34,7 @@ class PhienKhamModel {
       phongChucNangID: json['phongChucNangID'] ?? 0,
       trieuChung: json['trieuChung'] ?? '',
       ghiChu: json['ghiChu'] ?? '',
-      hinhAnhJSON: json['hinhAnhJSON'] ?? '',
+      hinhAnh: json['hinhAnh'] ?? '',
       chanDoanCuoi: json['chanDoanCuoi'] ?? '',
       ngayKham: json['ngayKham'] != null
           ? DateTime.parse(json['ngayKham'])

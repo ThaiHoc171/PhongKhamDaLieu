@@ -52,7 +52,9 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
       final thongTinId = prefs.getInt('thongTinId');
-      if (token == null || thongTinId == null) return;
+      if (token == null || thongTinId == null || thongTinId == 0) {
+        return;
+      }
 
       final data = await ProfileRepository().getProfile(thongTinId);
 
@@ -68,7 +70,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         linkAvatar = data.avatar;
       });
     } catch (e) {
-      DialogHelper.showSnacFailed(context, e.toString());
+      print("Load profile error: $e");
     }
   }
 
@@ -90,7 +92,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         'dd/MM/yyyy',
       ).parse(ngaySinhController.text);
 
-      final benhNhanId = await ProfileRepository().addProfile(
+      final thongTinId = await ProfileRepository().addProfile(
         taiKhoanId,
         hoTenController.text,
         ngaySinh,
@@ -102,8 +104,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         "",
         token,
       );
-      print("Response: $benhNhanId");
-      await prefs.setInt("benhNhanId", benhNhanId);
+      await prefs.setInt("thongTinId", thongTinId);
 
       DialogHelper.showSnackSuccess(context, "Tạo hồ sơ thành công");
 
@@ -349,9 +350,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
                 icon: const Icon(Icons.camera),
                 label: const Text("Camera"),
               ),
-
               const SizedBox(width: 20),
-
               ElevatedButton.icon(
                 onPressed: isLoading
                     ? null
@@ -370,23 +369,17 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   void takePhoto(ImageSource source) async {
     if (isLoading) return;
-
     setState(() {
       isLoading = true;
     });
-
     try {
       final pickedFile = await _picker.pickImage(source: source);
-
       if (pickedFile == null) {
         setState(() => isLoading = false);
         return;
       }
-
       final file = File(pickedFile.path);
-
       final imageUrl = await UploadRepository().uploadImage(file);
-
       setState(() {
         _imageFile = pickedFile;
         linkAvatar = imageUrl;

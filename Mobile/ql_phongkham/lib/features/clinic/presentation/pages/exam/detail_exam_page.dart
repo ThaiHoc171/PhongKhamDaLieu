@@ -29,10 +29,9 @@ class _DetailExamScreenState extends State<DetailExamScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
 
-      if (token == null || widget.caKhamId == null) return;
+      if (token == null) return;
 
       final data = await PhienKhamRepository().getChiTietPhienKham(
-        token,
         widget.caKhamId,
       );
       setState(() {
@@ -45,7 +44,7 @@ class _DetailExamScreenState extends State<DetailExamScreen> {
 
   List<Widget> parseImages() {
     try {
-      final List images = jsonDecode(phienKham!.hinhAnhJSON);
+      final List images = jsonDecode(phienKham!.hinhAnh);
 
       return images.map((img) {
         return ClipRRect(
@@ -176,7 +175,7 @@ class _DetailExamScreenState extends State<DetailExamScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            if (phienKham!.hinhAnhJSON.isNotEmpty) ...[
+            if (phienKham!.hinhAnh.isNotEmpty) ...[
               const Text(
                 "Hình ảnh bệnh",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

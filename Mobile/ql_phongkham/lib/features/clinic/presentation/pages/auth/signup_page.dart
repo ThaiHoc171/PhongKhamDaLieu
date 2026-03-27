@@ -160,11 +160,7 @@ class _SignupPageState extends State<SignupPage> {
 
       final repo = AuthRepository();
 
-      await repo.signup(
-        emailController.text,
-        passwordController.text,
-        "Bệnh nhân",
-      );
+      await repo.signup(emailController.text, passwordController.text, "Khách");
 
       Navigator.pushAndRemoveUntil(
         context,
