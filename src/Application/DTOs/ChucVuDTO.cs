@@ -1,4 +1,13 @@
 ﻿namespace Application.DTOs;
+public class ChucVuImport
+{
+	[ExcelColumn("TenChucVu")]
+	public string TenChucVu { get; set; } = "";
+	[ExcelColumn("MoTa")]
+	public string MoTa { get; set; } = "";
+	[ExcelColumn("TrangThai")]
+	public string TrangThai { get; set; } = "";
+}
 public class ChucVuRequest
 {
     public string TenChucVu { get; set; } = "";
