@@ -2,7 +2,7 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-using OfficeOpenXml;
+using Microsoft.Data.SqlClient;
 
 namespace Application.Services;
 
@@ -17,39 +17,58 @@ public class CanLamSangService
 
 	public async Task<ApiResponse<bool>> AddAsync(CanLamSangRequest dto)
 	{
-		var validate = Validate(dto);
-		if (!validate.Success)
-			return ApiResponse<bool>.Fail(validate.Message);
+		try
+		{
+			if (dto == null)
+				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
+			var entity = new CanLamSang(dto.TenCLS, dto.MoTa, dto.LoaiXetNghiem, dto.TrangThai);
 
-		var entity = new CanLamSang(dto.TenCLS, dto.MoTa, dto.LoaiXetNghiem, dto.TrangThai);
+			int row = await _repo.AddAsync(entity);
 
-		int row = await _repo.AddAsync(entity);
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Tạo cận lâm sàng thất bại");
 
-		if (row == 0)
-			return ApiResponse<bool>.Fail("Tạo cận lâm sàng thất bại");
-
-		return ApiResponse<bool>.SuccessResponse(true, "Tạo cận lâm sàng thành công");
+			return ApiResponse<bool>.SuccessResponse(true, "Tạo cận lâm sàng thành công");
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+		{
+			return ApiResponse<bool>.Fail("Tên cận lâm sàng đã tồn tại");
+		}
 	}
 
 	public async Task<ApiResponse<bool>> UpdateAsync(int id, CanLamSangRequest dto)
 	{
-		var validate = Validate(dto);
-		if (!validate.Success)
-			return ApiResponse<bool>.Fail(validate.Message);
+		try
+		{
+			if (dto == null)
+				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
 
-		var entity = await _repo.GetByIdAsync(id);
+			var entity = await _repo.GetByIdAsync(id);
 
-		if (entity == null)
-			return ApiResponse<bool>.Fail("Không tìm thấy cận lâm sàng");
+			if (entity == null)
+				return ApiResponse<bool>.Fail("Không tìm thấy cận lâm sàng");
 
-		entity.CapNhat(dto.TenCLS, dto.MoTa, dto.LoaiXetNghiem, dto.TrangThai);
+			entity.CapNhat(dto.TenCLS, dto.MoTa, dto.LoaiXetNghiem, dto.TrangThai);
 
-		int row = await _repo.UpdateAsync(entity);
+			int row = await _repo.UpdateAsync(entity);
 
-		if (row == 0)
-			return ApiResponse<bool>.Fail("Cập nhật cận lâm sàng thất bại");
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Cập nhật cận lâm sàng thất bại");
 
-		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật cận lâm sàng thành công");
+			return ApiResponse<bool>.SuccessResponse(true, "Cập nhật cận lâm sàng thành công");
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		catch (SqlException ex) when(ex.Number == 2627 || ex.Number == 2601)
+		{
+			return ApiResponse<bool>.Fail("Tên cận lâm sàng đã tồn tại");
+		}
 	}
 
 	public async Task<ApiResponse<PagedResult<CanLamSangListReadModel>>> GetPagedAsync(int page, int size)
@@ -144,22 +163,5 @@ public class CanLamSangService
 		).ToList();
 		await _repo.BulkInsertAsync(entities);
 		return ApiResponse<bool>.SuccessResponse(true, "Nhập dữ liệu từ excel thành công!");
-	}
-
-	private ApiResponse<bool> Validate(CanLamSangRequest dto)
-	{
-		if (dto == null)
-			return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
-
-		if (string.IsNullOrWhiteSpace(dto.TenCLS))
-			return ApiResponse<bool>.Fail("Tên cận lâm sàng không hợp lệ");
-
-		if (string.IsNullOrWhiteSpace(dto.LoaiXetNghiem))
-			return ApiResponse<bool>.Fail("Loại xét nghiệm không hợp lệ");
-
-		if (dto.TrangThai != "Hoạt động" && dto.TrangThai != "Vô hiệu")
-			return ApiResponse<bool>.Fail("Trạng thái không hợp lệ");
-
-		return ApiResponse<bool>.SuccessResponse(true);
 	}
 }

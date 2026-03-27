@@ -65,6 +65,13 @@ public class ThietBiController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet("combobox")]
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
+	{
+		var result = await _service.GetComboboxAsync();
+		return Ok(result);
+	}
 	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost("import/preview")]
 	public async Task<IActionResult> PreviewImport(

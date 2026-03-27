@@ -19,7 +19,7 @@ public class CanLamSangRepository : ICanLamSangRepository
     @"SELECT CanLamSangID, TenCLS, LoaiXetNghiem, TrangThai, NgayTao
       FROM CanLamSang";
     private const string BaseSelectDetail =
-    @"SELECT CanLamSangID, TenCLS, MoTa, LoaiXetNghiem, TrangThai, NgayTao
+    @"SELECT CanLamSangID, TenCLS, MoTa, LoaiXetNghiem, TrangThai, NgayTao, NgayCapNhat
       FROM CanLamSang";
 	#endregion
 	public async Task<CanLamSang?> GetByIdAsync(int id)
@@ -113,10 +113,10 @@ public class CanLamSangRepository : ICanLamSangRepository
             VALUES (@TenCLS, @MoTa, @LoaiXetNghiem, @TrangThai)";
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@TenCLS", SqlDbType.NVarChar).Value = cls.TenCLS;
-		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)cls.MoTa ?? DBNull.Value;
-		cmd.Parameters.Add("@LoaiXetNghiem", SqlDbType.NVarChar).Value = cls.LoaiXetNghiem;
-		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = cls.TrangThai;
+		cmd.Parameters.Add("@TenCLS", SqlDbType.NVarChar, 200).Value = cls.TenCLS;
+		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar, -1).Value = (object?)cls.MoTa ?? DBNull.Value;
+		cmd.Parameters.Add("@LoaiXetNghiem", SqlDbType.NVarChar, 100).Value = cls.LoaiXetNghiem;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = cls.TrangThai;
 		await conn.OpenAsync();
         int row = await cmd.ExecuteNonQueryAsync();
         return row;
@@ -128,15 +128,18 @@ public class CanLamSangRepository : ICanLamSangRepository
           SET TenCLS=@TenCLS,
               MoTa=@MoTa,
               LoaiXetNghiem=@LoaiXetNghiem,
-              TrangThai=@TrangThai
+              TrangThai=@TrangThai,
+              NgayCapNhat=@NgayCapNhat
           WHERE CanLamSangID=@Id";
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@TenCLS", SqlDbType.NVarChar).Value = cls.TenCLS;
-		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)cls.MoTa ?? DBNull.Value;
-		cmd.Parameters.Add("@LoaiXetNghiem", SqlDbType.NVarChar).Value = cls.LoaiXetNghiem;
-		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = cls.TrangThai;
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = cls.CanLamSangID;
+		cmd.Parameters.Add("@TenCLS", SqlDbType.NVarChar, 200).Value = cls.TenCLS;
+		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar, -1).Value = (object?)cls.MoTa ?? DBNull.Value;
+		cmd.Parameters.Add("@LoaiXetNghiem", SqlDbType.NVarChar, 100).Value = cls.LoaiXetNghiem;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = cls.TrangThai;
+		cmd.Parameters.Add("@NgayCapNhat", SqlDbType.DateTime).Value = cls.NgayCapNhat ?? (object)DBNull.Value;
+
 		await conn.OpenAsync();
 		int row = await cmd.ExecuteNonQueryAsync();
 		return row;
@@ -190,53 +193,38 @@ public class CanLamSangRepository : ICanLamSangRepository
 	#region Mapping
 	private static CanLamSang MapToEntity(SqlDataReader r)
     {
-        var id = r.GetOrdinal("CanLamSangID");
-        var ten = r.GetOrdinal("TenCLS");
-        var mota = r.GetOrdinal("MoTa");
-        var loai = r.GetOrdinal("LoaiXetNghiem");
-        var trangThai = r.GetOrdinal("TrangThai");
-        var ngay = r.GetOrdinal("NgayTao");
-        return new CanLamSang(
-            r.GetInt32(id),
-            r.GetString(ten),
-            r.IsDBNull(mota) ? null : r.GetString(mota),
-            r.GetString(loai),
-            r.GetDateTime(ngay),
-            r.GetString(trangThai)
-        );
-    }
+		return new CanLamSang(
+			r.GetInt32(r.GetOrdinal("CanLamSangID")),
+			r.GetString(r.GetOrdinal("TenCLS")),
+			r.GetString(r.GetOrdinal("MoTa")),
+			r.GetString(r.GetOrdinal("LoaiXetNghiem")),
+			r.GetString(r.GetOrdinal("TrangThai")),
+			r.GetDateTime(r.GetOrdinal("NgayTao")),
+			r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
+		);
+	}
     private static CanLamSangListReadModel MapToLiteDTO(SqlDataReader r)
     {
-        var id = r.GetOrdinal("CanLamSangID");
-        var ten = r.GetOrdinal("TenCLS");
-        var loai = r.GetOrdinal("LoaiXetNghiem");
-        var trangThai = r.GetOrdinal("TrangThai");
-        var ngay = r.GetOrdinal("NgayTao");
         return new CanLamSangListReadModel
         {
-            CanLamSangID = r.GetInt32(id),
-            TenCLS = r.GetString(ten),
-            LoaiXetNghiem = r.GetString(loai),
-            TrangThai = r.GetString(trangThai)
+            CanLamSangID = r.GetInt32(r.GetOrdinal("CanLamSangID")),
+            TenCLS = r.GetString(r.GetOrdinal("TenCLS")),
+            LoaiXetNghiem = r.GetString(r.GetOrdinal("LoaiXetNghiem")),
+            TrangThai = r.GetString(r.GetOrdinal("TrangThai"))
         };
     }
     private static CanLamSangReadModel MapToDetailDTO(SqlDataReader r)
     {
-        var id = r.GetOrdinal("CanLamSangID");
-        var ten = r.GetOrdinal("TenCLS");
-        var mota = r.GetOrdinal("MoTa");
-        var loai = r.GetOrdinal("LoaiXetNghiem");
-        var trangThai = r.GetOrdinal("TrangThai");
-        var ngay = r.GetOrdinal("NgayTao");
-        return new CanLamSangReadModel
-        {
-            CanLamSangID = r.GetInt32(id),
-            TenCLS = r.GetString(ten),
-            MoTa = r.IsDBNull(mota) ? null : r.GetString(mota),
-            LoaiXetNghiem = r.GetString(loai),
-            TrangThai = r.GetString(trangThai),
-            NgayTao = r.GetDateTime(ngay)
-        };
-    }
+		return new CanLamSangReadModel
+		{
+			CanLamSangID = r.GetInt32(r.GetOrdinal("CanLamSangID")),
+			TenCLS = r.GetString(r.GetOrdinal("TenCLS")),
+			MoTa = r.GetString(r.GetOrdinal("MoTa")),
+			LoaiXetNghiem = r.GetString(r.GetOrdinal("LoaiXetNghiem")),
+			TrangThai = r.GetString(r.GetOrdinal("TrangThai")),
+			NgayTao = r.GetDateTime(r.GetOrdinal("NgayTao")),
+			NgayCapNhat = r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
+		};
+	}
 	#endregion
 }
