@@ -20,7 +20,7 @@ public class ChucVuRepository : IChucVuRepository
         SELECT ChucVuID,TenChucVu,TrangThai
         FROM ChucVu";
     private const string BaseSelectDetail = @"
-        SELECT ChucVuID,TenChucVu,MoTa,NgayTao,TrangThai
+        SELECT ChucVuID,TenChucVu,MoTa,TrangThai,NgayTao,NgayCapNhat
         FROM ChucVu";
 	#endregion
 	public async Task<(List<ChucVuListReadModel>, int)> GetPagedAsync(int page, int size)
@@ -64,8 +64,7 @@ public class ChucVuRepository : IChucVuRepository
         FROM ChucVu
         WHERE TenChucVu LIKE @Keyword";
         using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = $"%{keyword}%";
-
+		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar, 100).Value = $"%{keyword}%";
 		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
 		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
 		using var reader = await cmd.ExecuteReaderAsync();
@@ -107,26 +106,50 @@ public class ChucVuRepository : IChucVuRepository
         var sql = @"INSERT INTO ChucVu(TenChucVu,MoTa,TrangThai)
                     VALUES(@TenChucVu,@MoTa,@TrangThai)";
         using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar).Value = chucVu.TenChucVu;
-		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)chucVu.MoTa ?? DBNull.Value;
-		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = chucVu.TrangThai;
+		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar, 100).Value = chucVu.TenChucVu;
+        cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar, -1).Value = chucVu.MoTa;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = chucVu.TrangThai;
 		int row = await cmd.ExecuteNonQueryAsync();
         return row;
     }
-    public async Task<int> UpdateAsync(ChucVu chucVu)
+	public async Task BulkInsertAsync(List<ChucVu> list)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		var table = new DataTable();
+
+		table.Columns.Add("TenChucVu");
+		table.Columns.Add("MoTa");
+		table.Columns.Add("TrangThai");
+
+		foreach (var item in list)
+		{
+			table.Rows.Add(item.TenChucVu, item.MoTa, item.TrangThai);
+		}
+
+		using var bulk = new SqlBulkCopy(conn);
+		bulk.DestinationTableName = "ChucVu";
+		bulk.ColumnMappings.Add("TenChucVu", "TenChucVu");
+		bulk.ColumnMappings.Add("MoTa", "MoTa");
+		bulk.ColumnMappings.Add("TrangThai", "TrangThai");
+		await conn.OpenAsync();
+		await bulk.WriteToServerAsync(table);
+	}
+	public async Task<int> UpdateAsync(ChucVu chucVu)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
         var sql = @"UPDATE ChucVu
                     SET TenChucVu=@TenChucVu,
                         MoTa=@MoTa,
-                        TrangThai=@TrangThai
+                        TrangThai=@TrangThai,
+                        NgayCapNhat=@NgayCapNhat
                     WHERE ChucVuID=@Id";
         using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = chucVu.ChucVuID;
-		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar).Value = chucVu.TenChucVu;
-		cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar).Value = (object?)chucVu.MoTa ?? DBNull.Value;
-		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = chucVu.TrangThai;
+		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar, 100).Value = chucVu.TenChucVu;
+        cmd.Parameters.Add("@MoTa", SqlDbType.NVarChar, -1).Value = chucVu.MoTa;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = chucVu.TrangThai;
+		cmd.Parameters.Add("@NgayCapNhat", SqlDbType.DateTime).Value = chucVu.NgayCapNhat;
 		int row = await cmd.ExecuteNonQueryAsync();
 		return row;
 	}
@@ -154,7 +177,7 @@ public class ChucVuRepository : IChucVuRepository
         var sql = @"SELECT ChucVuID,TenChucVu
                     FROM ChucVu
                     WHERE TrangThai = N'Hoạt động'
-                    ORDER BY TenChucVu";
+                    ORDER BY TenChucVu ASC";
         using var cmd = new SqlCommand(sql, conn);
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
@@ -170,33 +193,36 @@ public class ChucVuRepository : IChucVuRepository
 	#region Mapping
 	private ChucVu MapToEntity(SqlDataReader r)
     {
-        return new ChucVu(
-            (int)r["ChucVuID"],
-            (string)r["TenChucVu"],
-            r["MoTa"] as string,
-            (DateTime)r["NgayTao"],
-            (string)r["TrangThai"]
-        );
-    }
+		return new ChucVu(
+			r.GetInt32(r.GetOrdinal("ChucVuID")),
+			r.GetString(r.GetOrdinal("TenChucVu")),
+			r.GetString(r.GetOrdinal("MoTa")),
+			r.GetString(r.GetOrdinal("TrangThai")),
+			r.GetDateTime(r.GetOrdinal("NgayTao")),
+			r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
+		);
+	}
     private ChucVuListReadModel MapToListDTO(SqlDataReader r)
     {
-        return new ChucVuListReadModel
-        {
-            ChucVuID = (int)r["ChucVuID"],
-            TenChucVu = (string)r["TenChucVu"],
-            TrangThai = (string)r["TrangThai"]
-        };
-    }
+		return new ChucVuListReadModel
+		{
+			ChucVuID = r.GetInt32(r.GetOrdinal("ChucVuID")),
+			TenChucVu = r.GetString(r.GetOrdinal("TenChucVu")),
+			TrangThai = r.GetString(r.GetOrdinal("TrangThai"))
+		};
+	}
     private ChucVuReadModel MapToDetailDTO(SqlDataReader r)
     {
-        return new ChucVuReadModel
-        {
-            ChucVuID = (int)r["ChucVuID"],
-            TenChucVu = (string)r["TenChucVu"],
-            MoTa = r["MoTa"] as string,
-            NgayTao = (DateTime)r["NgayTao"],
-            TrangThai = (string)r["TrangThai"]
-        };
-    }
+
+		return new ChucVuReadModel
+		{
+			ChucVuID = r.GetInt32(r.GetOrdinal("ChucVuID")),
+			TenChucVu = r.GetString(r.GetOrdinal("TenChucVu")),
+			MoTa = r.GetString(r.GetOrdinal("MoTa")),
+			NgayTao = r.GetDateTime(r.GetOrdinal("NgayTao")),
+			TrangThai = r.GetString(r.GetOrdinal("TrangThai")),
+			NgayCapNhat = r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
+		};
+	}
 	#endregion
 }
