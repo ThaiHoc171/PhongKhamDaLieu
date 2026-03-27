@@ -100,4 +100,36 @@ public class ChucVuController : ControllerBase
 		var result = await _service.GetComboboxAsync();
 		return Ok(result);
 	}
+	[Authorize(Policy = "ROLE_CREATE")]
+	[HttpPost("import/preview")]
+	public async Task<IActionResult> PreviewImport(IFormFile file, [FromQuery] string sheet)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
+
+		if (string.IsNullOrWhiteSpace(sheet))
+			return BadRequest(ApiResponse<string>.Fail("Sheet không hợp lệ"));
+
+		using var stream = file.OpenReadStream();
+
+		var response = await _service.PreviewImport(stream, sheet);
+
+		if (!response.Success)
+			return BadRequest(response);
+		return Ok(response);
+	}
+	[Authorize(Policy = "ROLE_CREATE")]
+	[HttpPost("import/confirm")]
+	public async Task<IActionResult> Import([FromBody] List<ChucVuImport> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
+
+		var response = await _service.Import(list);
+
+		if (!response.Success)
+			return BadRequest(response);
+
+		return Ok(response);
+	}
 }
