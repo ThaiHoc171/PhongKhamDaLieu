@@ -39,9 +39,7 @@ public class PhongChucNangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_UPDATE")]
 	[HttpPut("{id}/status")]
-	public async Task<ActionResult<ApiResponse<bool>>> ChangeStatus(
-		int id,
-		[FromBody] TinhTrang trangThaiMoi)
+	public async Task<ActionResult<ApiResponse<bool>>> ChangeStatus(int id, [FromBody] TinhTrang trangThaiMoi)
 	{
 		var result = await _service.ChuyenTrangThaiAsync(id, trangThaiMoi);
 		if (!result.Success)
@@ -63,20 +61,16 @@ public class PhongChucNangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<PhongChucNangListReadModel>>>> GetPaged(
-		[FromQuery] int page = 1,
-		[FromQuery] int size = 15,
-		[FromQuery] string? trangThai = null)
+	public async Task<ActionResult<ApiResponse<PagedResult<PhongChucNangListReadModel>>>> 
+		GetPaged([FromQuery] int page = 1, [FromQuery] int size = 15, [FromQuery] string? trangThai = null)
 	{
 		var result = await _service.GetPagedAsync(page, size, trangThai);
 		return Ok(result);
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("search")]
-	public async Task<ActionResult<ApiResponse<PagedResult<PhongChucNangListReadModel>>>> Search(
-		[FromQuery] string? keyword,
-		[FromQuery] int page = 1,
-		[FromQuery] int size = 15)
+	public async Task<ActionResult<ApiResponse<PagedResult<PhongChucNangListReadModel>>>> 
+		Search([FromQuery] string? keyword, [FromQuery] int page = 1, [FromQuery] int size = 15)
 	{
 		var result = await _service.SearchAsync(keyword, page, size);
 		return Ok(result);
