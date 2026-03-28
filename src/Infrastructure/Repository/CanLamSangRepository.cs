@@ -32,7 +32,7 @@ public class CanLamSangRepository : ICanLamSangRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         return await reader.ReadAsync() ? MapToEntity(reader) : null;
     }
-    public async Task<(List<CanLamSangListReadModel>, int)>GetPagedAsync(int page, int size)
+    public async Task<(List<CanLamSangReadListModel>, int)>GetPagedAsync(int page, int size)
     {
         var sql =$@"
             {BaseSelectLite}
@@ -41,7 +41,7 @@ public class CanLamSangRepository : ICanLamSangRepository
             SELECT COUNT(*)
             FROM CanLamSang
         ";
-        var list = new List<CanLamSangListReadModel>();
+        var list = new List<CanLamSangReadListModel>();
         int total = 0;
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
@@ -55,7 +55,7 @@ public class CanLamSangRepository : ICanLamSangRepository
             total = reader.GetInt32(0);
         return (list, total);
     }
-    public async Task<(List<CanLamSangListReadModel>, int)>SearchPagedAsync(string keyword, int page, int size)
+    public async Task<(List<CanLamSangReadListModel>, int)>SearchPagedAsync(string keyword, int page, int size)
     {
         var sql = $@"
             {BaseSelectLite}
@@ -65,7 +65,7 @@ public class CanLamSangRepository : ICanLamSangRepository
             SELECT COUNT(*)
             FROM CanLamSang
             WHERE TenCLS LIKE @Keyword";
-        var list = new List<CanLamSangListReadModel>();
+        var list = new List<CanLamSangReadListModel>();
         int total = 0;
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
@@ -80,13 +80,13 @@ public class CanLamSangRepository : ICanLamSangRepository
             total = reader.GetInt32(0);
         return (list, total);
     }
-    public async Task<List<CanLamSangListReadModel>>GetByLoaiXetNghiemAsync(string loaiXetNghiem)
+    public async Task<List<CanLamSangReadListModel>>GetByLoaiXetNghiemAsync(string loaiXetNghiem)
     {
         var sql =
         $@"{BaseSelectLite}
            WHERE LoaiXetNghiem=@Loai
            ORDER BY TenCLS";
-        var list = new List<CanLamSangListReadModel>();
+        var list = new List<CanLamSangReadListModel>();
         await using var conn = CreateConnection();
         await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar).Value = loaiXetNghiem;
@@ -203,9 +203,9 @@ public class CanLamSangRepository : ICanLamSangRepository
 			r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
 		);
 	}
-    private static CanLamSangListReadModel MapToLiteDTO(SqlDataReader r)
+    private static CanLamSangReadListModel MapToLiteDTO(SqlDataReader r)
     {
-        return new CanLamSangListReadModel
+        return new CanLamSangReadListModel
         {
             CanLamSangID = r.GetInt32(r.GetOrdinal("CanLamSangID")),
             TenCLS = r.GetString(r.GetOrdinal("TenCLS")),

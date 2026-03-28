@@ -4,7 +4,6 @@ using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
-using static Amazon.S3.Util.S3EventNotification;
 namespace Infrastructure.Repositories;
 public class CaKhamRepository : ICaKhamRepository
 {
@@ -13,6 +12,73 @@ public class CaKhamRepository : ICaKhamRepository
 	{
 		_connectionString = config.GetConnectionString("DefaultConnection")
 			?? throw new ArgumentNullException("Connection string not found");
+	}
+	public async Task<int> GenerateAsync(DateTime tuNgay, DateTime denNgay, List<int> khungGio)
+	{
+		int created = 0;
+
+		await using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		for (var day = tuNgay.Date; day <= denNgay.Date; day = day.AddDays(1))
+		{
+			foreach (var khungId in khungGio)
+			{
+				// đếm số ca khám
+				var countKhamCmd = new SqlCommand(@"
+                SELECT COUNT(*) 
+                FROM CaKham
+                WHERE NgayKham = @Ngay
+                AND KhungGioID = @Khung
+                AND LoaiCaKham = N'Khám'", conn);
+
+				countKhamCmd.Parameters.AddWithValue("@Ngay", day);
+				countKhamCmd.Parameters.AddWithValue("@Khung", khungId);
+
+				int currentKham = Convert.ToInt32(await countKhamCmd.ExecuteScalarAsync());
+
+				int needKham = 5 - currentKham;
+
+				for (int i = 0; i < needKham; i++)
+				{
+					var insertKhamCmd = new SqlCommand(@"
+                    INSERT INTO CaKham (LoaiCaKham, KhungGioID, NgayKham, TrangThai)
+                    VALUES (N'Khám', @Khung, @Ngay, N'Trống')", conn);
+
+					insertKhamCmd.Parameters.AddWithValue("@Khung", khungId);
+					insertKhamCmd.Parameters.AddWithValue("@Ngay", day);
+
+					created += await insertKhamCmd.ExecuteNonQueryAsync();
+				}
+
+				// kiểm tra điều trị
+				var countDieuTriCmd = new SqlCommand(@"
+                SELECT COUNT(*) 
+                FROM CaKham
+                WHERE NgayKham = @Ngay
+                AND KhungGioID = @Khung
+                AND LoaiCaKham = N'Điều trị'", conn);
+
+				countDieuTriCmd.Parameters.AddWithValue("@Ngay", day);
+				countDieuTriCmd.Parameters.AddWithValue("@Khung", khungId);
+
+				int currentDieuTri = Convert.ToInt32(await countDieuTriCmd.ExecuteScalarAsync());
+
+				if (currentDieuTri == 0)
+				{
+					var insertDieuTriCmd = new SqlCommand(@"
+                    INSERT INTO CaKham (LoaiCaKham, KhungGioID, NgayKham, TrangThai)
+                    VALUES (N'Điều trị', @Khung, @Ngay, N'Trống')", conn);
+
+					insertDieuTriCmd.Parameters.AddWithValue("@Khung", khungId);
+					insertDieuTriCmd.Parameters.AddWithValue("@Ngay", day);
+
+					created += await insertDieuTriCmd.ExecuteNonQueryAsync();
+				}
+			}
+		}
+
+		return created;
 	}
 	public async Task<CaKham?> GetByIdAsync(int caKhamID)
 	{
