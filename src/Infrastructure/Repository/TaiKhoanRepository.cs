@@ -119,7 +119,19 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-	private static TaiKhoan MapToEntity(SqlDataReader r)
+    public async Task UpdateFcmTokenAsync(int taiKhoanId, string? fcmToken)
+    {
+        const string sql =
+        @"UPDATE TaiKhoan SET FCMToken=@FCMToken, NgayCapNhat=GETDATE() WHERE TaiKhoanID=@Id";
+        await using var conn = CreateConnection();
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@FCMToken", SqlDbType.NVarChar, 500).Value =
+            (object?)fcmToken ?? DBNull.Value;
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = taiKhoanId;
+        await conn.OpenAsync();
+        await cmd.ExecuteNonQueryAsync();
+    }
+    private static TaiKhoan MapToEntity(SqlDataReader r)
 	{
 		var id = r.GetOrdinal("TaiKhoanID");
 		var email = r.GetOrdinal("Email");

@@ -33,7 +33,16 @@ public class CaKhamController : ControllerBase
 			return NotFound(response);
 		return Ok(response);
 	}
-	[HttpGet("{id}")]
+    [HttpPut("{id}/trang-thai")]
+    [Authorize(Policy = "LICHKHAM_UPDATE")]
+    public async Task<IActionResult> UpdateTrangThai(int caKhamId, string trangThai, string? ghiChu)
+    {
+        var result = await _service.UpdateTrangThaiAsync(caKhamId, trangThai, ghiChu);
+        if (!result.Success)
+            return BadRequest(result);
+        return Ok(result);
+    }
+    [HttpGet("{id}")]
 	[Authorize(Policy = "LICHKHAM_VIEW")]
 	public async Task<ActionResult<ApiResponse<CaKhamReadModel>>> GetDetail(int id)
 	{
@@ -108,7 +117,7 @@ public class CaKhamController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[HttpPost("assign-lich")]
+    [HttpPost("assign-lich")]
 	[Authorize(Policy = "LICHKHAM_UPDATE")]
 	public async Task<ActionResult<ApiResponse<AssignLichLamViecReport>>> 
 		AssignLichLamViec([FromQuery] DateTime tuNgay, [FromQuery] DateTime denNgay)

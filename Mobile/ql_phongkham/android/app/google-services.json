@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "678237358713",
-    "project_id": "clinic-b4a8a",
-    "storage_bucket": "clinic-b4a8a.firebasestorage.app"
+    "project_number": "216357986029",
+    "project_id": "hoanmyclinic-2dfea",
+    "storage_bucket": "hoanmyclinic-2dfea.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:678237358713:android:192e319b7cf10a7ad1a2a8",
+        "mobilesdk_app_id": "1:216357986029:android:a5f7b0f159fcf09d2376e4",
         "android_client_info": {
           "package_name": "com.example.ql_phongkham"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBCLJxZ-T6GVH4Ry6rILm9RRaPoCZKRHMA"
+          "current_key": "AIzaSyCCCzPlXWg5ORx3iAcMg6-1wBaoHOLK1sc"
         }
       ],
       "services": {

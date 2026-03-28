@@ -102,4 +102,15 @@ public class TaiKhoanService
 		await _repo.UpdateAsync(tk);
 		return ApiResponse<bool>.SuccessResponse(true, "Thay đổi trạng thái tài khoản thành công");
 	}
+    public async Task<ApiResponse<bool>> UpdateFcmTokenAsync(
+        int taiKhoanId,
+        string? fcmToken)
+    {
+        var tk = await _repo.GetByIdAsync(taiKhoanId);
+        if (tk == null)
+            return ApiResponse<bool>.Fail("Tài khoản không tồn tại");
+
+        await _repo.UpdateFcmTokenAsync(taiKhoanId, fcmToken);
+        return ApiResponse<bool>.SuccessResponse(true, "Cập nhật FCM token thành công");
+    }
 }

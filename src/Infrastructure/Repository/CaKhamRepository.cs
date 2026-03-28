@@ -4,6 +4,7 @@ using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+using static Amazon.S3.Util.S3EventNotification;
 namespace Infrastructure.Repositories;
 public class CaKhamRepository : ICaKhamRepository
 {
@@ -264,7 +265,22 @@ public class CaKhamRepository : ICaKhamRepository
 		var result = await cmd.ExecuteScalarAsync();
 		return result != null;
 	}
-	public async Task UpdateAsync(CaKham entity)
+    public async Task<string?> GetFcmTokenByCaKhamIdAsync(int caKhamId)
+    {
+        const string sql = @"
+        SELECT tk.FcmToken
+        FROM CaKham ck
+        JOIN ThongTinBenhNhan tt ON ck.ThongTinID = tt.ThongTinID
+        JOIN TaiKhoan tk ON tt.TaiKhoanID = tk.TaiKhoanID
+        WHERE ck.CaKhamID = @Id";
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Id", SqlDbType.Int).Value = caKhamId;
+        await conn.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+        return result?.ToString();
+    }
+    public async Task UpdateAsync(CaKham entity)
 	{
 		const string sql = @"
 			UPDATE CaKham 

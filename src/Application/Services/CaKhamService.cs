@@ -2,14 +2,17 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Infrastructure.Services;
 namespace Application.Services;
 public class CaKhamService
 {
 	private readonly ICaKhamRepository _repo;
-	public CaKhamService(ICaKhamRepository repo)
+    private readonly FcmService _fcmService;
+    public CaKhamService(ICaKhamRepository repo, FcmService fcmService)
 	{
 		_repo = repo;
-	}
+        _fcmService = fcmService;
+    }
 	public async Task<ApiResponse<int>> AddAsync(CaKhamRequestDTO request)
 	{
 		if (string.IsNullOrWhiteSpace(request.LoaiCaKham))
@@ -42,7 +45,42 @@ public class CaKhamService
 		await _repo.UpdateAsync(entity);
 		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thành công");
 	}
-	public async Task<ApiResponse<CaKhamReadModel>> GetDetailAsync(int caKhamId)
+    public async Task<ApiResponse<bool>> UpdateTrangThaiAsync(int caKhamId, string trangThai, string? ghiChu)
+    {
+        if (caKhamId <= 0)
+            return ApiResponse<bool>.Fail("Ca khám không hợp lệ");
+
+        if (string.IsNullOrWhiteSpace(trangThai))
+            return ApiResponse<bool>.Fail("Trạng thái không hợp lệ");
+
+        try
+        {
+            await _repo.UpdateTrangThaiAsync(caKhamId, trangThai, ghiChu ?? "");
+            if (trangThai == "Đã xác nhận")
+            {
+                var fcmToken = await _repo.GetFcmTokenByCaKhamIdAsync(caKhamId);
+                if (!string.IsNullOrEmpty(fcmToken))
+                {
+                    await _fcmService.SendAsync(
+                        fcmToken,
+                        "Lịch khám đã được xác nhận",
+                        "Vui lòng đến đúng giờ",
+                        new Dictionary<string, string>
+                        {
+                        { "type", "xac_nhan_ca_kham" },
+                        { "caKhamId", caKhamId.ToString() }
+                        }
+                    );
+                }
+            }
+            return ApiResponse<bool>.SuccessResponse(true, "Cập nhật trạng thái thành công");
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<bool>.Fail(ex.Message);
+        }
+    }	
+    public async Task<ApiResponse<CaKhamReadModel>> GetDetailAsync(int caKhamId)
 	{
 		var data = await _repo.GetDetailAsync(caKhamId);
 		if (data == null)
@@ -179,11 +217,7 @@ public class CaKhamService
 
         return ApiResponse<int>.SuccessResponse(result);
     }
-    public async Task<ApiResponse<bool>> CheckThongTinDaDangKyAsync(
-    DateTime ngay,
-    int khungGioId,
-    string loaiCaKham,
-    int thongTinId)
+    public async Task<ApiResponse<bool>> CheckThongTinDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int thongTinId)
     {
         var result = await _repo.CheckThongTinDaDangKyAsync(
             ngay,

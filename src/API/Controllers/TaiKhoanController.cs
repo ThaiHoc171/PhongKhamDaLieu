@@ -81,4 +81,14 @@ public class TaiKhoanController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
+    [HttpPut("fcm-token")]
+    public async Task<ActionResult<ApiResponse<bool>>> UpdateFcmToken(
+    [FromBody] UpdateFcmTokenDto dto)
+    {
+        var taiKhoanId = int.Parse(User.FindFirst("TaiKhoanID")!.Value);
+        var result = await _service.UpdateFcmTokenAsync(taiKhoanId, dto.FCMToken);
+        if (!result.Success)
+            return BadRequest(result);
+        return Ok(result);
+    }
 }

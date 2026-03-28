@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/medical_record/medical_record_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/profile/profile_Update_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,7 +17,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
   String? linkAvatar;
   String hoTen = "";
   String email = "";
-
+  var benhnhanid;
   @override
   void initState() {
     super.initState();
@@ -28,7 +29,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
       final thongTinId = prefs.getInt('thongTinId');
-
+      final benhNhanId = prefs.getInt('benhNhanId');
       if (token == null || thongTinId == null) return;
 
       final data = await ProfileRepository().getProfile(thongTinId);
@@ -37,6 +38,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
         hoTen = data.hoTen;
         email = data.emailLienHe;
         linkAvatar = data.avatar;
+        benhnhanid = benhNhanId;
       });
     } catch (e) {
       DialogHelper.showSnacFailed(context, e.toString());
@@ -102,9 +104,16 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.date_range),
-            title: Text('Lịch khám', style: TextStyle(fontSize: 14)),
-            onTap: () {},
+            leading: Icon(Icons.article),
+            title: Text('Hồ sơ bệnh án', style: TextStyle(fontSize: 14)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => HoSoBenhAnPage(benhNhanId: benhnhanid),
+                ),
+              );
+            },
           ),
           Divider(),
           ListTile(

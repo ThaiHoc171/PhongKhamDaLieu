@@ -23,6 +23,8 @@ public interface ICaKhamRepository
     Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham);
     //Lấy ca khám gần nhất còn trống
     Task<int> GetCaKhamAsync(DateTime ngay, int khungGioId, string loaiCaKham);
+	//Lấy FCM Token qua CaKhamID, xác nhận thiết bị của tài khoản đã đăng ký khám
+    Task<string?> GetFcmTokenByCaKhamIdAsync(int caKhamId);
     //Tạo ca khám
     Task<int> AddAsync(CaKham caKham);
 	//Update ca khám sau khi bệnh nhân đăng ký lịch

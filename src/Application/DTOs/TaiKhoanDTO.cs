@@ -37,6 +37,10 @@ public class TaiKhoanUpdateRequestDTO
 {
 	public string? TrangThai { get; set; }
 }
+public class UpdateFcmTokenDto
+{
+    public string FCMToken { get; set; } = null!;
+}
 public class TaiKhoanListReadModel
 {
 	public int Id { get; set; }

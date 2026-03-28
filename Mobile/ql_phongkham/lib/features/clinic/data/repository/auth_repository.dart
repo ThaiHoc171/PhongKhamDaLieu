@@ -19,4 +19,11 @@ class AuthRepository {
     });
     return response;
   }
+
+  Future<void> updateFCM(String fcmToken) async {
+    final response = await ApiClient.put('taiKhoan/fcm-token', {
+      "fcmToken": fcmToken,
+    });
+    return response;
+  }
 }

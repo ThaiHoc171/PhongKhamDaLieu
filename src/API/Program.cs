@@ -4,6 +4,7 @@ using Application.Interfaces;
 using Application.Services;
 using Infrastructure.Repositories;
 using Infrastructure.Repository;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -187,6 +188,7 @@ builder.Services.AddScoped<ChucVuQuyenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
 builder.Services.AddScoped<PhongKhamService>();
+builder.Services.AddSingleton<FcmService>();
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
