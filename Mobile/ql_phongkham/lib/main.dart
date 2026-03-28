@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:ql_phongkham/core/network/firebase_api.dart';
+import 'package:ql_phongkham/core/services/navigator_service.dart';
 import 'package:ql_phongkham/core/theme/theme.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightThemeMode,
+      navigatorKey: NavigatorService.navigatorKey,
       home: const LoginPage(),
     );
   }

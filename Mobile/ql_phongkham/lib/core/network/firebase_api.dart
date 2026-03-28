@@ -1,5 +1,9 @@
+import 'dart:ui';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:ql_phongkham/core/services/navigator_service.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
 
 // Phải là top-level function
 @pragma('vm:entry-point')
@@ -53,7 +57,9 @@ class FirebaseApi {
           importance: Importance.high,
           priority: Priority.high,
           playSound: true,
-          icon: '@mipmap/ic_launcher',
+          icon: 'ic_notification',
+          largeIcon: DrawableResourceAndroidBitmap('ic_check_green'),
+          color: Color(0xFF528FEB),
         ),
       ),
     );
@@ -70,31 +76,40 @@ class FirebaseApi {
     // 2. Lấy FCM token
     final fcmToken = await _firebaseMessaging.getToken();
     print('FCM Token: $fcmToken');
-    // TODO: Gửi fcmToken lên server
 
     // 3. Setup local notifications
     await _initLocalNotifications();
 
     // 4. Khi app đang MỞ → dùng local notif để hiện banner
     FirebaseMessaging.onMessage.listen((message) {
-      print('Foreground: ${message.notification?.title}');
       _showNotification(message);
     });
 
     // 5. Khi app ở BACKGROUND rồi bấm vào thông báo
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print('Opened from background: ${message.notification?.title}');
-      // TODO: Navigate đến trang tương ứng
+      _handleNotificationTap(message);
     });
 
     // 6. Khi app TẮT HOÀN TOÀN rồi bấm vào thông báo
     final initialMessage = await _firebaseMessaging.getInitialMessage();
     if (initialMessage != null) {
-      print('Opened from terminated: ${initialMessage.notification?.title}');
-      // TODO: Navigate đến trang tương ứng
+      await Future.delayed(const Duration(milliseconds: 500));
+      _handleNotificationTap(initialMessage);
     }
-
     // 7. Background handler
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
+  }
+
+  void _handleNotificationTap(RemoteMessage message) {
+    final type = message.data['type'];
+
+    switch (type) {
+      case 'xac_nhan':
+      case 'nhac_nho':
+        NavigatorService.pushAndRemoveUntil(const LoginPage());
+        break;
+      default:
+        NavigatorService.pushAndRemoveUntil(const LoginPage());
+    }
   }
 }

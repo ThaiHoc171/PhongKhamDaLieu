@@ -151,7 +151,6 @@ class _LoginPageState extends State<LoginPage> {
 
       final fcmToken = await FirebaseMessaging.instance.getToken();
       final taiKhoanId = user.id;
-      print("FCM TOKEN: $fcmToken");
 
       if (fcmToken != null) {
         try {

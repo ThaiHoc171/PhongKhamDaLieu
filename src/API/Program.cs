@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Infrastructure.Services;
 ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");
 var builder = WebApplication.CreateBuilder(args);
 var firebaseJson = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIAL");
@@ -190,7 +191,7 @@ builder.Services.AddScoped<NgayNghiNhanVienService>();
 builder.Services.AddScoped<ITaiKhamRepository, TaiKhamRepository>();
 builder.Services.AddScoped<TaiKhamService>();
 builder.Services.AddScoped<ILieuTrinhDieuTriRepository, LieuTrinhDieuTriRepository>();
-builder.Services.AddScoped<LieuTrinhDieuTriService>();
+builder.Services.AddScoped<LieuTrinhDieuTriService>();	
 builder.Services.AddScoped<IBuoiDieuTriRepository, BuoiDieuTriRepository>();
 builder.Services.AddScoped<BuoiDieuTriService>();
 builder.Services.AddScoped<IBaiVietRepository, BaiVietRepository>();
@@ -203,8 +204,8 @@ builder.Services.AddScoped<ChucVuQuyenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
 builder.Services.AddScoped<PhongKhamService>();
-builder.Services.AddSingleton<FcmService>();
-var app = builder.Build();
+builder.Services.AddSingleton<IFcmService, FcmService>();
+builder.Services.AddHostedService<ReminderBackgroundService>(); var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
