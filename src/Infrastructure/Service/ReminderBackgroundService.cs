@@ -25,7 +25,7 @@ public class ReminderBackgroundService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             var now = DateTime.Now;
-            var nextRun = now.Date.AddDays(1);
+            var nextRun = now.Date.AddDays(1).AddHours(8);
             var delay = nextRun - now;
             await Task.Delay(delay, stoppingToken);
             await SendRemindersAsync();
