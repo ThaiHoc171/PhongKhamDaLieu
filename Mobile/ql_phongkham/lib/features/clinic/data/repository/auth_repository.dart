@@ -20,8 +20,8 @@ class AuthRepository {
     return response;
   }
 
-  Future<void> updateFCM(String fcmToken) async {
-    final response = await ApiClient.put('taiKhoan/fcm-token', {
+  Future<void> updateFCM(String fcmToken, int taiKhoanId) async {
+    final response = await ApiClient.put('taiKhoan/$taiKhoanId/fcm-token', {
       "fcmToken": fcmToken,
     });
     return response;

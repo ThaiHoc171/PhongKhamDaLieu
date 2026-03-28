@@ -201,9 +201,15 @@ public class CaKhamService
         if (string.IsNullOrWhiteSpace(loaiCaKham))
             return ApiResponse<List<int>>.Fail("Loại ca khám không hợp lệ");
 
-        var result = await _repo.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
-
-        return ApiResponse<List<int>>.SuccessResponse(result);
+        try
+        {
+            var result = await _repo.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
+            return ApiResponse<List<int>>.SuccessResponse(result);
+        }
+        catch (Exception ex)
+        {
+            return ApiResponse<List<int>>.Fail(ex.Message);
+        }
     }
     public async Task<ApiResponse<int>> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
     {

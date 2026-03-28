@@ -150,12 +150,12 @@ class _LoginPageState extends State<LoginPage> {
       await StorageService.saveUser(user);
 
       final fcmToken = await FirebaseMessaging.instance.getToken();
-
+      final taiKhoanId = user.id;
       print("FCM TOKEN: $fcmToken");
 
       if (fcmToken != null) {
         try {
-          await repo.updateFCM(fcmToken);
+          await repo.updateFCM(fcmToken, taiKhoanId);
         } catch (e) {
           print("Update FCM failed: $e");
         }
