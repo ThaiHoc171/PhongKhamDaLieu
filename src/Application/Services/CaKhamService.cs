@@ -2,13 +2,12 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
-using Infrastructure.Services;
 namespace Application.Services;
 public class CaKhamService
 {
 	private readonly ICaKhamRepository _repo;
-    private readonly FcmService _fcmService;
-    public CaKhamService(ICaKhamRepository repo, FcmService fcmService)
+    private readonly IFcmService _fcmService;
+    public CaKhamService(ICaKhamRepository repo, IFcmService fcmService)
 	{
 		_repo = repo;
         _fcmService = fcmService;
