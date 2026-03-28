@@ -270,7 +270,7 @@ public class CaKhamRepository : ICaKhamRepository
         const string sql = @"
         SELECT tk.FcmToken
         FROM CaKham ck
-        JOIN ThongTinBenhNhan tt ON ck.ThongTinID = tt.ThongTinID
+        JOIN ThongTinCaNhan tt ON ck.ThongTinID = tt.ThongTinID
         JOIN TaiKhoan tk ON tt.TaiKhoanID = tk.TaiKhoanID
         WHERE ck.CaKhamID = @Id";
         await using var conn = new SqlConnection(_connectionString);
