@@ -12,8 +12,23 @@ using OfficeOpenXml;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");
 var builder = WebApplication.CreateBuilder(args);
+var firebaseJson = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIAL");
+
+if (!string.IsNullOrEmpty(firebaseJson))
+{
+	var credential = CredentialFactory
+		.FromJson<ServiceAccountCredential>(firebaseJson)
+		.ToGoogleCredential();
+
+	FirebaseApp.Create(new AppOptions
+	{
+		Credential = credential
+	});
+}
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

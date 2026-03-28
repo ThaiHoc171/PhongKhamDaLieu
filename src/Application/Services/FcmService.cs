@@ -1,27 +1,8 @@
-﻿using Application.Interfaces;
-using FirebaseAdmin;
-using FirebaseAdmin.Messaging;
-using Google.Apis.Auth.OAuth2;
-using System.IO;
+﻿using FirebaseAdmin.Messaging;
 namespace Infrastructure.Services
 {
     public class FcmService
     {
-        public FcmService()
-        {
-            var path = Path.Combine(
-                Directory.GetCurrentDirectory(),
-                "serviceAccountKey.json"
-            );
-            if (FirebaseApp.DefaultInstance == null)
-            {
-                FirebaseApp.Create(new AppOptions
-                {
-                    Credential = GoogleCredential.FromFile(path)
-                });
-            }
-        }
-
         public async Task SendAsync(
             string fcmToken,
             string title,
