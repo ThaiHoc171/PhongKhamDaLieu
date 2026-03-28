@@ -27,7 +27,7 @@ public class CanLamSangReadModel
 	public DateTime NgayTao { get; set; }
 	public DateTime? NgayCapNhat { get; set; }
 }
-public class CanLamSangListReadModel
+public class CanLamSangReadListModel
 {
     public int CanLamSangID { get; set; }
     public string TenCLS { get; set; } = "";
