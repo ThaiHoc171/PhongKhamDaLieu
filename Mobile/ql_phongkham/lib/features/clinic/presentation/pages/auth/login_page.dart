@@ -8,6 +8,7 @@ import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_fiel
 import 'package:ql_phongkham/features/clinic/data/repository/auth_repository.dart';
 import 'package:ql_phongkham/core/services/storage_service.dart';
 import 'package:ql_phongkham/screen/home_screen/home.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class LoginPage extends StatefulWidget {
   static route() => MaterialPageRoute(builder: (context) => LoginPage());
@@ -147,6 +148,18 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       await StorageService.saveUser(user);
+
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+
+      print("FCM TOKEN: $fcmToken");
+
+      if (fcmToken != null) {
+        try {
+          await repo.updateFCM(fcmToken);
+        } catch (e) {
+          print("Update FCM failed: $e");
+        }
+      }
 
       if (user.thongTinId == null || user.thongTinId == 0) {
         Navigator.pushAndRemoveUntil(
