@@ -35,9 +35,9 @@ public class CaKhamController : ControllerBase
 	}
     [HttpPut("{id}/trang-thai")]
     [Authorize(Policy = "LICHKHAM_UPDATE")]
-    public async Task<IActionResult> UpdateTrangThai(int caKhamId, string trangThai, string? ghiChu)
+    public async Task<IActionResult> UpdateTrangThai(int id, string trangThai, string? ghiChu)
     {
-        var result = await _service.UpdateTrangThaiAsync(caKhamId, trangThai, ghiChu);
+        var result = await _service.UpdateTrangThaiAsync(id, trangThai, ghiChu);
         if (!result.Success)
             return BadRequest(result);
         return Ok(result);
