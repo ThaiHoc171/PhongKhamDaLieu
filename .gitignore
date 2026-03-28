@@ -40,3 +40,4 @@ packages/
 # .NET build folders
 bin/
 obj/
+src/API/serviceAccountKey.json
