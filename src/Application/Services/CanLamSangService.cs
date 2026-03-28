@@ -71,14 +71,14 @@ public class CanLamSangService
 		}
 	}
 
-	public async Task<ApiResponse<PagedResult<CanLamSangListReadModel>>> GetPagedAsync(int page, int size)
+	public async Task<ApiResponse<PagedResult<CanLamSangReadListModel>>> GetPagedAsync(int page, int size)
 	{
 		if (page < 1) page = 1;
 		if (size <= 0) size = 10;
 
 		var (items, total) = await _repo.GetPagedAsync(page, size);
 
-		var result = new PagedResult<CanLamSangListReadModel>
+		var result = new PagedResult<CanLamSangReadListModel>
 		{
 			Items = items,
 			TotalCount = total,
@@ -86,7 +86,7 @@ public class CanLamSangService
 			PageSize = size
 		};
 
-		return ApiResponse<PagedResult<CanLamSangListReadModel>>.SuccessResponse(result);
+		return ApiResponse<PagedResult<CanLamSangReadListModel>>.SuccessResponse(result);
 	}
 
 	public async Task<ApiResponse<CanLamSangReadModel>> GetDetailAsync(int id)
@@ -99,19 +99,19 @@ public class CanLamSangService
 		return ApiResponse<CanLamSangReadModel>.SuccessResponse(result);
 	}
 
-	public async Task<ApiResponse<PagedResult<CanLamSangListReadModel>>> SearchAsync(string keyword, int page, int size)
+	public async Task<ApiResponse<PagedResult<CanLamSangReadListModel>>> SearchAsync(string keyword, int page, int size)
 	{
 		if (page < 1) page = 1;
 		if (size <= 0) size = 10;
 
 		if (string.IsNullOrWhiteSpace(keyword))
-			return ApiResponse<PagedResult<CanLamSangListReadModel>>
+			return ApiResponse<PagedResult<CanLamSangReadListModel>>
 				.Fail("Keyword không hợp lệ");
 
 		var (items, total) =
 			await _repo.SearchPagedAsync(keyword.Trim(), page, size);
 
-		var result = new PagedResult<CanLamSangListReadModel>
+		var result = new PagedResult<CanLamSangReadListModel>
 		{
 			Items = items,
 			TotalCount = total,
@@ -119,18 +119,18 @@ public class CanLamSangService
 			PageSize = size
 		};
 
-		return ApiResponse<PagedResult<CanLamSangListReadModel>>.SuccessResponse(result);
+		return ApiResponse<PagedResult<CanLamSangReadListModel>>.SuccessResponse(result);
 	}
 
-	public async Task<ApiResponse<List<CanLamSangListReadModel>>> GetByLoaiXetNghiemAsync(string loai)
+	public async Task<ApiResponse<List<CanLamSangReadListModel>>> GetByLoaiXetNghiemAsync(string loai)
 	{
 		if (string.IsNullOrWhiteSpace(loai))
-			return ApiResponse<List<CanLamSangListReadModel>>
+			return ApiResponse<List<CanLamSangReadListModel>>
 				.Fail("Loại xét nghiệm không hợp lệ");
 
 		var result = await _repo.GetByLoaiXetNghiemAsync(loai);
 
-		return ApiResponse<List<CanLamSangListReadModel>>.SuccessResponse(result);
+		return ApiResponse<List<CanLamSangReadListModel>>.SuccessResponse(result);
 	}
 
 	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync()

@@ -52,7 +52,7 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> Paged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangReadListModel>>>> Paged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 	{
 		var result = await _service.GetPagedAsync(pageNumber, pageSize);
 
@@ -60,10 +60,10 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("search")]
-	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangListReadModel>>>> Search([FromQuery] string keyword, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
+	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangReadListModel>>>> Search([FromQuery] string keyword, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
 	{
 		if (string.IsNullOrWhiteSpace(keyword))
-			return BadRequest(ApiResponse<PagedResult<CanLamSangListReadModel>>.Fail("Keyword không hợp lệ"));
+			return BadRequest(ApiResponse<PagedResult<CanLamSangReadListModel>>.Fail("Keyword không hợp lệ"));
 
 		var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
 
@@ -71,7 +71,7 @@ public class CanLamSangController : ControllerBase
 	}
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("loai")]
-	public async Task<ActionResult<ApiResponse<List<CanLamSangListReadModel>>>> GetByLoai([FromQuery] string loai)
+	public async Task<ActionResult<ApiResponse<List<CanLamSangReadListModel>>>> GetByLoai([FromQuery] string loai)
 	{
 		var result = await _service.GetByLoaiXetNghiemAsync(loai);
 
