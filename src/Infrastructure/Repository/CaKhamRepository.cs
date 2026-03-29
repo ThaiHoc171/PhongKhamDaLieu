@@ -135,6 +135,7 @@ public class CaKhamRepository : ICaKhamRepository
 		}
 		return list;
 	}
+	
 	public async Task<int> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
 	{
 		const string sql = @"
@@ -152,6 +153,46 @@ public class CaKhamRepository : ICaKhamRepository
 		await conn.OpenAsync();
 		var result = await cmd.ExecuteScalarAsync();
 		return result == null ? 0 : Convert.ToInt32(result);
+	}
+	public async Task<(List<CaKhamListReadModel>, int)> GetChoXacNhanAsync(int page, int size)
+	{
+		var list = new List<CaKhamListReadModel>();
+		int total = 0;
+
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+			{BaseSelectList}
+			WHERE ck.TrangThai = N'Đã đặt'
+			AND ck.NgayKham >= CAST(GETDATE() AS DATE)
+			ORDER BY ck.NgayKham, ck.CaKhamID, ck.LoaiCaKham
+			OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+			SELECT COUNT(*)
+			FROM CaKham
+			WHERE TrangThai = N'Đã đặt'
+			AND NgayKham >= CAST(GETDATE() AS DATE)
+		";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+			list.Add(MapToListDTO(reader));
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
 	}
 	public async Task<string?> GetFcmTokenByCaKhamIdAsync(int caKhamId)
 	{

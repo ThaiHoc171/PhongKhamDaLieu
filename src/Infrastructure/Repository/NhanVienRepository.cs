@@ -80,7 +80,7 @@ public class NhanVienRepository : INhanVienRepository
 				NhanVienID, ThongTinID, ChucVuID, PhongChucNangID, NgayVaoLam, BangCap,
 				KinhNghiem, TrangThai, NgayTao, NgayCapNhat
 			FROM NhanVien
-			WHERE nNhanVienID = @NhanVienID
+			WHERE NhanVienID = @NhanVienID
 		";
 		using var conn = new SqlConnection(_connectionString);
 		using var cmd = new SqlCommand(sql, conn);
@@ -89,17 +89,20 @@ public class NhanVienRepository : INhanVienRepository
 		using var reader = await cmd.ExecuteReaderAsync();
 		if (!reader.Read())
 			return null;
+		DateTime? ngayVaoLam = reader.IsDBNull(4) ? null : reader.GetDateTime(4);
+		DateTime? ngayCapNhat = reader.IsDBNull(9) ? null : reader.GetDateTime(9);
+
 		return new NhanVien(
-			reader.GetInt32(0),
-			reader.GetInt32(1),
-			reader.GetInt32(2),
-			reader.GetInt32(3),
-			reader.GetDateTime(4),
-			reader.GetString(5),
-			reader.GetString(6),
-			reader.GetString(7),
-			reader.GetDateTime(8),
-			reader.GetDateTime(9)
+			reader.GetInt32(0), 
+			reader.GetInt32(1), 
+			reader.GetInt32(2), 
+			reader.GetInt32(3),  
+			ngayVaoLam,           
+			reader.GetString(5),   
+			reader.GetString(6),    
+			reader.GetString(7),   
+			reader.GetDateTime(8),  
+			ngayCapNhat            
 		);
 	}
 	public async Task<(List<NhanVienListReadModel>, int)> GetPageAsync(int pageNumber, int pageSize)

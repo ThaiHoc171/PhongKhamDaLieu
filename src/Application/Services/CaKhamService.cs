@@ -2,6 +2,7 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 namespace Application.Services;
 public class CaKhamService
 {
@@ -16,16 +17,16 @@ public class CaKhamService
 		_khunggio = khungGio;
 		_fcmService = fcmService;
     }
-	public async Task<ApiResponse<int>> GenerateAsync(DateTime tuNgay, DateTime denNgay)
+	public async Task<ApiResponse<int>> GenerateAsync(CaKhamRequest request)
 	{
 		List<int> khungGio = await _khunggio.ListKhungGioID();
 		int created = 0;
-		if (tuNgay > denNgay)
+		if (request.TuNgay > request.DenNgay)
 			return ApiResponse<int>.Fail("Khoảng ngày không hợp lệ");
 
-		if (tuNgay.Date < DateTime.Today)
+		if (request.TuNgay.Date < DateTime.Today)
 			return ApiResponse<int>.Fail("Không thể tạo ca cho ngày trong quá khứ");
-		for (var day = tuNgay.Date; day <= denNgay.Date; day = day.AddDays(1))
+		for (var day = request.TuNgay.Date; day <= request.DenNgay.Date; day = day.AddDays(1))
 		{
 			foreach (var khungId in khungGio)
 			{
@@ -60,8 +61,8 @@ public class CaKhamService
         try
         {
             await _repo.UpdateTrangThaiAsync(caKhamId, trangThai, ghiChu ?? "");
-            if (trangThai == "Đã xác nhận")
-            {
+			if (trangThai == TrangThaiCaKham.DaXacNhan.ToDbValue())
+			{
                 var fcmToken = await _repo.GetFcmTokenByCaKhamIdAsync(caKhamId);
                 if (!string.IsNullOrEmpty(fcmToken))
                 {
@@ -83,8 +84,22 @@ public class CaKhamService
         {
             return ApiResponse<bool>.Fail(ex.Message);
         }
-    }	
-    public async Task<ApiResponse<CaKhamReadModel>> GetDetailAsync(int caKhamId)
+    }
+	public async Task<ApiResponse<PagedResult<CaKhamListReadModel>>> GetChoXacNhanAsync(int pageNumber, int pageSize)
+	{
+		var (items, total) = await _repo.GetChoXacNhanAsync(pageNumber, pageSize);
+
+		var result = new PagedResult<CaKhamListReadModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = pageNumber,
+			PageSize = pageSize
+		};
+
+		return ApiResponse<PagedResult<CaKhamListReadModel>>.SuccessResponse(result);
+	}
+	public async Task<ApiResponse<CaKhamReadModel>> GetDetailAsync(int caKhamId)
 	{
 		var data = await _repo.GetDetailAsync(caKhamId);
 		if (data == null)
@@ -170,19 +185,19 @@ public class CaKhamService
 			return ApiResponse<bool>.Fail(ex.Message);
 		}
 	}
-	public async Task<ApiResponse<AssignLichLamViecReport>> AssignLichLamViecAsync(DateTime tuNgay, DateTime denNgay)
+	public async Task<ApiResponse<AssignLichLamViecReport>> AssignLichLamViecAsync(CaKhamRequest request)
 	{
-		if (tuNgay > denNgay)
+		if (request.TuNgay > request.DenNgay)
 			return ApiResponse<AssignLichLamViecReport>.Fail("Khoảng ngày không hợp lệ");
 		try
 		{
 			var report = new AssignLichLamViecReport
 			{
-				TuNgay = tuNgay,
-				DenNgay = denNgay
+				TuNgay = request.TuNgay,
+				DenNgay = request.DenNgay
 			};
 			// 1 kiểm tra ca chưa gán lịch
-			var count = await _repo.CountNotAssignedAsync(tuNgay, denNgay);
+			var count = await _repo.CountNotAssignedAsync(request.TuNgay, request.DenNgay);
 			report.TongCaChuaGan = count;
 			if (count == 0)
 			{
@@ -190,7 +205,7 @@ public class CaKhamService
 				return ApiResponse<AssignLichLamViecReport>.SuccessResponse(report);
 			}
 			// 2 assign
-			var updated = await _repo.AssignAsync(tuNgay, denNgay);
+			var updated = await _repo.AssignAsync(request.TuNgay, request.DenNgay);
 			report.SoCaDaCapNhat = updated;
 			report.Message = $"Đã gán lịch làm việc cho {updated} ca khám.";
 			return ApiResponse<AssignLichLamViecReport>.SuccessResponse(report);
