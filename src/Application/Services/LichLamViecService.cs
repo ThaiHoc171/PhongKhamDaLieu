@@ -53,17 +53,12 @@ public class LichLamViecService
 	}
 
 	// WEEK BY NHANVIEN
-	public async Task<ApiResponse<LichLamViecReadWeekModel>> GetWeekByNhanVienAsync(int nhanVienID, int page)
+	public async Task<ApiResponse<LichLamViecReadWeekModel>> GetWeekByNhanVienAsync(int nhanVienID, int week)
 	{
 		if (nhanVienID <= 0)
 			return ApiResponse<LichLamViecReadWeekModel>.Fail("Nhân viên không hợp lệ");
-
-		if (page < 1) page = 1;
-
-		var (start, end) = DateTimeHelper.GetWeekByPage(page);
-
+		var (start, end) = DateTimeHelper.GetWeekByPage(week);
 		var data = await _repo.GetWeekByNhanVienAsync(nhanVienID, start, end);
-
 		var result = new LichLamViecReadWeekModel
 		{
 			Page = page,
@@ -76,14 +71,10 @@ public class LichLamViecService
 	}
 
 	// WEEK ALL
-	public async Task<ApiResponse<List<LichLamViecReadModel>>> GetWeekAsync(int page)
+	public async Task<ApiResponse<List<LichLamViecReadModel>>> GetWeekAsync(int week)
 	{
-		if (page < 1) page = 1;
-
-		var (start, end) = DateTimeHelper.GetWeekByPage(page);
-
+		var (start, end) = DateTimeHelper.GetWeekByPage(week);
 		var data = await _repo.GetWeekAsync(start, end);
-
 		return ApiResponse<List<LichLamViecReadModel>>.SuccessResponse(data);
 	}
 
