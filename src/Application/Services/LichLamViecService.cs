@@ -61,7 +61,7 @@ public class LichLamViecService
 		var data = await _repo.GetWeekByNhanVienAsync(nhanVienID, start, end);
 		var result = new LichLamViecReadWeekModel
 		{
-			Page = page,
+			Page = week,
 			TuanBatDau = start,
 			TuanKetThuc = end,
 			LichLamViecs = data
