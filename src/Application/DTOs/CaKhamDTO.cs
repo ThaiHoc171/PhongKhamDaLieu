@@ -1,9 +1,13 @@
 ﻿namespace Application.DTOs;
-public class CaKhamRequestDTO
+public class CaKhamGenerateDTO
 {
-	public string LoaiCaKham { get; set; } = string.Empty;
-	public int KhungGioID { get; set; }
-	public DateTime NgayKham { get; set; }
+	public DateTime TuNgay { get; set; }
+	public DateTime DenNgay { get; set; }
+}
+public class CaKhamTrangThaiDTO
+{
+	public string TrangThai { get; set; } = default!;
+	public string? GhiChu { get; set; }
 }
 public class CaKhamUpdateRequestDTO
 {

@@ -6,45 +6,50 @@ namespace Application.Services;
 public class CaKhamService
 {
 	private readonly ICaKhamRepository _repo;
+	private readonly IKhungGioKhamRepository _khunggio;
     private readonly IFcmService _fcmService;
-    public CaKhamService(ICaKhamRepository repo, IFcmService fcmService)
+	private const int MAX_KHAM_PER_SLOT = 5;
+	private const int MAX_DIEUTRI_PER_SLOT = 1;
+	public CaKhamService(ICaKhamRepository repo, IKhungGioKhamRepository khungGio, IFcmService fcmService)
 	{
 		_repo = repo;
-        _fcmService = fcmService;
+		_khunggio = khungGio;
+		_fcmService = fcmService;
     }
-	public async Task<ApiResponse<int>> AddAsync(CaKhamRequestDTO request)
+	public async Task<ApiResponse<int>> GenerateAsync(DateTime tuNgay, DateTime denNgay)
 	{
-		if (string.IsNullOrWhiteSpace(request.LoaiCaKham))
-			return ApiResponse<int>.Fail("Loại ca khám không hợp lệ");
-		if (request.KhungGioID <= 0)
-			return ApiResponse<int>.Fail("Khung giờ không hợp lệ");
-		try
+		List<int> khungGio = await _khunggio.ListKhungGioID();
+		int created = 0;
+		if (tuNgay > denNgay)
+			return ApiResponse<int>.Fail("Khoảng ngày không hợp lệ");
+
+		if (tuNgay.Date < DateTime.Today)
+			return ApiResponse<int>.Fail("Không thể tạo ca cho ngày trong quá khứ");
+		for (var day = tuNgay.Date; day <= denNgay.Date; day = day.AddDays(1))
 		{
-			var entity = new CaKham(
-				request.LoaiCaKham,
-				request.KhungGioID,
-				request.NgayKham);
-			var id = await _repo.AddAsync(entity);
-			return ApiResponse<int>.SuccessResponse(id, "Tạo ca khám thành công");
+			foreach (var khungId in khungGio)
+			{
+				int currentKham = await _repo.CountAsync(day, khungId, "Khám");
+				int needKham = MAX_KHAM_PER_SLOT - currentKham;
+
+				for (int i = 0; i < needKham; i++)
+				{
+					await _repo.InsertAsync("Khám", khungId, day);
+					created++;
+				}
+
+				int currentDieuTri = await _repo.CountAsync(day, khungId, "Điều trị");
+
+				if (currentDieuTri < MAX_DIEUTRI_PER_SLOT)
+				{
+					await _repo.InsertAsync("Điều trị", khungId, day);
+					created++;
+				}
+			}
 		}
-		catch (Exception ex)
-		{
-			return ApiResponse<int>.Fail(ex.Message);
-		}
+		return ApiResponse<int>.SuccessResponse(created, "Tạo ca khám thành công");
 	}
-	public async Task<ApiResponse<bool>> UpdateAsync(int caKhamId, CaKhamUpdateRequestDTO request)
-	{
-		var entity = await _repo.GetByIdAsync(caKhamId);
-		if (entity == null)
-			return ApiResponse<bool>.Fail("Không tìm thấy ca khám");
-		if (request.LichLamViecID.HasValue)
-			entity.GanNhanVien(request.LichLamViecID.Value);
-		if (request.PhongChucNangID.HasValue)
-			entity.GanPhong(request.PhongChucNangID.Value);
-		await _repo.UpdateAsync(entity);
-		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thành công");
-	}
-    public async Task<ApiResponse<bool>> UpdateTrangThaiAsync(int caKhamId, string trangThai, string? ghiChu)
+    public async Task<ApiResponse<bool>> StatusAsync(int caKhamId, string trangThai, string? ghiChu)
     {
         if (caKhamId <= 0)
             return ApiResponse<bool>.Fail("Ca khám không hợp lệ");

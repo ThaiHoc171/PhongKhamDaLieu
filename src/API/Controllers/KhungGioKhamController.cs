@@ -4,6 +4,8 @@ using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+namespace API.Controllers;
+
 [ApiController]
 [Route("api/khunggiokham")]
 [Authorize]
@@ -17,24 +19,24 @@ public class KhungGioKhamController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "HETHONG_CREATE")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] KhungGioKhamRequestDTO dto)
+	[Authorize(Policy = "HETHONG_CREATE")]
+	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] KhungGioKhamRequest dto)
 	{
-		var result = await _service.TaoAsync(dto);
+		var result = await _service.AddAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
 
-		return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
+		return Ok(result);
 	}
 
 	// ==================== UPDATE ====================
-	[Authorize(Policy = "HETHONG_UPDATE")]
 	[HttpPut("{id}")]
-	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] KhungGioKhamRequestDTO dto)
+	[Authorize(Policy = "HETHONG_UPDATE")]
+	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] KhungGioKhamRequest dto)
 	{
-		var result = await _service.CapNhatAsync(id, dto);
+		var result = await _service.UpdateAsync(id, dto);
 
 		if (!result.Success)
 			return result.Message.Contains("không tồn tại")
@@ -43,21 +45,26 @@ public class KhungGioKhamController : ControllerBase
 
 		return Ok(result);
 	}
-    [Authorize(Policy = "HETHONG_DELETE")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var response = await _service.DeleteAsync(id);
-        if (!response.Success)
-            return NotFound(response);
-        return Ok(response);
-    }
-    // ==================== GET DETAIL ====================
-    [Authorize(Policy = "HETHONG_VIEW")]
+
+	// ==================== DELETE ====================
+	[HttpDelete("{id}")]
+	[Authorize(Policy = "HETHONG_DELETE")]
+	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
+	{
+		var result = await _service.DeleteAsync(id);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	// ==================== GET DETAIL ====================
 	[HttpGet("{id}")]
+	[Authorize(Policy = "HETHONG_VIEW")]
 	public async Task<ActionResult<ApiResponse<KhungGioKhamReadModel>>> GetById(int id)
 	{
-		var result = await _service.GetByIdAsync(id);
+		var result = await _service.GetDetailAsync(id);
 
 		if (!result.Success)
 			return NotFound(result);
@@ -66,17 +73,17 @@ public class KhungGioKhamController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "HETHONG_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<List<KhungGioKhamListReadModel>>>> GetList()
+	[Authorize(Policy = "HETHONG_VIEW")]
+	public async Task<ActionResult<ApiResponse<List<KhungGioKhamReadModel>>>> GetList()
 	{
 		var result = await _service.GetAllAsync();
 		return Ok(result);
 	}
 
 	// ==================== COMBOBOX ====================
-	[Authorize(Policy = "HETHONG_VIEW")]
 	[HttpGet("combobox")]
+	[Authorize(Policy = "HETHONG_VIEW")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
 	{
 		var result = await _service.GetComboboxAsync();
@@ -84,8 +91,8 @@ public class KhungGioKhamController : ControllerBase
 	}
 
 	// ==================== COUNT ====================
-	[Authorize(Policy = "HETHONG_VIEW")]
 	[HttpGet("count")]
+	[Authorize(Policy = "HETHONG_VIEW")]
 	public async Task<ActionResult<ApiResponse<int>>> Count()
 	{
 		var result = await _service.CountAsync();
@@ -93,8 +100,8 @@ public class KhungGioKhamController : ControllerBase
 	}
 
 	// ==================== FILTER BY CA LAM VIEC ====================
-	[Authorize(Policy = "HETHONG_VIEW")]
 	[HttpGet("calamviec/{caLamViec}")]
+	[Authorize(Policy = "HETHONG_VIEW")]
 	public async Task<ActionResult<ApiResponse<List<int>>>> GetByCaLamViec(int caLamViec)
 	{
 		var result = await _service.GetByCaLamViecAsync(caLamViec);
