@@ -25,18 +25,18 @@ public class LichLamViecController : ControllerBase
 	}
 	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
 	[HttpGet]
-	public async Task<IActionResult> List([FromQuery] int page = 0)
+	public async Task<IActionResult> List([FromQuery] int week = 0)
 	{
-		var response = await _service.GetWeekAsync(page);
+		var response = await _service.GetWeekAsync(week);
 		if (!response.Success)
 			return BadRequest(response);
 		return Ok(response);
 	}
 	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
 	[HttpGet("nhan-vien/{nhanVienID}")]
-	public async Task<IActionResult> GetByNhanVien(int nhanVienID, [FromQuery] int page = 0)
+	public async Task<IActionResult> GetByNhanVien(int nhanVienID, [FromQuery] int week = 0)
 	{
-		var response = await _service.GetWeekByNhanVienAsync(nhanVienID, page);
+		var response = await _service.GetWeekByNhanVienAsync(nhanVienID, week);
 		if (!response.Success)
 			return BadRequest(response);
 		return Ok(response);
