@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Application.Common;
 using Application.DTOs;
 using Application.Services;
-using Application.Common;
+using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 [ApiController]
 [Route("api/cakham")]
@@ -16,29 +17,21 @@ public class CaKhamController : ControllerBase
 	}
 	[HttpPost]
 	[Authorize(Policy = "LICHKHAM_CREATE")]
-	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CaKhamRequestDTO request)
+	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CaKhamGenerateDTO request)
 	{
-		var response = await _service.AddAsync(request);
+		var response = await _service.GenerateAsync(request.TuNgay, request.DenNgay);
 		if (!response.Success)
 			return BadRequest(response);
-		return CreatedAtAction(nameof(GetDetail),new { id = response.Data },response);
-	}
-	[HttpPut("{id}")]
-	[Authorize(Policy = "LICHKHAM_UPDATE")]
-	public async Task<ActionResult<ApiResponse<bool>>>
-		Update(int id, [FromBody] CaKhamUpdateRequestDTO request)
-	{
-		var response = await _service.UpdateAsync(id, request);
-		if (!response.Success)
-			return NotFound(response);
 		return Ok(response);
 	}
+
     [HttpPut("{id}/trang-thai")]
     [Authorize(Policy = "LICHKHAM_UPDATE")]
-    public async Task<IActionResult> UpdateTrangThai(int id, string trangThai, string? ghiChu)
+    public async Task<IActionResult> UpdateTrangThai(int id, [FromBody] CaKhamTrangThaiDTO request)
     {
-        var result = await _service.UpdateTrangThaiAsync(id, trangThai, ghiChu);
-        if (!result.Success)
+		var result = await _service.StatusAsync(id, request.TrangThai, request.GhiChu);
+
+		if (!result.Success)
             return BadRequest(result);
         return Ok(result);
     }

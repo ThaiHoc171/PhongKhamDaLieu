@@ -1,4 +1,7 @@
-﻿namespace Domain.Entities;
+﻿using Domain.Enums;
+
+namespace Domain.Entities;
+
 public class CaKham
 {
 	public int CaKhamID { get; private set; }
@@ -12,19 +15,20 @@ public class CaKham
 	public DateTime? NgayDat { get; private set; }
 	public DateTime NgayKham { get; private set; }
 	public string? GhiChu { get; private set; }
-	public CaKham( string loaiCaKham, int khungGioID, DateTime ngayKham)
+
+	public CaKham(string loaiCaKham, int khungGioID, DateTime ngayKham)
 	{
-		if (khungGioID <= 0)
-			throw new ArgumentException("Khung giờ không hợp lệ");
-		if (ngayKham.Date < DateTime.Today)
-			throw new ArgumentException("Ngày khám không hợp lệ");
+		Validate(loaiCaKham, khungGioID, ngayKham);
+
 		LoaiCaKham = loaiCaKham;
 		KhungGioID = khungGioID;
 		NgayKham = ngayKham.Date;
-		TrangThai = "Trống";
+
+		TrangThai = TrangThaiCaKham.Trong.ToDbValue();
 	}
-	public CaKham(int caKhamID, string loaiCaKham, int? lichLamViecID, int khungGioID, int? phongChucNangID,
-		int? thongTinID, string? lyDoKham, string trangThai, DateTime? ngayDat, DateTime ngayKham, string? ghiChu)
+
+	public CaKham(int caKhamID, string loaiCaKham, int? lichLamViecID, int khungGioID, int? phongChucNangID, int? thongTinID,
+		string? lyDoKham, string trangThai, DateTime? ngayDat, DateTime ngayKham, string? ghiChu)
 	{
 		CaKhamID = caKhamID;
 		LoaiCaKham = loaiCaKham;
@@ -38,42 +42,77 @@ public class CaKham
 		NgayKham = ngayKham;
 		GhiChu = ghiChu;
 	}
+
 	public void GanNhanVien(int lichLamViecID)
 	{
+		if (lichLamViecID <= 0)
+			throw new ArgumentException("Lịch làm việc không hợp lệ");
+
 		LichLamViecID = lichLamViecID;
 	}
+
 	public void GanPhong(int phongChucNangID)
 	{
+		if (phongChucNangID <= 0)
+			throw new ArgumentException("Phòng chức năng không hợp lệ");
+
 		PhongChucNangID = phongChucNangID;
 	}
-	public void DangKyKham(
-		int thongTinID,
-		string lyDoKham,
-		DateTime ngayDat,
-		string? ghiChu)
+
+	public void DangKyKham(int thongTinID, string lyDoKham, DateTime ngayDat, string? ghiChu)
 	{
-		if (TrangThai != "Trống")
+		if (TrangThai != TrangThaiCaKham.Trong.ToDbValue())
 			throw new InvalidOperationException("Ca khám đã được đặt");
+
+		if (thongTinID <= 0)
+			throw new ArgumentException("Thông tin bệnh nhân không hợp lệ");
+
+		if (string.IsNullOrWhiteSpace(lyDoKham))
+			throw new ArgumentException("Lý do khám không hợp lệ");
+
 		ThongTinID = thongTinID;
 		LyDoKham = lyDoKham;
 		NgayDat = ngayDat;
 		GhiChu = ghiChu;
-		TrangThai = "Đã đặt";
+
+		TrangThai = TrangThaiCaKham.DaDat.ToDbValue();
 	}
+
 	public void HuyDangKy()
 	{
-		if (TrangThai != "Đã đặt")
+		if (TrangThai != TrangThaiCaKham.DaDat.ToDbValue())
 			throw new InvalidOperationException("Ca khám chưa được đặt");
+
 		ThongTinID = null;
 		LyDoKham = null;
 		NgayDat = null;
 		GhiChu = null;
-		TrangThai = "Trống";
+
+		TrangThai = TrangThaiCaKham.Trong.ToDbValue();
 	}
+
 	public void CapNhatTrangThai(string trangThaiMoi)
 	{
 		if (string.IsNullOrWhiteSpace(trangThaiMoi))
 			throw new ArgumentException("Trạng thái không hợp lệ");
+
+		TrangThaiCaKhamExtensions.FromDb(trangThaiMoi);
+
 		TrangThai = trangThaiMoi;
+	}
+
+	private void Validate(string loaiCaKham, int khungGioID, DateTime ngayKham)
+	{
+		if (string.IsNullOrWhiteSpace(loaiCaKham))
+			throw new ArgumentException("Loại ca khám không hợp lệ");
+
+		if (loaiCaKham != "Khám" && loaiCaKham != "Điều trị")
+			throw new ArgumentException("Loại ca khám không hợp lệ");
+
+		if (khungGioID <= 0)
+			throw new ArgumentException("Khung giờ không hợp lệ");
+
+		if (ngayKham.Date < DateTime.Today)
+			throw new ArgumentException("Ngày khám không hợp lệ");
 	}
 }

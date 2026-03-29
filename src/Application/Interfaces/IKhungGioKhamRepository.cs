@@ -7,13 +7,14 @@ public interface IKhungGioKhamRepository
 {
     //-- CUD
     Task<int> AddAsync(KhungGioKham khungGio);
-    Task UpdateAsync(KhungGioKham entity);
-    Task DeleteAsync(int id);
+    Task<int> UpdateAsync(KhungGioKham entity);
+    Task<int> DeleteAsync(int id);
     //-- READ
-    Task<KhungGioKham?> GetByIdAsync(int id);
-    Task<List<KhungGioKhamListReadModel>> GetAllAsync();
+    Task<List<int>> ListKhungGioID();
+	Task<KhungGioKham?> GetByIdAsync(int id);
+    Task<List<KhungGioKhamReadModel>> GetAllAsync();
     Task<KhungGioKhamReadModel?> GetDetailAsync(int id);
     Task<List<int>> GetKhungGioIdsByCaLamViecAsync(int caLamViec);
-    Task<List<(int Id, string Ten)>> GetIdAndNameAsync();
-    Task<int> CountKhungGioKhamAsync();
+    Task<List<NameResponseDTO>> GetComboboxAsync();
+	Task<int> CountKhungGioKhamAsync();
 }
