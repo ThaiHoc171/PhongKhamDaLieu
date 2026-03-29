@@ -14,27 +14,6 @@ public class LichLamViecController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
-	[HttpPost("import")]
-	public async Task<IActionResult> ImportExcel(IFormFile file)
-	{
-		if (file == null || file.Length == 0)
-			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
-		using var stream = file.OpenReadStream();
-		var response = await _service.ImportExcelAsync(stream);
-		if (!response.Success)
-			return BadRequest(response);
-		return Ok(response);
-	}
-	[Authorize(Policy = "LICHLAMVIEC_UPDATE")]
-	[HttpPut("{id}")]
-	public async Task<IActionResult> Update(int id, LichLamViecUpdateRequestDTO request)
-	{
-		var response = await _service.UpdateAsync(id, request);
-		if (!response.Success)
-			return NotFound(response);
-		return Ok(response);
-	}
 	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> Detail(int id)
@@ -61,5 +40,59 @@ public class LichLamViecController : ControllerBase
 		if (!response.Success)
 			return BadRequest(response);
 		return Ok(response);
+	}
+	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	[HttpPost("import/preview")]
+	public async Task<ActionResult<ApiResponse<ExcelImportResult<LichLamViecImport>>>> 
+		PreviewImport( IFormFile file, [FromQuery] string sheet)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
+
+		if (string.IsNullOrWhiteSpace(sheet))
+			return BadRequest(ApiResponse<string>.Fail("Sheet không hợp lệ"));
+
+		using var stream = file.OpenReadStream();
+
+		var result = await _service.PreviewImport(stream, sheet);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	// ==================== VALIDATE IMPORT ====================
+	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	[HttpPost("import/validate")]
+	public async Task<ActionResult<ApiResponse<ExcelImportResult<LichLamViecImport>>>> 
+		ValidateImport([FromBody] List<LichLamViecImport> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
+
+		var result = await _service.ValidateImport(list);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	// ==================== CONFIRM IMPORT ====================
+	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	[HttpPost("import/confirm")]
+	public async Task<ActionResult<ApiResponse<bool>>> Import(
+		[FromBody] List<LichLamViecImport> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
+
+		var result = await _service.Import(list);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
 	}
 }

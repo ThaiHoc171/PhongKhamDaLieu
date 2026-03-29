@@ -1,18 +1,23 @@
 ﻿namespace Application.DTOs;
-public class LichLamViecRequestDTO
+public class LichLamViecImport
+{
+	[ExcelColumn("NhanVienID")]
+	public int NhanVienID { get; set; }
+	[ExcelColumn("Ngay")]
+	public DateTime Ngay { get; set; }
+	[ExcelColumn("CaLamViec")]
+	public int CaLamViec { get; set; }
+	[ExcelColumn("GhiChu")]
+	public string? GhiChu { get; set; }
+}
+public class LichLamViecRequest
 {
 	public int NhanVienID { get; set; }
 	public DateTime Ngay { get; set; }
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
 }
-public class LichLamViecUpdateRequestDTO
-{
-	public DateTime Ngay { get; set; }
-	public int CaLamViec { get; set; }
-	public string? GhiChu { get; set; }
-}
-public class LichLamViecReadModel
+public class LichLamViecReadListModel
 {
 	public int LichLamViecID { get; set; }
 	public NameResponseDTO NhanVien { get; init; } = null!;
@@ -20,7 +25,7 @@ public class LichLamViecReadModel
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
 }
-public class LichLamViecChucVuReadModel
+public class LichLamViecReadModel
 {
 	public int LichLamViecID { get; set; }
 	public NameResponseDTO ChucVu { get; init; } = null!;
@@ -30,10 +35,10 @@ public class LichLamViecChucVuReadModel
 	public int CaLamViec { get; set; }
 	public string? GhiChu { get; set; }
 }
-public class WeekLichLamViecReadModel
+public class LichLamViecReadWeekModel
 {
 	public int Page { get; set; }
 	public DateTime TuanBatDau { get; set; }
 	public DateTime TuanKetThuc { get; set; }
-	public List<LichLamViecReadModel> LichLamViecs { get; set; } = new();
+	public List<LichLamViecReadListModel> LichLamViecs { get; set; } = new();
 }

@@ -17,9 +17,9 @@ public class CaKhamController : ControllerBase
 	}
 	[HttpPost]
 	[Authorize(Policy = "LICHKHAM_CREATE")]
-	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CaKhamGenerateDTO request)
+	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CaKhamRequest request)
 	{
-		var response = await _service.GenerateAsync(request.TuNgay, request.DenNgay);
+		var response = await _service.GenerateAsync(request);
 		if (!response.Success)
 			return BadRequest(response);
 		return Ok(response);
@@ -63,7 +63,14 @@ public class CaKhamController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-    [HttpGet("khunggio-trong")]
+	[HttpGet("choxacnhan")]
+	[Authorize(Policy = "LICHKHAM_VIEW")]
+	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> CaKhamChoXacNhan([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
+	{
+		var response = await _service.GetChoXacNhanAsync(pageNumber, pageSize);
+		return Ok(response);
+	}
+	[HttpGet("khunggio-trong")]
     [Authorize(Policy = "LICHKHAM_VIEW")]
     public async Task<ActionResult<ApiResponse<List<int>>>>GetKhungGioConTrong([FromQuery] DateTime ngayKham, [FromQuery] string loaiCaKham)
     {
@@ -113,9 +120,9 @@ public class CaKhamController : ControllerBase
     [HttpPost("assign-lich")]
 	[Authorize(Policy = "LICHKHAM_UPDATE")]
 	public async Task<ActionResult<ApiResponse<AssignLichLamViecReport>>> 
-		AssignLichLamViec([FromQuery] DateTime tuNgay, [FromQuery] DateTime denNgay)
+		AssignLichLamViec([FromQuery] CaKhamRequest request)
 	{
-		var response = await _service.AssignLichLamViecAsync(tuNgay, denNgay);
+		var response = await _service.AssignLichLamViecAsync(request);
 		if (!response.Success)
 			return BadRequest(response);
 		return Ok(response);
