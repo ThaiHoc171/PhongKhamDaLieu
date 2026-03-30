@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 [ApiController]
-[Route("api/lich-lam-viec")]
+[Route("api/lichlamviec")]
 [Authorize]
 public class LichLamViecController : ControllerBase
 {
@@ -13,15 +13,6 @@ public class LichLamViecController : ControllerBase
 	public LichLamViecController(LichLamViecService service)
 	{
 		_service = service;
-	}
-	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
-	[HttpGet("{id}")]
-	public async Task<IActionResult> Detail(int id)
-	{
-		var response = await _service.GetDetailAsync(id);
-		if (!response.Success)
-			return NotFound(response);
-		return Ok(response);
 	}
 	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
 	[HttpGet]

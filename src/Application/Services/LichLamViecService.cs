@@ -22,36 +22,6 @@ public class LichLamViecService
 		_nvRepo = nvRepo;
 	}
 
-
-	// DETAIL
-	public async Task<ApiResponse<LichLamViecReadListModel>> GetDetailAsync(int id)
-	{
-		if (id <= 0)
-			return ApiResponse<LichLamViecReadListModel>.Fail("ID không hợp lệ");
-
-		var entity = await _repo.GetByIdAsync(id);
-
-		if (entity == null)
-			return ApiResponse<LichLamViecReadListModel>.Fail("Không tìm thấy lịch");
-
-		var nv = await _nvRepo.GetDetailAsync(entity.NhanVienID);
-
-		var result = new LichLamViecReadListModel
-		{
-			LichLamViecID = entity.LichLamViecID,
-			NhanVien = new NameResponseDTO
-			{
-				Id = entity.NhanVienID,
-				Name = nv.HoTen
-			},
-			Ngay = entity.Ngay,
-			CaLamViec = entity.CaLamViec,
-			GhiChu = entity.GhiChu
-		};
-
-		return ApiResponse<LichLamViecReadListModel>.SuccessResponse(result);
-	}
-
 	// WEEK BY NHANVIEN
 	public async Task<ApiResponse<LichLamViecReadWeekModel>> GetWeekByNhanVienAsync(int nhanVienID, int week)
 	{
@@ -71,11 +41,11 @@ public class LichLamViecService
 	}
 
 	// WEEK ALL
-	public async Task<ApiResponse<List<LichLamViecReadModel>>> GetWeekAsync(int week)
+	public async Task<ApiResponse<List<LichLamViecReadListModel>>> GetWeekAsync(int week)
 	{
 		var (start, end) = DateTimeHelper.GetWeekByPage(week);
 		var data = await _repo.GetWeekAsync(start, end);
-		return ApiResponse<List<LichLamViecReadModel>>.SuccessResponse(data);
+		return ApiResponse<List<LichLamViecReadListModel>>.SuccessResponse(data);
 	}
 
 	public async Task<ApiResponse<ExcelImportResult<LichLamViecImport>>> PreviewImport(Stream stream, string sheet)
