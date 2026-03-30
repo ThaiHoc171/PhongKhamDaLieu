@@ -24,25 +24,12 @@ public class LichLamViecRepository : ILichLamViecRepository
 			   tt.HoTen,
 			   llv.Ngay,
 			   llv.CaLamViec,
+			   pcn.TenPhong,
 			   llv.GhiChu
 		FROM LichLamViecNhanVien llv
 		JOIN NhanVien nv ON nv.NhanVienID = llv.NhanVienID
-		JOIN ThongTinCaNhan tt ON tt.ThongTinID = nv.ThongTinID";
-
-	private const string BaseSelectDetail = @"
-		SELECT llv.LichLamViecID,
-			   nv.NhanVienID,
-			   tt.HoTen,
-			   cv.ChucVuID,
-			   cv.TenChucVu,
-			   nv.PhongChucNangID,
-			   llv.Ngay,
-			   llv.CaLamViec,
-			   llv.GhiChu
-		FROM LichLamViecNhanVien llv
-		JOIN NhanVien nv ON nv.NhanVienID = llv.NhanVienID
-		JOIN ChucVu cv ON cv.ChucVuID = nv.ChucVuID
-		JOIN ThongTinCaNhan tt ON tt.ThongTinID = nv.ThongTinID";
+		JOIN ThongTinCaNhan tt ON tt.ThongTinID = nv.ThongTinID
+		JOIN PhongChucNang pcn ON pcn.PhongChucNangID = nv.PhongChucNangID";
 
 	#endregion
 
@@ -120,15 +107,15 @@ public class LichLamViecRepository : ILichLamViecRepository
 	}
 
 
-	public async Task<List<LichLamViecReadModel>> GetWeekAsync(DateTime tuNgay, DateTime denNgay)
+	public async Task<List<LichLamViecReadListModel>> GetWeekAsync(DateTime tuNgay, DateTime denNgay)
 	{
-		var list = new List<LichLamViecReadModel>();
+		var list = new List<LichLamViecReadListModel>();
 
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
 		var sql = $@"
-		{BaseSelectDetail}
+		{BaseSelectList}
 		WHERE llv.Ngay >= @TuNgay AND llv.Ngay < @DenNgay
 		ORDER BY llv.Ngay,llv.CaLamViec";
 
@@ -140,7 +127,7 @@ public class LichLamViecRepository : ILichLamViecRepository
 		using var reader = await cmd.ExecuteReaderAsync();
 
 		while (await reader.ReadAsync())
-			list.Add(MapToDetailDTO(reader));
+			list.Add(MapToListDTO(reader));
 
 		return list;
 	}
@@ -218,35 +205,9 @@ public class LichLamViecRepository : ILichLamViecRepository
 			},
 			Ngay = r.GetDateTime(r.GetOrdinal("Ngay")),
 			CaLamViec = r.GetInt32(r.GetOrdinal("CaLamViec")),
+			TenPhong = r.GetString(r.GetOrdinal("TenPhong")),
 			GhiChu = r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu"))
 		};
 	}
-
-	private LichLamViecReadModel MapToDetailDTO(SqlDataReader r)
-	{
-		return new LichLamViecReadModel
-		{
-			LichLamViecID = r.GetInt32(r.GetOrdinal("LichLamViecID")),
-			NhanVien = new NameResponseDTO
-			{
-				Id = r.GetInt32(r.GetOrdinal("NhanVienID")),
-				Name = r.GetString(r.GetOrdinal("HoTen"))
-			},
-			ChucVu = new NameResponseDTO
-			{
-				Id = r.GetInt32(r.GetOrdinal("ChucVuID")),
-				Name = r.GetString(r.GetOrdinal("TenChucVu"))
-			},
-			PhongChucNang = new NameResponseDTO
-			{
-				Id = r.GetInt32(r.GetOrdinal("PhongChucNangID")),
-				Name = ""
-			},
-			Ngay = r.GetDateTime(r.GetOrdinal("Ngay")),
-			CaLamViec = r.GetInt32(r.GetOrdinal("CaLamViec")),
-			GhiChu = r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu"))
-		};
-	}
-
 	#endregion
 }

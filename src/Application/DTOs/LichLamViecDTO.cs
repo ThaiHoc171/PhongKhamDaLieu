@@ -10,29 +10,13 @@ public class LichLamViecImport
 	[ExcelColumn("GhiChu")]
 	public string? GhiChu { get; set; }
 }
-public class LichLamViecRequest
-{
-	public int NhanVienID { get; set; }
-	public DateTime Ngay { get; set; }
-	public int CaLamViec { get; set; }
-	public string? GhiChu { get; set; }
-}
 public class LichLamViecReadListModel
 {
 	public int LichLamViecID { get; set; }
 	public NameResponseDTO NhanVien { get; init; } = null!;
 	public DateTime Ngay { get; set; }
 	public int CaLamViec { get; set; }
-	public string? GhiChu { get; set; }
-}
-public class LichLamViecReadModel
-{
-	public int LichLamViecID { get; set; }
-	public NameResponseDTO ChucVu { get; init; } = null!;
-	public NameResponseDTO PhongChucNang { get; init; } = null!;
-	public NameResponseDTO NhanVien { get; init; } = null!;
-	public DateTime Ngay { get; set; }
-	public int CaLamViec { get; set; }
+	public string TenPhong { get; set; } = string.Empty;
 	public string? GhiChu { get; set; }
 }
 public class LichLamViecReadWeekModel
