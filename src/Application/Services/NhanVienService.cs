@@ -23,7 +23,7 @@ public class NhanVienService
 	{
 		if (string.IsNullOrWhiteSpace(value))
 			return GioiTinhEnum.Khac;
-		return GioiTinhExtensions.ToEnum(value);
+		return GioiTinhExtensions.FromDbValue(value);
 	}
 	public async Task<ApiResponse<int>> AddNhanVienAsync(NhanVienRequestDTO dto)
 	{

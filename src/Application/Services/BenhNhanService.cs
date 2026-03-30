@@ -25,8 +25,9 @@ public class BenhNhanService
 
         if (string.IsNullOrWhiteSpace(dto.DiaChi))
             return ApiResponse<int>.Fail("Phải cung cấp địa chỉ");
-
-        var thongTin = await _thongTinRepo.GetByEmailOrSDTAsync(dto.EmailLienHe, dto.SDT);
+		if(string.IsNullOrWhiteSpace(dto.GioiTinh))
+			return ApiResponse<int>.Fail("Phải cung cấp giới tính");
+		var thongTin = await _thongTinRepo.GetByEmailOrSDTAsync(dto.EmailLienHe, dto.SDT);
         int thongTinID;
 
         if (thongTin != null)
@@ -34,13 +35,13 @@ public class BenhNhanService
             thongTin.CapNhat(
                 hoTen: dto.HoTen,
                 ngaySinh: dto.NgaySinh,
-                gioiTinh: GioiTinhExtensions.ParseGioiTinhOrDefault(dto.GioiTinh),
+                gioiTinh: GioiTinhExtensions.FromDbValue(dto.GioiTinh),
                 sdt: dto.SDT,
-                emailLienHe: dto.EmailLienHe,
+                emailLienHe: dto.EmailLienHe ?? "",
                 diaChi: dto.DiaChi,
                 avatar: dto.Avatar,
 				loai: LoaiThongTinEnum.BenhNhan
-            );
+			);
             await _thongTinRepo.UpdateAsync(thongTin);
             thongTinID = thongTin.ThongTinID;
         }
@@ -50,13 +51,13 @@ public class BenhNhanService
                 taiKhoanID: dto.TaiKhoanID,
                 hoTen: dto.HoTen,
                 ngaySinh: dto.NgaySinh,
-                gioiTinh: GioiTinhExtensions.ParseGioiTinhOrDefault(dto.GioiTinh),
-                sdt: dto.SDT,
-                emailLienHe: dto.EmailLienHe,
+                gioiTinh: GioiTinhExtensions.FromDbValue(dto.GioiTinh),
+				sdt: dto.SDT,
+                emailLienHe: dto.EmailLienHe ?? "",
                 diaChi: dto.DiaChi,
                 avatar: dto.Avatar,
                 loai: LoaiThongTinEnum.BenhNhan
-            );
+			);
 
             thongTinID = await _thongTinRepo.AddAsync(newThongTin);
         }

@@ -8,10 +8,9 @@ public interface IThongTinCaNhanRepository
 	Task<int> GetIdByTaiKhoanId(int taiKhoanId);
 
 	Task<bool> ExistsByEmailAsync(string email, string sdt);
-    Task<ThongTinFullReadModel?> GetDetailAsync(int id);
-	Task<List<ThongTinLiteReadModel>> GetAllByLoaiAsync(LoaiThongTinEnum loai);
+    Task<ThongTinReadModel?> GetDetailAsync(int id);
+	Task<List<ThongTinReadListModel>> GetAllByLoaiAsync(LoaiThongTinEnum loai);
 	Task<ThongTinCaNhan?> GetByEmailOrSDTAsync(string? email, string? sdt);
-
     Task<List<NameResponseDTO>> GetComboboxAsync();
 	Task<int> AddAsync(ThongTinCaNhan thongTin);
 	Task UpdateAsync(ThongTinCaNhan thongTin);

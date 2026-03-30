@@ -5,190 +5,226 @@ using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+
 namespace Infrastructure.Repositories;
+
 public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 {
 	private readonly string _connectionString;
-	public ThongTinCaNhanRepository(IConfiguration config)
+
+	public ThongTinCaNhanRepository(IConfiguration configuration)
 	{
-		_connectionString = config.GetConnectionString("DefaultConnection")
-			?? throw new ArgumentNullException("Connection string not found");
+		_connectionString = configuration.GetConnectionString("DefaultConnection")!;
 	}
+
+	#region Queries
+
+	private const string BaseSelectList = @"
+        SELECT ThongTinID, TaiKhoanID, HoTen, NgaySinh, GioiTinh, SDT, EmailLienHe
+        FROM ThongTinCaNhan";
+
+	private const string BaseSelectDetail = @"
+        SELECT ThongTinID,TaiKhoanID,HoTen,NgaySinh,GioiTinh,SDT,
+               EmailLienHe,DiaChi,Avatar,Loai,NgayTao,NgayCapNhat
+        FROM ThongTinCaNhan";
+
+	#endregion
+
 	public async Task<ThongTinCaNhan?> GetByIdAsync(int id)
 	{
-		const string sql = @"
-			SELECT ThongTinID,TaiKhoanID,HoTen,NgaySinh,GioiTinh,SDT,
-				EmailLienHe,DiaChi,Avatar,Loai,NgayTao,NgayCapNhat
-			FROM ThongTinCaNhan
-			 WHERE ThongTinID=@Id";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = id });
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		return await reader.ReadAsync() ? MapToEntity(reader) : null;
+
+		var sql = BaseSelectDetail + " WHERE ThongTinID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToEntity(reader);
+
+		return null;
 	}
-    public async Task<ThongTinCaNhan?> GetByEmailOrSDTAsync(string? email, string? sdt)
-    {
-        const string sql = @"
-        SELECT TOP 1 
-            ThongTinID,TaiKhoanID,HoTen,NgaySinh,GioiTinh,SDT,
-            EmailLienHe,DiaChi,Avatar,Loai,NgayTao,NgayCapNhat
-        FROM ThongTinCaNhan
-        WHERE 
-			(@Email IS NOT NULL AND EmailLienHe = @Email)
-			OR
-			(@SDT IS NOT NULL AND SDT = @SDT)";
 
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-
-        cmd.Parameters.Add("@Email", SqlDbType.NVarChar)
-            .Value = (object?)email ?? DBNull.Value;
-
-        cmd.Parameters.Add("@SDT", SqlDbType.NVarChar)
-            .Value = (object?)sdt ?? DBNull.Value;
-
-        await conn.OpenAsync();
-
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        return await reader.ReadAsync() ? MapToEntity(reader) : null;
-    }
-    public async Task<int> GetIdByTaiKhoanId(int taiKhoanId)
-    {
-        const string sql =
-        @"SELECT ThongTinID FROM ThongTinCaNhan WHERE TaiKhoanID=@Id";
-        await using var conn = new SqlConnection(_connectionString);
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = taiKhoanId });
-        await conn.OpenAsync();
-        return Convert.ToInt32(await cmd.ExecuteScalarAsync());
-    }
-    public async Task<bool> ExistsByEmailAsync(string email, string sdt)
-    {
-        const string sql = "SELECT COUNT(1) FROM ThongTinCaNhan WHERE EmailLienHe = @Email OR SDT = @SDT";
-        using var conn = new SqlConnection(_connectionString);
-        using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = email;
-        cmd.Parameters.Add("@SDT", SqlDbType.NVarChar).Value = sdt;
-        await conn.OpenAsync();
-        return Convert.ToInt32(await cmd.ExecuteScalarAsync()) > 0;
-    }
-    public async Task<ThongTinFullReadModel?> GetDetailAsync(int id)
+	public async Task<ThongTinReadModel?> GetDetailAsync(int id)
 	{
-		const string sql = @"
-			SELECT ThongTinID,TaiKhoanID,HoTen,NgaySinh,GioiTinh,SDT,
-				EmailLienHe,DiaChi,Avatar,Loai,NgayTao,NgayCapNhat
-			FROM ThongTinCaNhan
-			WHERE ThongTinID=@Id";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = id });
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return new ThongTinFullReadModel
-		{
-			ThongTinID = reader.GetInt32(0),
-			TaiKhoanID = reader.IsDBNull(1) ? null : reader.GetInt32(1),
-			HoTen = reader.GetString(2),
-			NgaySinh = reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-			GioiTinh = reader.IsDBNull(4) ? null : reader.GetString(4),
-			SDT = reader.GetString(5),
-			EmailLienHe = reader.GetString(6),
-			DiaChi = reader.IsDBNull(7) ? null : reader.GetString(7),
-			Avatar = reader.IsDBNull(8) ? null : reader.GetString(8),
-			Loai = reader.GetString(9),
-			NgayTao = reader.GetDateTime(10),
-			NgayCapNhat = reader.IsDBNull(11) ? null : reader.GetDateTime(11)
-		};
+
+		var sql = BaseSelectDetail + " WHERE ThongTinID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToReadModel(reader);
+
+		return null;
 	}
-	public async Task<List<ThongTinLiteReadModel>> GetAllByLoaiAsync(LoaiThongTinEnum loai)
+
+	public async Task<List<ThongTinReadListModel>> GetAllByLoaiAsync(LoaiThongTinEnum loai)
 	{
-		const string sql = @"
-			SELECT ThongTinID,TaiKhoanID,HoTen,SDT,EmailLienHe,Loai,NgayTao,NgayCapNhat
-			FROM ThongTinCaNhan
-			WHERE Loai=@Loai";
-		var list = new List<ThongTinLiteReadModel>();
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add(new SqlParameter("@Loai", SqlDbType.NVarChar, 50) { Value = loai.ToDbValue() });
+		var list = new List<ThongTinReadListModel>();
+
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
+
+		var sql = BaseSelectList + " WHERE Loai=@Loai";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar, 50).Value = loai.ToDbValue();
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
-		{
-			list.Add(new ThongTinLiteReadModel
-			{
-				ThongTinID = reader.GetInt32(0),
-				TaiKhoanID = reader.IsDBNull(1) ? null : reader.GetInt32(1),
-				HoTen = reader.GetString(2),
-				SDT = reader.GetString(3),
-				EmailLienHe = reader.GetString(4),
-				Loai = reader.GetString(5),
-				NgayTao = reader.GetDateTime(6),
-				NgayCapNhat = reader.IsDBNull(7) ? null : reader.GetDateTime(7)
-			});
-		}
+			list.Add(MapToReadListModel(reader));
+
 		return list;
 	}
+
+	public async Task<ThongTinCaNhan?> GetByEmailOrSDTAsync(string? email, string? sdt)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = BaseSelectDetail + @"
+            WHERE 
+                (@Email IS NOT NULL AND EmailLienHe=@Email)
+                OR
+                (@SDT IS NOT NULL AND SDT=@SDT)";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Email", SqlDbType.NVarChar)
+			.Value = (object?)email ?? DBNull.Value;
+
+		cmd.Parameters.Add("@SDT", SqlDbType.NVarChar)
+			.Value = (object?)sdt ?? DBNull.Value;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToEntity(reader);
+
+		return null;
+	}
+
+	public async Task<int> GetIdByTaiKhoanId(int taiKhoanId)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"SELECT ThongTinID FROM ThongTinCaNhan WHERE TaiKhoanID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = taiKhoanId;
+
+		var result = await cmd.ExecuteScalarAsync();
+
+		return result == null ? 0 : Convert.ToInt32(result);
+	}
+
+	public async Task<bool> ExistsByEmailAsync(string email, string sdt)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"SELECT COUNT(1)
+                    FROM ThongTinCaNhan
+                    WHERE EmailLienHe=@Email OR SDT=@SDT";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = email;
+		cmd.Parameters.Add("@SDT", SqlDbType.NVarChar).Value = sdt;
+
+		return Convert.ToInt32(await cmd.ExecuteScalarAsync()) > 0;
+	}
+
 	public async Task<int> AddAsync(ThongTinCaNhan tt)
 	{
-		const string sql = @"
-			INSERT INTO ThongTinCaNhan(HoTen,NgaySinh,GioiTinh,SDT,EmailLienHe,DiaChi,Avatar,Loai,TaiKhoanID)
-			OUTPUT INSERTED.ThongTinID
-			VALUES(@HoTen,@NgaySinh,@GioiTinh,@SDT,@Email,@DiaChi,@Avatar,@Loai,@TaiKhoanID)";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add(new SqlParameter("@HoTen", SqlDbType.NVarChar) { Value = tt.HoTen });
-		cmd.Parameters.Add(new SqlParameter("@NgaySinh", SqlDbType.DateTime) { Value = (object?)tt.NgaySinh ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@GioiTinh", SqlDbType.NVarChar) { Value = (object?)tt.GioiTinh ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@SDT", SqlDbType.NVarChar) { Value = tt.SDT });
-		cmd.Parameters.Add(new SqlParameter("@Email", SqlDbType.NVarChar) { Value = tt.EmailLienHe });
-		cmd.Parameters.Add(new SqlParameter("@DiaChi", SqlDbType.NVarChar) { Value = (object?)tt.DiaChi ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@Avatar", SqlDbType.NVarChar) { Value = (object?)tt.Avatar ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@Loai", SqlDbType.NVarChar) { Value = tt.Loai });
-		cmd.Parameters.Add(new SqlParameter("@TaiKhoanID", SqlDbType.Int) { Value = (object?)tt.TaiKhoanID ?? DBNull.Value });
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
+
+		var sql = @"
+        INSERT INTO ThongTinCaNhan
+        (HoTen,NgaySinh,GioiTinh,SDT,EmailLienHe,DiaChi,Avatar,Loai,TaiKhoanID)
+        OUTPUT INSERTED.ThongTinID
+        VALUES
+        (@HoTen,@NgaySinh,@GioiTinh,@SDT,@Email,@DiaChi,@Avatar,@Loai,@TaiKhoanID)";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@HoTen", SqlDbType.NVarChar).Value = tt.HoTen;
+		cmd.Parameters.Add("@NgaySinh", SqlDbType.DateTime).Value = tt.NgaySinh;
+		cmd.Parameters.Add("@GioiTinh", SqlDbType.NVarChar).Value = tt.GioiTinh.ToDbValue();
+		cmd.Parameters.Add("@SDT", SqlDbType.NVarChar).Value = tt.SDT;
+		cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = tt.EmailLienHe;
+		cmd.Parameters.Add("@DiaChi", SqlDbType.NVarChar).Value = tt.DiaChi;
+		cmd.Parameters.Add("@Avatar", SqlDbType.NVarChar).Value = (object?)tt.Avatar ?? DBNull.Value;
+		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar).Value = tt.Loai.ToDbValue();
+		cmd.Parameters.Add("@TaiKhoanID", SqlDbType.Int).Value = (object?)tt.TaiKhoanID ?? DBNull.Value;
+
 		var result = await cmd.ExecuteScalarAsync();
-		if (result == null || result == DBNull.Value)
-			throw new InvalidOperationException("Không lấy được ID sau khi insert");
+
 		return Convert.ToInt32(result);
 	}
+
 	public async Task UpdateAsync(ThongTinCaNhan tt)
 	{
-		const string sql = @"
-			UPDATE ThongTinCaNhan
-			SET HoTen=@HoTen,NgaySinh=@NgaySinh,GioiTinh=@GioiTinh,SDT=@SDT,
-				EmailLienHe=@Email,DiaChi=@DiaChi,Avatar=@Avatar,Loai=@Loai,NgayCapNhat=GETDATE()
-			WHERE ThongTinID=@Id";	 
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add(new SqlParameter("@HoTen", SqlDbType.NVarChar) { Value = tt.HoTen });
-		cmd.Parameters.Add(new SqlParameter("@NgaySinh", SqlDbType.DateTime) { Value = (object?)tt.NgaySinh ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@GioiTinh", SqlDbType.NVarChar) { Value = (object?)tt.GioiTinh ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@SDT", SqlDbType.NVarChar) { Value = tt.SDT });
-		cmd.Parameters.Add(new SqlParameter("@Email", SqlDbType.NVarChar) { Value = tt.EmailLienHe });
-		cmd.Parameters.Add(new SqlParameter("@DiaChi", SqlDbType.NVarChar) { Value = (object?)tt.DiaChi ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@Avatar", SqlDbType.NVarChar) { Value = (object?)tt.Avatar ?? DBNull.Value });
-        cmd.Parameters.Add("@Loai", SqlDbType.NVarChar).Value = tt.Loai;
-        cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = tt.ThongTinID });
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
+
+		var sql = @"
+        UPDATE ThongTinCaNhan
+        SET TaiKhoanID=@TaiKhoanID,
+			HoTen=@HoTen,
+            NgaySinh=@NgaySinh,
+            GioiTinh=@GioiTinh,
+            SDT=@SDT,
+            EmailLienHe=@Email,
+            DiaChi=@DiaChi,
+            Avatar=@Avatar,
+            Loai=@Loai,
+            NgayCapNhat=GETDATE()
+        WHERE ThongTinID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@TaiKhoanID", SqlDbType.Int).Value = (object?)tt.TaiKhoanID ?? DBNull.Value;
+		cmd.Parameters.Add("@HoTen", SqlDbType.NVarChar).Value = tt.HoTen;
+		cmd.Parameters.Add("@NgaySinh", SqlDbType.DateTime).Value = tt.NgaySinh;
+		cmd.Parameters.Add("@GioiTinh", SqlDbType.NVarChar).Value = tt.GioiTinh.ToDbValue();
+		cmd.Parameters.Add("@SDT", SqlDbType.NVarChar).Value = tt.SDT;
+		cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = tt.EmailLienHe;
+		cmd.Parameters.Add("@DiaChi", SqlDbType.NVarChar).Value = tt.DiaChi;
+		cmd.Parameters.Add("@Avatar", SqlDbType.NVarChar).Value = (object?)tt.Avatar ?? DBNull.Value;
+		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar) .Value = tt.Loai.ToDbValue();
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = tt.ThongTinID;
+
 		await cmd.ExecuteNonQueryAsync();
 	}
+
 	public async Task<List<NameResponseDTO>> GetComboboxAsync()
 	{
-		const string sql = @"
-			SELECT ThongTinID,HoTen
-			FROM ThongTinCaNhan
-			WHERE Loai=N'Bệnh nhân'
-			ORDER BY HoTen";
 		var list = new List<NameResponseDTO>();
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
+
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
+
+		var sql = @"
+        SELECT ThongTinID,HoTen
+        FROM ThongTinCaNhan
+        WHERE Loai=N'Bệnh nhân'
+        ORDER BY HoTen";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
 		{
 			list.Add(new NameResponseDTO
@@ -197,23 +233,62 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 				Name = reader.GetString(1)
 			});
 		}
+
 		return list;
 	}
-	private static ThongTinCaNhan MapToEntity(SqlDataReader reader)
+
+	#region Mapping
+
+	private ThongTinCaNhan MapToEntity(SqlDataReader r)
 	{
 		return new ThongTinCaNhan(
-			reader.GetInt32(0),
-			reader.IsDBNull(1) ? null : reader.GetInt32(1),
-			reader.GetString(2),
-			reader.IsDBNull(3) ? null : reader.GetDateTime(3),
-			reader.IsDBNull(4) ? null : reader.GetString(4),
-			reader.GetString(5),
-			reader.GetString(6),
-			reader.IsDBNull(7) ? null : reader.GetString(7),
-			reader.IsDBNull(8) ? null : reader.GetString(8),
-			reader.GetString(9),
-			reader.GetDateTime(10),
-			reader.IsDBNull(11) ? null : reader.GetDateTime(11)
+			r.GetInt32(r.GetOrdinal("ThongTinID")),
+			r.IsDBNull(r.GetOrdinal("TaiKhoanID")) ? null : r.GetInt32(r.GetOrdinal("TaiKhoanID")),
+			r.GetString(r.GetOrdinal("HoTen")),
+			r.GetDateTime(r.GetOrdinal("NgaySinh")),
+			GioiTinhExtensions.FromDbValue(r.GetString(r.GetOrdinal("GioiTinh"))),
+			r.GetString(r.GetOrdinal("SDT")),
+			r.GetString(r.GetOrdinal("EmailLienHe")),
+			r.IsDBNull(r.GetOrdinal("DiaChi")) ? null : r.GetString(r.GetOrdinal("DiaChi")),
+			r.IsDBNull(r.GetOrdinal("Avatar")) ? null : r.GetString(r.GetOrdinal("Avatar")),
+			LoaiThongTinExtensions.FromDbValue(r.GetString(r.GetOrdinal("Loai"))),
+			r.GetDateTime(r.GetOrdinal("NgayTao")),
+			r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
 		);
 	}
+
+	private ThongTinReadListModel MapToReadListModel(SqlDataReader r)
+	{
+		return new ThongTinReadListModel
+		{
+			ThongTinID = r.GetInt32(r.GetOrdinal("ThongTinID")),
+			TaiKhoanID = r.IsDBNull(r.GetOrdinal("TaiKhoanID")) ? null : r.GetInt32(r.GetOrdinal("TaiKhoanID")),
+			HoTen = r.GetString(r.GetOrdinal("HoTen")),
+			NgaySinh = r.GetDateTime(r.GetOrdinal("NgaySinh")),
+			GioiTinh = r.GetString(r.GetOrdinal("GioiTinh")),
+			SDT = r.GetString(r.GetOrdinal("SDT")),
+			EmailLienHe = r.GetString(r.GetOrdinal("EmailLienHe"))
+		};
+	}
+
+	private ThongTinReadModel MapToReadModel(SqlDataReader r)
+	{
+		return new ThongTinReadModel
+		{
+			ThongTinID = r.GetInt32(r.GetOrdinal("ThongTinID")),
+			TaiKhoanID = r.IsDBNull(r.GetOrdinal("TaiKhoanID")) ? null : r.GetInt32(r.GetOrdinal("TaiKhoanID")),
+			HoTen = r.GetString(r.GetOrdinal("HoTen")),
+			NgaySinh = r.IsDBNull(r.GetOrdinal("NgaySinh")) ? null : r.GetDateTime(r.GetOrdinal("NgaySinh")),
+			GioiTinh = r.IsDBNull(r.GetOrdinal("GioiTinh")) ? null : r.GetString(r.GetOrdinal("GioiTinh")),
+			SDT = r.GetString(r.GetOrdinal("SDT")),
+			EmailLienHe = r.GetString(r.GetOrdinal("EmailLienHe")),
+			DiaChi = r.IsDBNull(r.GetOrdinal("DiaChi")) ? null : r.GetString(r.GetOrdinal("DiaChi")),
+			Avatar = r.IsDBNull(r.GetOrdinal("Avatar")) ? null : r.GetString(r.GetOrdinal("Avatar")),
+			Loai = r.GetString(r.GetOrdinal("Loai")),
+			NgayTao = r.GetDateTime(r.GetOrdinal("NgayTao")),
+			NgayCapNhat = r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
+		};
+	}
+
+	#endregion
 }

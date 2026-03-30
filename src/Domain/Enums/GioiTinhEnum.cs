@@ -15,7 +15,7 @@ public static class GioiTinhExtensions
 			GioiTinhEnum.Khac => "Khác",
 			_ => throw new ArgumentOutOfRangeException()
 		};
-	public static GioiTinhEnum ToEnum(string value)
+	public static GioiTinhEnum FromDbValue(string value)
 		=> value switch
 		{
 			"Nam" => GioiTinhEnum.Nam,
@@ -27,6 +27,6 @@ public static class GioiTinhExtensions
 	{
 		if (string.IsNullOrWhiteSpace(value))
 			return GioiTinhEnum.Khac;
-		return GioiTinhExtensions.ToEnum(value);
+		return GioiTinhExtensions.FromDbValue(value);
 	}
 }

@@ -15,7 +15,7 @@ public static class LoaiThongTinExtensions
 			LoaiThongTinEnum.Khach => "Khách",
 			_ => throw new ArgumentOutOfRangeException()
 		};
-	public static LoaiThongTinEnum ToEnum(string value)
+	public static LoaiThongTinEnum FromDbValue(string value)
 		=> value switch
 		{
 			"Nhân viên" => LoaiThongTinEnum.NhanVien,
