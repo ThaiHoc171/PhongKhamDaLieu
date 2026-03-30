@@ -80,6 +80,8 @@ public class LichLamViecService
 
 			if (nv == null)
 				errors.Add($"Dòng {row}: Nhân viên không tồn tại");
+			if (item.Ngay < DateTime.Today)
+				errors.Add($"Dòng {row}: Ngày làm việc không được trước ngày hiện tại");
 
 			else
 			{
@@ -127,18 +129,25 @@ public class LichLamViecService
 	}
 	public async Task<ApiResponse<bool>> Import(List<LichLamViecImport> list)
 	{
-		var entities = list.Select(x =>
-			new LichLamViec(
-				x.NhanVienID,
-				x.Ngay,
-				x.CaLamViec,
-				x.GhiChu
-			)
-		).ToList();
+		try
+		{
+			var entities = list.Select(x =>
+				new LichLamViec(
+					x.NhanVienID,
+					x.Ngay,
+					x.CaLamViec,
+					x.GhiChu
+				)
+			).ToList();
 
-		await _repo.BulkInsertAsync(entities);
+			await _repo.BulkInsertAsync(entities);
 
-		return ApiResponse<bool>
-			.SuccessResponse(true, "Nhập dữ liệu từ excel thành công!");
+			return ApiResponse<bool>
+				.SuccessResponse(true, "Nhập dữ liệu từ excel thành công!");
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
 	}
 }

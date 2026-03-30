@@ -49,8 +49,8 @@ public class LichLamViecRepository : ILichLamViecRepository
 		}
 
 		using var bulk = new SqlBulkCopy(conn);
-		bulk.DestinationTableName = "LichLamViec";
-		bulk.ColumnMappings.Add("NhanVienID", "TenChucVu");
+		bulk.DestinationTableName = "LichLamViecNhanVien";
+		bulk.ColumnMappings.Add("NhanVienID", "NhanVienID");
 		bulk.ColumnMappings.Add("Ngay", "Ngay");
 		bulk.ColumnMappings.Add("CaLamViec", "CaLamViec");
 		bulk.ColumnMappings.Add("GhiChu", "GhiChu");
