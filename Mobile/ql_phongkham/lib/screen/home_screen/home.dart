@@ -30,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<BaiVietModel> baiVietList = [];
   bool isLoadingBacSi = true;
   bool isLoadingBaiViet = true;
+  bool isExpandArticle = false;
   int _selectedIndex = 0;
   final items = ['assets/images/banner1.jpg', 'assets/images/banner2.png'];
   int myCurrentIndex = 0;

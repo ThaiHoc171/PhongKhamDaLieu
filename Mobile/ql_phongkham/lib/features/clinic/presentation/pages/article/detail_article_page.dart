@@ -86,7 +86,7 @@ class _BaiVietDetailScreenState extends State<BaiVietDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (bv.hinhAnh != null && bv.hinhAnh!.isNotEmpty)
+            if ((bv.hinhAnh ?? '').isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.network(
@@ -94,6 +94,9 @@ class _BaiVietDetailScreenState extends State<BaiVietDetailScreen> {
                   width: double.infinity,
                   height: 180,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const SizedBox(); // lỗi load ảnh → ẩn luôn
+                  },
                 ),
               ),
 

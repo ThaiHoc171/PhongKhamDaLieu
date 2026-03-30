@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ql_phongkham/features/clinic/data/models/article_model.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/article/detail_article_page.dart';
 
-class ArticleSection extends StatelessWidget {
+class ArticleSection extends StatefulWidget {
   final List<BaiVietModel> baiVietList;
   final bool isLoading;
 
@@ -10,10 +10,20 @@ class ArticleSection extends StatelessWidget {
     super.key,
     required this.baiVietList,
     required this.isLoading,
+    // Bỏ isExpanded và onToggle
   });
 
   @override
+  State<ArticleSection> createState() => _ArticleSectionState();
+}
+
+class _ArticleSectionState extends State<ArticleSection> {
+  bool _isExpanded = false; // chỉ dùng cái này
+
+  @override
   Widget build(BuildContext context) {
+    final list = widget.baiVietList;
+
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -44,15 +54,16 @@ class ArticleSection extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-          isLoading
+          widget.isLoading
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: baiVietList.length > 5 ? 5 : baiVietList.length,
+                  itemCount: _isExpanded
+                      ? list.length
+                      : list.length.clamp(0, 5),
                   itemBuilder: (context, index) {
-                    final bv = baiVietList[index];
-
+                    final bv = list[index];
                     return Card(
                       margin: const EdgeInsets.only(bottom: 10),
                       shape: RoundedRectangleBorder(
@@ -84,6 +95,14 @@ class ArticleSection extends StatelessWidget {
                     );
                   },
                 ),
+
+          if (list.length > 5)
+            Center(
+              child: TextButton(
+                onPressed: () => setState(() => _isExpanded = !_isExpanded),
+                child: Text(_isExpanded ? "Thu gọn" : "Xem thêm"),
+              ),
+            ),
         ],
       ),
     );
