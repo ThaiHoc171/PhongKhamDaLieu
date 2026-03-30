@@ -26,6 +26,8 @@ public class ReminderBackgroundService : BackgroundService
         {
             var now = DateTime.Now;
             var nextRun = now.Date.AddDays(1).AddHours(8);
+            if (now.Hour < 8)
+                nextRun = now.Date.AddHours(8);
             var delay = nextRun - now;
             await Task.Delay(delay, stoppingToken);
             await SendRemindersAsync();

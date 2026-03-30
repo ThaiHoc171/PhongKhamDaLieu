@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
+import 'package:ql_phongkham/features/clinic/data/models/article_model.dart';
 import 'package:ql_phongkham/features/clinic/data/models/doctor_profile_model.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/article_repository.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/doctor_profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/list_booking_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/treatment_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/profile/proflie_page.dart';
+import 'package:ql_phongkham/features/clinic/presentation/widgets/home/article.dart';
+import 'package:ql_phongkham/features/clinic/presentation/widgets/home/profile_doctor.dart';
 import 'package:ql_phongkham/screen/home_screen/menubar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -23,7 +27,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<BacSiProfileModel> bacSiList = [];
+  List<BaiVietModel> baiVietList = [];
   bool isLoadingBacSi = true;
+  bool isLoadingBaiViet = true;
   int _selectedIndex = 0;
   final items = ['assets/images/banner1.jpg', 'assets/images/banner2.png'];
   int myCurrentIndex = 0;
@@ -31,24 +37,24 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    loadBacSi();
+    loadData();
   }
 
-  Future<void> loadBacSi() async {
+  Future<void> loadData() async {
     try {
-      final repo = BacsiProfileRepository();
-
-      final data = await repo.getBacSiProfile();
+      final results = await Future.wait([
+        BacsiProfileRepository().getBacSiProfile(),
+        BaiVietRepository().getListBaiViet(),
+      ]);
 
       setState(() {
-        bacSiList = data;
+        bacSiList = results[0] as List<BacSiProfileModel>;
+        baiVietList = results[1] as List<BaiVietModel>;
         isLoadingBacSi = false;
+        isLoadingBaiViet = false;
       });
     } catch (e) {
-      DialogHelper.showThongBao(
-        context,
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      DialogHelper.showThongBao(context, e.toString());
     }
   }
 
@@ -348,128 +354,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: BoxBorder.all(color: Colors.brown, width: 3),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: const [
-                      Icon(
-                        Icons.medical_services,
-                        size: 18,
-                        color: Colors.blueAccent,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "Bác sĩ",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueAccent,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  isLoadingBacSi
-                      ? const Center(child: CircularProgressIndicator())
-                      : SizedBox(
-                          height: 205,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: bacSiList.length,
-                            itemBuilder: (context, index) {
-                              final bacSi = bacSiList[index];
-
-                              return Container(
-                                width: 160,
-                                margin: const EdgeInsets.only(right: 10),
-                                child: Card(
-                                  elevation: 3,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Column(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 35,
-                                          backgroundImage: AssetImage(
-                                            "assets/images/${bacSi.hinhAnh}",
-                                          ),
-                                        ),
-
-                                        const SizedBox(height: 10),
-
-                                        Text(
-                                          bacSi.chuyenMon,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-
-                                        const SizedBox(height: 5),
-
-                                        Text(
-                                          bacSi.hoTen,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                ],
-              ),
-            ),
+            DoctorSection(bacSiList: bacSiList, isLoading: isLoadingBacSi),
 
             SizedBox(height: 10),
-            Container(
-              alignment: Alignment.topLeft,
-              padding: const EdgeInsets.all(10),
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: BoxBorder.all(color: Colors.brown, width: 3),
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(width: 10),
-                  Icon(
-                    Icons.library_books_rounded,
-                    size: 18,
-                    color: Colors.blueAccent,
-                  ),
-                  SizedBox(width: 5),
-                  Text(
-                    "Bài viết",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                ],
-              ),
+
+            ArticleSection(
+              baiVietList: baiVietList,
+              isLoading: isLoadingBaiViet,
             ),
           ],
         ),

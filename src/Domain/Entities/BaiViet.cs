@@ -37,10 +37,6 @@ public class BaiViet
         NgayCapNhat = ngayCapNhat;
         TrangThai = trangThai;
     }
-    public void TangLuotXem()
-    {
-        LuotXem++;
-    }
     public void CapNhat(string tieuDe, string? tomTat, string? noiDung, string? hinhAnh, int? loaiBenhID)
     {
         TieuDe = tieuDe;

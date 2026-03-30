@@ -134,7 +134,7 @@ public class BaiVietRepository : IBaiVietRepository
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        var sql = BaseSelectDetail + " WHERE BaiVietID=@Id";
+        var sql = @"UPDATE BaiViet SET LuotXem = LuotXem + 1 OUTPUT inserted.* WHERE BaiVietID = @Id;";
         using var cmd = new SqlCommand(sql, conn);
         cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
         using var reader = await cmd.ExecuteReaderAsync();
