@@ -34,7 +34,7 @@ public class BenhNhanController : ControllerBase
 	}
 	[Authorize(Policy = "BENHNHAN_DETAIL")]
 	[HttpGet("{id}")]
-	public async Task<ActionResult<ApiResponse<BenhNhanDetailReadModel>>> Detail(int id)
+	public async Task<ActionResult<ApiResponse<BenhNhanReadModel>>> Detail(int id)
 	{
 		if (User.IsInRole("Bệnh nhân"))
 		{
@@ -49,7 +49,7 @@ public class BenhNhanController : ControllerBase
 	}
 	[Authorize(Policy = "BENHNHAN_LIST")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadModel>>>> List(
+	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadListModel>>>> List(
 		[FromQuery] int pageNumber = 1,
 		[FromQuery] int pageSize = 10)
 	{
@@ -58,7 +58,7 @@ public class BenhNhanController : ControllerBase
 	}
 	[Authorize(Policy = "BENHNHAN_LIST")]
 	[HttpGet("Search")]
-	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadModel>>>> Search(
+	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadListModel>>>> Search(
 		[FromQuery] string? keyword,
 		[FromQuery] int pageNumber = 1,
 		[FromQuery] int pageSize = 10)

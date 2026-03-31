@@ -1,21 +1,21 @@
 ﻿namespace Domain.Entities;
+
 public class BenhNhan
 {
 	public int BenhNhanID { get; private set; }
 	public int ThongTinID { get; private set; }
 	public string GhiChu { get; private set; }
 	public DateTime NgayTao { get; private set; }
-	public DateTime NgayCapNhat { get; private set; }
-	// Constructor tạo mới
-	public BenhNhan(int thongTinID, string? ghiChu = null)
+	public DateTime? NgayCapNhat { get; private set; }
+
+	public BenhNhan(int thongTinID, string? ghiChu)
 	{
-		if (thongTinID <= 0)
-			throw new ArgumentException("ThongTinID không hợp lệ");
+		Validate(thongTinID);
+
 		ThongTinID = thongTinID;
 		GhiChu = ghiChu ?? "";
 	}
-	// Constructor map DB
-	public BenhNhan(int benhNhanID, int thongTinID, string ghiChu, DateTime ngayTao, DateTime ngayCapNhat)
+	public BenhNhan(int benhNhanID, int thongTinID, string ghiChu, DateTime ngayTao, DateTime? ngayCapNhat)
 	{
 		BenhNhanID = benhNhanID;
 		ThongTinID = thongTinID;
@@ -23,9 +23,16 @@ public class BenhNhan
 		NgayTao = ngayTao;
 		NgayCapNhat = ngayCapNhat;
 	}
-	// Business method
-	public void CapNhatGhiChu(string? ghiChu)
+
+	public void CapNhat(string? ghiChu)
 	{
 		GhiChu = ghiChu ?? "";
+		NgayCapNhat = DateTime.UtcNow;
+	}
+
+	private void Validate(int thongTinID)
+	{
+		if (thongTinID <= 0)
+			throw new ArgumentException("ThongTinID không hợp lệ");
 	}
 }

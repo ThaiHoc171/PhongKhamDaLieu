@@ -62,7 +62,17 @@ public class ThongTinCaNhanController : ControllerBase
 		var result = await _service.GetPagedAsync(page, size);
 		return Ok(result);
 	}
+	[Authorize(Policy = "USER_VIEW")]
+	[HttpGet("search")]
+	public async Task<ActionResult<ApiResponse<PagedResult<ThongTinReadListModel>>>> Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10)
+	{
+		var result = await _service.SearchAsync(keyword, page, size);
 
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
 	[Authorize(Policy = "USER_UPDATE")]
 	[HttpPut("{thongTinId}/taikhoan/{taiKhoanId}")]
 	public async Task<ActionResult<ApiResponse<bool>>> LinkTaiKhoan(
@@ -70,7 +80,7 @@ public class ThongTinCaNhanController : ControllerBase
 		int taiKhoanId,
 		[FromQuery] string email)
 	{
-		var result = await _service.CapNhatTaiKhoanAsync(thongTinId, taiKhoanId, email);
+		var result = await _service.UpdateAccountAsync(thongTinId, taiKhoanId, email);
 
 		if (!result.Success)
 			return BadRequest(result);
