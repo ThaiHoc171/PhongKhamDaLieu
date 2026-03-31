@@ -4,259 +4,307 @@ using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+
 namespace Infrastructure.Repositories;
+
 public class NhanVienRepository : INhanVienRepository
 {
 	private readonly string _connectionString;
-	public NhanVienRepository(IConfiguration config)
-	{
-		_connectionString = config.GetConnectionString("DefaultConnection")
-			?? throw new ArgumentNullException("Connection string not found");
-	}
-	private const string SELECT_LIST = @"
-		SELECT nv.NhanVienID,tt.HoTen,tt.EmailLienHe,cv.TenChucVu,nv.TrangThai
-		FROM NhanVien nv
-		JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
-		JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID
-	";
-	private const string SELECT_DETAIL = @"
-		SELECT nv.NhanVienID, nv.ThongTinID, nv.NgayVaoLam, nv.BangCap,
-			nv.KinhNghiem, nv.TrangThai, nv.NgayTao, nv.NgayCapNhat, 
-			tt.HoTen, tt.NgaySinh, tt.GioiTinh,	tt.SDT, tt.EmailLienHe,
-			tt.DiaChi, tt.Avatar,
-			cv.ChucVuID, cv.TenChucVu,
-			pcn.PhongChucNangID, pcn.TenPhong
-		FROM NhanVien nv
-		JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
-		JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID
-		JOIN PhongChucNang pcn ON nv.PhongChucNangID = pcn.PhongChucNangID
-	";
-	public async Task AddAsync(NhanVien nv)
-	{
-		const string sql = @"
-			INSERT INTO NhanVien (ThongTinID,ChucVuID,PhongChucNangID,NgayVaoLam,BangCap,KinhNghiem)
-			VALUES (@ThongTinID,@ChucVuID,@PhongChucNangID,@NgayVaoLam,@BangCap,@KinhNghiem)
-		";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add(new SqlParameter("@ThongTinID", SqlDbType.Int) { Value = nv.ThongTinID });
-		cmd.Parameters.Add(new SqlParameter("@ChucVuID", SqlDbType.Int) { Value = nv.ChucVuID });
-		cmd.Parameters.Add(new SqlParameter("@PhongChucNangID", SqlDbType.Int) { Value = nv.PhongChucNangID });
-		cmd.Parameters.Add(new SqlParameter("@NgayVaoLam", SqlDbType.DateTime) { Value = (object?)nv.NgayVaoLam ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@BangCap", SqlDbType.NVarChar) { Value = nv.BangCap });
-		cmd.Parameters.Add(new SqlParameter("@KinhNghiem", SqlDbType.NVarChar) { Value = nv.KinhNghiem });
-		await conn.OpenAsync();
-		await cmd.ExecuteNonQueryAsync();
-	}
-	public async Task UpdateAsync(NhanVien nv)
-	{
-		const string sql = @"
-			UPDATE NhanVien
-			SET ChucVuID=@ChucVuID,
-				PhongChucNangID=@PhongChucNangID,
-				NgayVaoLam=@NgayVaoLam,
-				BangCap=@BangCap,
-				KinhNghiem=@KinhNghiem,
-				TrangThai=@TrangThai,
-				NgayCapNhat=GETDATE()
-			WHERE NhanVienID=@NhanVienID
-		";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add(new SqlParameter("@NhanVienID", SqlDbType.Int) { Value = nv.NhanVienID });
-		cmd.Parameters.Add(new SqlParameter("@ChucVuID", SqlDbType.Int) { Value = nv.ChucVuID });
-		cmd.Parameters.Add(new SqlParameter("@PhongChucNangID", SqlDbType.Int) { Value = nv.PhongChucNangID });
-		cmd.Parameters.Add(new SqlParameter("@NgayVaoLam", SqlDbType.DateTime) { Value = (object?)nv.NgayVaoLam ?? DBNull.Value });
-		cmd.Parameters.Add(new SqlParameter("@BangCap", SqlDbType.NVarChar) { Value = nv.BangCap });
-		cmd.Parameters.Add(new SqlParameter("@KinhNghiem", SqlDbType.NVarChar) { Value = nv.KinhNghiem });
-		cmd.Parameters.Add(new SqlParameter("@TrangThai", SqlDbType.NVarChar) { Value = nv.TrangThai });
-		await conn.OpenAsync();
-		await cmd.ExecuteNonQueryAsync();
-	}
-	public async Task<NhanVien?> GetByIdAsync(int nhanVienId)
-	{
-		const string sql = @"
-			SELECT 
-				NhanVienID, ThongTinID, ChucVuID, PhongChucNangID, NgayVaoLam, BangCap,
-				KinhNghiem, TrangThai, NgayTao, NgayCapNhat
-			FROM NhanVien
-			WHERE NhanVienID = @NhanVienID
-		";
-		using var conn = new SqlConnection(_connectionString);
-		using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@NhanVienID", nhanVienId);
-		await conn.OpenAsync();
-		using var reader = await cmd.ExecuteReaderAsync();
-		if (!reader.Read())
-			return null;
-		DateTime? ngayVaoLam = reader.IsDBNull(4) ? null : reader.GetDateTime(4);
-		DateTime? ngayCapNhat = reader.IsDBNull(9) ? null : reader.GetDateTime(9);
 
-		return new NhanVien(
-			reader.GetInt32(0), 
-			reader.GetInt32(1), 
-			reader.GetInt32(2), 
-			reader.GetInt32(3),  
-			ngayVaoLam,           
-			reader.GetString(5),   
-			reader.GetString(6),    
-			reader.GetString(7),   
-			reader.GetDateTime(8),  
-			ngayCapNhat            
-		);
-	}
-	public async Task<(List<NhanVienListReadModel>, int)> GetPageAsync(int pageNumber, int pageSize)
+	public NhanVienRepository(IConfiguration configuration)
 	{
-		var sql = $@"
-			{SELECT_LIST}
-			ORDER BY nv.NhanVienID
-			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-			SELECT COUNT(*) FROM NhanVien;
-		";
-		var list = new List<NhanVienListReadModel>();
+		_connectionString = configuration.GetConnectionString("DefaultConnection")!;
+	}
+
+	#region Queries
+
+	private const string BaseSelectList = @"
+        SELECT nv.NhanVienID, tt.HoTen, tt.EmailLienHe, cv.TenChucVu, nv.TrangThai
+        FROM NhanVien nv
+        JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+        JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID";
+
+	private const string BaseSelectDetail = @"
+        SELECT nv.NhanVienID, nv.ThongTinID, nv.NgayVaoLam, nv.BangCap, nv.KinhNghiem, nv.TrangThai, nv.NgayTao, nv.NgayCapNhat,               tt.HoTen, tt.NgaySinh, tt.GioiTinh, tt.SDT, tt.EmailLienHe, tt.DiaChi, tt.Avatar,
+               cv.ChucVuID, cv.TenChucVu,
+               pcn.PhongChucNangID, pcn.TenPhong
+        FROM NhanVien nv
+        JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+        JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID
+        JOIN PhongChucNang pcn ON nv.PhongChucNangID = pcn.PhongChucNangID";
+
+	#endregion
+
+
+	public async Task<(List<NhanVienReadListModel>, int)> GetPagedAsync(int page, int size)
+	{
+		var list = new List<NhanVienReadListModel>();
 		int total = 0;
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		int offset = (pageNumber - 1) * pageSize;
-		cmd.Parameters.Add(new SqlParameter("@Offset", SqlDbType.Int) { Value = offset });
-		cmd.Parameters.Add(new SqlParameter("@PageSize", SqlDbType.Int) { Value = pageSize });
+
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+            {BaseSelectList}
+            ORDER BY nv.NhanVienID
+            OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+            SELECT COUNT(*) FROM NhanVien";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
-			list.Add(MapList(reader));
-		if (await reader.NextResultAsync())
-			if (await reader.ReadAsync())
-				total = reader.GetInt32(0);
+			list.Add(MapToListDTO(reader));
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
 		return (list, total);
 	}
-	public async Task<(List<NhanVienListReadModel>, int)> SearchAsync(string keyword, int pageNumber, int pageSize)
+
+
+	public async Task<(List<NhanVienReadListModel>, int)> SearchAsync(string keyword, int page, int size)
 	{
-		var sql = $@"
-			{SELECT_LIST}
-			WHERE tt.HoTen LIKE @Keyword OR tt.EmailLienHe LIKE @Keyword
-			ORDER BY nv.NhanVienID
-			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-			SELECT COUNT(*)
-			FROM NhanVien nv
-			JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
-			WHERE tt.HoTen LIKE @Keyword OR tt.EmailLienHe LIKE @Keyword;
-		";
-		var list = new List<NhanVienListReadModel>();
+		var list = new List<NhanVienReadListModel>();
 		int total = 0;
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		int offset = (pageNumber - 1) * pageSize;
-		cmd.Parameters.Add(new SqlParameter("@Keyword", SqlDbType.NVarChar) { Value = $"%{keyword}%" });
-		cmd.Parameters.Add(new SqlParameter("@Offset", SqlDbType.Int) { Value = offset });
-		cmd.Parameters.Add(new SqlParameter("@PageSize", SqlDbType.Int) { Value = pageSize });
+
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+            {BaseSelectList}
+            WHERE tt.HoTen LIKE @Keyword OR tt.EmailLienHe LIKE @Keyword
+            ORDER BY nv.NhanVienID
+            OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+            SELECT COUNT(*)
+            FROM NhanVien nv
+            JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+            WHERE tt.HoTen LIKE @Keyword OR tt.EmailLienHe LIKE @Keyword";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar, 200).Value = $"%{keyword}%";
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
-			list.Add(MapList(reader));
-		if (await reader.NextResultAsync())
-			if (await reader.ReadAsync())
-				total = reader.GetInt32(0);
+			list.Add(MapToListDTO(reader));
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
 		return (list, total);
 	}
-	public async Task<NhanVienDetailReadModel?> GetDetailAsync(int id)
+
+
+	public async Task<NhanVienReadModel?> GetDetailAsync(int id)
 	{
-		var sql = $@"
-			{SELECT_DETAIL}
-			WHERE nv.NhanVienID=@Id
-		";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = id });
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return MapDetail(reader);
+
+		var sql = BaseSelectDetail + " WHERE nv.NhanVienID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToDetailDTO(reader);
+
+		return null;
 	}
+
+
+	public async Task<NhanVien?> GetByIdAsync(int id)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		const string sql = @"
+            SELECT NhanVienID,ThongTinID,ChucVuID,PhongChucNangID,
+                   NgayVaoLam,BangCap,KinhNghiem,TrangThai,
+                   NgayTao,NgayCapNhat
+            FROM NhanVien
+            WHERE NhanVienID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToEntity(reader);
+
+		return null;
+	}
+
+
+	public async Task<int> AddAsync(NhanVien nv)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"INSERT INTO NhanVien
+                    (ThongTinID,ChucVuID,PhongChucNangID,NgayVaoLam,BangCap,KinhNghiem,TrangThai)
+                    VALUES
+                    (@ThongTinID,@ChucVuID,@PhongChucNangID,@NgayVaoLam,@BangCap,@KinhNghiem,@TrangThai)";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@ThongTinID", SqlDbType.Int).Value = nv.ThongTinID;
+		cmd.Parameters.Add("@ChucVuID", SqlDbType.Int).Value = nv.ChucVuID;
+		cmd.Parameters.Add("@PhongChucNangID", SqlDbType.Int).Value = nv.PhongChucNangID;
+		cmd.Parameters.Add("@NgayVaoLam", SqlDbType.DateTime).Value = nv.NgayVaoLam;
+		cmd.Parameters.Add("@BangCap", SqlDbType.NVarChar, -1).Value = nv.BangCap;
+		cmd.Parameters.Add("@KinhNghiem", SqlDbType.NVarChar, -1).Value = nv.KinhNghiem;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = nv.TrangThai;
+
+		return await cmd.ExecuteNonQueryAsync();
+	}
+
+	public async Task<int> UpdateAsync(NhanVien nv)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"UPDATE NhanVien
+                    SET ChucVuID=@ChucVuID,
+                        PhongChucNangID=@PhongChucNangID,
+                        NgayVaoLam=@NgayVaoLam,
+                        BangCap=@BangCap,
+                        KinhNghiem=@KinhNghiem,
+                        TrangThai=@TrangThai,
+                        NgayCapNhat=@NgayCapNhat
+                    WHERE NhanVienID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = nv.NhanVienID;
+		cmd.Parameters.Add("@ChucVuID", SqlDbType.Int).Value = nv.ChucVuID;
+		cmd.Parameters.Add("@PhongChucNangID", SqlDbType.Int).Value = nv.PhongChucNangID;
+		cmd.Parameters.Add("@NgayVaoLam", SqlDbType.DateTime).Value = nv.NgayVaoLam;
+		cmd.Parameters.Add("@BangCap", SqlDbType.NVarChar, -1).Value = nv.BangCap;
+		cmd.Parameters.Add("@KinhNghiem", SqlDbType.NVarChar, -1).Value = nv.KinhNghiem;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = nv.TrangThai;
+		cmd.Parameters.Add("@NgayCapNhat", SqlDbType.DateTime).Value = nv.NgayCapNhat;
+
+		return await cmd.ExecuteNonQueryAsync();
+	}
+
+
 	public async Task<List<NameResponseDTO>> GetComboboxAsync(int chucVuId)
 	{
-		const string sql = @"
-			SELECT nv.NhanVienID,tt.HoTen
-			FROM NhanVien nv
-			JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
-			WHERE nv.ChucVuID=@ChucVuID AND nv.TrangThai=N'Đang làm việc'
-			ORDER BY tt.HoTen
-		";
 		var list = new List<NameResponseDTO>();
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add(new SqlParameter("@ChucVuID", SqlDbType.Int) { Value = chucVuId });
-		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		while (await reader.ReadAsync())
-			list.Add( new NameResponseDTO
-			{
-				Id = (int)reader["NhanVienID"],
-				Name = reader["HoTen"].ToString()!
-			});
-		return list;
-	}
-	public async Task<int> GetIdAsync(int taiKhoanId)
-	{
-		const string sql = @"
-			SELECT nv.NhanVienID
-			FROM NhanVien nv
-			JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
-			JOIN TaiKhoan tk ON tt.TaiKhoanID = tk.TaiKhoanID
-			WHERE tt.TaiKhoanID = @TaiKhoanID
-		";
+
 		using var conn = new SqlConnection(_connectionString);
-		using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.AddWithValue("@TaiKhoanID", taiKhoanId);
 		await conn.OpenAsync();
+
+		var sql = @"
+            SELECT nv.NhanVienID,tt.HoTen
+            FROM NhanVien nv
+            JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+            WHERE nv.ChucVuID=@ChucVuID
+            AND nv.TrangThai=N'Đang làm việc'
+            ORDER BY tt.HoTen";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@ChucVuID", SqlDbType.Int).Value = chucVuId;
+
 		using var reader = await cmd.ExecuteReaderAsync();
-		if (await reader.ReadAsync())
+
+		while (await reader.ReadAsync())
 		{
-			return reader.GetInt32(0);
+			list.Add(new NameResponseDTO
+			{
+				Id = reader.GetInt32(reader.GetOrdinal("NhanVienID")),
+				Name = reader.GetString(reader.GetOrdinal("HoTen"))
+			});
 		}
 
-		return 0;
+		return list;
 	}
-	private static NhanVienListReadModel MapList(SqlDataReader r)
+
+
+	#region Mapping
+
+	private NhanVien MapToEntity(SqlDataReader r)
 	{
-		return new NhanVienListReadModel
+		return new NhanVien(
+			r.GetInt32(r.GetOrdinal("NhanVienID")),
+			r.GetInt32(r.GetOrdinal("ThongTinID")),
+			r.GetInt32(r.GetOrdinal("ChucVuID")),
+			r.GetInt32(r.GetOrdinal("PhongChucNangID")),
+			r.GetDateTime(r.GetOrdinal("NgayVaoLam")),
+			r.GetString(r.GetOrdinal("BangCap")),
+			r.GetString(r.GetOrdinal("KinhNghiem")),
+			r.GetString(r.GetOrdinal("TrangThai")),
+			r.GetDateTime(r.GetOrdinal("NgayTao")),
+			r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
+		);
+	}
+
+	private NhanVienReadListModel MapToListDTO(SqlDataReader r)
+	{
+		return new NhanVienReadListModel
 		{
-			NhanVienID = (int)r["NhanVienID"],
-			HoTen = r["HoTen"].ToString()!,
-			Email = r["EmailLienHe"].ToString()!,
-			TenChucVu = r["TenChucVu"].ToString()!,
-			TrangThai = r["TrangThai"].ToString()!
+			NhanVienID = r.GetInt32(r.GetOrdinal("NhanVienID")),
+			HoTen = r.GetString(r.GetOrdinal("HoTen")),
+			Email = r.GetString(r.GetOrdinal("EmailLienHe")),
+			TenChucVu = r.GetString(r.GetOrdinal("TenChucVu")),
+			TrangThai = r.GetString(r.GetOrdinal("TrangThai"))
 		};
 	}
-	private static NhanVienDetailReadModel MapDetail(SqlDataReader r)
+
+	private NhanVienReadModel MapToDetailDTO(SqlDataReader r)
 	{
-		return new NhanVienDetailReadModel
+		return new NhanVienReadModel
 		{
-			NhanVienID = (int)r["NhanVienID"],
-			ThongTinID = (int)r["ThongTinID"],
+			NhanVienID = r.GetInt32(r.GetOrdinal("NhanVienID")),
+			ThongTinID = r.GetInt32(r.GetOrdinal("ThongTinID")),
+
 			ChucVu = new NameResponseDTO
 			{
-				Id = (int)r["ChucVuID"],
-				Name = r["TenChucVu"].ToString()!
+				Id = r.GetInt32(r.GetOrdinal("ChucVuID")),
+				Name = r.GetString(r.GetOrdinal("TenChucVu"))
 			},
+
 			PhongChucNang = new NameResponseDTO
 			{
-				Id = (int)r["PhongChucNangID"],
-				Name = r["TenPhong"].ToString()!
+				Id = r.GetInt32(r.GetOrdinal("PhongChucNangID")),
+				Name = r.GetString(r.GetOrdinal("TenPhong"))
 			},
-			HoTen = r["HoTen"].ToString()!,
-			NgaySinh = r["NgaySinh"] as DateTime?,
-			GioiTinh = r["GioiTinh"].ToString(),
-			SDT = r["SDT"].ToString(),
-			EmailLienHe = r["EmailLienHe"].ToString()!,
-			DiaChi = r["DiaChi"].ToString(),
-			Avatar = r["Avatar"].ToString(),
-			NgayVaoLam = r["NgayVaoLam"] as DateTime?,
-			BangCap = r["BangCap"].ToString(),
-			KinhNghiem = r["KinhNghiem"].ToString(),
-			TrangThai = r["TrangThai"].ToString()!,
-			NgayTao = (DateTime)r["NgayTao"],
-			NgayCapNhat = r["NgayCapNhat"] as DateTime?
+
+			HoTen = r.GetString(r.GetOrdinal("HoTen")),
+			NgaySinh = r.GetDateTime(r.GetOrdinal("NgaySinh")),
+			GioiTinh = r["GioiTinh"]?.ToString(),
+			SDT = r["SDT"]?.ToString(),
+			EmailLienHe = r.GetString(r.GetOrdinal("EmailLienHe")),
+			DiaChi = r["DiaChi"]?.ToString(),
+			Avatar = r["Avatar"]?.ToString(),
+			NgayVaoLam = r.GetDateTime(r.GetOrdinal("NgayVaoLam")),
+			BangCap = r["BangCap"]?.ToString(),
+			KinhNghiem = r["KinhNghiem"]?.ToString(),
+			TrangThai = r.GetString(r.GetOrdinal("TrangThai")),
+			NgayTao = r.GetDateTime(r.GetOrdinal("NgayTao")),
+			NgayCapNhat = r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
 		};
 	}
+
+	#endregion
 }

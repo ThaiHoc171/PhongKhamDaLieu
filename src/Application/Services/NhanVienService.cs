@@ -86,44 +86,44 @@ public class NhanVienService
 		await _repo.UpdateAsync(nv);
 		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật trạng thái thành công");
 	}
-	public async Task<ApiResponse<NhanVienDetailReadModel>> GetDetailAsync(int nhanVienID)
+	public async Task<ApiResponse<NhanVienReadModel>> GetDetailAsync(int nhanVienID)
 	{
 		var nv = await _repo.GetDetailAsync(nhanVienID);
 		if (nv == null)
-			return ApiResponse<NhanVienDetailReadModel>.Fail("Không tìm thấy nhân viên");
-		return ApiResponse<NhanVienDetailReadModel>.SuccessResponse(nv);
+			return ApiResponse<NhanVienReadModel>.Fail("Không tìm thấy nhân viên");
+		return ApiResponse<NhanVienReadModel>.SuccessResponse(nv);
 	}
-	public async Task<ApiResponse<PagedResult<NhanVienListReadModel>>> 
+	public async Task<ApiResponse<PagedResult<NhanVienReadListModel>>> 
 		GetPagedAsync(int pageNumber, int pageSize)
 	{
 		if (pageNumber <= 0) pageNumber = 1;
 		if (pageSize <= 0) pageSize = 10;
 		var (data, totalCount) = await _repo.GetPageAsync(pageNumber, pageSize);
-		var result = new PagedResult<NhanVienListReadModel>
+		var result = new PagedResult<NhanVienReadListModel>
 		{
 			Items = data,
 			TotalCount = totalCount,
 			PageNumber = pageNumber,
 			PageSize = pageSize
 		};
-		return ApiResponse<PagedResult<NhanVienListReadModel>>
+		return ApiResponse<PagedResult<NhanVienReadListModel>>
 			.SuccessResponse(result);
 	}
-	public async Task<ApiResponse<PagedResult<NhanVienListReadModel>>> 
+	public async Task<ApiResponse<PagedResult<NhanVienReadListModel>>> 
 		SearchAsync(string keyword, int pageNumber, int pageSize)
 	{
 		if (pageNumber <= 0) pageNumber = 1;
 		if (pageSize <= 0) pageSize = 10;
 		var (data, totalCount) =
 			await _repo.SearchAsync(keyword ?? "", pageNumber, pageSize);
-		var result = new PagedResult<NhanVienListReadModel>
+		var result = new PagedResult<NhanVienReadListModel>
 		{
 			Items = data,
 			TotalCount = totalCount,
 			PageNumber = pageNumber,
 			PageSize = pageSize
 		};
-		return ApiResponse<PagedResult<NhanVienListReadModel>>
+		return ApiResponse<PagedResult<NhanVienReadListModel>>
 			.SuccessResponse(result);
 	}
 	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync(int chucVuId)

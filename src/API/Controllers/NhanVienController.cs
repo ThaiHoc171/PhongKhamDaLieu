@@ -16,7 +16,7 @@ public class NhanVienController : ControllerBase
 	}
 	[Authorize(Policy = "NHANVIEN_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<NhanVienListReadModel>>>> 
+	public async Task<ActionResult<ApiResponse<PagedResult<NhanVienReadListModel>>>> 
 		GetPaged(int pageNumber = 1, int pageSize = 10)
 	{
 		var result = await _service.GetPagedAsync(pageNumber, pageSize);
@@ -24,7 +24,7 @@ public class NhanVienController : ControllerBase
 	}
 	[Authorize(Policy = "NHANVIEN_VIEW")]
 	[HttpGet("search")]
-	public async Task<ActionResult<ApiResponse<PagedResult<NhanVienListReadModel>>>> 
+	public async Task<ActionResult<ApiResponse<PagedResult<NhanVienReadListModel>>>> 
 		Search(string keyword, int pageNumber = 1, int pageSize = 10)
 	{
 		var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
@@ -32,7 +32,7 @@ public class NhanVienController : ControllerBase
 	}
 	[Authorize(Policy = "NHANVIEN_VIEW")]
 	[HttpGet("{id}")]
-	public async Task<ActionResult<ApiResponse<NhanVienDetailReadModel>>> GetDetail(int id)
+	public async Task<ActionResult<ApiResponse<NhanVienReadModel>>> GetDetail(int id)
 	{
 		var result = await _service.GetDetailAsync(id);
 		if (!result.Success)
