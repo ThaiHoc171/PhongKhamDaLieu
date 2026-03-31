@@ -25,7 +25,8 @@ public class NhanVienRepository : INhanVienRepository
         JOIN ChucVu cv ON nv.ChucVuID = cv.ChucVuID";
 
 	private const string BaseSelectDetail = @"
-        SELECT nv.NhanVienID, nv.ThongTinID, nv.NgayVaoLam, nv.BangCap, nv.KinhNghiem, nv.TrangThai, nv.NgayTao, nv.NgayCapNhat,               tt.HoTen, tt.NgaySinh, tt.GioiTinh, tt.SDT, tt.EmailLienHe, tt.DiaChi, tt.Avatar,
+        SELECT nv.NhanVienID, nv.ThongTinID, nv.NgayVaoLam, nv.BangCap, nv.KinhNghiem, nv.TrangThai, nv.NgayTao, nv.NgayCapNhat,
+               tt.HoTen, tt.NgaySinh, tt.GioiTinh, tt.SDT, tt.EmailLienHe, tt.DiaChi, tt.Avatar,
                cv.ChucVuID, cv.TenChucVu,
                pcn.PhongChucNangID, pcn.TenPhong
         FROM NhanVien nv
@@ -154,7 +155,26 @@ public class NhanVienRepository : INhanVienRepository
 		return null;
 	}
 
-
+	public async Task<int> GetIdAsync(int taiKhoanId)
+	{
+		const string sql = @"
+			SELECT nv.NhanVienID
+			FROM NhanVien nv
+			JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+			JOIN TaiKhoan tk ON tt.TaiKhoanID = tk.TaiKhoanID
+			WHERE tt.TaiKhoanID = @TaiKhoanID
+		";
+		using var conn = new SqlConnection(_connectionString);
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.AddWithValue("@TaiKhoanID", taiKhoanId);
+		await conn.OpenAsync();
+		using var reader = await cmd.ExecuteReaderAsync();
+		if (await reader.ReadAsync())
+		{
+			return reader.GetInt32(0);
+		}
+		return 0;
+	}
 	public async Task<int> AddAsync(NhanVien nv)
 	{
 		using var conn = new SqlConnection(_connectionString);
@@ -292,14 +312,14 @@ public class NhanVienRepository : INhanVienRepository
 
 			HoTen = r.GetString(r.GetOrdinal("HoTen")),
 			NgaySinh = r.GetDateTime(r.GetOrdinal("NgaySinh")),
-			GioiTinh = r["GioiTinh"]?.ToString(),
-			SDT = r["SDT"]?.ToString(),
-			EmailLienHe = r.GetString(r.GetOrdinal("EmailLienHe")),
-			DiaChi = r["DiaChi"]?.ToString(),
-			Avatar = r["Avatar"]?.ToString(),
+			GioiTinh = r.GetString(r.GetOrdinal("GioiTinh")),
+			SDT = r.GetString(r.GetOrdinal("SDT")),
+			EmailLienHe = r.IsDBNull(r.GetOrdinal("EmailLienHe")) ? null : r.GetString(r.GetOrdinal("EmailLienHe")),
+			DiaChi = r.GetString(r.GetOrdinal("DiaChi")),
+			Avatar = r.IsDBNull(r.GetOrdinal("Avatar")) ? null : r.GetString(r.GetOrdinal("Avatar")),
 			NgayVaoLam = r.GetDateTime(r.GetOrdinal("NgayVaoLam")),
-			BangCap = r["BangCap"]?.ToString(),
-			KinhNghiem = r["KinhNghiem"]?.ToString(),
+			BangCap = r.GetString(r.GetOrdinal("BangCap")),
+			KinhNghiem = r.GetString(r.GetOrdinal("KinhNghiem")),
 			TrangThai = r.GetString(r.GetOrdinal("TrangThai")),
 			NgayTao = r.GetDateTime(r.GetOrdinal("NgayTao")),
 			NgayCapNhat = r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
