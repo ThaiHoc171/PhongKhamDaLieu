@@ -3,133 +3,238 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+
 namespace Application.Services;
+
 public class NhanVienService
 {
 	private readonly INhanVienRepository _repo;
 	private readonly IThongTinCaNhanRepository _thongTinRepo;
 	private readonly ITaiKhoanRepository _taiKhoanRepo;
 	private readonly IConfiguration _config;
-	public NhanVienService(INhanVienRepository repo, IThongTinCaNhanRepository thongTinRepo, 
-		IConfiguration config, ITaiKhoanRepository taiKhoanRepository)
+
+	public NhanVienService(
+		INhanVienRepository repo,
+		IThongTinCaNhanRepository thongTinRepo,
+		ITaiKhoanRepository taiKhoanRepo,
+		IConfiguration config)
 	{
 		_repo = repo;
 		_thongTinRepo = thongTinRepo;
+		_taiKhoanRepo = taiKhoanRepo;
 		_config = config;
-		_taiKhoanRepo = taiKhoanRepository;
 	}
+
 	private static GioiTinhEnum ParseGioiTinh(string value)
 	{
 		if (string.IsNullOrWhiteSpace(value))
 			return GioiTinhEnum.Khac;
+
 		return GioiTinhExtensions.FromDbValue(value);
 	}
-	public async Task<ApiResponse<int>> AddNhanVienAsync(NhanVienRequestDTO dto)
+
+	public async Task<ApiResponse<int>> AddAsync(NhanVienRequestDTO dto)
 	{
-		var defaultPassword = _config["DefaultPassword"];
-		if (string.IsNullOrWhiteSpace(defaultPassword))
-			return ApiResponse<int>.Fail("Chưa cấu hình mật khẩu mặc định.");
-		var hash = Helper.Password.PassWordHash(defaultPassword);
-		var taiKhoan = new TaiKhoan(dto.ThongTin.EmailLienHe, hash, VaiTroEnum.NhanVien);
-		await _taiKhoanRepo.AddAsync(taiKhoan);
-		var created = await _taiKhoanRepo.GetByEmailAsync(dto.ThongTin.EmailLienHe);
-		if (created == null)
-			return ApiResponse<int>.Fail("Không tạo được tài khoản.");
-		var entity = new ThongTinCaNhan(
-			dto.ThongTin.HoTen,
-			dto.ThongTin.NgaySinh,
-			ParseGioiTinh(dto.ThongTin.GioiTinh),
-			dto.ThongTin.SDT,
-			dto.ThongTin.EmailLienHe,
-			dto.ThongTin.DiaChi,
-			dto.ThongTin.Avatar,
-			LoaiThongTinEnum.NhanVien,
-			created.TaiKhoanID
-		);
-		int? id = await _thongTinRepo.AddAsync(entity);
-		if (id == null)
-			return ApiResponse<int>.Fail("Lỗi khởi tạo hồ sơ!");
-		var thongTinID = id.Value;
-		var nv = new NhanVien(
-			thongTinID: thongTinID,
-			chucVuID: dto.ChucVuID,
-			phongChucNangID: dto.PhongChucNangID,
-			ngayVaoLam: dto.NgayVaoLam,
-			bangCap: dto.BangCap,
-			kinhNghiem: dto.KinhNghiem
-		);
-		await _repo.AddAsync(nv);
-		return ApiResponse<int>.SuccessResponse(nv.NhanVienID, "Tạo nhân viên thành công");
-	}
-	public async Task<ApiResponse<bool>> UpdateAsync(int nhanVienID, NhanVienRequestUpdateDTO dto)
-	{
-		var nv = await _repo.GetByIdAsync(nhanVienID);
-		if (nv == null)
-			return ApiResponse<bool>.Fail("Nhân viên không tồn tại");
-		nv.Update(
-			chucVuID: dto.ChucVuID,
-			phongChucNangID: dto.PhongChucNangID,
-			ngayVaoLam: dto.NgayVaoLam,
-			bangCap: dto.BangCap,
-			kinhNghiem: dto.KinhNghiem
-		);
-		await _repo.UpdateAsync(nv);
-		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thành công");
-	}
-	public async Task<ApiResponse<bool>> StatusAsync(int nhanVienID, string trangThai)
-	{
-		var nv = await _repo.GetByIdAsync(nhanVienID);
-		if (nv == null)
-			return ApiResponse<bool>.Fail("Nhân viên không tồn tại");
-		nv.Status(trangThai);
-		await _repo.UpdateAsync(nv);
-		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật trạng thái thành công");
-	}
-	public async Task<ApiResponse<NhanVienDetailReadModel>> GetDetailAsync(int nhanVienID)
-	{
-		var nv = await _repo.GetDetailAsync(nhanVienID);
-		if (nv == null)
-			return ApiResponse<NhanVienDetailReadModel>.Fail("Không tìm thấy nhân viên");
-		return ApiResponse<NhanVienDetailReadModel>.SuccessResponse(nv);
-	}
-	public async Task<ApiResponse<PagedResult<NhanVienListReadModel>>> 
-		GetPagedAsync(int pageNumber, int pageSize)
-	{
-		if (pageNumber <= 0) pageNumber = 1;
-		if (pageSize <= 0) pageSize = 10;
-		var (data, totalCount) = await _repo.GetPageAsync(pageNumber, pageSize);
-		var result = new PagedResult<NhanVienListReadModel>
+		try
 		{
-			Items = data,
-			TotalCount = totalCount,
-			PageNumber = pageNumber,
-			PageSize = pageSize
-		};
-		return ApiResponse<PagedResult<NhanVienListReadModel>>
-			.SuccessResponse(result);
-	}
-	public async Task<ApiResponse<PagedResult<NhanVienListReadModel>>> 
-		SearchAsync(string keyword, int pageNumber, int pageSize)
-	{
-		if (pageNumber <= 0) pageNumber = 1;
-		if (pageSize <= 0) pageSize = 10;
-		var (data, totalCount) =
-			await _repo.SearchAsync(keyword ?? "", pageNumber, pageSize);
-		var result = new PagedResult<NhanVienListReadModel>
+			if (dto == null)
+				return ApiResponse<int>.Fail("Dữ liệu không hợp lệ");
+			if (dto.ThongTin.EmailLienHe == null)
+				return ApiResponse<int>.Fail("Email liên hệ không được để trống");
+
+			var defaultPassword = _config["DefaultPassword"];
+
+			if (string.IsNullOrWhiteSpace(defaultPassword))
+				return ApiResponse<int>.Fail("Chưa cấu hình mật khẩu mặc định");
+
+			var hash = Helper.Password.PassWordHash(defaultPassword);
+
+			var taiKhoan = new TaiKhoan(
+				dto.ThongTin.EmailLienHe,
+				hash,
+				VaiTroEnum.NhanVien
+			);
+
+			await _taiKhoanRepo.AddAsync(taiKhoan);
+
+			var created = await _taiKhoanRepo.GetByEmailAsync(dto.ThongTin.EmailLienHe);
+
+			if (created == null)
+				return ApiResponse<int>.Fail("Không tạo được tài khoản");
+
+			var thongTin = new ThongTinCaNhan(
+				dto.ThongTin.HoTen,
+				dto.ThongTin.NgaySinh,
+				GioiTinhExtensions.FromDbValue(dto.ThongTin.GioiTinh),
+				dto.ThongTin.SDT,
+				dto.ThongTin.EmailLienHe,
+				dto.ThongTin.DiaChi,
+				dto.ThongTin.Avatar,
+				LoaiThongTinEnum.NhanVien,
+				created.TaiKhoanID
+			);
+
+			int? thongTinId = await _thongTinRepo.AddAsync(thongTin);
+
+			if (thongTinId == null)
+				return ApiResponse<int>.Fail("Khởi tạo thông tin cá nhân thất bại");
+
+			var nv = new NhanVien(
+				thongTinId.Value,
+				dto.ChucVuID,
+				dto.PhongChucNangID,
+				dto.NgayVaoLam ?? DateTime.UtcNow,
+				dto.BangCap,
+				dto.KinhNghiem,
+				"Đang làm việc"
+			);
+
+			int row = await _repo.AddAsync(nv);
+
+			if (row == 0)
+				return ApiResponse<int>.Fail("Tạo nhân viên thất bại");
+
+			return ApiResponse<int>.SuccessResponse(nv.NhanVienID, "Tạo nhân viên thành công");
+		}
+		catch (ArgumentException ex)
 		{
-			Items = data,
-			TotalCount = totalCount,
-			PageNumber = pageNumber,
-			PageSize = pageSize
-		};
-		return ApiResponse<PagedResult<NhanVienListReadModel>>
-			.SuccessResponse(result);
+			return ApiResponse<int>.Fail(ex.Message);
+		}
+		catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+		{
+			return ApiResponse<int>.Fail("Email đã tồn tại");
+		}
 	}
+
+	public async Task<ApiResponse<bool>> UpdateAsync(int id, NhanVienRequestUpdateDTO dto)
+	{
+		try
+		{
+			if (id <= 0)
+				return ApiResponse<bool>.Fail("ID không hợp lệ");
+
+			if (dto == null)
+				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
+
+			var nv = await _repo.GetByIdAsync(id);
+
+			if (nv == null)
+				return ApiResponse<bool>.Fail("Nhân viên không tồn tại");
+
+			nv.CapNhat(
+				dto.ChucVuID,
+				dto.PhongChucNangID,
+				dto.NgayVaoLam ?? nv.NgayVaoLam,
+				dto.BangCap,
+				dto.KinhNghiem,
+				nv.TrangThai
+			);
+
+			int row = await _repo.UpdateAsync(nv);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Cập nhật nhân viên thất bại");
+
+			return ApiResponse<bool>.SuccessResponse(true, "Cập nhật nhân viên thành công");
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+	}
+
+	public async Task<ApiResponse<bool>> StatusAsync(int id, string trangThai)
+	{
+		try
+		{
+			if (id <= 0)
+				return ApiResponse<bool>.Fail("ID không hợp lệ");
+
+			var nv = await _repo.GetByIdAsync(id);
+
+			if (nv == null)
+				return ApiResponse<bool>.Fail("Nhân viên không tồn tại");
+
+			nv.CapNhat(
+				nv.ChucVuID,
+				nv.PhongChucNangID,
+				nv.NgayVaoLam,
+				nv.BangCap,
+				nv.KinhNghiem,
+				trangThai
+			);
+
+			int row = await _repo.UpdateAsync(nv);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Cập nhật trạng thái thất bại");
+
+			return ApiResponse<bool>.SuccessResponse(true, "Cập nhật trạng thái thành công");
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+	}
+
+	public async Task<ApiResponse<NhanVienReadModel>> GetDetailAsync(int id)
+	{
+		if (id <= 0)
+			return ApiResponse<NhanVienReadModel>.Fail("ID không hợp lệ");
+
+		var data = await _repo.GetDetailAsync(id);
+
+		if (data == null)
+			return ApiResponse<NhanVienReadModel>.Fail("Nhân viên không tồn tại");
+
+		return ApiResponse<NhanVienReadModel>.SuccessResponse(data);
+	}
+
+	public async Task<ApiResponse<PagedResult<NhanVienReadListModel>>> GetPagedAsync(int page, int size)
+	{
+		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
+
+		var (items, total) = await _repo.GetPagedAsync(page, size);
+
+		var result = new PagedResult<NhanVienReadListModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
+		};
+
+		return ApiResponse<PagedResult<NhanVienReadListModel>>.SuccessResponse(result);
+	}
+
+	public async Task<ApiResponse<PagedResult<NhanVienReadListModel>>> SearchAsync(string keyword, int page, int size)
+	{
+		if (string.IsNullOrWhiteSpace(keyword))
+			return ApiResponse<PagedResult<NhanVienReadListModel>>
+				.Fail("Từ khóa không hợp lệ");
+
+		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
+
+		var (items, total) = await _repo.SearchAsync(keyword.Trim(), page, size);
+
+		var result = new PagedResult<NhanVienReadListModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
+		};
+
+		return ApiResponse<PagedResult<NhanVienReadListModel>>.SuccessResponse(result);
+	}
+
 	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync(int chucVuId)
 	{
 		var data = await _repo.GetComboboxAsync(chucVuId);
-		return ApiResponse<List<NameResponseDTO>>
-			.SuccessResponse(data);
+		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
 	}
 }
