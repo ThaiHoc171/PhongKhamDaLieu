@@ -22,9 +22,6 @@ public class ThongTinCaNhanService
 		{
 			if (dto == null)
 				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
-			bool isExist = await _repo.ExistsByEmailAsync(dto.EmailLienHe, dto.SDT);
-			if (isExist)
-				return ApiResponse<bool>.Fail("Email hoặc số điện thoại đã tồn tại");
 
 			var entity = new ThongTinCaNhan(
 				dto.HoTen.Trim(),
@@ -38,9 +35,9 @@ public class ThongTinCaNhanService
 				dto.TaiKhoanID
 			);
 
-			int id = await _repo.AddAsync(entity);
+			int row = await _repo.AddAsync(entity);
 
-			if (id <= 0)
+			if (row == 0)
 				return ApiResponse<bool>.Fail("Tạo thông tin thất bại");
 
 			return ApiResponse<bool>.SuccessResponse(true, "Tạo thông tin thành công");
@@ -65,9 +62,6 @@ public class ThongTinCaNhanService
 			if (dto == null)
 				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
 
-			if (dto.NgaySinh == null)
-				return ApiResponse<bool>.Fail("Ngày sinh không hợp lệ");
-
 			var entity = await _repo.GetByIdAsync(id);
 
 			if (entity == null)
@@ -75,7 +69,7 @@ public class ThongTinCaNhanService
 
 			entity.CapNhat(
 				dto.HoTen.Trim(),
-				dto.NgaySinh.Value,
+				dto.NgaySinh,
 				GioiTinhExtensions.FromDbValue(dto.GioiTinh),
 				dto.SDT,
 				dto.EmailLienHe,
@@ -84,7 +78,10 @@ public class ThongTinCaNhanService
 				LoaiThongTinExtensions.FromDbValue(dto.Loai)
 			);
 
-			await _repo.UpdateAsync(entity);
+			int row = await _repo.UpdateAsync(entity);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Cập nhật thông tin thất bại");
 
 			return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thông tin thành công");
 		}
@@ -110,15 +107,22 @@ public class ThongTinCaNhanService
 
 		return ApiResponse<ThongTinReadModel>.SuccessResponse(result);
 	}
-
-	public async Task<ApiResponse<List<ThongTinReadListModel>>> DanhSachKhachAsync()
+	public async Task<ApiResponse<PagedResult<ThongTinReadListModel>>> GetPagedAsync(int page, int size)
 	{
-		var list = await _repo.GetAllByLoaiAsync(LoaiThongTinEnum.BenhNhan);
-
-		return ApiResponse<List<ThongTinReadListModel>>.SuccessResponse(list);
+		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
+		var (items, total) = await _repo.GetPagedAsync(page, size);
+		var result = new PagedResult<ThongTinReadListModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
+		};
+		return ApiResponse<PagedResult<ThongTinReadListModel>>.SuccessResponse(result);
 	}
 
-	public async Task<ApiResponse<bool>> CapNhatTaiKhoanAsync(int thongTinId, int taiKhoanId)
+	public async Task<ApiResponse<bool>> CapNhatTaiKhoanAsync(int thongTinId, int taiKhoanId, string email)
 	{
 		try
 		{
@@ -126,15 +130,24 @@ public class ThongTinCaNhanService
 				return ApiResponse<bool>.Fail("ID không hợp lệ");
 
 			var entity = await _repo.GetByIdAsync(thongTinId);
-			int reulst = await _repo.GetIdByTaiKhoanId(taiKhoanId);
+
 			if (entity == null)
 				return ApiResponse<bool>.Fail("Không tìm thấy thông tin");
-			if (reulst != thongTinId && reulst != 0)
-				return ApiResponse<bool>.Fail("Tài khoản đã được liên kết với thông tin khác");
 
-			entity.CapNhatTaiKhoan(taiKhoanId);
+			int existId = await _repo.GetIdByTaiKhoanId(taiKhoanId);
 
-			await _repo.UpdateAsync(entity);
+			if (existId != 0 && existId != thongTinId)
+				return ApiResponse<bool>.Fail("Tài khoản đã liên kết với thông tin khác");
+
+			string? emailLienHe = entity.EmailLienHe;
+			if (string.IsNullOrWhiteSpace(emailLienHe))
+				emailLienHe = email;
+			entity.CapNhatTaiKhoan(taiKhoanId,emailLienHe);
+
+			int row = await _repo.UpdateAsync(entity);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Cập nhật tài khoản thất bại");
 
 			return ApiResponse<bool>.SuccessResponse(true, "Cập nhật tài khoản thành công");
 		}

@@ -66,24 +66,42 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		return null;
 	}
 
-	public async Task<List<ThongTinReadListModel>> GetAllByLoaiAsync(LoaiThongTinEnum loai)
+	public async Task<(List<ThongTinReadListModel>, int)> GetPagedAsync(int page, int size)
 	{
 		var list = new List<ThongTinReadListModel>();
+		int total = 0;
 
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
-		var sql = BaseSelectList + " WHERE Loai=@Loai";
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+			{BaseSelectList}
+			WHERE Loai=N'Khách'
+			ORDER BY HoTen
+			OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+			SELECT COUNT(*)
+			FROM ThongTinCaNhan
+			WHERE Loai=N'Khách'";
 
 		using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar, 50).Value = loai.ToDbValue();
+
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
 
 		using var reader = await cmd.ExecuteReaderAsync();
 
 		while (await reader.ReadAsync())
 			list.Add(MapToReadListModel(reader));
 
-		return list;
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
 	}
 
 	public async Task<ThongTinCaNhan?> GetByEmailOrSDTAsync(string? email, string? sdt)
@@ -128,7 +146,7 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		return result == null ? 0 : Convert.ToInt32(result);
 	}
 
-	public async Task<bool> ExistsByEmailAsync(string email, string sdt)
+	public async Task<bool> ExistsByEmailAsync(string? email, string sdt)
 	{
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
@@ -174,7 +192,7 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		return Convert.ToInt32(result);
 	}
 
-	public async Task UpdateAsync(ThongTinCaNhan tt)
+	public async Task<int> UpdateAsync(ThongTinCaNhan tt)
 	{
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
@@ -204,38 +222,9 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		cmd.Parameters.Add("@Avatar", SqlDbType.NVarChar).Value = (object?)tt.Avatar ?? DBNull.Value;
 		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar) .Value = tt.Loai.ToDbValue();
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = tt.ThongTinID;
-
-		await cmd.ExecuteNonQueryAsync();
+		return await cmd.ExecuteNonQueryAsync();
 	}
 
-	public async Task<List<NameResponseDTO>> GetComboboxAsync()
-	{
-		var list = new List<NameResponseDTO>();
-
-		using var conn = new SqlConnection(_connectionString);
-		await conn.OpenAsync();
-
-		var sql = @"
-        SELECT ThongTinID,HoTen
-        FROM ThongTinCaNhan
-        WHERE Loai=N'Bệnh nhân'
-        ORDER BY HoTen";
-
-		using var cmd = new SqlCommand(sql, conn);
-
-		using var reader = await cmd.ExecuteReaderAsync();
-
-		while (await reader.ReadAsync())
-		{
-			list.Add(new NameResponseDTO
-			{
-				Id = reader.GetInt32(0),
-				Name = reader.GetString(1)
-			});
-		}
-
-		return list;
-	}
 
 	#region Mapping
 
@@ -248,8 +237,8 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 			r.GetDateTime(r.GetOrdinal("NgaySinh")),
 			GioiTinhExtensions.FromDbValue(r.GetString(r.GetOrdinal("GioiTinh"))),
 			r.GetString(r.GetOrdinal("SDT")),
-			r.GetString(r.GetOrdinal("EmailLienHe")),
-			r.IsDBNull(r.GetOrdinal("DiaChi")) ? null : r.GetString(r.GetOrdinal("DiaChi")),
+			r.IsDBNull(r.GetOrdinal("EmailLienHe")) ? null : r.GetString(r.GetOrdinal("EmailLienHe")),
+			r.GetString(r.GetOrdinal("DiaChi")),
 			r.IsDBNull(r.GetOrdinal("Avatar")) ? null : r.GetString(r.GetOrdinal("Avatar")),
 			LoaiThongTinExtensions.FromDbValue(r.GetString(r.GetOrdinal("Loai"))),
 			r.GetDateTime(r.GetOrdinal("NgayTao")),
@@ -267,7 +256,7 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 			NgaySinh = r.GetDateTime(r.GetOrdinal("NgaySinh")),
 			GioiTinh = r.GetString(r.GetOrdinal("GioiTinh")),
 			SDT = r.GetString(r.GetOrdinal("SDT")),
-			EmailLienHe = r.GetString(r.GetOrdinal("EmailLienHe"))
+			EmailLienHe = r.IsDBNull(r.GetOrdinal("EmailLienHe")) ? null : r.GetString(r.GetOrdinal("EmailLienHe"))
 		};
 	}
 
@@ -278,17 +267,16 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 			ThongTinID = r.GetInt32(r.GetOrdinal("ThongTinID")),
 			TaiKhoanID = r.IsDBNull(r.GetOrdinal("TaiKhoanID")) ? null : r.GetInt32(r.GetOrdinal("TaiKhoanID")),
 			HoTen = r.GetString(r.GetOrdinal("HoTen")),
-			NgaySinh = r.IsDBNull(r.GetOrdinal("NgaySinh")) ? null : r.GetDateTime(r.GetOrdinal("NgaySinh")),
-			GioiTinh = r.IsDBNull(r.GetOrdinal("GioiTinh")) ? null : r.GetString(r.GetOrdinal("GioiTinh")),
+			NgaySinh = r.GetDateTime(r.GetOrdinal("NgaySinh")),
+			GioiTinh = r.GetString(r.GetOrdinal("GioiTinh")),
 			SDT = r.GetString(r.GetOrdinal("SDT")),
-			EmailLienHe = r.GetString(r.GetOrdinal("EmailLienHe")),
-			DiaChi = r.IsDBNull(r.GetOrdinal("DiaChi")) ? null : r.GetString(r.GetOrdinal("DiaChi")),
+			EmailLienHe = r.IsDBNull(r.GetOrdinal("EmailLienHe")) ? null : r.GetString(r.GetOrdinal("EmailLienHe")),
+			DiaChi = r.GetString(r.GetOrdinal("DiaChi")),
 			Avatar = r.IsDBNull(r.GetOrdinal("Avatar")) ? null : r.GetString(r.GetOrdinal("Avatar")),
 			Loai = r.GetString(r.GetOrdinal("Loai")),
 			NgayTao = r.GetDateTime(r.GetOrdinal("NgayTao")),
 			NgayCapNhat = r.IsDBNull(r.GetOrdinal("NgayCapNhat")) ? null : r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
 		};
 	}
-
 	#endregion
 }
