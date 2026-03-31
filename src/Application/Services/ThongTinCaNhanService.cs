@@ -121,8 +121,24 @@ public class ThongTinCaNhanService
 		};
 		return ApiResponse<PagedResult<ThongTinReadListModel>>.SuccessResponse(result);
 	}
-
-	public async Task<ApiResponse<bool>> CapNhatTaiKhoanAsync(int thongTinId, int taiKhoanId, string email)
+	public async Task<ApiResponse<PagedResult<ThongTinReadListModel>>> SearchAsync(string keyword, int page, int size)
+	{
+		if (string.IsNullOrWhiteSpace(keyword))
+			return ApiResponse<PagedResult<ThongTinReadListModel>>
+				.Fail("Từ khóa không hợp lệ");
+		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
+		var (items, total) = await _repo.SearchPagedAsync(keyword.Trim(), page, size);
+		var result = new PagedResult<ThongTinReadListModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
+		};
+		return ApiResponse<PagedResult<ThongTinReadListModel>>.SuccessResponse(result);
+	}
+	public async Task<ApiResponse<bool>> UpdateAccountAsync(int thongTinId, int taiKhoanId, string email)
 	{
 		try
 		{

@@ -20,7 +20,6 @@ public class ThongTinUpdateRequestDTO
 	public string DiaChi { get; set; } = "";
 	public string? Avatar { get; set; }
     public string Loai { get; set; } = "";
-
 }
 public class ThongTinReadListModel
 {

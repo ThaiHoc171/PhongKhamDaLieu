@@ -103,7 +103,54 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 
 		return (list, total);
 	}
+	public async Task<(List<ThongTinReadListModel>, int)> SearchPagedAsync(string keyword, int page, int size)
+	{
+		var list = new List<ThongTinReadListModel>();
+		int total = 0;
 
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+			{BaseSelectList}
+			WHERE Loai = N'Khách'
+			AND (
+				HoTen LIKE @Keyword
+				OR SDT LIKE @Keyword
+				OR EmailLienHe LIKE @Keyword
+			)
+			ORDER BY HoTen
+			OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+			SELECT COUNT(*)
+			FROM ThongTinCaNhan
+			WHERE Loai = N'Khách'
+			AND (
+				HoTen LIKE @Keyword
+				OR SDT LIKE @Keyword
+				OR EmailLienHe LIKE @Keyword
+			)";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = $"%{keyword}%";
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+			list.Add(MapToReadListModel(reader));
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
+	}
 	public async Task<ThongTinCaNhan?> GetByEmailOrSDTAsync(string? email, string? sdt)
 	{
 		using var conn = new SqlConnection(_connectionString);
@@ -144,23 +191,6 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		var result = await cmd.ExecuteScalarAsync();
 
 		return result == null ? 0 : Convert.ToInt32(result);
-	}
-
-	public async Task<bool> ExistsByEmailAsync(string? email, string sdt)
-	{
-		using var conn = new SqlConnection(_connectionString);
-		await conn.OpenAsync();
-
-		var sql = @"SELECT COUNT(1)
-                    FROM ThongTinCaNhan
-                    WHERE EmailLienHe=@Email OR SDT=@SDT";
-
-		using var cmd = new SqlCommand(sql, conn);
-
-		cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = email;
-		cmd.Parameters.Add("@SDT", SqlDbType.NVarChar).Value = sdt;
-
-		return Convert.ToInt32(await cmd.ExecuteScalarAsync()) > 0;
 	}
 
 	public async Task<int> AddAsync(ThongTinCaNhan tt)
