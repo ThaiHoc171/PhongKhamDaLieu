@@ -178,10 +178,10 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		using var cmd = new SqlCommand(sql, conn);
 
 		cmd.Parameters.Add("@HoTen", SqlDbType.NVarChar).Value = tt.HoTen;
-		cmd.Parameters.Add("@NgaySinh", SqlDbType.DateTime).Value = tt.NgaySinh;
+		cmd.Parameters.Add("@NgaySinh", SqlDbType.Date).Value = tt.NgaySinh;
 		cmd.Parameters.Add("@GioiTinh", SqlDbType.NVarChar).Value = tt.GioiTinh.ToDbValue();
 		cmd.Parameters.Add("@SDT", SqlDbType.NVarChar).Value = tt.SDT;
-		cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = tt.EmailLienHe;
+		cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = (object?)tt.EmailLienHe ?? DBNull.Value;
 		cmd.Parameters.Add("@DiaChi", SqlDbType.NVarChar).Value = tt.DiaChi;
 		cmd.Parameters.Add("@Avatar", SqlDbType.NVarChar).Value = (object?)tt.Avatar ?? DBNull.Value;
 		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar).Value = tt.Loai.ToDbValue();
@@ -214,10 +214,10 @@ public class ThongTinCaNhanRepository : IThongTinCaNhanRepository
 		using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@TaiKhoanID", SqlDbType.Int).Value = (object?)tt.TaiKhoanID ?? DBNull.Value;
 		cmd.Parameters.Add("@HoTen", SqlDbType.NVarChar).Value = tt.HoTen;
-		cmd.Parameters.Add("@NgaySinh", SqlDbType.DateTime).Value = tt.NgaySinh;
+		cmd.Parameters.Add("@NgaySinh", SqlDbType.Date).Value = tt.NgaySinh;
 		cmd.Parameters.Add("@GioiTinh", SqlDbType.NVarChar).Value = tt.GioiTinh.ToDbValue();
 		cmd.Parameters.Add("@SDT", SqlDbType.NVarChar).Value = tt.SDT;
-		cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = tt.EmailLienHe;
+		cmd.Parameters.Add("@Email", SqlDbType.NVarChar).Value = (object?)tt.EmailLienHe ?? DBNull.Value;
 		cmd.Parameters.Add("@DiaChi", SqlDbType.NVarChar).Value = tt.DiaChi;
 		cmd.Parameters.Add("@Avatar", SqlDbType.NVarChar).Value = (object?)tt.Avatar ?? DBNull.Value;
 		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar) .Value = tt.Loai.ToDbValue();
