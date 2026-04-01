@@ -18,12 +18,15 @@ public static class VaiTroExtensions
             _ => throw new ArgumentOutOfRangeException()
         };
     public static VaiTroEnum ToEnum(string value)
-        => value switch
-        {
-            "Admin" => VaiTroEnum.Admin,
-            "Nhân viên" => VaiTroEnum.NhanVien,
-            "Bệnh nhân" => VaiTroEnum.BenhNhan,
-            "Khách" => VaiTroEnum.Khach,
-            _ => throw new ArgumentException($"Vai trò không hợp lệ: {value}")
-        };
+    {
+		value = value.Trim();
+		return value switch
+		{
+			"Admin" => VaiTroEnum.Admin,
+			"Nhân viên" => VaiTroEnum.NhanVien,
+			"Bệnh nhân" => VaiTroEnum.BenhNhan,
+			"Khách" => VaiTroEnum.Khach,
+			_ => throw new ArgumentException($"Vai trò không hợp lệ: {value}")
+		};
+	}
 }

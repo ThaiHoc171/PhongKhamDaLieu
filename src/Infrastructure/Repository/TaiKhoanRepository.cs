@@ -206,7 +206,7 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 
 		cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 100).Value = taiKhoan.Email;
 		cmd.Parameters.Add("@MatKhau", SqlDbType.NVarChar, 255).Value = taiKhoan.MatKhau;
-		cmd.Parameters.Add("@VaiTro", SqlDbType.NVarChar, 20).Value = taiKhoan.VaiTro;
+		cmd.Parameters.Add("@VaiTro", SqlDbType.NVarChar, 20) .Value = taiKhoan.VaiTro.ToDbValue();
 		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = taiKhoan.TrangThai;
 
 		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
