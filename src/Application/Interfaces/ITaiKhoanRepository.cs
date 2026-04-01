@@ -11,6 +11,6 @@ public interface ITaiKhoanRepository
 	Task<(List<TaiKhoanListReadModel>, int)>
 		GetPagedAsync(int page, int size, string? vaiTro, string? trangThai);
 	Task<int> AddAsync(TaiKhoan taiKhoan);
-	Task UpdateAsync(TaiKhoan taiKhoan);
+	Task<int> UpdateAsync(TaiKhoan taiKhoan);
     Task UpdateFcmTokenAsync(int taiKhoanId, string? fcmToken);
 }

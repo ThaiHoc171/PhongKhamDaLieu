@@ -54,14 +54,11 @@ public class NhanVienService
 			var taiKhoan = new TaiKhoan(
 				dto.ThongTin.EmailLienHe,
 				hash,
-				VaiTroEnum.NhanVien
+				VaiTroEnum.NhanVien.ToDbValue()
 			);
 
-			await _taiKhoanRepo.AddAsync(taiKhoan);
-
-			var created = await _taiKhoanRepo.GetByEmailAsync(dto.ThongTin.EmailLienHe);
-
-			if (created == null)
+			int taiKhoanID = await _taiKhoanRepo.AddAsync(taiKhoan);
+			if (taiKhoanID == 0)
 				return ApiResponse<int>.Fail("Không tạo được tài khoản");
 
 			var thongTin = new ThongTinCaNhan(
@@ -73,7 +70,7 @@ public class NhanVienService
 				dto.ThongTin.DiaChi,
 				dto.ThongTin.Avatar,
 				LoaiThongTinEnum.NhanVien,
-				created.TaiKhoanID
+				taiKhoanID
 			);
 
 			int? thongTinId = await _thongTinRepo.AddAsync(thongTin);
