@@ -25,6 +25,7 @@ public class BenhNhanReadModel
 {
 	public int BenhNhanID { get; init; }
 	public int ThongTinID { get; init; }
+	public int ? TaiKhoanID { get; init; }
 	public string HoTen { get; init; } = "";
 	public DateTime NgaySinh { get; init; }
 	public string GioiTinh { get; init; } = "";
