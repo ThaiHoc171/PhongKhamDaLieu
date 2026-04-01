@@ -24,7 +24,7 @@ public class BenhNhanRepository : IBenhNhanRepository
         JOIN ThongTinCaNhan tt ON bn.ThongTinID = tt.ThongTinID";
 
 	private const string BaseSelectDetail = @"
-        SELECT bn.BenhNhanID, bn.ThongTinID, tt.HoTen, tt.NgaySinh, tt.GioiTinh, tt.SDT, tt.EmailLienHe,
+        SELECT bn.BenhNhanID, bn.ThongTinID, tt.TaiKhoanID, tt.HoTen, tt.NgaySinh, tt.GioiTinh, tt.SDT, tt.EmailLienHe,
                tt.DiaChi, tt.Avatar, bn.GhiChu, bn.NgayTao, bn.NgayCapNhat
         FROM BenhNhan bn
         JOIN ThongTinCaNhan tt ON bn.ThongTinID = tt.ThongTinID";
@@ -279,6 +279,7 @@ public class BenhNhanRepository : IBenhNhanRepository
 		{
 			BenhNhanID = r.GetInt32(r.GetOrdinal("BenhNhanID")),
 			ThongTinID = r.GetInt32(r.GetOrdinal("ThongTinID")),
+			TaiKhoanID = r.IsDBNull(r.GetOrdinal("TaiKhoanID")) ? null : r.GetInt32(r.GetOrdinal("TaiKhoanID")),
 			HoTen = r.GetString(r.GetOrdinal("HoTen")),
 			NgaySinh = r.GetDateTime(r.GetOrdinal("NgaySinh")),
 			GioiTinh = r.GetString(r.GetOrdinal("GioiTinh")),
