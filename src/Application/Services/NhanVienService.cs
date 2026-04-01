@@ -54,7 +54,7 @@ public class NhanVienService
 			var taiKhoan = new TaiKhoan(
 				dto.ThongTin.EmailLienHe,
 				hash,
-				VaiTroEnum.NhanVien.ToDbValue()
+				VaiTroEnum.NhanVien
 			);
 
 			int taiKhoanID = await _taiKhoanRepo.AddAsync(taiKhoan);

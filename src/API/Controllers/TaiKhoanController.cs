@@ -114,4 +114,16 @@ public class TaiKhoanController : ControllerBase
 
 		return Ok(result);
 	}
+	[Authorize(Policy = "USER_VIEW")]
+	[HttpGet]
+	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhoanListReadModel>>>>
+	Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string? vaiTro = null, [FromQuery] string? trangThai = null)
+	{
+		var result = await _service.SearchAsync(page, size,keyword,vaiTro,trangThai);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
 }

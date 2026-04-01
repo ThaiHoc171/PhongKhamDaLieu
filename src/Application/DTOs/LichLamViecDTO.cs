@@ -14,6 +14,7 @@ public class LichLamViecReadListModel
 {
 	public int LichLamViecID { get; set; }
 	public NameResponseDTO NhanVien { get; init; } = null!;
+	public string ChucVu { get; init; } =string.Empty;
 	public DateTime Ngay { get; set; }
 	public int CaLamViec { get; set; }
 	public string TenPhong { get; set; } = string.Empty;

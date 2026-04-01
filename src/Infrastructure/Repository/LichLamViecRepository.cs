@@ -22,12 +22,14 @@ public class LichLamViecRepository : ILichLamViecRepository
 		SELECT llv.LichLamViecID,
 			   nv.NhanVienID,
 			   tt.HoTen,
+				cv.TenChucVu,
 			   llv.Ngay,
 			   llv.CaLamViec,
 			   pcn.TenPhong,
 			   llv.GhiChu
 		FROM LichLamViecNhanVien llv
 		JOIN NhanVien nv ON nv.NhanVienID = llv.NhanVienID
+		JOIN ChucVu cv ON cv.ChucVuID = nv.ChucVuID
 		JOIN ThongTinCaNhan tt ON tt.ThongTinID = nv.ThongTinID
 		JOIN PhongChucNang pcn ON pcn.PhongChucNangID = nv.PhongChucNangID";
 
@@ -203,6 +205,7 @@ public class LichLamViecRepository : ILichLamViecRepository
 				Id = r.GetInt32(r.GetOrdinal("NhanVienID")),
 				Name = r.GetString(r.GetOrdinal("HoTen"))
 			},
+			ChucVu = r.GetString(r.GetOrdinal("TenChucVu")),
 			Ngay = r.GetDateTime(r.GetOrdinal("Ngay")),
 			CaLamViec = r.GetInt32(r.GetOrdinal("CaLamViec")),
 			TenPhong = r.GetString(r.GetOrdinal("TenPhong")),

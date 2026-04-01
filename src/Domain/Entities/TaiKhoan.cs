@@ -7,16 +7,16 @@ public class TaiKhoan
 	public int TaiKhoanID { get; private set; }
 	public string Email { get; private set; }
 	public string MatKhau { get; private set; }
-	public string VaiTro { get; private set; }
+	public VaiTroEnum VaiTro { get; private set; }
 	public string TrangThai { get; private set; }
 	public DateTime NgayTao { get; private set; }
 	public DateTime? NgayCapNhat { get; private set; }
 	public string? FCMToken { get; private set; }
 
 	// Constructor tạo mới
-	public TaiKhoan(string email, string matKhau, string vaiTro)
+	public TaiKhoan(string email, string matKhau, VaiTroEnum vaiTro)
 	{
-		Validate(email, matKhau, vaiTro, "Hoạt động");
+		Validate(email, matKhau, "Hoạt động");
 
 		Email = email;
 		MatKhau = matKhau;
@@ -29,13 +29,13 @@ public class TaiKhoan
 		int taiKhoanID,
 		string email,
 		string matKhau,
-		string vaiTro,
+		VaiTroEnum vaiTro,
 		string trangThai,
 		DateTime ngayTao,
 		DateTime? ngayCapNhat = null,
 		string? fcmToken = null)
 	{
-		Validate(email, matKhau, vaiTro, trangThai);
+		Validate(email, matKhau, trangThai);
 
 		TaiKhoanID = taiKhoanID;
 		Email = email;
@@ -83,7 +83,7 @@ public class TaiKhoan
 	}
 
 	// Validate central
-	private void Validate(string email, string matKhau, string vaiTro, string trangThai)
+	private void Validate(string email, string matKhau, string trangThai)
 	{
 		if (string.IsNullOrWhiteSpace(email))
 			throw new ArgumentException("Email không hợp lệ");
@@ -91,14 +91,7 @@ public class TaiKhoan
 		if (string.IsNullOrWhiteSpace(matKhau))
 			throw new ArgumentException("Mật khẩu không hợp lệ");
 
-		if (string.IsNullOrWhiteSpace(vaiTro))
-			throw new ArgumentException("Vai trò không hợp lệ");
-
 		if (string.IsNullOrWhiteSpace(trangThai))
 			throw new ArgumentException("Trạng thái không hợp lệ");
-
-		// validate enum mapping
-		VaiTroExtensions.ToEnum(vaiTro);
-		TrangThaiSystemExtensions.FromDb(trangThai);
 	}
 }

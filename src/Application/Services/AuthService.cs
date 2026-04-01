@@ -2,6 +2,7 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -55,7 +56,7 @@ public class AuthService
 			{
 				Id = tk.TaiKhoanID,
 				Email = tk.Email,
-				VaiTro = tk.VaiTro,
+				VaiTro = VaiTroExtensions.ToDbValue(tk.VaiTro),
 				AccessToken = accessToken,
 				RefreshToken = refreshToken,
 				HoTen = new NameResponseDTO
@@ -89,7 +90,7 @@ public class AuthService
 			{
 				Id = taiKhoan.TaiKhoanID,
 				Email = taiKhoan.Email,
-				VaiTro = taiKhoan.VaiTro,
+				VaiTro = VaiTroExtensions.ToDbValue(taiKhoan.VaiTro),
 				AccessToken = accessToken,
 				RefreshToken = newRefreshToken,
 				HoTen = new NameResponseDTO
@@ -110,12 +111,12 @@ public class AuthService
 	private async Task<UserInfo> BuildUserInfoAsync(TaiKhoan tk)
 	{
 		var info = new UserInfo();
-		if (tk.VaiTro == "Admin")
+		if (tk.VaiTro == VaiTroEnum.Admin)
 		{
 			info.HoTen = "Admin";
 			return info;
 		}
-		if (tk.VaiTro == "Nhân viên")
+		if (tk.VaiTro == VaiTroEnum.NhanVien)
 		{
 			int nvId = await _nhanVienRepo.GetIdAsync(tk.TaiKhoanID);
 			var nv = await _nhanVienRepo.GetDetailAsync(nvId);
@@ -131,7 +132,7 @@ public class AuthService
 				}
 			}
 		}
-		if (tk.VaiTro == "Bệnh nhân")
+		if (tk.VaiTro == VaiTroEnum.BenhNhan)
 		{
 			var thongTinId = await _thongTinCaNhanRepo.GetIdByTaiKhoanId(tk.TaiKhoanID);
 			var bn = await _benhNhanRepo.GetByThongTinIDAsync(thongTinId);
@@ -162,7 +163,7 @@ public class AuthService
 		{
 			new Claim(ClaimTypes.NameIdentifier, tk.TaiKhoanID.ToString()),
 			new Claim(ClaimTypes.Email, tk.Email),
-			new Claim(ClaimTypes.Role, tk.VaiTro)
+			new Claim(ClaimTypes.Role, VaiTroExtensions.ToDbValue(tk.VaiTro))
 		};
 		if (info.ThongTinID.HasValue)
 			claims.Add(new Claim("ThongTinID", info.ThongTinID.Value.ToString()));

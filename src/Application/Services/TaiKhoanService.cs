@@ -2,6 +2,7 @@
 using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
@@ -32,7 +33,7 @@ public class TaiKhoanService
 			var entity = new TaiKhoan(
 				dto.Email.Trim(),
 				hash,
-				dto.VaiTro);
+				VaiTroExtensions.ToEnum(dto.VaiTro));
 
 			var id = await _repo.AddAsync(entity);
 
@@ -117,7 +118,8 @@ public class TaiKhoanService
 
 			if (tk == null)
 				return ApiResponse<bool>.Fail("Tài khoản không tồn tại");
-
+			if(dto == null)
+				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
 			if (dto.TrangThai == "Bị khóa")
 				tk.Lock();
 
@@ -134,16 +136,34 @@ public class TaiKhoanService
 		}
 	}
 
-	public async Task<ApiResponse<PagedResult<TaiKhoanListReadModel>>> GetPagedAsync(
-		int page,
-		int size,
-		string? vaiTro,
-		string? trangThai)
+	public async Task<ApiResponse<PagedResult<TaiKhoanListReadModel>>> 
+		GetPagedAsync(int page, int size, string? vaiTro, string? trangThai)
 	{
 		if (page < 1) page = 1;
 		if (size <= 0) size = 10;
 
 		var (items, total) = await _repo.GetPagedAsync(page, size, vaiTro, trangThai);
+
+		var result = new PagedResult<TaiKhoanListReadModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
+		};
+
+		return ApiResponse<PagedResult<TaiKhoanListReadModel>>.SuccessResponse(result);
+	}
+	public async Task<ApiResponse<PagedResult<TaiKhoanListReadModel>>> SearchAsync(int page, int size, string keyword, string? vaiTro, string? trangThai)
+	{
+		if (string.IsNullOrWhiteSpace(keyword))
+			return ApiResponse<PagedResult<TaiKhoanListReadModel>>
+				.Fail("Từ khóa không hợp lệ");
+
+		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
+
+		var (items, total) = await _repo.SearchPagedAsync( page, size,keyword.Trim(),vaiTro,trangThai);
 
 		var result = new PagedResult<TaiKhoanListReadModel>
 		{

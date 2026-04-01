@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
@@ -123,7 +124,57 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 
 		return (list, total);
 	}
+	public async Task<(List<TaiKhoanListReadModel>, int)> 
+		SearchPagedAsync(int page, int size, string? keyword, string? vaiTro, string? trangThai)
+	{
+		var list = new List<TaiKhoanListReadModel>();
+		int total = 0;
 
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+	{BaseSelectList}
+	WHERE (@Keyword IS NULL OR Email LIKE '%' + @Keyword + '%')
+	AND (@VaiTro IS NULL OR VaiTro = @VaiTro)
+	AND (@TrangThai IS NULL OR TrangThai = @TrangThai)
+	ORDER BY TaiKhoanID DESC
+	OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+	SELECT COUNT(*)
+	FROM TaiKhoan
+	WHERE (@Keyword IS NULL OR Email LIKE '%' + @Keyword + '%')
+	AND (@VaiTro IS NULL OR VaiTro = @VaiTro)
+	AND (@TrangThai IS NULL OR TrangThai = @TrangThai)";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar, 100).Value =
+			(object?)keyword ?? DBNull.Value;
+
+		cmd.Parameters.Add("@VaiTro", SqlDbType.NVarChar, 20).Value =
+			(object?)vaiTro ?? DBNull.Value;
+
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value =
+			(object?)trangThai ?? DBNull.Value;
+
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+			list.Add(MapToListDTO(reader));
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
+	}
 	public async Task<TaiKhoanReadModel?> GetDetailAsync(int id)
 	{
 		using var conn = new SqlConnection(_connectionString);
@@ -211,7 +262,7 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 			r.GetInt32(r.GetOrdinal("TaiKhoanID")),
 			r.GetString(r.GetOrdinal("Email")),
 			r.GetString(r.GetOrdinal("MatKhau")),
-			r.GetString(r.GetOrdinal("VaiTro")),
+			VaiTroExtensions.ToEnum(r.GetString(r.GetOrdinal("VaiTro"))),
 			r.GetString(r.GetOrdinal("TrangThai")),
 			r.GetDateTime(r.GetOrdinal("NgayTao")),
 			r.IsDBNull(r.GetOrdinal("NgayCapNhat"))
