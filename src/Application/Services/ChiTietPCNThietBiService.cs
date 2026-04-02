@@ -113,8 +113,8 @@ public class ChiTietPCNThietBiService
 
 		try
 		{
-			entity.CapNhatGhiChu(dto.GhiChu);
-			if(string.IsNullOrWhiteSpace(dto.TinhTrang) == false)
+			entity.CapNhat(dto.MaTaiSan, dto.GhiChu);
+			if(!string.IsNullOrWhiteSpace(dto.TinhTrang))
 				entity.ChuyenTinhTrang(dto.TinhTrang);
 		}
 		catch (InvalidOperationException ex)
