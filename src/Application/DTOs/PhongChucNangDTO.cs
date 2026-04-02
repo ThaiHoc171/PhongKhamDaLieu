@@ -13,7 +13,7 @@ public class PhongChucNangReadModel
 	public DateTime NgayTao { get; set; }
 	public DateTime? NgayCapNhat { get; set; }
 }
-public class PhongChucNangListReadModel
+public class PhongChucNangReadListModel
 {
 	public int PhongChucNangID { get; set; }
 	public string TenPhong { get; set; } = default!;

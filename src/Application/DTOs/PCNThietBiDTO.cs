@@ -16,7 +16,7 @@ public class PCNThietBiReadModel
     public NameResponseDTO ThietBi { get; init; } = default!;
     public int TongSoLuong { get; set; }
 }
-public class PCNThietBiListReadModel
+public class PCNThietBiReadListModel
 {
     public int PCN_TB_ID { get; set; }
     public string? PhongChucNang { get; set; }

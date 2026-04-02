@@ -4,213 +4,256 @@ using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
-namespace Infrastructure.Repository;
+namespace Infrastructure.Repositories;
 
 public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 {
-    private readonly string _connectionString;
-    public ChiTietPCNThietBiRepository(IConfiguration config)
-    {
-        _connectionString = config.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException("Connection string not found.");
-    }
-    private SqlConnection CreateConnection() => new(_connectionString);
-    private const string BaseJoin =
-        @"FROM ChiTiet_PCNTB ct
-          JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
-          JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID";
+	private readonly string _connectionString;
 
-    private const string BaseSelectLite =
-        @"SELECT ct.ChiTietID, ct.MaTaiSan, ct.NgayNhap, ct.TinhTrang";
+	public ChiTietPCNThietBiRepository(IConfiguration configuration)
+	{
+		_connectionString = configuration.GetConnectionString("DefaultConnection")!;
+	}
 
-    private const string BaseSelectDetail =
-        @"SELECT ct.ChiTietID, ct.MaTaiSan, ct.NgayNhap, ct.TinhTrang, ct.GhiChu,
-                 ptb.PhongChucNangID,
-                 tb.ThietBiID, tb.TenTB";
-    public async Task<ChiTietPCNThietBi?> GetByIdAsync(int id)
-    {
-        const string sql = @"
-            SELECT ChiTietID, PCN_TB_ID, MaTaiSan, NgayNhap, TinhTrang, GhiChu
-            FROM ChiTiet_PCNTB
-            WHERE ChiTietID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? MapToEntity(reader) : null;
-    }
-    public async Task<ChiTietPCNThietBiReadModel?> GetDetailAsync(int id)
-    {
-        var sql = $@"
+	#region Queries
+
+	private const string BaseJoin = @"
+        FROM ChiTiet_PCNTB ct
+        JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
+        JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID";
+
+	private const string BaseSelectList = @"
+        SELECT ct.ChiTietID, ct.MaTaiSan, ct.NgayNhap, ct.TinhTrang";
+
+	private const string BaseSelectDetail = @"
+        SELECT ct.ChiTietID, ct.MaTaiSan, ct.NgayNhap, ct.TinhTrang, ct.GhiChu,
+               ptb.PhongChucNangID,
+               tb.ThietBiID, tb.TenTB";
+
+	#endregion
+
+
+	public async Task<ChiTietPCNThietBi?> GetByIdAsync(int id)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"SELECT ChiTietID, PCN_TB_ID, MaTaiSan, NgayNhap, TinhTrang, GhiChu
+                    FROM ChiTiet_PCNTB
+                    WHERE ChiTietID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToEntity(reader);
+
+		return null;
+	}
+
+
+	public async Task<ChiTietPCNThietBiReadModel?> GetDetailAsync(int id)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = $@"
             {BaseSelectDetail}
             {BaseJoin}
             WHERE ct.ChiTietID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        return await reader.ReadAsync() ? MapToDetailDTO(reader) : null;
-    }
-    public async Task<(List<ChiTietPCNThietBiListReadModel>, int)> GetPagedAsync(int pcnTbId, int page, int size)
-    {
-        var sql = $@"
-            {BaseSelectLite}
-            {BaseJoin}
-            WHERE ct.PCN_TB_ID=@PCN_TB_ID
-            ORDER BY ct.NgayNhap DESC
-            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
 
-            SELECT COUNT(*)
-            FROM ChiTiet_PCNTB
-            WHERE PCN_TB_ID=@PCN_TB_ID";
-        var list = new List<ChiTietPCNThietBiListReadModel>();
-        int total = 0;
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@PCN_TB_ID", pcnTbId);
-        cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
-        cmd.Parameters.AddWithValue("@PageSize", size);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-            list.Add(MapToLiteDTO(reader));
-        if (await reader.NextResultAsync() && await reader.ReadAsync())
-            total = reader.GetInt32(0);
-        return (list, total);
-    }
-    public async Task<(List<ChiTietPCNThietBiListReadModel>, int)> SearchPagedAsync(int pcnTbId, string keyword, int page, int size)
-    {
-        var sql = $@"
-            {BaseSelectLite}
-            {BaseJoin}
-            WHERE ct.PCN_TB_ID=@PCN_TB_ID
-              AND (@Keyword IS NULL OR ct.MaTaiSan LIKE @Keyword OR tb.TenTB LIKE @Keyword)
-            ORDER BY ct.NgayNhap DESC
-            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
 
-            SELECT COUNT(*)
-            FROM ChiTiet_PCNTB ct
-            JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
-            JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID
-            WHERE ct.PCN_TB_ID=@PCN_TB_ID
-              AND (@Keyword IS NULL OR ct.MaTaiSan LIKE @Keyword OR tb.TenTB LIKE @Keyword)";
-        var list = new List<ChiTietPCNThietBiListReadModel>();
-        int total = 0;
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@PCN_TB_ID", pcnTbId);
-        cmd.Parameters.AddWithValue("@Keyword",
-            string.IsNullOrWhiteSpace(keyword) ? DBNull.Value : $"%{keyword}%");
-        cmd.Parameters.AddWithValue("@Offset", (page - 1) * size);
-        cmd.Parameters.AddWithValue("@PageSize", size);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-            list.Add(MapToLiteDTO(reader));
-        if (await reader.NextResultAsync() && await reader.ReadAsync())
-            total = reader.GetInt32(0);
-        return (list, total);
-    }
-    public async Task<List<(int Id, string Ten)>> GetComboboxAsync(int pcnTbId)
-    {
-        const string sql = @"
-            SELECT ct.ChiTietID, tb.TenTB
-            FROM ChiTiet_PCNTB ct
-            JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
-            JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID
-            WHERE ct.PCN_TB_ID=@PCN_TB_ID";
-        var list = new List<(int, string)>();
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@PCN_TB_ID", pcnTbId);
-        await conn.OpenAsync();
-        await using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-            list.Add((reader.GetInt32(0), reader.GetString(1)));
-        return list;
-    }
-    public async Task<int> AddAsync(ChiTietPCNThietBi entity)
-    {
-        const string sql = @"
-            INSERT INTO ChiTiet_PCNTB (PCN_TB_ID, MaTaiSan, TinhTrang, GhiChu)
-            OUTPUT INSERTED.ChiTietID
-            VALUES (@PCN_TB_ID, @MaTaiSan, @TinhTrang, @GhiChu)";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@PCN_TB_ID", entity.PCN_TB_ID);
-        cmd.Parameters.AddWithValue("@MaTaiSan", entity.MaTaiSan);
-        cmd.Parameters.AddWithValue("@TinhTrang", entity.TinhTrang.ToDbValue());
-        cmd.Parameters.AddWithValue("@GhiChu", (object?)entity.GhiChu ?? DBNull.Value);
-        await conn.OpenAsync();
-        return Convert.ToInt32(await cmd.ExecuteScalarAsync());
-    }
-    public async Task UpdateAsync(ChiTietPCNThietBi entity)
-    {
-        const string sql = @"
-            UPDATE ChiTiet_PCNTB
-            SET TinhTrang=@TinhTrang,
-                GhiChu=@GhiChu
-            WHERE ChiTietID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@TinhTrang", entity.TinhTrang.ToDbValue());
-        cmd.Parameters.AddWithValue("@GhiChu", (object?)entity.GhiChu ?? DBNull.Value);
-        cmd.Parameters.AddWithValue("@Id", entity.ChiTietID);
-        await conn.OpenAsync();
-        await cmd.ExecuteNonQueryAsync();
-    }
-    public async Task DeleteAsync(int id)
-    {
-        const string sql = @"DELETE FROM ChiTiet_PCNTB WHERE ChiTietID=@Id";
-        await using var conn = CreateConnection();
-        await using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("@Id", id);
-        await conn.OpenAsync();
-        await cmd.ExecuteNonQueryAsync();
-    }
-    private static ChiTietPCNThietBi MapToEntity(SqlDataReader r)
-    {
-        return new ChiTietPCNThietBi(
-            r.GetInt32(0),
-            r.GetInt32(1),
-            r.GetString(2),
-            r.GetDateTime(3),
-            r.GetString(4),
-            r.IsDBNull(5) ? null : r.GetString(5)
-        );
-    }
-    private static ChiTietPCNThietBiListReadModel MapToLiteDTO(SqlDataReader r)
-    {
-        return new ChiTietPCNThietBiListReadModel
-        {
-            ChiTietID = r.GetInt32(0),
-            MaTaiSan = r.GetString(1),
-            NgayNhap = r.GetDateTime(2),
-            TinhTrang = r.GetString(3)
-        };
-    }
-    private static ChiTietPCNThietBiReadModel MapToDetailDTO(SqlDataReader r)
-    {
-        return new ChiTietPCNThietBiReadModel
-        {
-            ChiTietID = r.GetInt32(0),
-            MaTaiSan = r.GetString(1),
-            NgayNhap = r.GetDateTime(2),
-            TinhTrang = r.GetString(3),
-            GhiChu = r.IsDBNull(4) ? null : r.GetString(4),
-            PhongChucNang = new NameResponseDTO
-            {
-                Id = r.GetInt32(5),
-                Name = "PCN"
-            },
-            ThietBi = new NameResponseDTO
-            {
-                Id = r.GetInt32(6),
-                Name = r.GetString(7)
-            }
-        };
-    }
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToDetailDTO(reader);
+
+		return null;
+	}
+
+
+	public async Task<List<ChiTietPCNThietBiListReadModel>> GetListAsync(int pcnTbId)
+	{
+		var list = new List<ChiTietPCNThietBiListReadModel>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = $@"
+        {BaseSelectList}
+        {BaseJoin}
+        WHERE ct.PCN_TB_ID = @PCN_TB_ID
+        ORDER BY ct.NgayNhap DESC";
+
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@PCN_TB_ID", SqlDbType.Int).Value = pcnTbId;
+
+		await using var reader = await cmd.ExecuteReaderAsync();
+		while (await reader.ReadAsync())
+		{
+			list.Add(MapToListDTO(reader));
+		}
+		return list;
+	}
+
+
+	public async Task BulkInsertAsync(List<ChiTietPCNThietBi> list)
+	{
+		using var conn = new SqlConnection(_connectionString);
+
+		var table = new DataTable();
+
+		table.Columns.Add("PCN_TB_ID", typeof(int));
+		table.Columns.Add("MaTaiSan", typeof(string));
+		table.Columns.Add("NgayNhap", typeof(DateTime));
+		table.Columns.Add("TinhTrang", typeof(string));
+		table.Columns.Add("GhiChu", typeof(string));
+
+		foreach (var item in list)
+		{
+			table.Rows.Add(
+				item.PCN_TB_ID,
+				item.MaTaiSan,
+				item.NgayNhap,
+				item.TinhTrang.ToDbValue(),
+				item.GhiChu ?? (object)DBNull.Value
+			);
+		}
+
+		using var bulk = new SqlBulkCopy(conn);
+
+		bulk.DestinationTableName = "ChiTiet_PCNTB";
+
+		bulk.ColumnMappings.Add("PCN_TB_ID", "PCN_TB_ID");
+		bulk.ColumnMappings.Add("MaTaiSan", "MaTaiSan");
+		bulk.ColumnMappings.Add("NgayNhap", "NgayNhap");
+		bulk.ColumnMappings.Add("TinhTrang", "TinhTrang");
+		bulk.ColumnMappings.Add("GhiChu", "GhiChu");
+
+		await conn.OpenAsync();
+
+		await bulk.WriteToServerAsync(table);
+	}
+	public async Task<int> AddAsync(ChiTietPCNThietBi entity)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"INSERT INTO ChiTiet_PCNTB
+                    (PCN_TB_ID, MaTaiSan, TinhTrang, GhiChu)
+                    OUTPUT INSERTED.ChiTietID
+                    VALUES (@PCN_TB_ID,@MaTaiSan,@TinhTrang,@GhiChu)";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@PCN_TB_ID", SqlDbType.Int).Value = entity.PCN_TB_ID;
+		cmd.Parameters.Add("@MaTaiSan", SqlDbType.NVarChar, 100).Value = entity.MaTaiSan;
+		cmd.Parameters.Add("@TinhTrang", SqlDbType.NVarChar, 50).Value = entity.TinhTrang.ToDbValue();
+		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar, -1).Value =
+			(object?)entity.GhiChu ?? DBNull.Value;
+
+		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
+	}
+
+
+	public async Task<int> UpdateAsync(ChiTietPCNThietBi entity)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"UPDATE ChiTiet_PCNTB
+                    SET TinhTrang=@TinhTrang,
+                        GhiChu=@GhiChu
+                    WHERE ChiTietID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@TinhTrang", SqlDbType.NVarChar, 50)
+			.Value = entity.TinhTrang.ToDbValue();
+
+		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar, -1)
+			.Value = (object?)entity.GhiChu ?? DBNull.Value;
+
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = entity.ChiTietID;
+
+		int row = await cmd.ExecuteNonQueryAsync();
+
+		return row;
+	}
+
+
+	public async Task<int> DeleteAsync(int id)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"DELETE FROM ChiTiet_PCNTB WHERE ChiTietID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		int row = await cmd.ExecuteNonQueryAsync();
+
+		return row;
+	}
+
+
+	#region Mapping
+
+	private ChiTietPCNThietBi MapToEntity(SqlDataReader r)
+	{
+		return new ChiTietPCNThietBi(
+			r.GetInt32(r.GetOrdinal("ChiTietID")),
+			r.GetInt32(r.GetOrdinal("PCN_TB_ID")),
+			r.GetString(r.GetOrdinal("MaTaiSan")),
+			r.GetDateTime(r.GetOrdinal("NgayNhap")),
+			r.GetString(r.GetOrdinal("TinhTrang")),
+			r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu"))
+		);
+	}
+
+
+	private ChiTietPCNThietBiListReadModel MapToListDTO(SqlDataReader r)
+	{
+		return new ChiTietPCNThietBiListReadModel
+		{
+			ChiTietID = r.GetInt32(r.GetOrdinal("ChiTietID")),
+			MaTaiSan = r.GetString(r.GetOrdinal("MaTaiSan")),
+			NgayNhap = r.GetDateTime(r.GetOrdinal("NgayNhap")),
+			TinhTrang = r.GetString(r.GetOrdinal("TinhTrang"))
+		};
+	}
+
+
+	private ChiTietPCNThietBiReadModel MapToDetailDTO(SqlDataReader r)
+	{
+		return new ChiTietPCNThietBiReadModel
+		{
+			ChiTietID = r.GetInt32(r.GetOrdinal("ChiTietID")),
+			MaTaiSan = r.GetString(r.GetOrdinal("MaTaiSan")),
+			NgayNhap = r.GetDateTime(r.GetOrdinal("NgayNhap")),
+			TinhTrang = r.GetString(r.GetOrdinal("TinhTrang")),
+			GhiChu = r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu")),
+
+			PhongChucNang = new NameResponseDTO
+			{
+				Id = r.GetInt32(r.GetOrdinal("PhongChucNangID")),
+				Name = "PCN"
+			},
+
+			ThietBi = new NameResponseDTO
+			{
+				Id = r.GetInt32(r.GetOrdinal("ThietBiID")),
+				Name = r.GetString(r.GetOrdinal("TenTB"))
+			}
+		};
+	}
+
+	#endregion
 }

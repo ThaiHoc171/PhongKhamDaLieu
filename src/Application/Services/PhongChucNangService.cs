@@ -3,176 +3,139 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using OfficeOpenXml;
-namespace Application.Services;
-public class PhongChucNangService
+using Microsoft.Data.SqlClient;
+ namespace Application.Services;
+ public class PhongChucNangService
 {
 	private readonly IPhongChucNangRepository _repo;
-	public PhongChucNangService(IPhongChucNangRepository repo)
+ 	public PhongChucNangService(IPhongChucNangRepository repo)
 	{
 		_repo = repo;
 	}
-	public async Task<ApiResponse<int>> TaoMoiAsync(PhongChucNangRequestDTO dto)
+ 	public async Task<ApiResponse<bool>> AddAsync(PhongChucNangRequestDTO dto)
 	{
-		var validate = ValidateCreate(dto);
-		if (!validate.Success)
-			return ApiResponse<int>.Fail(validate.Message);
 		try
 		{
-			var entity = new PhongChucNang(
-				dto.TenPhong,
+			if (dto == null)
+				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
+ 			var entity = new PhongChucNang(
+				dto.TenPhong.Trim(),
 				dto.MoTa
 			);
-			var id = await _repo.AddAsync(entity);
-			return ApiResponse<int>.SuccessResponse(id);
+ 			int row = await _repo.AddAsync(entity);
+ 			if (row == 0)
+				return ApiResponse<bool>.Fail("Tạo phòng chức năng thất bại");
+ 			return ApiResponse<bool>.SuccessResponse(true, "Tạo phòng chức năng thành công");
 		}
-		catch (Exception ex)
-		{
-			return ApiResponse<int>.Fail(ex.Message);
-		}
-	}
-	public async Task<ApiResponse<bool>> CapNhatAsync(int id, PhongChucNangRequestDTO dto)
-	{
-		var phong = await _repo.GetByIdAsync(id);
-		if (phong == null)
-			return ApiResponse<bool>.Fail("Phòng chức năng không tồn tại");
-		var validate = ValidateUpdate(dto);
-		if (!validate.Success)
-			return ApiResponse<bool>.Fail(validate.Message);
-		try
-		{
-			phong.CapNhat(
-				dto.TenPhong,
-				dto.MoTa
-			);
-			await _repo.UpdateAsync(phong);
-			return ApiResponse<bool>.SuccessResponse(true);
-		}
-		catch (Exception ex)
+		catch (ArgumentException ex)
 		{
 			return ApiResponse<bool>.Fail(ex.Message);
 		}
+		catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+		{
+			return ApiResponse<bool>.Fail("Tên phòng đã tồn tại");
+		}
 	}
-	public async Task<ApiResponse<bool>> ChuyenTrangThaiAsync(int id, TinhTrang trangThaiMoi)
+ 	public async Task<ApiResponse<bool>> UpdateAsync(int id, PhongChucNangRequestDTO dto)
 	{
-		var phong = await _repo.GetByIdAsync(id);
-		if (phong == null)
-			return ApiResponse<bool>.Fail("Phòng chức năng không tồn tại");
 		try
 		{
-			phong.ChuyenTrangThai(trangThaiMoi);
-			await _repo.UpdateAsync(phong);
-			return ApiResponse<bool>.SuccessResponse(true);
+			if (id <= 0)
+				return ApiResponse<bool>.Fail("ID không hợp lệ");
+ 			if (dto == null)
+				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
+ 			var entity = await _repo.GetByIdAsync(id);
+ 			if (entity == null)
+				return ApiResponse<bool>.Fail("Phòng chức năng không tồn tại");
+ 			entity.CapNhat(
+				dto.TenPhong,
+				dto.MoTa
+			);
+ 			int row = await _repo.UpdateAsync(entity);
+ 			if (row == 0)
+				return ApiResponse<bool>.Fail("Cập nhật phòng chức năng thất bại");
+ 			return ApiResponse<bool>.SuccessResponse(true, "Cập nhật phòng chức năng thành công");
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+		{
+			return ApiResponse<bool>.Fail("Tên phòng đã tồn tại");
+		}
+	}
+ 	public async Task<ApiResponse<bool>> ChangeStatusAsync(int id, TinhTrang trangThaiMoi)
+	{
+		try
+		{
+			if (id <= 0)
+				return ApiResponse<bool>.Fail("ID không hợp lệ");
+ 			var entity = await _repo.GetByIdAsync(id);
+ 			if (entity == null)
+				return ApiResponse<bool>.Fail("Phòng chức năng không tồn tại");
+ 			entity.ChuyenTrangThai(trangThaiMoi);
+ 			int row = await _repo.UpdateAsync(entity);
+ 			if (row == 0)
+				return ApiResponse<bool>.Fail("Chuyển trạng thái thất bại");
+ 			return ApiResponse<bool>.SuccessResponse(true, "Chuyển trạng thái thành công");
 		}
 		catch (InvalidOperationException ex)
 		{
 			return ApiResponse<bool>.Fail(ex.Message);
 		}
 	}
-	public async Task<ApiResponse<PhongChucNangReadModel>> GetByIdAsync(int id)
+ 	public async Task<ApiResponse<PhongChucNangReadModel>> GetDetailAsync(int id)
 	{
-		var result = await _repo.GetDetailAsync(id);
-		if (result == null)
+		if (id <= 0)
+			return ApiResponse<PhongChucNangReadModel>.Fail("ID không hợp lệ");
+ 		var result = await _repo.GetDetailAsync(id);
+ 		if (result == null)
 			return ApiResponse<PhongChucNangReadModel>.Fail("Phòng chức năng không tồn tại");
-		return ApiResponse<PhongChucNangReadModel>.SuccessResponse(result);
+ 		return ApiResponse<PhongChucNangReadModel>.SuccessResponse(result);
 	}
-	public async Task<ApiResponse<PagedResult<PhongChucNangListReadModel>>> GetPagedAsync(
+ 	public async Task<ApiResponse<PagedResult<PhongChucNangReadListModel>>> GetPagedAsync(
 		int page,
 		int size,
 		string? trangThai)
 	{
-		var (items, total) = await _repo.GetPagedAsync(page, size, trangThai);
-		return ApiResponse<PagedResult<PhongChucNangListReadModel>>.SuccessResponse(
-			new PagedResult<PhongChucNangListReadModel>
-			{
-				Items = items,
-				TotalCount = total,
-				PageNumber = page,
-				PageSize = size
-			});
+		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
+ 		var (items, total) = await _repo.GetPagedAsync(page, size, trangThai);
+ 		var result = new PagedResult<PhongChucNangReadListModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
+		};
+ 		return ApiResponse<PagedResult<PhongChucNangReadListModel>>
+			.SuccessResponse(result);
 	}
-	public async Task<ApiResponse<PagedResult<PhongChucNangListReadModel>>> SearchAsync(
+ 	public async Task<ApiResponse<PagedResult<PhongChucNangReadListModel>>> SearchAsync(
 		string? keyword,
 		int page,
 		int size)
 	{
-		var (items, total) = await _repo.SearchPagedAsync(keyword, page, size);
-		return ApiResponse<PagedResult<PhongChucNangListReadModel>>.SuccessResponse(
-			new PagedResult<PhongChucNangListReadModel>
-			{
-				Items = items,
-				TotalCount = total,
-				PageNumber = page,
-				PageSize = size
-			});
-	}
-	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync()
-	{
-		var list = await _repo.GetComboboxAsync();
-		var result = list.Select(x => new NameResponseDTO
+		if (string.IsNullOrWhiteSpace(keyword))
+			return ApiResponse<PagedResult<PhongChucNangReadListModel>>
+				.Fail("Từ khóa không hợp lệ");
+ 		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
+ 		var (items, total) = await _repo.SearchPagedAsync(keyword.Trim(), page, size);
+ 		var result = new PagedResult<PhongChucNangReadListModel>
 		{
-			Id = x.Id,
-			Name = x.Ten
-		}).ToList();
-		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(result);
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
+		};
+ 		return ApiResponse<PagedResult<PhongChucNangReadListModel>>
+			.SuccessResponse(result);
 	}
-	public async Task<ApiResponse<ImportResult>> ImportExcelAsync(Stream fileStream)
+ 	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync()
 	{
-		var result = new ImportResult();
-		using var package = new ExcelPackage(fileStream);
-		var sheet = package.Workbook.Worksheets[0];
-		var rowCount = sheet.Dimension.Rows;
-		for (int row = 2; row <= rowCount; row++)
-		{
-			try
-			{
-				var tenPhong = sheet.Cells[row, 1].GetValue<string>();
-				var moTa = sheet.Cells[row, 2].GetValue<string>();
-				var dto = new PhongChucNangRequestDTO
-				{
-					TenPhong = tenPhong ?? "",
-					MoTa = moTa
-				};
-				var validate = ValidateCreate(dto);
-				if (!validate.Success)
-				{
-					result.Errors.Add(new ImportError
-					{
-						Row = row,
-						Message = validate.Message
-					});
-					continue;
-				}
-				var entity = new PhongChucNang(
-					dto.TenPhong,
-					dto.MoTa
-				);
-				await _repo.AddAsync(entity);
-				result.SuccessCount++;
-			}
-			catch (Exception ex)
-			{
-				result.Errors.Add(new ImportError
-				{
-					Row = row,
-					Message = ex.Message
-				});
-			}
-		}
-		return ApiResponse<ImportResult>.SuccessResponse(result);
-	}
-	private ApiResponse<bool> ValidateCreate(PhongChucNangRequestDTO dto)
-	{
-		if (string.IsNullOrWhiteSpace(dto.TenPhong))
-			return ApiResponse<bool>.Fail("Tên phòng không được để trống");
-		if (dto.TenPhong.Length > 200)
-			return ApiResponse<bool>.Fail("Tên phòng quá dài");
-		return ApiResponse<bool>.SuccessResponse(true);
-	}
-	private ApiResponse<bool> ValidateUpdate(PhongChucNangRequestDTO dto)
-	{
-		if (string.IsNullOrWhiteSpace(dto.TenPhong))
-			return ApiResponse<bool>.Fail("Tên phòng không được để trống");
-		return ApiResponse<bool>.SuccessResponse(true);
+		var data = await _repo.GetComboboxAsync();
+ 		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
 	}
 }
