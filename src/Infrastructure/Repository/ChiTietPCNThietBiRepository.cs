@@ -20,7 +20,8 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 	#region Queries
 
 	private const string BaseSelectList = @"
-        SELECT ct.ChiTietID, ct.MaTaiSan, ct.NgayNhap, ct.TinhTrang";
+        SELECT ct.ChiTietID, ct.MaTaiSan, ct.NgayNhap, ct.TinhTrang
+		FROM ChiTiet_PCNTB ct";
 
 	private const string BaseSelectDetail = @"
         SELECT ct.ChiTietID, ct.PCN_TB_ID, ct.MaTaiSan, ct.NgayNhap,              ct.TinhTrang, ct.GhiChu, pcn.TenPhong, tb.TenTB
