@@ -37,8 +37,11 @@
 			throw new InvalidOperationException("Thiết bị hỏng cần bảo trì trước");
  		TinhTrang = tinhTrangMoi;
 	}
- 	public void CapNhatGhiChu(string? ghiChu)
+ 	public void CapNhat(string maTaiSan, string? ghiChu)
 	{
+		if (string.IsNullOrWhiteSpace(maTaiSan))
+			throw new ArgumentException("Mã tài sản không hợp lệ");
+		MaTaiSan = maTaiSan.Trim();
 		GhiChu = ghiChu;
 	}
 	public static List<ChiTietPCNThietBi> TaoDanhSach(int pcnTbId,List<string> danhSachMaTaiSan)

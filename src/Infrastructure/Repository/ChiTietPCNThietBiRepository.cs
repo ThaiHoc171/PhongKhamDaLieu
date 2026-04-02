@@ -164,18 +164,17 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 		await conn.OpenAsync();
 
 		var sql = @"UPDATE ChiTiet_PCNTB
-                    SET TinhTrang=@TinhTrang,
+                    SET MaTaiSan=@MaTaiSan,
+						TinhTrang=@TinhTrang,
                         GhiChu=@GhiChu
                     WHERE ChiTietID=@Id";
 
 		await using var cmd = new SqlCommand(sql, conn);
 
-		cmd.Parameters.Add("@TinhTrang", SqlDbType.NVarChar, 50)
-			.Value = entity.TinhTrang.ToDbValue();
-
+		cmd.Parameters.Add("@MaTaiSan", SqlDbType.NVarChar, 100).Value=entity.MaTaiSan;
+		cmd.Parameters.Add("@TinhTrang", SqlDbType.NVarChar, 50) .Value = entity.TinhTrang.ToDbValue();
 		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar, -1)
 			.Value = (object?)entity.GhiChu ?? DBNull.Value;
-
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = entity.ChiTietID;
 
 		return await cmd.ExecuteNonQueryAsync();

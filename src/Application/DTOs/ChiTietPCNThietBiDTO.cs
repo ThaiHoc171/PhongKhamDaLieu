@@ -3,7 +3,8 @@ namespace Application.DTOs;
 
 public class ChiTietPCNThietBiUpdateDTO
 {
-    public string? TinhTrang { get; set; }
+    public string MaTaiSan { get; set; } = string.Empty;
+	public string? TinhTrang { get; set; }
 	public string? GhiChu { get; set; }
 }
 public class ChiTietPCNThietBiImport
