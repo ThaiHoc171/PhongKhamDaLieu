@@ -18,9 +18,65 @@ public class ChiTietPCNThietBiService
 		_repo = repo;
 		_pcnRepo = pcnRepo;
 	}
+	public async Task<ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>> PreviewImport(Stream stream, string sheet)
+	{
+		return ExcelImporter.Preview<ChiTietPCNThietBiImport>(stream, sheet, (item, row) =>
+		{
+			var errors = new List<string>();
 
+			if (item.PhongChucNangID <= 0)
+				errors.Add($"Dòng {row}: Phòng chức năng không hợp lệ");
+
+			if (item.ThietBiID <= 0)
+				errors.Add($"Dòng {row}: Thiết bị không hợp lệ");
+
+			if (string.IsNullOrWhiteSpace(item.MaTaiSan))
+				errors.Add($"Dòng {row}: Mã tài sản đang rỗng");
+
+			return errors;
+		});
+	}
+	public async Task<ApiResponse<bool>> ImportAsync(List<ChiTietPCNThietBiImport> list)
+	{
+		if (list == null || list.Count == 0)
+			return ApiResponse<bool>.Fail("Danh sách import rỗng");
+
+		foreach (var group in list.GroupBy(x => new { x.PhongChucNangID, x.ThietBiID }))
+		{
+			var phongId = group.Key.PhongChucNangID;
+			var thietBiId = group.Key.ThietBiID;
+
+			// tìm PCN thiết bị
+			var pcn = await _pcnRepo.GetByPhongAndThietBiAsync(phongId, thietBiId);
+
+			if (pcn == null)
+			{
+				var newPCN = new PCNThietBi(phongId, thietBiId);
+				var id = await _pcnRepo.AddAsync(newPCN);
+				pcn = await _pcnRepo.GetByIdAsync(id);
+
+				if (pcn == null)
+					return ApiResponse<bool>.Fail("Không thể tạo PCN thiết bị");
+			}
+
+			// lấy danh sách mã tài sản
+			var maList = group.Select(x => x.MaTaiSan).ToList();
+
+			// tạo entity list
+			var entities = ChiTietPCNThietBi.TaoDanhSach(pcn.PCN_TB_ID, maList);
+
+			// insert bulk
+			await _repo.BulkInsertAsync(entities);
+
+			// update tổng số lượng
+			pcn.Update(pcn.TongSoLuong + entities.Count);
+			await _pcnRepo.UpdateAsync(pcn);
+		}
+
+		return ApiResponse<bool>.SuccessResponse(true, "Import thiết bị thành công");
+	}
 	// Thêm mới chi tiết PCN thiết bị
-	public async Task<ApiResponse<int>> TaoMoiAsync(ChiTietPCNThietBiRequestDTO dto)
+	public async Task<ApiResponse<int>> CreateAsync(ChiTietPCNThietBiRequestDTO dto)
 	{
 		if (dto == null)
 			return ApiResponse<int>.Fail("Dữ liệu không hợp lệ");
@@ -28,9 +84,9 @@ public class ChiTietPCNThietBiService
 		var pcn = await _pcnRepo.GetByPhongAndThietBiAsync(dto.PhongChucNangID, dto.ThietBiID);
 		if (pcn == null)
 		{
-			pcn = new PCNThietBi(dto.PhongChucNangID, dto.ThietBiID);
-			await _pcnRepo.AddAsync(pcn);
-			pcn = await _pcnRepo.GetByPhongAndThietBiAsync(dto.PhongChucNangID, dto.ThietBiID);
+			var req = new PCNThietBi(dto.PhongChucNangID, dto.ThietBiID);
+			var res = await _pcnRepo.AddAsync(req);
+			pcn = await _pcnRepo.GetByIdAsync(res);
 			if (pcn == null)
 				return ApiResponse<int>.Fail("Không thể tạo PCN thiết bị");
 		}
@@ -46,7 +102,7 @@ public class ChiTietPCNThietBiService
 	}
 
 	// Cập nhật chi tiết PCN thiết bị
-	public async Task<ApiResponse<bool>> CapNhatAsync(int id, ChiTietPCNThietBiUpdateDTO dto)
+	public async Task<ApiResponse<bool>> UpdateAsync(int id, ChiTietPCNThietBiUpdateDTO dto)
 	{
 		if (id <= 0 || dto == null)
 			return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
@@ -58,7 +114,8 @@ public class ChiTietPCNThietBiService
 		try
 		{
 			entity.CapNhatGhiChu(dto.GhiChu);
-			entity.ChuyenTinhTrang(dto.TinhTrang);
+			if(string.IsNullOrWhiteSpace(dto.TinhTrang) == false)
+				entity.ChuyenTinhTrang(dto.TinhTrang);
 		}
 		catch (InvalidOperationException ex)
 		{
@@ -70,7 +127,7 @@ public class ChiTietPCNThietBiService
 	}
 
 	// Xóa chi tiết PCN thiết bị
-	public async Task<ApiResponse<bool>> XoaAsync(int id)
+	public async Task<ApiResponse<bool>> DeleteAsync(int id)
 	{
 		var entity = await _repo.GetByIdAsync(id);
 		if (entity == null)

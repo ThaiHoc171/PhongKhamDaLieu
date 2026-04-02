@@ -21,11 +21,12 @@ public class ChiTietPCNThietBiController : ControllerBase
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ChiTietPCNThietBiRequestDTO dto)
 	{
-		var result = await _service.TaoMoiAsync(dto);
+		var result = await _service.CreateAsync(dto);
+
 		if (!result.Success)
 			return BadRequest(result);
 
-		return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
+		return Ok(result);
 	}
 
 	// ==================== UPDATE ====================
@@ -33,7 +34,8 @@ public class ChiTietPCNThietBiController : ControllerBase
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] ChiTietPCNThietBiUpdateDTO dto)
 	{
-		var result = await _service.CapNhatAsync(id, dto);
+		var result = await _service.UpdateAsync(id, dto);
+
 		if (!result.Success)
 			return result.Message.Contains("không tồn tại")
 				? NotFound(result)
@@ -47,7 +49,8 @@ public class ChiTietPCNThietBiController : ControllerBase
 	[HttpPut("delete/{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{
-		var result = await _service.XoaAsync(id);
+		var result = await _service.DeleteAsync(id);
+
 		if (!result.Success)
 			return result.Message.Contains("không tồn tại")
 				? NotFound(result)
@@ -59,24 +62,63 @@ public class ChiTietPCNThietBiController : ControllerBase
 	// ==================== GET DETAIL ====================
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("{id}")]
-	public async Task<ActionResult<ApiResponse<ChiTietPCNThietBiReadModel>>> GetById(int id)
+	public async Task<ActionResult<ApiResponse<ChiTietPCNThietBiReadModel>>> Detail(int id)
 	{
 		var result = await _service.GetByIdAsync(id);
+
 		if (!result.Success)
 			return NotFound(result);
 
 		return Ok(result);
 	}
 
-	// ==================== GET PAGED ====================
+	// ==================== GET LIST ====================
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<List<ChiTietPCNThietBiListReadModel>>>> GetList([FromQuery] int pcnTbId)
+	public async Task<ActionResult<ApiResponse<List<ChiTietPCNThietBiListReadModel>>>> List([FromQuery] int pcnTbId)
 	{
 		var result = await _service.GetListAsync(pcnTbId);
+
 		if (!result.Success)
 			return NotFound(result);
+
 		return Ok(result);
 	}
 
+	// ==================== IMPORT PREVIEW ====================
+	[Authorize(Policy = "CSVC_CREATE")]
+	[HttpPost("import/preview")]
+	public async Task<IActionResult> PreviewImport(IFormFile file, [FromQuery] string sheet)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
+
+		if (string.IsNullOrWhiteSpace(sheet))
+			return BadRequest(ApiResponse<string>.Fail("Sheet không hợp lệ"));
+
+		using var stream = file.OpenReadStream();
+
+		var response = await _service.PreviewImport(stream, sheet);
+
+		if (!response.Success)
+			return BadRequest(response);
+
+		return Ok(response);
+	}
+
+	// ==================== IMPORT CONFIRM ====================
+	[Authorize(Policy = "CSVC_CREATE")]
+	[HttpPost("import/confirm")]
+	public async Task<IActionResult> Import([FromBody] List<ChiTietPCNThietBiImport> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
+
+		var response = await _service.ImportAsync(list);
+
+		if (!response.Success)
+			return BadRequest(response);
+
+		return Ok(response);
+	}
 }

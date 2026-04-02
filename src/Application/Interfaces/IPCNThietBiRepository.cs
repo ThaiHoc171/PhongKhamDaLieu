@@ -12,8 +12,6 @@ public interface IPCNThietBiRepository
     // ---- Read
     Task<PCNThietBi?> GetByIdAsync(int pcnTbId);
     Task<PCNThietBi?> GetByPhongAndThietBiAsync(int phongChucNangId, int thietBiId);
-    Task<(List<PCNThietBiReadListModel>, int)> GetPagedAsync(int page, int size, int? phongChucNangID);
-    Task<(List<PCNThietBiReadListModel>, int)> SearchPagedAsync(string keyword, int page,int size, int? phongChucNangID);
-    Task<List<PCNThietBiReadModel>> GetByPhongAsync(int phongChucNangID);
-    Task<PCNThietBiReadModel?> GetDetailAsync(int pcnTbId);
+    Task<(List<PCNThietBiReadModel>, int)> GetPagedAsync(int page, int size, int? phongChucNangID);
+    Task<(List<PCNThietBiReadModel>, int)> SearchPagedAsync(string keyword, int page,int size, int? phongChucNangID);
 }
