@@ -3,8 +3,8 @@ namespace Application.DTOs;
 
 public class ChiTietPCNThietBiUpdateDTO
 {
-    public TinhTrang TinhTrang { get; set; }
-    public string? GhiChu { get; set; }
+    public string? TinhTrang { get; set; }
+	public string? GhiChu { get; set; }
 }
 public class ChiTietPCNThietBiImport
 {
@@ -31,8 +31,8 @@ public class ChiTietPCNThietBiReadModel
     public DateTime NgayNhap { get; set; }
     public string TinhTrang { get; set; } = default!;
     public string? GhiChu { get; set; }
-    public NameResponseDTO? PhongChucNang { get; init; }
-    public NameResponseDTO? ThietBi { get; init; }
+    public string PhongChucNang { get; init; } = string.Empty;
+	public string ThietBi { get; init; } = string.Empty;
 }
 public class ChiTietPCNThietBiListReadModel
 {

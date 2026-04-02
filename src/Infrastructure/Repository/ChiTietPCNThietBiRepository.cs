@@ -19,35 +19,32 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 
 	#region Queries
 
-	private const string BaseJoin = @"
-        FROM ChiTiet_PCNTB ct
-        JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
-        JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID";
-
 	private const string BaseSelectList = @"
         SELECT ct.ChiTietID, ct.MaTaiSan, ct.NgayNhap, ct.TinhTrang";
 
 	private const string BaseSelectDetail = @"
-        SELECT ct.ChiTietID, ct.MaTaiSan, ct.NgayNhap, ct.TinhTrang, ct.GhiChu,
-               ptb.PhongChucNangID,
-               tb.ThietBiID, tb.TenTB";
+        SELECT ct.ChiTietID, ct.PCN_TB_ID, ct.MaTaiSan, ct.NgayNhap,              ct.TinhTrang, ct.GhiChu, pcn.TenPhong, tb.TenTB
+		FROM ChiTiet_PCNTB ct
+        JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
+        JOIN PhongChucNang pcn ON ptb.PhongChucNangID = pcn.PhongChucNangID
+        JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID";
 
 	#endregion
 
 
 	public async Task<ChiTietPCNThietBi?> GetByIdAsync(int id)
 	{
-		using var conn = new SqlConnection(_connectionString);
+		await using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
 		var sql = @"SELECT ChiTietID, PCN_TB_ID, MaTaiSan, NgayNhap, TinhTrang, GhiChu
                     FROM ChiTiet_PCNTB
                     WHERE ChiTietID=@Id";
 
-		using var cmd = new SqlCommand(sql, conn);
+		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
 
-		using var reader = await cmd.ExecuteReaderAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
 
 		if (await reader.ReadAsync())
 			return MapToEntity(reader);
@@ -58,18 +55,17 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 
 	public async Task<ChiTietPCNThietBiReadModel?> GetDetailAsync(int id)
 	{
-		using var conn = new SqlConnection(_connectionString);
+		await using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
 		var sql = $@"
             {BaseSelectDetail}
-            {BaseJoin}
             WHERE ct.ChiTietID=@Id";
 
-		using var cmd = new SqlCommand(sql, conn);
+		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
 
-		using var reader = await cmd.ExecuteReaderAsync();
+		await using var reader = await cmd.ExecuteReaderAsync();
 
 		if (await reader.ReadAsync())
 			return MapToDetailDTO(reader);
@@ -87,7 +83,6 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 
 		var sql = $@"
         {BaseSelectList}
-        {BaseJoin}
         WHERE ct.PCN_TB_ID = @PCN_TB_ID
         ORDER BY ct.NgayNhap DESC";
 
@@ -105,7 +100,8 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 
 	public async Task BulkInsertAsync(List<ChiTietPCNThietBi> list)
 	{
-		using var conn = new SqlConnection(_connectionString);
+		await using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
 
 		var table = new DataTable();
 
@@ -136,13 +132,13 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 		bulk.ColumnMappings.Add("TinhTrang", "TinhTrang");
 		bulk.ColumnMappings.Add("GhiChu", "GhiChu");
 
-		await conn.OpenAsync();
-
 		await bulk.WriteToServerAsync(table);
 	}
+
+
 	public async Task<int> AddAsync(ChiTietPCNThietBi entity)
 	{
-		using var conn = new SqlConnection(_connectionString);
+		await using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
 		var sql = @"INSERT INTO ChiTiet_PCNTB
@@ -150,7 +146,7 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
                     OUTPUT INSERTED.ChiTietID
                     VALUES (@PCN_TB_ID,@MaTaiSan,@TinhTrang,@GhiChu)";
 
-		using var cmd = new SqlCommand(sql, conn);
+		await using var cmd = new SqlCommand(sql, conn);
 
 		cmd.Parameters.Add("@PCN_TB_ID", SqlDbType.Int).Value = entity.PCN_TB_ID;
 		cmd.Parameters.Add("@MaTaiSan", SqlDbType.NVarChar, 100).Value = entity.MaTaiSan;
@@ -164,7 +160,7 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 
 	public async Task<int> UpdateAsync(ChiTietPCNThietBi entity)
 	{
-		using var conn = new SqlConnection(_connectionString);
+		await using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
 		var sql = @"UPDATE ChiTiet_PCNTB
@@ -172,7 +168,7 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
                         GhiChu=@GhiChu
                     WHERE ChiTietID=@Id";
 
-		using var cmd = new SqlCommand(sql, conn);
+		await using var cmd = new SqlCommand(sql, conn);
 
 		cmd.Parameters.Add("@TinhTrang", SqlDbType.NVarChar, 50)
 			.Value = entity.TinhTrang.ToDbValue();
@@ -182,25 +178,21 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = entity.ChiTietID;
 
-		int row = await cmd.ExecuteNonQueryAsync();
-
-		return row;
+		return await cmd.ExecuteNonQueryAsync();
 	}
 
 
 	public async Task<int> DeleteAsync(int id)
 	{
-		using var conn = new SqlConnection(_connectionString);
+		await using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
 		var sql = @"DELETE FROM ChiTiet_PCNTB WHERE ChiTietID=@Id";
 
-		using var cmd = new SqlCommand(sql, conn);
+		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
 
-		int row = await cmd.ExecuteNonQueryAsync();
-
-		return row;
+		return await cmd.ExecuteNonQueryAsync();
 	}
 
 
@@ -240,18 +232,8 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 			NgayNhap = r.GetDateTime(r.GetOrdinal("NgayNhap")),
 			TinhTrang = r.GetString(r.GetOrdinal("TinhTrang")),
 			GhiChu = r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu")),
-
-			PhongChucNang = new NameResponseDTO
-			{
-				Id = r.GetInt32(r.GetOrdinal("PhongChucNangID")),
-				Name = "PCN"
-			},
-
-			ThietBi = new NameResponseDTO
-			{
-				Id = r.GetInt32(r.GetOrdinal("ThietBiID")),
-				Name = r.GetString(r.GetOrdinal("TenTB"))
-			}
+			PhongChucNang = r.GetString(r.GetOrdinal("TenPhong")),
+			ThietBi = r.GetString(r.GetOrdinal("TenTB"))
 		};
 	}
 

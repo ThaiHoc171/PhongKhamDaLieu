@@ -18,18 +18,19 @@
 		TinhTrang = TinhTrang.HoatDong;
 	}
  	// Constructor map DB
-	public ChiTietPCNThietBi( int chiTietId, int pcnTbId, string maTaiSan, DateTime ngayNhap, string tinhTrangDb, string? ghiChu)
+	public ChiTietPCNThietBi( int chiTietId, int pcnTbId, string maTaiSan, DateTime ngayNhap, string tinhTrang, string? ghiChu)
 	{
 		ChiTietID = chiTietId;
 		PCN_TB_ID = pcnTbId;
 		MaTaiSan = maTaiSan;
 		NgayNhap = ngayNhap;
-		TinhTrang = TinhTrangExtensions.FromDb(tinhTrangDb);
+		TinhTrang = TinhTrangExtensions.FromDb(tinhTrang);
 		GhiChu = ghiChu;
 	}
  	// Business methods
- 	public void ChuyenTinhTrang(TinhTrang tinhTrangMoi)
+ 	public void ChuyenTinhTrang(string tinhTrang)
 	{
+		TinhTrang tinhTrangMoi = TinhTrangExtensions.FromDb(tinhTrang);
 		if (TinhTrang == tinhTrangMoi)
 			return;
  		if (TinhTrang == TinhTrang.Hong && tinhTrangMoi == TinhTrang.HoatDong)
@@ -40,11 +41,16 @@
 	{
 		GhiChu = ghiChu;
 	}
- 	public bool DangSuDung()
+	public static List<ChiTietPCNThietBi> TaoDanhSach(int pcnTbId,List<string> danhSachMaTaiSan)
 	{
-		return TinhTrang == TinhTrang.HoatDong;
+		var list = new List<ChiTietPCNThietBi>();
+		foreach (var ma in danhSachMaTaiSan)
+		{
+			list.Add(new ChiTietPCNThietBi(pcnTbId, ma, null));
+		}
+		return list;
 	}
- 	private void Validate(int pcnTbId, string maTaiSan)
+	private void Validate(int pcnTbId, string maTaiSan)
 	{
 		if (pcnTbId <= 0)
 			throw new ArgumentException("PCN thiết bị không hợp lệ");

@@ -23,25 +23,17 @@ public class PCNThietBiRepository : IPCNThietBiRepository
         JOIN ThietBi tb ON pcn_tb.ThietBiID = tb.ThietBiID
         JOIN PhongChucNang pcn ON pcn_tb.PhongChucNangID = pcn.PhongChucNangID";
 
-	private const string BaseSelectList = @"
+	private const string BaseSelect = @"
         SELECT pcn_tb.PCN_TB_ID,
                pcn.TenPhong,
                tb.TenTB,
                pcn_tb.TongSoLuong";
 
-	private const string BaseSelectDetail = @"
-        SELECT pcn_tb.PCN_TB_ID,
-               pcn_tb.PhongChucNangID,
-               pcn_tb.ThietBiID,
-               pcn_tb.TongSoLuong,
-               pcn.TenPhong,
-               tb.TenTB";
-
 	#endregion
 
-	public async Task<(List<PCNThietBiReadListModel>, int)> GetPagedAsync(int page, int size, int? phongChucNangID)
+	public async Task<(List<PCNThietBiReadModel>, int)> GetPagedAsync(int page, int size, int? phongChucNangID)
 	{
-		var list = new List<PCNThietBiReadListModel>();
+		var list = new List<PCNThietBiReadModel>();
 		int total = 0;
 
 		using var conn = new SqlConnection(_connectionString);
@@ -50,7 +42,7 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 		int offset = (page - 1) * size;
 
 		var sql = $@"
-        {BaseSelectList}
+        {BaseSelect}
         {BaseJoin}
         WHERE (@PhongID IS NULL OR pcn_tb.PhongChucNangID = @PhongID)
         ORDER BY pcn_tb.PCN_TB_ID DESC
@@ -79,9 +71,9 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 		return (list, total);
 	}
 
-	public async Task<(List<PCNThietBiReadListModel>, int)> SearchPagedAsync(string keyword, int page, int size, int? phongChucNangID)
+	public async Task<(List<PCNThietBiReadModel>, int)> SearchPagedAsync(string keyword, int page, int size, int? phongChucNangID)
 	{
-		var list = new List<PCNThietBiReadListModel>();
+		var list = new List<PCNThietBiReadModel>();
 		int total = 0;
 
 		using var conn = new SqlConnection(_connectionString);
@@ -90,7 +82,7 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 		int offset = (page - 1) * size;
 
 		var sql = $@"
-        {BaseSelectList}
+        {BaseSelect}
         {BaseJoin}
         WHERE (@PhongID IS NULL OR pcn_tb.PhongChucNangID = @PhongID)
         AND (@Keyword IS NULL OR tb.TenTB LIKE @Keyword)
@@ -122,28 +114,6 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 			total = reader.GetInt32(0);
 
 		return (list, total);
-	}
-
-	public async Task<PCNThietBiReadModel?> GetDetailAsync(int id)
-	{
-		using var conn = new SqlConnection(_connectionString);
-		await conn.OpenAsync();
-
-		var sql = $@"
-        {BaseSelectDetail}
-        {BaseJoin}
-        WHERE pcn_tb.PCN_TB_ID=@Id";
-
-		using var cmd = new SqlCommand(sql, conn);
-
-		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
-
-		using var reader = await cmd.ExecuteReaderAsync();
-
-		if (await reader.ReadAsync())
-			return MapToDetailDTO(reader);
-
-		return null;
 	}
 
 	public async Task<PCNThietBi?> GetByIdAsync(int id)
@@ -188,25 +158,13 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 
 		return null;
 	}
-	public async Task<List<PCNThietBiReadModel>> GetByPhongAsync(int phongId) 
-	{ 
-		var sql = $@" {BaseSelectDetail} {BaseJoin} WHERE pcn_tb.PhongChucNangID = @PhongID"; 
-		var list = new List<PCNThietBiReadModel>(); 
-		using var conn = new SqlConnection(_connectionString); 
-		await conn.OpenAsync(); 
-		using var cmd = new SqlCommand(sql, conn); 
-		cmd.Parameters.Add("@PhongID", SqlDbType.Int).Value = phongId;
-		using var reader = await cmd.ExecuteReaderAsync(); 
-		while (await reader.ReadAsync()) list.Add(MapToDetailDTO(reader)); 
-		return list; 
-	}
-
 	public async Task<int> AddAsync(PCNThietBi entity)
 	{
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
 		var sql = @"INSERT INTO PhongChucNang_ThietBi(PhongChucNangID,ThietBiID)
+					OUTPUT INSERTED.PCN_TB_ID
                     VALUES(@PhongID,@ThietBiID)";
 
 		using var cmd = new SqlCommand(sql, conn);
@@ -214,9 +172,9 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 		cmd.Parameters.Add("@PhongID", SqlDbType.Int).Value = entity.PhongChucNangID;
 		cmd.Parameters.Add("@ThietBiID", SqlDbType.Int).Value = entity.ThietBiID;
 
-		int row = await cmd.ExecuteNonQueryAsync();
+		int id = Convert.ToInt32(await cmd.ExecuteScalarAsync());
 
-		return row;
+		return id;
 	}
 
 	public async Task<int> UpdateAsync(PCNThietBi entity)
@@ -267,32 +225,13 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 		);
 	}
 
-	private PCNThietBiReadListModel MapToListDTO(SqlDataReader r)
-	{
-		return new PCNThietBiReadListModel
-		{
-			PCN_TB_ID = r.GetInt32(r.GetOrdinal("PCN_TB_ID")),
-			PhongChucNang = r.GetString(r.GetOrdinal("TenPhong")),
-			ThietBi = r.GetString(r.GetOrdinal("TenTB")),
-			TongSoLuong = r.GetInt32(r.GetOrdinal("TongSoLuong"))
-		};
-	}
-
-	private PCNThietBiReadModel MapToDetailDTO(SqlDataReader r)
+	private PCNThietBiReadModel MapToListDTO(SqlDataReader r)
 	{
 		return new PCNThietBiReadModel
 		{
 			PCN_TB_ID = r.GetInt32(r.GetOrdinal("PCN_TB_ID")),
-			PhongChucNang = new NameResponseDTO
-			{
-				Id = r.GetInt32(r.GetOrdinal("PhongChucNangID")),
-				Name = r.GetString(r.GetOrdinal("TenPhong"))
-			},
-			ThietBi = new NameResponseDTO
-			{
-				Id = r.GetInt32(r.GetOrdinal("ThietBiID")),
-				Name = r.GetString(r.GetOrdinal("TenTB"))
-			},
+			PhongChucNang = r.GetString(r.GetOrdinal("TenPhong")),
+			ThietBi = r.GetString(r.GetOrdinal("TenTB")),
 			TongSoLuong = r.GetInt32(r.GetOrdinal("TongSoLuong"))
 		};
 	}
