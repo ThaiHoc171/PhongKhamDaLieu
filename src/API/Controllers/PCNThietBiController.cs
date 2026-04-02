@@ -23,7 +23,7 @@ public class PCNThietBiController : ControllerBase
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] PCNThietBiRequestDTO dto)
 	{
-		var result = await _service.TaoMoiAsync(dto);
+		var result = await _service.AddAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
@@ -36,7 +36,7 @@ public class PCNThietBiController : ControllerBase
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] PCNThietBiUpdateDTO dto)
 	{
-		var result = await _service.CapNhatAsync(id, dto);
+		var result = await _service.UpdateAsync(id, dto);
 
 		if (!result.Success)
 			return result.Message.Contains("không tồn tại")
@@ -51,10 +51,12 @@ public class PCNThietBiController : ControllerBase
 	[HttpDelete("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{
-		var result = await _service.XoaAsync(id);
+		var result = await _service.DeleteAsync(id);
 
 		if (!result.Success)
-			return NotFound(result);
+			return result.Message.Contains("không tồn tại")
+				? NotFound(result)
+				: BadRequest(result);
 
 		return Ok(result);
 	}
@@ -64,7 +66,7 @@ public class PCNThietBiController : ControllerBase
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<PCNThietBiReadModel>>> GetById(int id)
 	{
-		var result = await _service.GetByIdAsync(id);
+		var result = await _service.GetDetailAsync(id);
 
 		if (!result.Success)
 			return NotFound(result);
@@ -81,28 +83,23 @@ public class PCNThietBiController : ControllerBase
 		return Ok(result);
 	}
 
-	// ==================== GET LIST ====================
+	// ==================== GET PAGED ====================
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<PCNThietBiListReadModel>>>> GetPaged(
-		[FromQuery] int pageNumber = 1,
-		[FromQuery] int pageSize = 15,
-		[FromQuery] int? phongChucNangID = null)
+	public async Task<ActionResult<ApiResponse<PagedResult<PCNThietBiReadListModel>>>> 
+		GetPaged( [FromQuery] int page = 1, [FromQuery] int size = 15, [FromQuery] int? phongChucNangID = null)
 	{
-		var result = await _service.GetPagedAsync(pageNumber, pageSize, phongChucNangID);
+		var result = await _service.GetPagedAsync(page, size, phongChucNangID);
 		return Ok(result);
 	}
 
 	// ==================== SEARCH ====================
 	[Authorize(Policy = "CSVC_VIEW")]
 	[HttpGet("search")]
-	public async Task<ActionResult<ApiResponse<PagedResult<PCNThietBiListReadModel>>>> Search(
-		[FromQuery] string keyword,
-		[FromQuery] int pageNumber = 1,
-		[FromQuery] int pageSize = 15,
-		[FromQuery] int? phongChucNangID = null)
+	public async Task<ActionResult<ApiResponse<PagedResult<PCNThietBiReadListModel>>>> 
+		Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 15, [FromQuery] int? phongChucNangID = null)
 	{
-		var result = await _service.SearchAsync(keyword, pageNumber, pageSize, phongChucNangID);
+		var result = await _service.SearchAsync(keyword, page, size, phongChucNangID);
 		return Ok(result);
 	}
 }

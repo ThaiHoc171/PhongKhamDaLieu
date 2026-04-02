@@ -6,6 +6,17 @@ public class ChiTietPCNThietBiUpdateDTO
     public TinhTrang TinhTrang { get; set; }
     public string? GhiChu { get; set; }
 }
+public class ChiTietPCNThietBiImport
+{
+    [ExcelColumn("PhongChucNangID")]
+	public int PhongChucNangID { get; set; }
+    [ExcelColumn("ThietBiID")]
+	public int ThietBiID { get; set; }
+    [ExcelColumn("MaTaiSan")]
+	public string MaTaiSan { get; set; } = default!;
+    [ExcelColumn("GhiChu")]
+	public string? GhiChu { get; set; }
+}
 public class ChiTietPCNThietBiRequestDTO
 {
     public int PhongChucNangID { get; set; }
