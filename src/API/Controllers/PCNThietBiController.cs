@@ -48,7 +48,7 @@ public class PCNThietBiController : ControllerBase
 
 	// ==================== DELETE ====================
 	[Authorize(Policy = "CSVC_UPDATE")]
-	[HttpDelete("{id}")]
+	[HttpPut("delete/{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{
 		var result = await _service.DeleteAsync(id);

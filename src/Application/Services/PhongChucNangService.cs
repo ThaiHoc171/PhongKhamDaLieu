@@ -65,7 +65,7 @@ using Microsoft.Data.SqlClient;
 			return ApiResponse<bool>.Fail("Tên phòng đã tồn tại");
 		}
 	}
- 	public async Task<ApiResponse<bool>> ChangeStatusAsync(int id, TinhTrang trangThaiMoi)
+ 	public async Task<ApiResponse<bool>> ChangeStatusAsync(int id, string trangThaiMoi)
 	{
 		try
 		{
@@ -74,7 +74,8 @@ using Microsoft.Data.SqlClient;
  			var entity = await _repo.GetByIdAsync(id);
  			if (entity == null)
 				return ApiResponse<bool>.Fail("Phòng chức năng không tồn tại");
- 			entity.ChuyenTrangThai(trangThaiMoi);
+			TinhTrang status = TinhTrangExtensions.FromDb(trangThaiMoi);
+			entity.ChuyenTrangThai(status);
  			int row = await _repo.UpdateAsync(entity);
  			if (row == 0)
 				return ApiResponse<bool>.Fail("Chuyển trạng thái thất bại");

@@ -54,7 +54,7 @@ public class PhongChucNangController : ControllerBase
 	[HttpPut("{id}/status")]
 	public async Task<ActionResult<ApiResponse<bool>>> ChangeStatus(
 		int id,
-		[FromBody] TinhTrang trangThaiMoi)
+		[FromBody] string trangThaiMoi)
 	{
 		var result = await _service.ChangeStatusAsync(id, trangThaiMoi);
 
