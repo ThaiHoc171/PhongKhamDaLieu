@@ -84,8 +84,7 @@ public class NhanVienService
 				dto.PhongChucNangID,
 				dto.NgayVaoLam ?? DateTime.UtcNow,
 				dto.BangCap,
-				dto.KinhNghiem,
-				"Đang làm việc"
+				dto.KinhNghiem
 			);
 
 			int row = await _repo.AddAsync(nv);
