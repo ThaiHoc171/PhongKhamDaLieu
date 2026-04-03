@@ -16,18 +16,16 @@ public class NhanVien
 	public DateTime? NgayCapNhat { get; private set; }
 
 	// CREATE
-	public NhanVien(int thongTinID, int chucVuID, int phongChucNangID, DateTime ngayVaoLam,
-		string bangCap, string kinhNghiem, string trangThai)
+	public NhanVien(int thongTinID, int chucVuID, int phongChucNangID, DateTime ngayVaoLam, string bangCap, string kinhNghiem)
 	{
-		Validate(thongTinID, chucVuID, phongChucNangID, bangCap, kinhNghiem, trangThai);
-
+		Validate(thongTinID, chucVuID, phongChucNangID, bangCap, kinhNghiem);
 		ThongTinID = thongTinID;
 		ChucVuID = chucVuID;
 		PhongChucNangID = phongChucNangID;
 		NgayVaoLam = ngayVaoLam;
 		BangCap = bangCap;
 		KinhNghiem = kinhNghiem;
-		TrangThai = trangThai;
+		TrangThai = "Đang làm việc";
 	}
 
 	// MAP DB
@@ -48,7 +46,7 @@ public class NhanVien
 
 	public void CapNhat(int chucVuID, int phongChucNangID, DateTime ngayVaoLam, string bangCap, string kinhNghiem, string trangThai)
 	{
-		Validate(ThongTinID, chucVuID, phongChucNangID, bangCap, kinhNghiem, trangThai);
+		Validate(ThongTinID, chucVuID, phongChucNangID, bangCap, kinhNghiem);
 
 		ChucVuID = chucVuID;
 		PhongChucNangID = phongChucNangID;
@@ -60,7 +58,7 @@ public class NhanVien
 		NgayCapNhat = DateTime.UtcNow;
 	}
 
-	private void Validate( int thongTinID, int chucVuID, int phongChucNangID, string bangCap, string kinhNghiem, string trangThai)
+	private void Validate( int thongTinID, int chucVuID, int phongChucNangID, string bangCap, string kinhNghiem)
 	{
 		if (thongTinID <= 0)
 			throw new ArgumentException("ThongTinID không hợp lệ");
@@ -76,10 +74,5 @@ public class NhanVien
 
 		if (string.IsNullOrWhiteSpace(kinhNghiem))
 			throw new ArgumentException("Kinh nghiệm không hợp lệ");
-
-		if (string.IsNullOrWhiteSpace(trangThai))
-			throw new ArgumentException("Trạng thái không hợp lệ");
-
-		TrangThaiSystemExtensions.FromDb(trangThai);
 	}
 }
