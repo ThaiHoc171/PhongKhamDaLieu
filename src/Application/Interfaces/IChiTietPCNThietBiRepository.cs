@@ -10,8 +10,9 @@ public interface IChiTietPCNThietBiRepository
     Task BulkInsertAsync(List<ChiTietPCNThietBi> list);
     Task<int> UpdateAsync(ChiTietPCNThietBi entity);
     Task<int> DeleteAsync(int chiTietId);
-    
-	//READ
+
+    //READ
+    Task<bool> ExistsMaTaiSanAsync(string maTaiSan);
 	Task<ChiTietPCNThietBi?> GetByIdAsync(int chiTietId);
     Task<ChiTietPCNThietBiReadModel?> GetDetailAsync(int chiTietId);
     Task<List<ChiTietPCNThietBiListReadModel>> GetListAsync(int pcnTbId);

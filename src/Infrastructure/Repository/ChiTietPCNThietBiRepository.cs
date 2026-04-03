@@ -32,6 +32,25 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
         JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID";
 
 	#endregion
+	public async Task<bool> ExistsMaTaiSanAsync(string maTaiSan)
+	{
+		if (string.IsNullOrWhiteSpace(maTaiSan))
+			return false;
+
+		await using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"SELECT 1 
+                FROM ChiTiet_PCNTB 
+                WHERE MaTaiSan = @MaTaiSan";
+
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@MaTaiSan", SqlDbType.NVarChar, 100).Value = maTaiSan.Trim();
+
+		var result = await cmd.ExecuteScalarAsync();
+
+		return result != null;
+	}
 	public async Task<ChiTietPCNThietBi?> GetByIdAsync(int id)
 	{
 		await using var conn = new SqlConnection(_connectionString);

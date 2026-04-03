@@ -61,7 +61,8 @@ public class ChiTietPCNThietBiService
 
 			if (string.IsNullOrWhiteSpace(item.MaTaiSan))
 				errors.Add($"Dòng {row}: Mã tài sản rỗng");
-
+			if (await _repo.ExistsMaTaiSanAsync(item.MaTaiSan))
+				errors.Add($"Dòng {row}: Mã tài sản đã tồn tại");
 			// trùng trong file
 			if (!maSet.Add(item.MaTaiSan))
 				errors.Add($"Dòng {row}: Mã tài sản bị trùng trong file");
