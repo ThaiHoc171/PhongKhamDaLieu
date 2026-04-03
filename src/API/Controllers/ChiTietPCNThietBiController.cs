@@ -105,7 +105,21 @@ public class ChiTietPCNThietBiController : ControllerBase
 
 		return Ok(response);
 	}
+	[Authorize(Policy = "CSVC_CREATE")]
+	[HttpPost("import/validate")]
+	public async Task<ActionResult<ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>>>
+	ValidateImport([FromBody] List<ChiTietPCNThietBiImport> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
 
+		var result = await _service.ValidateImport(list);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
 	// ==================== IMPORT CONFIRM ====================
 	[Authorize(Policy = "CSVC_CREATE")]
 	[HttpPost("import/confirm")]

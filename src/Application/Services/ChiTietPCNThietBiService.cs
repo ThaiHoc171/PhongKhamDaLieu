@@ -18,6 +18,9 @@ public class ChiTietPCNThietBiService
 		_repo = repo;
 		_pcnRepo = pcnRepo;
 	}
+	#region Import
+
+	// PREVIEW FILE EXCEL
 	public async Task<ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>> PreviewImport(Stream stream, string sheet)
 	{
 		return ExcelImporter.Preview<ChiTietPCNThietBiImport>(stream, sheet, (item, row) =>
@@ -31,11 +34,61 @@ public class ChiTietPCNThietBiService
 				errors.Add($"Dòng {row}: Thiết bị không hợp lệ");
 
 			if (string.IsNullOrWhiteSpace(item.MaTaiSan))
-				errors.Add($"Dòng {row}: Mã tài sản đang rỗng");
+				errors.Add($"Dòng {row}: Mã tài sản không hợp lệ");
 
 			return errors;
 		});
 	}
+
+	// VALIDATE BUSINESS
+	public async Task<ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>> 
+		ValidateImport(List<ChiTietPCNThietBiImport> list)
+	{
+		var result = new ExcelImportResult<ChiTietPCNThietBiImport>();
+
+		int row = 2;
+		var maSet = new HashSet<string>();
+
+		foreach (var item in list)
+		{
+			var errors = new List<string>();
+
+			if (item.PhongChucNangID <= 0)
+				errors.Add($"Dòng {row}: Phòng chức năng không hợp lệ");
+
+			if (item.ThietBiID <= 0)
+				errors.Add($"Dòng {row}: Thiết bị không hợp lệ");
+
+			if (string.IsNullOrWhiteSpace(item.MaTaiSan))
+				errors.Add($"Dòng {row}: Mã tài sản rỗng");
+
+			// trùng trong file
+			if (!maSet.Add(item.MaTaiSan))
+				errors.Add($"Dòng {row}: Mã tài sản bị trùng trong file");
+
+			// kiểm tra PCN thiết bị
+			var pcn = await _pcnRepo.GetByPhongAndThietBiAsync(item.PhongChucNangID, item.ThietBiID);
+			if (errors.Any())
+			{
+				result.Errors.Add(new ExcelImportError
+				{
+					Row = row,
+					Errors = errors
+				});
+			}
+			else
+			{
+				result.Data.Add(item);
+			}
+
+			row++;
+		}
+
+		return ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>
+			.SuccessResponse(result);
+	}
+
+	// IMPORT DATA
 	public async Task<ApiResponse<bool>> ImportAsync(List<ChiTietPCNThietBiImport> list)
 	{
 		if (list == null || list.Count == 0)
@@ -46,9 +99,9 @@ public class ChiTietPCNThietBiService
 			var phongId = group.Key.PhongChucNangID;
 			var thietBiId = group.Key.ThietBiID;
 
-			// tìm PCN thiết bị
 			var pcn = await _pcnRepo.GetByPhongAndThietBiAsync(phongId, thietBiId);
 
+			// nếu chưa có thì tạo
 			if (pcn == null)
 			{
 				var newPCN = new PCNThietBi(phongId, thietBiId);
@@ -60,12 +113,12 @@ public class ChiTietPCNThietBiService
 			}
 
 			// lấy danh sách mã tài sản
-			var maList = group.Select(x => x.MaTaiSan).ToList();
+			var maList = group.Select(x => x.MaTaiSan.Trim()).ToList();
 
 			// tạo entity list
 			var entities = ChiTietPCNThietBi.TaoDanhSach(pcn.PCN_TB_ID, maList);
 
-			// insert bulk
+			// bulk insert
 			await _repo.BulkInsertAsync(entities);
 
 			// update tổng số lượng
@@ -75,6 +128,8 @@ public class ChiTietPCNThietBiService
 
 		return ApiResponse<bool>.SuccessResponse(true, "Import thiết bị thành công");
 	}
+
+	#endregion
 	// Thêm mới chi tiết PCN thiết bị
 	public async Task<ApiResponse<int>> CreateAsync(ChiTietPCNThietBiRequestDTO dto)
 	{

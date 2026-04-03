@@ -14,6 +14,7 @@
 		Validate(pcnTbId, maTaiSan);
  		PCN_TB_ID = pcnTbId;
 		MaTaiSan = maTaiSan.Trim();
+		NgayNhap = DateTime.UtcNow;
 		GhiChu = ghiChu;
 		TinhTrang = TinhTrang.HoatDong;
 	}

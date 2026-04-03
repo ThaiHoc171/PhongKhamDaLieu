@@ -31,7 +31,7 @@ public class ThietBiRepository : IThietBiRepository
         int offset = (page - 1) * size;
         var sql = $@"
             {BaseSelectList}
-            ORDER BY TenTB ASC
+            ORDER BY ThietBiID ASC
             OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
             SELECT COUNT(*) FROM ThietBi
         ";
@@ -56,7 +56,7 @@ public class ThietBiRepository : IThietBiRepository
         var sql = $@"
             {BaseSelectList}
             WHERE TenTB LIKE @Keyword
-            ORDER BY TenTB ASC
+            ORDER BY ThietBiID ASC
             OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
             SELECT COUNT(*)
             FROM ThietBi
