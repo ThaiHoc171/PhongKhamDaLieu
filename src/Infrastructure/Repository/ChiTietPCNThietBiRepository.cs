@@ -24,15 +24,14 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 		FROM ChiTiet_PCNTB ct";
 
 	private const string BaseSelectDetail = @"
-        SELECT ct.ChiTietID, ct.PCN_TB_ID, ct.MaTaiSan, ct.NgayNhap,              ct.TinhTrang, ct.GhiChu, pcn.TenPhong, tb.TenTB
+        SELECT ct.ChiTietID, ct.PCN_TB_ID, ct.MaTaiSan, ct.NgayNhap,
+              ct.TinhTrang, ct.GhiChu, pcn.TenPhong, tb.TenTB
 		FROM ChiTiet_PCNTB ct
         JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
         JOIN PhongChucNang pcn ON ptb.PhongChucNangID = pcn.PhongChucNangID
         JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID";
 
 	#endregion
-
-
 	public async Task<ChiTietPCNThietBi?> GetByIdAsync(int id)
 	{
 		await using var conn = new SqlConnection(_connectionString);
@@ -98,44 +97,26 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 		return list;
 	}
 
-
 	public async Task BulkInsertAsync(List<ChiTietPCNThietBi> list)
 	{
 		await using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-
 		var table = new DataTable();
-
 		table.Columns.Add("PCN_TB_ID", typeof(int));
 		table.Columns.Add("MaTaiSan", typeof(string));
-		table.Columns.Add("NgayNhap", typeof(DateTime));
-		table.Columns.Add("TinhTrang", typeof(string));
-		table.Columns.Add("GhiChu", typeof(string));
-
 		foreach (var item in list)
 		{
 			table.Rows.Add(
 				item.PCN_TB_ID,
-				item.MaTaiSan,
-				item.NgayNhap,
-				item.TinhTrang.ToDbValue(),
-				item.GhiChu ?? (object)DBNull.Value
+				item.MaTaiSan
 			);
 		}
-
 		using var bulk = new SqlBulkCopy(conn);
-
 		bulk.DestinationTableName = "ChiTiet_PCNTB";
-
 		bulk.ColumnMappings.Add("PCN_TB_ID", "PCN_TB_ID");
 		bulk.ColumnMappings.Add("MaTaiSan", "MaTaiSan");
-		bulk.ColumnMappings.Add("NgayNhap", "NgayNhap");
-		bulk.ColumnMappings.Add("TinhTrang", "TinhTrang");
-		bulk.ColumnMappings.Add("GhiChu", "GhiChu");
-
 		await bulk.WriteToServerAsync(table);
 	}
-
 
 	public async Task<int> AddAsync(ChiTietPCNThietBi entity)
 	{

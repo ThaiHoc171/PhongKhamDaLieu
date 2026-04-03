@@ -15,8 +15,6 @@ public class ChiTietPCNThietBiImport
 	public int ThietBiID { get; set; }
     [ExcelColumn("MaTaiSan")]
 	public string MaTaiSan { get; set; } = default!;
-    [ExcelColumn("GhiChu")]
-	public string? GhiChu { get; set; }
 }
 public class ChiTietPCNThietBiRequestDTO
 {

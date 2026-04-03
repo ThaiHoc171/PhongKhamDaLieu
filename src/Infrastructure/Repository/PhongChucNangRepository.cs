@@ -31,7 +31,7 @@ using System.Data;
  		var sql = $@"
 		{BaseSelectList}
 		WHERE (@TrangThai IS NULL OR TrangThai=@TrangThai)
-		ORDER BY TenPhong
+		ORDER BY PhongChucNangID ASC
 		OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
  		SELECT COUNT(*)
 		FROM PhongChucNang
@@ -61,7 +61,7 @@ using System.Data;
  		var sql = $@"
 		{BaseSelectList}
 		WHERE TenPhong LIKE @Keyword
-		ORDER BY TenPhong
+		ORDER BY PhongChucNangID ASC
 		OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
  		SELECT COUNT(*)
 		FROM PhongChucNang
