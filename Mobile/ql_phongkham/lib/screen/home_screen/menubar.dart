@@ -17,7 +17,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
   String? linkAvatar;
   String hoTen = "";
   String email = "";
-  var benhnhanid;
+  int? benhnhanid;
   @override
   void initState() {
     super.initState();
@@ -33,11 +33,10 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
       if (token == null || thongTinId == null) return;
 
       final data = await ProfileRepository().getProfile(thongTinId);
-
       setState(() {
         hoTen = data.hoTen;
         email = data.emailLienHe;
-        linkAvatar = data.avatar;
+        linkAvatar = _buildAvatarUrl(data.avatar);
         benhnhanid = benhNhanId;
       });
     } catch (e) {
@@ -82,7 +81,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
               radius: 60,
               backgroundImage: linkAvatar != null && linkAvatar!.isNotEmpty
                   ? NetworkImage(linkAvatar!)
-                  : const AssetImage("assets/images/user.png"),
+                  : const AssetImage("assets/images/user.png") as ImageProvider,
             ),
             decoration: BoxDecoration(
               color: Colors.blueAccent,
@@ -110,7 +109,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => HoSoBenhAnPage(benhNhanId: benhnhanid),
+                  builder: (_) => HoSoBenhAnPage(benhNhanId: benhnhanid!),
                 ),
               );
             },
@@ -164,5 +163,12 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
         ],
       ),
     );
+  }
+
+  String? _buildAvatarUrl(String? avatar) {
+    if (avatar == null || avatar.isEmpty) return null;
+    if (avatar.startsWith('http')) return avatar;
+    final path = avatar.startsWith('/') ? avatar.substring(1) : avatar;
+    return "https://hoanmyclinic.s3.ap-southeast-2.amazonaws.com/$path";
   }
 }

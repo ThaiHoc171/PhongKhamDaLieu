@@ -53,9 +53,8 @@ class LichKhamRepository {
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
 
     final response = await ApiClient.get(
-      "CaKham/kiemtra-dadangky?ngay=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Khám&thongTinId=$thongTinId",
+      "caKham/check-dadangky?ngay=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Khám&thongTinId=$thongTinId",
     );
-
     return response['data'];
   }
 
@@ -74,45 +73,46 @@ class LichKhamRepository {
   }
 
   Future<String> dangKyKham(int caKhamId, int thongTinId) async {
-    final response = await ApiClient.put("CaKham/$caKhamId/dangky", {
+    final response = await ApiClient.put("caKham/$caKhamId/register", {
       'thongTinID': thongTinId,
       'lyDoKham': 'Khám da liễu',
       'ngayDat': DateTime.now().toIso8601String(),
       'ghiChu': '',
     });
-
     return response["message"];
   }
 
   Future<TaiKhamModel?> checkTaiKhamPending(int benhNhanId) async {
-    final response = await ApiClient.get(
-      "TaiKham/benhnhan/$benhNhanId/pending",
-    );
-
-    if (response == null || response["taiKhamId"] == null) {
+    final response = await ApiClient.get("taikham/benhnhan/$benhNhanId");
+    if (response == null || response["data"] == null) {
       return null;
     }
-
-    return TaiKhamModel.fromJson(response["taiKhamId"]);
+    final items = response["data"]["items"];
+    if (items == null || items.isEmpty) {
+      return null;
+    }
+    return TaiKhamModel.fromJson(items[0]);
   }
 
   Future<String> updateTaiKham(int taiKhamId, int caKhamId) async {
-    final response = await ApiClient.put("TaiKham/$taiKhamId", {
+    final response = await ApiClient.put("taiKham/$taiKhamId", {
       "trangThai": "Đang xử lý",
       "caKhamID": caKhamId,
     });
-
     return response["message"] ?? "Cập nhật thành công";
   }
 
   Future<LieuTrinhDieuTriModel?> checkDieuTriPending(int benhNhanId) async {
-    final response = await ApiClient.get(
-      "LieuTrinhDieuTri/benhnhan/$benhNhanId",
-    );
+    final response = await ApiClient.get("lieutrinh/benhnhan/$benhNhanId");
 
-    if (response == null) return null;
-
-    return LieuTrinhDieuTriModel.fromJson(response);
+    if (response == null || response["data"] == null) {
+      return null;
+    }
+    final items = response["data"]["items"];
+    if (items == null || items.isEmpty) {
+      return null;
+    }
+    return LieuTrinhDieuTriModel.fromJson(items[0]);
   }
 
   Future<String> addBuoiDieuTri(int lieuTrinhId, int caKhamId) async {

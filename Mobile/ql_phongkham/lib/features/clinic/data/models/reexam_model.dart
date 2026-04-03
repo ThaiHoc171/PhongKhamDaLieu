@@ -1,34 +1,33 @@
 class TaiKhamModel {
   final int taiKhamID;
-  final int phienKhamID;
   final int benhNhanID;
+  final String benhNhanName;
   final DateTime ngayDuKien;
   final String lyDo;
   final String trangThai;
-  final int? caKhamID;
-  final DateTime ngayTao;
 
   TaiKhamModel({
     required this.taiKhamID,
-    required this.phienKhamID,
     required this.benhNhanID,
+    required this.benhNhanName,
     required this.ngayDuKien,
     required this.lyDo,
     required this.trangThai,
-    this.caKhamID,
-    required this.ngayTao,
   });
 
   factory TaiKhamModel.fromJson(Map<String, dynamic> json) {
     return TaiKhamModel(
-      taiKhamID: json['taiKhamID'],
-      phienKhamID: json['phienKhamID'],
-      benhNhanID: json['benhNhanID'],
-      ngayDuKien: DateTime.parse(json['ngayDuKien']),
-      lyDo: json['lyDo'],
-      trangThai: json['trangThai'],
-      caKhamID: json['caKhamID'],
-      ngayTao: DateTime.parse(json['ngayTao']),
+      taiKhamID: json['taiKhamID'] ?? 0,
+
+      benhNhanID: json['benhNhan']?['id'] ?? 0,
+      benhNhanName: json['benhNhan']?['name'] ?? '',
+
+      ngayDuKien: json['ngayDuKien'] != null
+          ? DateTime.parse(json['ngayDuKien'])
+          : DateTime.now(),
+
+      lyDo: json['lyDo'] ?? '',
+      trangThai: json['trangThai'] ?? '',
     );
   }
 }

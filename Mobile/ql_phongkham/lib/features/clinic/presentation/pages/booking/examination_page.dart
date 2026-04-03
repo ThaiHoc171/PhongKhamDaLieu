@@ -338,7 +338,6 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
   bool isPastTimeSlot(String gio) {
     final now = DateTime.now();
 
-    // chỉ kiểm tra nếu ngày chọn là hôm nay
     if (!isSameDay(_currentDay, now)) return false;
 
     final parts = gio.split(":");
@@ -352,6 +351,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       hour,
       minute,
     );
-    return slotTime.isBefore(now);
+    final difference = slotTime.difference(now);
+    return difference.inMinutes < 30;
   }
 }

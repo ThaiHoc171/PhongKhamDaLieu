@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:ql_phongkham/core/constants/app_config.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/upload_repository.dart';
@@ -67,7 +68,8 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         sdtController.text = data.sdt;
         emailController.text = data.emailLienHe;
         diaChiController.text = data.diaChi;
-        linkAvatar = data.avatar;
+        final rawPath = Uri.parse(data.avatar!).path;
+        linkAvatar = rawPath.startsWith('/') ? rawPath.substring(1) : rawPath;
       });
     } catch (e) {
       print("Load profile error: $e");
@@ -100,7 +102,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         sdtController.text,
         emailController.text,
         diaChiController.text,
-        linkAvatar ?? "",
+        _toRelativePath(linkAvatar),
         "",
         token,
       );
@@ -146,7 +148,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         sdtController.text,
         emailController.text,
         diaChiController.text,
-        linkAvatar ?? "",
+        _toRelativePath(linkAvatar),
         vaitro!,
       );
 
@@ -211,7 +213,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
                 const SizedBox(height: 20),
                 DropdownButtonFormField<String>(
-                  value: gioiTinh,
+                  initialValue: gioiTinh,
                   decoration: const InputDecoration(
                     labelText: "Giới tính",
                     border: OutlineInputBorder(),
@@ -281,15 +283,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          CircleAvatar(
-            radius: 60,
-            backgroundImage: _imageFile != null
-                ? FileImage(File(_imageFile!.path))
-                : (linkAvatar != null && linkAvatar!.startsWith("http")
-                          ? NetworkImage(linkAvatar!)
-                          : const AssetImage("assets/images/user.png"))
-                      as ImageProvider,
-          ),
+          CircleAvatar(radius: 60, backgroundImage: _buildAvatarImage()),
           if (isLoading)
             Container(
               width: 120,
@@ -393,5 +387,25 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         isLoading = false;
       });
     }
+  }
+
+  String _toRelativePath(String? url) {
+    if (url == null || url.isEmpty) return "";
+    // Nếu là full URL thì lấy path, ngược lại giữ nguyên
+    final uri = Uri.tryParse(url);
+    if (uri != null && uri.isAbsolute) {
+      return uri.path; // /profile/abc.jpg
+    }
+    return url; // đã là relative rồi
+  }
+
+  ImageProvider _buildAvatarImage() {
+    if (_imageFile != null) {
+      return FileImage(File(_imageFile!.path));
+    }
+    if (linkAvatar != null && linkAvatar!.isNotEmpty) {
+      return NetworkImage(AppConfig.baseImageUrl + linkAvatar!);
+    }
+    return const AssetImage("assets/images/user.png");
   }
 }

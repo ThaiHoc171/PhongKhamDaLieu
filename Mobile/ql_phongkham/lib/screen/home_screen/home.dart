@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/data/models/article_model.dart';
 import 'package:ql_phongkham/features/clinic/data/models/doctor_profile_model.dart';
+import 'package:ql_phongkham/features/clinic/data/models/reexam_model.dart';
+import 'package:ql_phongkham/features/clinic/data/models/treatment_model.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/article_repository.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/doctor_profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
@@ -31,6 +33,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoadingBacSi = true;
   bool isLoadingBaiViet = true;
   bool isExpandArticle = false;
+  bool hasTaiKham = false;
+  bool hasDieuTri = false;
+
+  int? taiKhamId;
+  int? lieuTrinhId;
   int _selectedIndex = 0;
   final items = ['assets/images/banner1.jpg', 'assets/images/banner2.png'];
   int myCurrentIndex = 0;
@@ -43,67 +50,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> loadData() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final benhNhanId = prefs.getInt('benhNhanId')!;
+
+      final repo = LichKhamRepository();
+
       final results = await Future.wait([
         BacsiProfileRepository().getBacSiProfile(),
         BaiVietRepository().getListBaiViet(),
+        repo.checkTaiKhamPending(benhNhanId),
+        repo.checkDieuTriPending(benhNhanId),
       ]);
+
+      final taiKham = results[2] as TaiKhamModel?;
+      final dieuTri = results[3] as LieuTrinhDieuTriModel?;
 
       setState(() {
         bacSiList = results[0] as List<BacSiProfileModel>;
         baiVietList = results[1] as List<BaiVietModel>;
+
+        if (taiKham?.trangThai == 'Chờ khám') {
+          hasTaiKham = taiKham != null;
+          taiKhamId = taiKham?.taiKhamID;
+        }
+        if (dieuTri?.trangThai == 'Đang điều trị') {
+          hasDieuTri = dieuTri != null;
+          lieuTrinhId = dieuTri?.lieuTrinhID;
+        }
+
         isLoadingBacSi = false;
         isLoadingBaiViet = false;
       });
     } catch (e) {
       DialogHelper.showThongBao(context, e.toString());
-    }
-  }
-
-  Future<void> checkTaiKham() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final benhNhanId = prefs.getInt('benhNhanId')!;
-      final repo = LichKhamRepository();
-      final check = await repo.checkTaiKhamPending(benhNhanId);
-      if (check != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => LichKhamScreen(taiKhamId: check.taiKhamID),
-          ),
-        );
-      } else {
-        DialogHelper.showThongBao(context, 'Bạn không có lịch tái khám!');
-      }
-    } catch (e) {
-      DialogHelper.showThongBao(
-        context,
-        e.toString().replaceFirst('Exception: ', ''),
-      );
-    }
-  }
-
-  Future<void> checkDieuTri() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final benhNhanId = prefs.getInt('benhNhanId')!;
-      final repo = LichKhamRepository();
-      final check = await repo.checkDieuTriPending(benhNhanId);
-      if (check != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => LichDieuTriScreen(lieuTrinhID: check.lieuTrinhID),
-          ),
-        );
-      } else {
-        DialogHelper.showThongBao(context, 'Bạn không có lịch điều trị!');
-      }
-    } catch (e) {
-      DialogHelper.showThongBao(
-        context,
-        e.toString().replaceFirst('Exception: ', ''),
-      );
     }
   }
 
@@ -318,13 +297,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       ElevatedButton(
-                        onPressed: () {
-                          checkDieuTri();
-                        },
-                        child: const Text(
-                          'Đặt lịch điều trị',
-                          style: TextStyle(fontSize: 15),
-                        ),
+                        onPressed: hasDieuTri
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => LichDieuTriScreen(
+                                      lieuTrinhID: lieuTrinhId!,
+                                    ),
+                                  ),
+                                );
+                              }
+                            : null,
+                        child: const Text('Đặt lịch điều trị'),
                       ),
                     ],
                   ),
@@ -333,13 +318,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
-                          checkTaiKham();
-                        },
-                        child: const Text(
-                          'Đặt lịch tái khám',
-                          style: TextStyle(fontSize: 15),
-                        ),
+                        onPressed: hasTaiKham
+                            ? () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        LichKhamScreen(taiKhamId: taiKhamId!),
+                                  ),
+                                );
+                              }
+                            : null,
+                        child: const Text('Đặt lịch tái khám'),
                       ),
                       ElevatedButton(
                         onPressed: () {},
