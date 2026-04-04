@@ -93,7 +93,7 @@ builder.Services
 			context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 			context.Response.ContentType = "application/json";
 			await context.Response.WriteAsJsonAsync(
-				ApiResponse<string>.Fail("Bạn chưa đăng nhập")
+				ApiResponse<bool>.Fail("Bạn chưa đăng nhập")
 			);
 		},
 		OnForbidden = async context =>
@@ -101,7 +101,7 @@ builder.Services
 			context.Response.StatusCode = StatusCodes.Status403Forbidden;
 			context.Response.ContentType = "application/json";
 			await context.Response.WriteAsJsonAsync(
-				ApiResponse<string>.Fail("Bạn không có quyền truy cập")
+				ApiResponse<bool>.Fail("Bạn không có quyền thực hiện hành động này")
 			);
 		}
 	};

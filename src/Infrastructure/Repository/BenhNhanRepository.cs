@@ -221,7 +221,7 @@ public class BenhNhanRepository : IBenhNhanRepository
 		await conn.OpenAsync();
 
 		const string sql = @"
-            SELECT bn.BenhNhanID, tt.HoTen
+            SELECT bn.ThongTinID, tt.HoTen
             FROM BenhNhan bn
             JOIN ThongTinCaNhan tt ON bn.ThongTinID = tt.ThongTinID
             ORDER BY tt.HoTen";
