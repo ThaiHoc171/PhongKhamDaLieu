@@ -50,7 +50,7 @@ public class CaKhamController : ControllerBase
 		List([FromQuery] DateTime ngayKham, [FromQuery] string trangThai,[FromQuery] string loaiCaKham,
 		[FromQuery] int pageNumber = 1,	[FromQuery] int pageSize = 15)
 	{
-		var response = await _service.GetPagedAsync( ngayKham,trangThai, loaiCaKham, pageNumber,	pageSize);
+		var response = await _service.GetPagedAsync( ngayKham,trangThai, loaiCaKham, pageNumber, pageSize);
 		return Ok(response);
 	}
 	[HttpGet("search/by-thongtin/{thongTinId}")]

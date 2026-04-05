@@ -19,14 +19,14 @@ public class LoaiBenhController : ControllerBase
 	// ==================== CREATE ====================
 	[Authorize(Policy = "BENH_CREATE")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] LoaiBenhRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] LoaiBenhRequestDTO dto)
 	{
-		var result = await _service.TaoMoiAsync(dto);
+		var result = await _service.AddAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
 
-		return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
+		return Ok(result);
 	}
 
 	// ==================== UPDATE ====================
@@ -34,10 +34,10 @@ public class LoaiBenhController : ControllerBase
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] LoaiBenhUpdateDTO dto)
 	{
-		var result = await _service.CapNhatAsync(id, dto);
+		var result = await _service.UpdateAsync(id, dto);
 
 		if (!result.Success)
-			return result.Message.Contains("không tồn tại")
+			return result.Message.Contains("không tìm thấy")
 				? NotFound(result)
 				: BadRequest(result);
 
@@ -47,9 +47,9 @@ public class LoaiBenhController : ControllerBase
 	// ==================== GET DETAIL ====================
 	[Authorize(Policy = "BENH_VIEW")]
 	[HttpGet("{id}")]
-	public async Task<ActionResult<ApiResponse<LoaiBenhReadModel>>> GetById(int id)
+	public async Task<ActionResult<ApiResponse<LoaiBenhReadModel>>> Detail(int id)
 	{
-		var result = await _service.GetByIdAsync(id);
+		var result = await _service.GetDetailAsync(id);
 
 		if (!result.Success)
 			return NotFound(result);
@@ -60,11 +60,11 @@ public class LoaiBenhController : ControllerBase
 	// ==================== GET LIST ====================
 	[Authorize(Policy = "BENH_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<LoaiBenhListReadModel>>>> GetPaged(
-		[FromQuery] int pageNumber = 1,
-		[FromQuery] int pageSize = 15)
+	public async Task<ActionResult<ApiResponse<PagedResult<LoaiBenhListReadModel>>>> Paged(
+		[FromQuery] int page = 1,
+		[FromQuery] int size = 10)
 	{
-		var result = await _service.GetPagedAsync(pageNumber, pageSize);
+		var result = await _service.GetPagedAsync(page, size);
 		return Ok(result);
 	}
 
@@ -73,17 +73,21 @@ public class LoaiBenhController : ControllerBase
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<LoaiBenhListReadModel>>>> Search(
 		[FromQuery] string keyword,
-		[FromQuery] int pageNumber = 1,
-		[FromQuery] int pageSize = 15)
+		[FromQuery] int page = 1,
+		[FromQuery] int size = 10)
 	{
-		var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
+		var result = await _service.SearchAsync(keyword, page, size);
+
+		if (!result.Success)
+			return BadRequest(result);
+
 		return Ok(result);
 	}
 
 	// ==================== COMBOBOX ====================
 	[Authorize(Policy = "BENH_VIEW")]
 	[HttpGet("combobox")]
-	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
 	{
 		var result = await _service.GetComboboxAsync();
 		return Ok(result);
@@ -92,7 +96,7 @@ public class LoaiBenhController : ControllerBase
 	// ==================== GET TEN BENH ====================
 	[Authorize(Policy = "BENH_VIEW")]
 	[HttpGet("{id}/ten")]
-	public async Task<ActionResult<ApiResponse<string>>> GetTenBenh(int id)
+	public async Task<ActionResult<ApiResponse<string?>>> GetTenBenh(int id)
 	{
 		var result = await _service.GetTenBenhAsync(id);
 
@@ -100,5 +104,59 @@ public class LoaiBenhController : ControllerBase
 			return NotFound(result);
 
 		return Ok(result);
+	}
+
+	// ==================== IMPORT PREVIEW ====================
+	[Authorize(Policy = "BENH_CREATE")]
+	[HttpPost("import/preview")]
+	public async Task<IActionResult> PreviewImport(IFormFile file, [FromQuery] string sheet)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest(ApiResponse<string>.Fail("File không hợp lệ"));
+
+		if (string.IsNullOrWhiteSpace(sheet))
+			return BadRequest(ApiResponse<string>.Fail("Sheet không hợp lệ"));
+
+		using var stream = file.OpenReadStream();
+
+		var response = await _service.PreviewImport(stream, sheet);
+
+		if (!response.Success)
+			return BadRequest(response);
+
+		return Ok(response);
+	}
+
+	// ==================== IMPORT VALIDATE ====================
+	[Authorize(Policy = "BENH_CREATE")]
+	[HttpPost("import/validate")]
+	public async Task<ActionResult<ApiResponse<ExcelImportResult<LoaiBenhRequestDTO>>>>
+	ValidateImport([FromBody] List<LoaiBenhRequestDTO> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
+
+		var result = await _service.ValidateImport(list);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	// ==================== IMPORT CONFIRM ====================
+	[Authorize(Policy = "BENH_CREATE")]
+	[HttpPost("import/confirm")]
+	public async Task<IActionResult> Import([FromBody] List<LoaiBenhRequestDTO> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
+
+		var response = await _service.ImportAsync(list);
+
+		if (!response.Success)
+			return BadRequest(response);
+
+		return Ok(response);
 	}
 }
