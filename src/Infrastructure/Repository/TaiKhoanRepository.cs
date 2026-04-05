@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.ValueObjects;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
@@ -46,8 +47,26 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 
 		return null;
 	}
+    public async Task<TaiKhoan?> GetBySDTAsync(string sdt)
+    {
+        using var conn = new SqlConnection(_connectionString);
+        await conn.OpenAsync();
 
-	public async Task<TaiKhoan?> GetByIdAsync(int id)
+        var sql = @"SELECT TaiKhoanID,Email,MatKhau,VaiTro,TrangThai,NgayTao,NgayCapNhat,FCMToken
+					FROM TaiKhoan tk, ThongTinCaNhan tt
+					WHERE tt.TaiKhoanID = tk.TaiKhoanID AND tt.SDT = @SDT";
+
+        using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@SDT", SqlDbType.NVarChar, 100).Value = sdt;
+
+        using var reader = await cmd.ExecuteReaderAsync();
+
+        if (await reader.ReadAsync())
+            return MapToEntity(reader);
+
+        return null;
+    }
+    public async Task<TaiKhoan?> GetByIdAsync(int id)
 	{
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
@@ -93,7 +112,7 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 		{BaseSelectList}
 		WHERE (@VaiTro IS NULL OR VaiTro=@VaiTro)
 		AND (@TrangThai IS NULL OR TrangThai=@TrangThai)
-		ORDER BY TaiKhoanID DESC
+		ORDER BY TaiKhoanID ASC
 		OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
 
 		SELECT COUNT(*)
@@ -136,18 +155,18 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 		int offset = (page - 1) * size;
 
 		var sql = $@"
-	{BaseSelectList}
-	WHERE (@Keyword IS NULL OR Email LIKE '%' + @Keyword + '%')
-	AND (@VaiTro IS NULL OR VaiTro = @VaiTro)
-	AND (@TrangThai IS NULL OR TrangThai = @TrangThai)
-	ORDER BY TaiKhoanID DESC
-	OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+		{BaseSelectList}
+		WHERE (@Keyword IS NULL OR Email LIKE '%' + @Keyword + '%')
+		AND (@VaiTro IS NULL OR VaiTro = @VaiTro)
+		AND (@TrangThai IS NULL OR TrangThai = @TrangThai)
+		ORDER BY TaiKhoanID DESC
+		OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
 
-	SELECT COUNT(*)
-	FROM TaiKhoan
-	WHERE (@Keyword IS NULL OR Email LIKE '%' + @Keyword + '%')
-	AND (@VaiTro IS NULL OR VaiTro = @VaiTro)
-	AND (@TrangThai IS NULL OR TrangThai = @TrangThai)";
+		SELECT COUNT(*)
+		FROM TaiKhoan
+		WHERE (@Keyword IS NULL OR Email LIKE '%' + @Keyword + '%')
+		AND (@VaiTro IS NULL OR VaiTro = @VaiTro)
+		AND (@TrangThai IS NULL OR TrangThai = @TrangThai)";
 
 		using var cmd = new SqlCommand(sql, conn);
 

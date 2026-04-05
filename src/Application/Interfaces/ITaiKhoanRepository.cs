@@ -4,7 +4,8 @@ namespace Application.Interfaces;
 public interface ITaiKhoanRepository
 {
 	Task<TaiKhoan?> GetByEmailAsync(string email);
-	Task<TaiKhoan?> GetByIdAsync(int id);
+    Task<TaiKhoan?> GetBySDTAsync(string sdt);
+    Task<TaiKhoan?> GetByIdAsync(int id);
 	Task<bool> ExistsByEmailAsync(string email);
 
     Task<TaiKhoanReadModel?> GetDetailAsync(int id);
