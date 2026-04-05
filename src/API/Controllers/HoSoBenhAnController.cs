@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/benhan")]
+[Route("api/hosobenhan")]
 [Authorize]
 public class HoSoBenhAnController : ControllerBase
 {
@@ -21,14 +21,14 @@ public class HoSoBenhAnController : ControllerBase
 	// ==================== CREATE ====================
 	[Authorize(Policy = "HOSO_CREATE")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] HoSoBenhAnRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] HoSoBenhAnRequestDTO dto)
 	{
-		var result = await _service.TaoAsync(dto);
+		var result = await _service.AddAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
 
-		return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
+		return Ok(result);
 	}
 
 	// ==================== UPDATE ====================
@@ -36,7 +36,7 @@ public class HoSoBenhAnController : ControllerBase
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] HoSoBenhAnUpdateDTO dto)
 	{
-		var result = await _service.CapNhatAsync(id, dto);
+		var result = await _service.UpdateAsync(id, dto);
 
 		if (!result.Success)
 			return result.Message.Contains("không tồn tại")
@@ -47,11 +47,11 @@ public class HoSoBenhAnController : ControllerBase
 	}
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "HOSO_DETAIL")]
+	[Authorize(Policy = "HOSO_VIEW")]
 	[HttpGet("{id}")]
-	public async Task<ActionResult<ApiResponse<HoSoBenhAnReadModel>>> GetById(int id)
+	public async Task<ActionResult<ApiResponse<HoSoBenhAnReadModel>>> Detail(int id)
 	{
-		var result = await _service.GetByIdAsync(id);
+		var result = await _service.GetDetailAsync(id);
 
 		if (!result.Success)
 			return NotFound(result);
@@ -60,7 +60,7 @@ public class HoSoBenhAnController : ControllerBase
 	}
 
 	// ==================== GET BY BENH NHAN ====================
-	[Authorize(Policy = "HOSO_LIST")]
+	[Authorize(Policy = "HOSO_VIEW")]
 	[HttpGet("benhnhan/{benhNhanId}")]
 	public async Task<ActionResult<ApiResponse<HoSoBenhAnReadModel?>>> GetByBenhNhanId(int benhNhanId)
 	{
@@ -73,9 +73,9 @@ public class HoSoBenhAnController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "HOSO_LIST")]
+	[Authorize(Policy = "HOSO_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<PagedResult<HoSoBenhAnListReadModel>>>> GetPaged(
+	public async Task<ActionResult<ApiResponse<PagedResult<HoSoBenhAnListReadModel>>>> Paged(
 		[FromQuery] int page = 1,
 		[FromQuery] int size = 10)
 	{
@@ -84,7 +84,7 @@ public class HoSoBenhAnController : ControllerBase
 	}
 
 	// ==================== SEARCH ====================
-	[Authorize(Policy = "HOSO_LIST")]
+	[Authorize(Policy = "HOSO_VIEW")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<HoSoBenhAnListReadModel>>>> Search(
 		[FromQuery] string keyword,

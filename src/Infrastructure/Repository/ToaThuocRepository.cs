@@ -4,109 +4,194 @@ using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+
 namespace Infrastructure.Repositories;
+
 public class ToaThuocRepository : IToaThuocRepository
 {
 	private readonly string _connectionString;
-	public ToaThuocRepository(IConfiguration config)
+
+	public ToaThuocRepository(IConfiguration configuration)
 	{
-		_connectionString = config.GetConnectionString("DefaultConnection")
-			?? throw new InvalidOperationException("Connection string not found.");
+		_connectionString = configuration.GetConnectionString("DefaultConnection")!;
 	}
-	private SqlConnection CreateConnection() => new(_connectionString);
+
+	#region Queries
+
+	private const string BaseSelectList = @"
+        SELECT t.ToaThuocID,t.NgayLap,t.GhiChu,tt.HoTen
+        FROM ToaThuoc t
+        INNER JOIN NhanVien nv ON t.NhanVienKeDonID = nv.NhanVienID
+        INNER JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID";
+
+	private const string BaseSelectDetail = @"
+        SELECT t.ToaThuocID,t.PhienKhamID,t.NhanVienKeDonID,t.NgayLap,t.GhiChu,
+               nv.NhanVienID,tt.HoTen
+        FROM ToaThuoc t
+        INNER JOIN NhanVien nv ON t.NhanVienKeDonID = nv.NhanVienID
+        INNER JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID";
+
+	#endregion
+
 	public async Task<bool> ExistsByPhienKhamAsync(int phienKhamID)
 	{
-		const string sql =
-		@"SELECT 1 FROM ToaThuoc WHERE PhienKhamID=@PhienKhamID";
-		await using var conn = CreateConnection();
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamID;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
+
+		const string sql = @"SELECT 1 FROM ToaThuoc WHERE PhienKhamID=@PhienKhamID";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamID;
+
 		var result = await cmd.ExecuteScalarAsync();
+
 		return result != null;
 	}
+
 	public async Task<int> AddAsync(ToaThuoc entity)
 	{
-		const string sql =
-		@"INSERT INTO ToaThuoc (PhienKhamID,NhanVienKeDonID,GhiChu)
-		  OUTPUT INSERTED.ToaThuocID
-		  VALUES (@PhienKhamID,@NhanVienKeDonID,@GhiChu)";
-		await using var conn = CreateConnection();
-		await using var cmd = new SqlCommand(sql, conn);
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"INSERT INTO ToaThuoc(PhienKhamID,NhanVienKeDonID,GhiChu)
+                    OUTPUT INSERTED.ToaThuocID
+                    VALUES(@PhienKhamID,@NhanVienKeDonID,@GhiChu)";
+
+		using var cmd = new SqlCommand(sql, conn);
+
 		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = entity.PhienKhamID;
 		cmd.Parameters.Add("@NhanVienKeDonID", SqlDbType.Int).Value = entity.NhanVienKeDonID;
-		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar).Value =
+		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar, -1).Value =
 			(object?)entity.GhiChu ?? DBNull.Value;
-		await conn.OpenAsync();
+
 		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
 	}
-	public async Task<ToaThuoc?> GetByIdAsync(int toaThuocID)
+
+	public async Task<ToaThuoc?> GetByIdAsync(int id)
 	{
-		const string sql =
-		@"SELECT ToaThuocID,PhienKhamID,NhanVienKeDonID,NgayLap,GhiChu
-		  FROM ToaThuoc
-		  WHERE ToaThuocID=@Id";
-		await using var conn = CreateConnection();
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = toaThuocID;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return MapToEntity(reader);
+
+		var sql = BaseSelectDetail + " WHERE t.ToaThuocID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToEntity(reader);
+
+		return null;
 	}
+
 	public async Task<ToaThuocReadModel?> GetByPhienKhamAsync(int phienKhamID)
 	{
-		const string sql =
-		@"SELECT t.ToaThuocID,t.PhienKhamID,t.NgayLap,t.GhiChu,nv.NhanVienID,tt.HoTen
-		  FROM ToaThuoc t
-		  JOIN NhanVien nv ON t.NhanVienKeDonID=nv.NhanVienID
-		  JOIN ThongTinCaNhan tt ON nv.ThongTinID=tt.ThongTinID
-		  WHERE t.PhienKhamID=@PhienKhamID";
-		await using var conn = CreateConnection();
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamID;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return MapToDetailDTO(reader);
+
+		var sql = BaseSelectDetail + " WHERE t.PhienKhamID=@PhienKhamID";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamID;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToDetailDTO(reader);
+
+		return null;
 	}
+
 	public async Task<(List<ToaThuocListReadModel>, int)> GetPagedAsync(int page, int size)
 	{
-		var sql =
-		@"SELECT t.ToaThuocID,t.NgayLap,t.GhiChu,tt.HoTen
-		  FROM ToaThuoc t
-		  JOIN NhanVien nv ON t.NhanVienKeDonID=nv.NhanVienID
-		  JOIN ThongTinCaNhan tt ON nv.ThongTinID=tt.ThongTinID
-		  ORDER BY t.NgayLap DESC
-		  OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-		  SELECT COUNT(*) FROM ToaThuoc";
 		var list = new List<ToaThuocListReadModel>();
 		int total = 0;
-		await using var conn = CreateConnection();
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = (page - 1) * size;
-		cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
+
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+        {BaseSelectList}
+        ORDER BY t.NgayLap DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+        SELECT COUNT(*) FROM ToaThuoc";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
 			list.Add(MapToListDTO(reader));
-		if (await reader.NextResultAsync() && await reader.ReadAsync())
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
 			total = reader.GetInt32(0);
+
 		return (list, total);
 	}
-	public async Task DeleteAsync(int toaThuocID)
+	public async Task<(List<ToaThuocListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size)
 	{
-		const string sql =
-		@"DELETE FROM ToaThuoc WHERE ToaThuocID=@Id";
-		await using var conn = CreateConnection();
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = toaThuocID;
+		var list = new List<ToaThuocListReadModel>();
+		int total = 0;
+
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+    {BaseSelectList}
+    WHERE tt.HoTen LIKE @Keyword OR t.GhiChu LIKE @Keyword
+    ORDER BY t.NgayLap DESC
+    OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+    SELECT COUNT(*)
+    FROM ToaThuoc t
+    INNER JOIN NhanVien nv ON t.NhanVienKeDonID = nv.NhanVienID
+    INNER JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+    WHERE tt.HoTen LIKE @Keyword OR t.GhiChu LIKE @Keyword";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar, 200).Value = $"%{keyword}%";
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+			list.Add(MapToListDTO(reader));
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
+	}
+	public async Task DeleteAsync(int id)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		const string sql = @"DELETE FROM ToaThuoc WHERE ToaThuocID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
 		await cmd.ExecuteNonQueryAsync();
 	}
-	private static ToaThuoc MapToEntity(SqlDataReader r)
+
+	#region Mapping
+
+	private ToaThuoc MapToEntity(SqlDataReader r)
 	{
 		return new ToaThuoc(
 			r.GetInt32(r.GetOrdinal("ToaThuocID")),
@@ -116,29 +201,33 @@ public class ToaThuocRepository : IToaThuocRepository
 			r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu"))
 		);
 	}
-	private static ToaThuocListReadModel MapToListDTO(SqlDataReader r)
+
+	private ToaThuocListReadModel MapToListDTO(SqlDataReader r)
 	{
 		return new ToaThuocListReadModel
 		{
-			ToaThuocID = r.GetInt32(0),
-			NgayLap = r.GetDateTime(1),
-			GhiChu = r.IsDBNull(2) ? null : r.GetString(2),
-			NguoiLap = r.GetString(3)
+			ToaThuocID = r.GetInt32(r.GetOrdinal("ToaThuocID")),
+			NgayLap = r.GetDateTime(r.GetOrdinal("NgayLap")),
+			GhiChu = r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu")),
+			NguoiLap = r.GetString(r.GetOrdinal("HoTen"))
 		};
 	}
-	private static ToaThuocReadModel MapToDetailDTO(SqlDataReader r)
+
+	private ToaThuocReadModel MapToDetailDTO(SqlDataReader r)
 	{
 		return new ToaThuocReadModel
 		{
-			ToaThuocID = r.GetInt32(0),
-			PhienKhamID = r.GetInt32(1),
-			NgayLap = r.GetDateTime(2),
-			GhiChu = r.IsDBNull(3) ? null : r.GetString(3),
+			ToaThuocID = r.GetInt32(r.GetOrdinal("ToaThuocID")),
+			PhienKhamID = r.GetInt32(r.GetOrdinal("PhienKhamID")),
+			NgayLap = r.GetDateTime(r.GetOrdinal("NgayLap")),
+			GhiChu = r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu")),
 			NguoiLap = new NameResponseDTO
 			{
-				Id = r.GetInt32(4),
-				Name = r.GetString(5)
+				Id = r.GetInt32(r.GetOrdinal("NhanVienID")),
+				Name = r.GetString(r.GetOrdinal("HoTen"))
 			}
 		};
 	}
+
+	#endregion
 }

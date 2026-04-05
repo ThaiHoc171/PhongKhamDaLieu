@@ -443,12 +443,16 @@ public class CaKhamRepository : ICaKhamRepository
 		return new CaKhamReadModel
 		{
 			CaKhamID = r.GetInt32(r.GetOrdinal("CaKhamID")),
+			LichLamViecID = r.IsDBNull(r.GetOrdinal("LichLamViecID")) ? null : r.GetInt32(r.GetOrdinal("LichLamViecID")),
+			LoaiCaKham = r.GetString(r.GetOrdinal("LoaiCaKham")),
 			NgayKham = r.GetDateTime(r.GetOrdinal("NgayKham")),
 			TenKhungGio = r.GetString(r.GetOrdinal("TenKhung")),
 			TenPhong = r.IsDBNull(r.GetOrdinal("TenPhong")) ? null : r.GetString(r.GetOrdinal("TenPhong")),
 			HoTen = r.IsDBNull(r.GetOrdinal("HoTen")) ? null : r.GetString(r.GetOrdinal("HoTen")),
 			LyDoKham = r.IsDBNull(r.GetOrdinal("LyDoKham")) ? null : r.GetString(r.GetOrdinal("LyDoKham")),
-			TrangThai = r.GetString(r.GetOrdinal("TrangThai"))
+			TrangThai = r.GetString(r.GetOrdinal("TrangThai")),
+			NgayDat = r.IsDBNull(r.GetOrdinal("NgayDat")) ? null : r.GetDateTime(r.GetOrdinal("NgayDat")),
+			GhiChu = r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu"))
 		};
 	}
 

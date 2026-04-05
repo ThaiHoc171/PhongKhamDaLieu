@@ -8,6 +8,7 @@ public interface IToaThuocRepository
 	Task<int> AddAsync(ToaThuoc toaThuoc);
 	Task<ToaThuocReadModel?> GetByPhienKhamAsync(int phienKhamID);
 	Task<(List<ToaThuocListReadModel>, int)> GetPagedAsync(int page, int size);
+	Task<(List<ToaThuocListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size);
 	Task DeleteAsync(int toaThuocID);
 }
 public interface IChiTietToaThuocRepository

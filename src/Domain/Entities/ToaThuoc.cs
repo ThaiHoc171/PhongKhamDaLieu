@@ -25,8 +25,4 @@ public class ToaThuoc
 		NgayLap = ngayLap;
 		GhiChu = ghiChu;
 	}
-	public void Note(string? ghiChu)
-	{
-		GhiChu = ghiChu;
-	}
 }
