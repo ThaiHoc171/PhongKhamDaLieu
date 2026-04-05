@@ -1,131 +1,232 @@
 ﻿using Application.Common;
 using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
+using Microsoft.Data.SqlClient;
 using OfficeOpenXml;
+
 namespace Application.Services;
+
 public class ThuocService
 {
 	private readonly IThuocRepository _repo;
+
 	public ThuocService(IThuocRepository repo)
 	{
 		_repo = repo;
 	}
-	public async Task<ApiResponse<int>> AddAsync(ThuocRequestDTO dto)
+
+	public async Task<ApiResponse<bool>> AddAsync(ThuocRequestDTO dto)
 	{
-		var validate = ValidateCreate(dto);
-		if (!validate.Success)
-			return ApiResponse<int>.Fail(validate.Message);
-		var entity = new Thuoc(dto.TenThuoc, dto.HoatChat);
-		var id = await _repo.AddAsync(entity);
-		return ApiResponse<int>.SuccessResponse(id, "Tạo thuốc thành công");
+		try
+		{
+			if (dto == null)
+				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
+
+			var entity = new Thuoc(
+				dto.TenThuoc.Trim(),
+				dto.HoatChat.Trim()
+			);
+
+			int row = await _repo.AddAsync(entity);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Tạo thuốc thất bại");
+
+			return ApiResponse<bool>.SuccessResponse(true, "Tạo thuốc thành công");
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+		{
+			return ApiResponse<bool>.Fail("Tên thuốc đã tồn tại");
+		}
 	}
+
 	public async Task<ApiResponse<bool>> UpdateAsync(int id, ThuocUpdateDTO dto)
 	{
-		var validate = ValidateUpdate(dto);
-		if (!validate.Success)
-			return ApiResponse<bool>.Fail(validate.Message);
-		var entity = await _repo.GetByIdAsync(id);
-		if (entity == null)
-			return ApiResponse<bool>.Fail("Không tìm thấy thuốc");
-		entity.CapNhat(dto.TenThuoc, dto.HoatChat);
-		await _repo.UpdateAsync(entity);
-		return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thuốc thành công");
+		try
+		{
+			if (id <= 0)
+				return ApiResponse<bool>.Fail("ID không hợp lệ");
+
+			if (dto == null)
+				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
+
+			var entity = await _repo.GetByIdAsync(id);
+
+			if (entity == null)
+				return ApiResponse<bool>.Fail("Không tìm thấy thuốc");
+
+			entity.CapNhat(
+				dto.TenThuoc.Trim(),
+				dto.HoatChat.Trim()
+			);
+
+			int row = await _repo.UpdateAsync(entity);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Cập nhật thuốc thất bại");
+
+			return ApiResponse<bool>.SuccessResponse(true, "Cập nhật thuốc thành công");
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+		{
+			return ApiResponse<bool>.Fail("Tên thuốc đã tồn tại");
+		}
 	}
+
 	public async Task<ApiResponse<bool>> DeleteAsync(int id)
 	{
+		if (id <= 0)
+			return ApiResponse<bool>.Fail("ID không hợp lệ");
+
 		var entity = await _repo.GetByIdAsync(id);
+
 		if (entity == null)
 			return ApiResponse<bool>.Fail("Không tìm thấy thuốc");
+
 		await _repo.DeleteAsync(id);
+
 		return ApiResponse<bool>.SuccessResponse(true, "Xóa thuốc thành công");
 	}
+
 	public async Task<ApiResponse<ThuocReadModel>> GetDetailAsync(int id)
 	{
+		if (id <= 0)
+			return ApiResponse<ThuocReadModel>.Fail("ID không hợp lệ");
+
 		var result = await _repo.GetDetailAsync(id);
+
 		if (result == null)
 			return ApiResponse<ThuocReadModel>.Fail("Không tìm thấy thuốc");
+
 		return ApiResponse<ThuocReadModel>.SuccessResponse(result);
 	}
-	public async Task<ApiResponse<PagedResult<ThuocListReadModel>>> GetPagedAsync(int page, int size)
+
+	public async Task<ApiResponse<PagedResult<ThuocReadModel>>> GetPagedAsync(int page, int size)
 	{
 		if (page < 1) page = 1;
 		if (size <= 0) size = 10;
+
 		var (items, total) = await _repo.GetPagedAsync(page, size);
-		var result = new PagedResult<ThuocListReadModel>
+
+		var result = new PagedResult<ThuocReadModel>
 		{
 			Items = items,
 			TotalCount = total,
 			PageNumber = page,
 			PageSize = size
 		};
-		return ApiResponse<PagedResult<ThuocListReadModel>>
+
+		return ApiResponse<PagedResult<ThuocReadModel>>
 			.SuccessResponse(result);
 	}
-	public async Task<ApiResponse<PagedResult<ThuocListReadModel>>> SearchAsync(
-		string keyword,
-		int page,
-		int size)
+
+	public async Task<ApiResponse<PagedResult<ThuocReadModel>>> SearchAsync(string keyword, int page, int size)
 	{
 		if (string.IsNullOrWhiteSpace(keyword))
-			return ApiResponse<PagedResult<ThuocListReadModel>>
-				.Fail("Keyword không hợp lệ");
-		var (items, total) =
-			await _repo.SearchPagedAsync(keyword.Trim(), page, size);
-		var result = new PagedResult<ThuocListReadModel>
+			return ApiResponse<PagedResult<ThuocReadModel>>
+				.Fail("Từ khóa không hợp lệ");
+
+		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
+
+		var (items, total) = await _repo.SearchPagedAsync(keyword.Trim(), page, size);
+
+		var result = new PagedResult<ThuocReadModel>
 		{
 			Items = items,
 			TotalCount = total,
 			PageNumber = page,
 			PageSize = size
 		};
-		return ApiResponse<PagedResult<ThuocListReadModel>>
+
+		return ApiResponse<PagedResult<ThuocReadModel>>
 			.SuccessResponse(result);
 	}
-    public async Task<ApiResponse<List<NameResponseDTO>>> GetIdAndNameAsync()
-    {
-        var list = await _repo.GetIdAndNameAsync();
-        var result = list.Select(x => new NameResponseDTO
-        {
-            Id = x.Id,
-            Name = x.Ten
-        }).ToList();
-        return ApiResponse<List<NameResponseDTO>>.SuccessResponse(result);
-    }
-    public async Task<ApiResponse<int>> ImportExcelAsync(Stream stream)
+
+	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync()
 	{
-		ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");
-		using var package = new ExcelPackage(stream);
-		var sheet = package.Workbook.Worksheets.FirstOrDefault();
-		if (sheet == null)
-			return ApiResponse<int>.Fail("File Excel không hợp lệ");
-		var rowCount = sheet.Dimension.Rows;
-		int success = 0;
-		for (int row = 2; row <= rowCount; row++)
+		var data = await _repo.GetComboboxAsync();
+
+		return ApiResponse<List<NameResponseDTO>>
+			.SuccessResponse(data);
+	}
+
+	public async Task<ApiResponse<ExcelImportResult<ThuocRequestDTO>>> PreviewImport(Stream stream, string sheet)
+	{
+		return ExcelImporter.Preview<ThuocRequestDTO>(stream, sheet, (item, row) =>
 		{
-			var tenThuoc = sheet.Cells[row, 1].Text?.Trim();
-			var hoatChat = sheet.Cells[row, 2].Text?.Trim();
-			if (string.IsNullOrWhiteSpace(tenThuoc))
-				continue;
-			var entity = new Thuoc(tenThuoc, hoatChat);
-			await _repo.AddAsync(entity);
-			success++;
+			var errors = new List<string>();
+
+			if (string.IsNullOrWhiteSpace(item.TenThuoc))
+				errors.Add($"Dòng {row}: Tên thuốc đang rỗng");
+			if(string.IsNullOrWhiteSpace(item.HoatChat))
+				errors.Add($"Dòng {row}: Tên hoạt chất đang rỗng");
+			return errors;
+		});
+	}
+
+	public async Task<ApiResponse<ExcelImportResult<ThuocRequestDTO>>>
+	ValidateImport(List<ThuocRequestDTO> list)
+	{
+		var result = new ExcelImportResult<ThuocRequestDTO>();
+
+		int row = 2;
+
+		var tenThuocSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+		foreach (var item in list)
+		{
+			var errors = new List<string>();
+
+			// trùng trong file
+			if (!tenThuocSet.Add(item.TenThuoc))
+				errors.Add($"Dòng {row}: Tên thuốc bị trùng trong file");
+
+			// trùng DB
+			if (await _repo.ExistsTenThuocAsync(item.TenThuoc))
+				errors.Add($"Dòng {row}: Tên thuốc đã tồn tại");
+
+			if (errors.Any())
+			{
+				result.Errors.Add(new ExcelImportError
+				{
+					Row = row,
+					Errors = errors
+				});
+			}
+			else
+			{
+				result.Data.Add(item);
+			}
+
+			row++;
 		}
-		return ApiResponse<int>.SuccessResponse(success, "Import thuốc thành công");
+
+		return ApiResponse<ExcelImportResult<ThuocRequestDTO>>
+			.SuccessResponse(result);
 	}
-	private ApiResponse<bool> ValidateCreate(ThuocRequestDTO dto)
+
+	public async Task<ApiResponse<bool>> ImportAsync(List<ThuocRequestDTO> list)
 	{
-		if (dto == null)
-			return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
-		if (string.IsNullOrWhiteSpace(dto.TenThuoc))
-			return ApiResponse<bool>.Fail("Tên thuốc không được để trống");
-		return ApiResponse<bool>.SuccessResponse(true);
-	}
-	private ApiResponse<bool> ValidateUpdate(ThuocUpdateDTO dto)
-	{
-		if (dto == null)
-			return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
-		if (string.IsNullOrWhiteSpace(dto.TenThuoc))
-			return ApiResponse<bool>.Fail("Tên thuốc không được để trống");
-		return ApiResponse<bool>.SuccessResponse(true);
+		if (list == null || list.Count == 0)
+			return ApiResponse<bool>.Fail("Danh sách import rỗng");
+
+		var entities = list.Select(x => new Thuoc(
+			x.TenThuoc.Trim(),
+			x.HoatChat.Trim()
+		)).ToList();
+
+		await _repo.BulkInsertAsync(entities);
+
+		return ApiResponse<bool>.SuccessResponse(true, "Import thuốc thành công");
 	}
 }

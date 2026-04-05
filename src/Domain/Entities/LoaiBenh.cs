@@ -49,15 +49,6 @@ public class LoaiBenh
 		MucDoNghiemTrong = mucDoNghiemTrong;
 	}
 
-	public void KiemTraTrung(IEnumerable<LoaiBenh> danhSach)
-	{
-		if (danhSach.Any(x => x.LoaiBenhID != LoaiBenhID && string.Equals(x.TenBenh, TenBenh, StringComparison.OrdinalIgnoreCase)))
-			throw new ArgumentException("Tên bệnh đã tồn tại");
-
-		if (danhSach.Any(x => x.LoaiBenhID != LoaiBenhID && string.Equals(x.TenKhoaHoc, TenKhoaHoc, StringComparison.OrdinalIgnoreCase)))
-			throw new ArgumentException("Tên khoa học đã tồn tại");
-	}
-
 	private void Validate(string tenBenh, string tenKhoaHoc, string nhomBenh, string moTa, string doPhoBien, string mucDoNghiemTrong)
 	{
 		if (string.IsNullOrWhiteSpace(tenBenh))
