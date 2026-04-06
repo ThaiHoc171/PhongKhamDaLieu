@@ -28,18 +28,26 @@ public class OtpService
             if (dto == null || string.IsNullOrWhiteSpace(dto.Email))
                 return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
 
-            var taiKhoan = await _taiKhoanRepo.GetByEmailAsync(dto.Email.Trim());
-            if (taiKhoan == null)
-                return ApiResponse<bool>.Fail("Email không tồn tại");
-
-            await _otpRepo.InvalidateAllAsync(taiKhoan.TaiKhoanID);
-
+            var email = dto.Email.Trim().ToLower();
             var maOtp = TaoMaOtp();
-            var otp = new Otp(taiKhoan.TaiKhoanID, maOtp);
+            var taiKhoan = await _taiKhoanRepo.GetByEmailAsync(email);
 
-            await _otpRepo.AddAsync(otp);
-            await _emailService.SendOtpAsync(taiKhoan.Email, maOtp);
+            if (taiKhoan != null)
+            {
+                // Tài khoản đã tồn tại → luồng đổi mật khẩu
+                await _otpRepo.InvalidateAllByTaiKhoanAsync(taiKhoan.TaiKhoanID);
+                var otp = new Otp(taiKhoan.TaiKhoanID, maOtp);
+                await _otpRepo.AddAsync(otp);
+            }
+            else
+            {
+                // Chưa có tài khoản → luồng đăng ký
+                await _otpRepo.InvalidateAllByEmailAsync(email);
+                var otp = new Otp(email, maOtp);
+                await _otpRepo.AddAsync(otp);
+            }
 
+            await _emailService.SendOtpAsync(email, maOtp);
             return ApiResponse<bool>.SuccessResponse(true, "OTP đã được gửi đến email của bạn");
         }
         catch (ArgumentException ex)
@@ -56,21 +64,20 @@ public class OtpService
                             || string.IsNullOrWhiteSpace(dto.MaOTP))
                 return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
 
-            var taiKhoan = await _taiKhoanRepo.GetByEmailAsync(dto.Email.Trim());
-            if (taiKhoan == null)
-                return ApiResponse<bool>.Fail("Email không tồn tại");
+            var email = dto.Email.Trim().ToLower();
+            var taiKhoan = await _taiKhoanRepo.GetByEmailAsync(email);
 
-            var otp = await _otpRepo.GetValidOtpAsync(taiKhoan.TaiKhoanID, dto.MaOTP.Trim());
+            Otp? otp;
+            if (taiKhoan != null)
+                otp = await _otpRepo.GetValidOtpByTaiKhoanAsync(taiKhoan.TaiKhoanID, dto.MaOTP.Trim());
+            else
+                otp = await _otpRepo.GetValidOtpByEmailAsync(email, dto.MaOTP.Trim());
 
-            if (otp == null)
+            if (otp == null || !otp.IsValid())
                 return ApiResponse<bool>.Fail("Mã OTP không hợp lệ hoặc đã hết hạn");
-
-            if (!otp.IsValid())
-                return ApiResponse<bool>.Fail("Mã OTP đã hết hạn");
 
             otp.Invalidate();
             await _otpRepo.InvalidateAsync(otp.OtpID);
-
             return ApiResponse<bool>.SuccessResponse(true, "Xác thực OTP thành công");
         }
         catch (InvalidOperationException ex)
