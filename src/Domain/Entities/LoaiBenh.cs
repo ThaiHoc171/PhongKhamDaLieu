@@ -69,10 +69,10 @@ public class LoaiBenh
 		if (string.IsNullOrWhiteSpace(mucDoNghiemTrong))
 			throw new ArgumentException("Mức độ nghiêm trọng không hợp lệ");
 
-		if (doPhoBien != "Phổ biến" && doPhoBien != "Ít gặp" && doPhoBien != "Hiếm")
+		if (doPhoBien != "phổ biến" && doPhoBien != "ít gặp" && doPhoBien != "hiếm")
 			throw new ArgumentException("Độ phổ biến không hợp lệ");
 
-		if (mucDoNghiemTrong != "Nhẹ" && mucDoNghiemTrong != "Trung bình" && mucDoNghiemTrong != "Nặng")
+		if (mucDoNghiemTrong != "nhẹ" && mucDoNghiemTrong != "trung bình" && mucDoNghiemTrong != "nặng")
 			throw new ArgumentException("Mức độ nghiêm trọng không hợp lệ");
 	}
 }
