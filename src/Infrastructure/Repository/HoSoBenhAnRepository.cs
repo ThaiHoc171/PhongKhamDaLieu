@@ -269,7 +269,9 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
 			ThoiQuenSong = r["ThoiQuenSong"] as string,
 			ThongTinKhac = r["ThongTinKhac"] as string,
 			NgayTao = r.GetDateTime(r.GetOrdinal("NgayTao")),
-			NgayCapNhat = r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
+			NgayCapNhat = r.IsDBNull(r.GetOrdinal("NgayCapNhat"))
+			? DateTime.MinValue
+			: r.GetDateTime(r.GetOrdinal("NgayCapNhat"))
 		};
 	}
 

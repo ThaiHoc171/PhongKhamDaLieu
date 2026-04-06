@@ -8,7 +8,6 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/taikhoan")]
-[Authorize]
 public class TaiKhoanController : ControllerBase
 {
 	private readonly TaiKhoanService _service;
@@ -19,7 +18,6 @@ public class TaiKhoanController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "USER_CREATE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] TaiKhoanRequestDTO dto)
 	{

@@ -47,7 +47,7 @@ public class HoSoBenhAnController : ControllerBase
 	}
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "HOSO_VIEW")]
+	[Authorize(Policy = "HOSO_DETAIL")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<HoSoBenhAnReadModel>>> Detail(int id)
 	{
@@ -60,7 +60,7 @@ public class HoSoBenhAnController : ControllerBase
 	}
 
 	// ==================== GET BY BENH NHAN ====================
-	[Authorize(Policy = "HOSO_VIEW")]
+	[Authorize(Policy = "HOSO_DETAIL")]
 	[HttpGet("benhnhan/{benhNhanId}")]
 	public async Task<ActionResult<ApiResponse<HoSoBenhAnReadModel?>>> GetByBenhNhanId(int benhNhanId)
 	{
@@ -73,7 +73,7 @@ public class HoSoBenhAnController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "HOSO_VIEW")]
+	[Authorize(Policy = "HOSO_LIST")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<HoSoBenhAnListReadModel>>>> Paged(
 		[FromQuery] int page = 1,
@@ -84,7 +84,7 @@ public class HoSoBenhAnController : ControllerBase
 	}
 
 	// ==================== SEARCH ====================
-	[Authorize(Policy = "HOSO_VIEW")]
+	[Authorize(Policy = "HOSO_LIST")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<HoSoBenhAnListReadModel>>>> Search(
 		[FromQuery] string keyword,
