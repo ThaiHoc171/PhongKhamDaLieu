@@ -1,35 +1,36 @@
+// otp_email_page.dart
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/theme/app_pallete.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
-import 'package:ql_phongkham/features/clinic/data/repository/auth_repository.dart';
-import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/otp_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_field.dart';
+import 'package:ql_phongkham/features/clinic/data/repository/auth_repository.dart';
 
-class SignupPage extends StatefulWidget {
-  static route() => MaterialPageRoute(builder: (context) => SignupPage());
-  const SignupPage({super.key});
+class OtpEmailPage extends StatefulWidget {
+  const OtpEmailPage({super.key});
+
+  static route() => MaterialPageRoute(builder: (_) => const OtpEmailPage());
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<OtpEmailPage> createState() => _OtpEmailPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _OtpEmailPageState extends State<OtpEmailPage> {
   bool _submitted = false;
   bool isLoading = false;
   final formKey = GlobalKey<FormState>();
-
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final checkpassController = TextEditingController();
 
   @override
   void dispose() {
     emailController.dispose();
-    passwordController.dispose();
-    checkpassController.dispose();
     super.dispose();
+  }
+
+  bool isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$');
+    return emailRegex.hasMatch(email);
   }
 
   Future<void> sendOtp() async {
@@ -41,11 +42,7 @@ class _SignupPageState extends State<SignupPage> {
       if (!mounted) return;
       Navigator.push(
         context,
-        OtpVerifyPage.routeRegister(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-          loai: 'Khách',
-        ),
+        OtpVerifyPage.routeForgotPassword(email: emailController.text.trim()),
       );
     } catch (e) {
       if (!mounted) return;
@@ -61,13 +58,8 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: AppPallete.transparentColor,
-        elevation: 0,
-      ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/bg.jpg'),
             fit: BoxFit.cover,
@@ -83,84 +75,51 @@ class _SignupPageState extends State<SignupPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Đăng ký',
+                const Text(
+                  'Xác nhận',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Nhập email để nhận mã xác nhận',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black54, fontSize: 14),
+                ),
                 const SizedBox(height: 30),
                 AuthField(
                   hintText: 'Email',
                   controller: emailController,
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null || value.isEmpty)
                       return "Email đang trống!";
-                    }
-                    if (!isValidEmail(value)) {
-                      return "Email không hợp lệ!";
-                    }
+                    if (!isValidEmail(value)) return "Email không hợp lệ!";
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
-                AuthField(
-                  hintText: 'Mật khẩu',
-                  controller: passwordController,
-                  isObscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Mật khẩu đang trống!";
-                    }
-                    if (value.length < 6) {
-                      return "Mật khẩu ít nhất 6 ký tự!";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 15),
-                AuthField(
-                  hintText: 'Nhập lại mật khẩu',
-                  controller: checkpassController,
-                  isObscureText: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Vui lòng nhập lại mật khẩu!";
-                    }
-                    if (value != passwordController.text) {
-                      return "Mật khẩu không khớp!";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 20),
                 isLoading
                     ? const CircularProgressIndicator()
                     : AuthButton(
-                        buttonText: 'Đăng ký',
+                        buttonText: 'Gửi mã OTP',
                         onPressed: () {
-                          setState(() {
-                            _submitted = true;
-                          });
-                          if (formKey.currentState!.validate()) {
-                            sendOtp();
-                          }
+                          setState(() => _submitted = true);
+                          if (formKey.currentState!.validate()) sendOtp();
                         },
                       ),
                 const SizedBox(height: 20),
                 GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, LoginPage.route());
-                  },
+                  onTap: () => Navigator.pop(context),
                   child: RichText(
                     text: TextSpan(
-                      text: 'Đã có tài khoản?',
+                      text: 'Đã có tài khoản? ',
                       style: Theme.of(context).textTheme.titleMedium,
                       children: [
                         TextSpan(
-                          text: ' Đăng nhập',
+                          text: 'Đăng nhập',
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 color: AppPallete.gradient3,
@@ -177,10 +136,5 @@ class _SignupPageState extends State<SignupPage> {
         ),
       ),
     );
-  }
-
-  bool isValidEmail(String email) {
-    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$');
-    return emailRegex.hasMatch(email);
   }
 }

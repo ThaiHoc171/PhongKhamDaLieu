@@ -26,4 +26,17 @@ class AuthRepository {
     });
     return response;
   }
+
+  Future<void> sendOtp(String email) async {
+    final response = await ApiClient.post('otp/tao', {"email": email});
+    return response;
+  }
+
+  Future<void> verifyOtp(String email, String otp) async {
+    final response = await ApiClient.post("otp/xac-thuc", {
+      "email": email,
+      "maOTP": otp,
+    });
+    return response;
+  }
 }

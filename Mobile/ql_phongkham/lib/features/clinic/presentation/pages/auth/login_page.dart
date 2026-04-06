@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/theme/app_pallete.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/auth/otp_email_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/signup_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/profile/profile_Update_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
@@ -123,6 +124,21 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                         ),
                       ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, OtpEmailPage.route());
+                  },
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Quên mật khẩu?',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppPallete.gradient3,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),

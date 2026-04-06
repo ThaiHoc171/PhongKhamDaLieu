@@ -5,7 +5,9 @@ namespace Application.Interfaces;
 public interface IOtpRepository
 {
     Task<int> AddAsync(Otp otp);
-    Task<Otp?> GetValidOtpAsync(int taiKhoanID, string maOTP);
-    Task InvalidateAllAsync(int taiKhoanID);
+    Task<Otp?> GetValidOtpByTaiKhoanAsync(int taiKhoanID, string maOTP);
+    Task<Otp?> GetValidOtpByEmailAsync(string email, string maOTP);  
+    Task InvalidateAllByTaiKhoanAsync(int taiKhoanID);
+    Task InvalidateAllByEmailAsync(string email);                    
     Task InvalidateAsync(int otpID);
 }

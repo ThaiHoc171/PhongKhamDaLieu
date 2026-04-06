@@ -102,18 +102,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget imageProfile() {
-    final avatar = profile?.avatar;
+    final linkAvatar = _buildAvatarUrl(profile?.avatar);
     return Center(
       child: Stack(
         children: [
           CircleAvatar(
             radius: 60,
-            backgroundImage: avatar != null && avatar.isNotEmpty
-                ? NetworkImage(avatar)
-                : const AssetImage("assets/images/user.png"),
+            backgroundImage: linkAvatar != null && linkAvatar.isNotEmpty
+                ? NetworkImage(linkAvatar)
+                : const AssetImage("assets/images/user.png") as ImageProvider,
           ),
         ],
       ),
     );
+  }
+
+  String? _buildAvatarUrl(String? avatar) {
+    if (avatar == null || avatar.isEmpty) return null;
+    if (avatar.startsWith('http')) return avatar;
+    final path = avatar.startsWith('/') ? avatar.substring(1) : avatar;
+    return "https://hoanmyclinic.s3.ap-southeast-2.amazonaws.com/$path";
   }
 }
