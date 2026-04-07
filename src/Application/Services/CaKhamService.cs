@@ -24,7 +24,7 @@ public class CaKhamService
 		if (request.TuNgay > request.DenNgay)
 			return ApiResponse<int>.Fail("Khoảng ngày không hợp lệ");
 
-		if (request.TuNgay.Date < DateTime.Today)
+		if (request.TuNgay.Date < DateTime.Today.Date)
 			return ApiResponse<int>.Fail("Không thể tạo ca cho ngày trong quá khứ");
 		for (var day = request.TuNgay.Date; day <= request.DenNgay.Date; day = day.AddDays(1))
 		{
