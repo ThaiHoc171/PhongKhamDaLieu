@@ -120,7 +120,7 @@ public class CaKhamController : ControllerBase
     [HttpPost("assign-lich")]
 	[Authorize(Policy = "LICHKHAM_UPDATE")]
 	public async Task<ActionResult<ApiResponse<AssignLichLamViecReport>>> 
-		AssignLichLamViec([FromQuery] CaKhamRequest request)
+		AssignLichLamViec([FromBody] CaKhamRequest request)
 	{
 		var response = await _service.AssignLichLamViecAsync(request);
 		if (!response.Success)
