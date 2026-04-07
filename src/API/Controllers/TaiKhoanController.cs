@@ -45,7 +45,6 @@ public class TaiKhoanController : ControllerBase
 	}
 
 	// ==================== RESET PASSWORD ====================
-	[Authorize(Policy = "USER_UPDATE")]
 	[HttpPut("{id}/reset-password")]
 	public async Task<ActionResult<ApiResponse<bool>>> ResetPassword(int id)
 	{
