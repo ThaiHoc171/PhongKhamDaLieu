@@ -118,7 +118,7 @@ public class LichLamViecRepository : ILichLamViecRepository
 
 		var sql = $@"
 		{BaseSelectList}
-		WHERE llv.Ngay >= @TuNgay AND llv.Ngay < @DenNgay
+		WHERE llv.Ngay >= @TuNgay AND llv.Ngay <= @DenNgay
 		ORDER BY llv.Ngay,llv.CaLamViec";
 
 		using var cmd = new SqlCommand(sql, conn);
