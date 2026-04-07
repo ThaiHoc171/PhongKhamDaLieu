@@ -62,7 +62,7 @@ public class PhienKhamService
 			if (nv == null)
 				return ApiResponse<int>.Fail("Không tìm thấy nhân viên");
 
-			var bn = await _benhNhanRepo.GetDetailAsync(caKham.ThongTinID.Value);
+			var bn = await _benhNhanRepo.GetByThongTinIDAsync(caKham.ThongTinID.Value);
 
 			if (bn == null)
 				return ApiResponse<int>.Fail("Bệnh nhân không tồn tại");
