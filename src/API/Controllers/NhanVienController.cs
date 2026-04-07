@@ -100,4 +100,11 @@ public class NhanVienController : ControllerBase
 		var result = await _service.GetComboboxAsync(chucVuId);
 		return Ok(result);
 	}
+	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[HttpGet("combobox/doctor")]
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>>	ComboboxDoctor()
+	{
+		var result = await _service.GetComboboxDoctorAsync();
+		return Ok(result);
+	}
 }

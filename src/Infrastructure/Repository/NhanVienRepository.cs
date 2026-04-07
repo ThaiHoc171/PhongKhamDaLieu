@@ -259,7 +259,36 @@ public class NhanVienRepository : INhanVienRepository
 
 		return list;
 	}
+	public async Task<List<NameResponseDTO>> GetComboboxDoctorAsync()
+	{
+		var list = new List<NameResponseDTO>();
 
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"
+            SELECT nv.NhanVienID,tt.HoTen
+            FROM NhanVien nv
+            JOIN ThongTinCaNhan tt ON nv.ThongTinID = tt.ThongTinID
+            WHERE nv.ChucVuID BETWEEN 1 AND 2
+            AND nv.TrangThai=N'Đang làm việc'
+            ORDER BY tt.HoTen";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add(new NameResponseDTO
+			{
+				Id = reader.GetInt32(reader.GetOrdinal("NhanVienID")),
+				Name = reader.GetString(reader.GetOrdinal("HoTen"))
+			});
+		}
+
+		return list;
+	}
 
 	#region Mapping
 

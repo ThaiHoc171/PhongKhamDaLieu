@@ -12,5 +12,6 @@ namespace Application.Interfaces
 		Task<(List<NhanVienReadListModel>, int)> SearchAsync(string keyword, int pageNumber, int pageSize);
 		Task<int> GetIdAsync(int taiKhoanId);
 		Task<List<NameResponseDTO>> GetComboboxAsync(int chucVuId);
+		Task<List<NameResponseDTO>> GetComboboxDoctorAsync();
 	}
 }

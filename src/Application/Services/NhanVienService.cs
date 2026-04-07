@@ -233,4 +233,9 @@ public class NhanVienService
 		var data = await _repo.GetComboboxAsync(chucVuId);
 		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
 	}
+	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxDoctorAsync()
+	{
+		var data = await _repo.GetComboboxDoctorAsync();
+		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
+	}
 }
