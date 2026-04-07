@@ -55,7 +55,7 @@ public class CaKhamRepository : ICaKhamRepository
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
-		var sql = BaseSelectList + " WHERE ck.CaKhamID=@Id";
+		var sql = BaseSelectDetail + " WHERE CaKhamID=@Id";
 
 		using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
