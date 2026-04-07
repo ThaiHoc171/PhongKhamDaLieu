@@ -57,8 +57,8 @@ public class TaiKhoanController : ControllerBase
 		return Ok(result);
 	}
     // ==================== GET ID ====================
-    [HttpGet("getIdByEmail")]
-    public async Task<ActionResult<ApiResponse<int>>> GetIdByEmail([FromQuery] string email)
+    [HttpGet("getIdByEmail/{email}")]
+    public async Task<ActionResult<ApiResponse<int>>> GetIdByEmail(string email)
     {
         var response = await _service.GetIdByEmailAsync(email);
         if (!response.Success)

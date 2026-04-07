@@ -40,6 +40,11 @@ class AuthRepository {
     return response;
   }
 
+  Future<int> getIdByEmail(String email) async {
+    final response = await ApiClient.get('taikhoan/getIdByEmail?$email');
+    return response['data'];
+  }
+
   Future<void> updateFCM(String fcmToken, int taiKhoanId) async {
     final response = await ApiClient.put('taikhoan/$taiKhoanId/fcm-token', {
       "fcmToken": fcmToken,

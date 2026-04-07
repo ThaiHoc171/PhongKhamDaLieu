@@ -78,12 +78,10 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     try {
       setState(() => isLoading = true);
 
-      // Bước 1: Xác thực OTP trước
       await AuthRepository().verifyOtp(widget.email, code);
 
       if (!mounted) return;
 
-      // Bước 2: OTP đúng → mới tạo tài khoản
       if (widget.password != null && widget.loai != null) {
         await AuthRepository().signup(
           widget.email,
@@ -99,12 +97,20 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
           (route) => false,
         );
       } else {
-        // Luồng quên mật khẩu
-        // Navigator.pushAndRemoveUntil(
-        //   context,
-        //   ResetPasswordPage.route(email: widget.email),
-        //   (route) => false,
-        // );
+        final taikhoanid = await AuthRepository().getIdByEmail(widget.email);
+        await AuthRepository().forgetpassword(taikhoanid);
+        print("Email: ${widget.email}");
+        print("TaiKhoanID: $taikhoanid");
+        if (!mounted) return;
+        DialogHelper.showSnackSuccess(
+          context,
+          'Mật khẩu đã đươc reset, Mật khẩu hiện tại là: 123456, vui lòng đăng nhập và đổi mật khẩu mới',
+        );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => LoginPage()),
+          (route) => false,
+        );
       }
     } catch (e) {
       if (!mounted) return;
