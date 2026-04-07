@@ -26,9 +26,12 @@ public class CaKhamRepository : ICaKhamRepository
         LEFT JOIN ThongTinCaNhan tt ON ck.ThongTinID = tt.ThongTinID";
 
 	private const string BaseSelectDetail = @"
-        SELECT CaKhamID,LoaiCaKham,LichLamViecID,KhungGioID,PhongChucNangID,
-               ThongTinID,LyDoKham,TrangThai,NgayDat,NgayKham,GhiChu
-        FROM CaKham";
+		SELECT ck.CaKhamID, ck.LoaiCaKham, ck.LichLamViecID, ck.KhungGioID, ck.PhongChucNangID, ck.ThongTinID,
+			   ck.LyDoKham, ck.TrangThai, ck.NgayDat, ck.NgayKham, ck.GhiChu, kg.TenKhung, pc.TenPhong, tt.HoTen
+		FROM CaKham ck
+		LEFT JOIN KhungGioKham kg ON ck.KhungGioID = kg.KhungGioID
+		LEFT JOIN PhongChucNang pc ON ck.PhongChucNangID = pc.PhongChucNangID
+		LEFT JOIN ThongTinCaNhan tt ON ck.ThongTinID = tt.ThongTinID";
 
 	#endregion
 
@@ -37,7 +40,11 @@ public class CaKhamRepository : ICaKhamRepository
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
-		var sql = BaseSelectDetail + " WHERE CaKhamID=@Id";
+		var sql = @"
+			SELECT CaKhamID,LoaiCaKham,LichLamViecID,KhungGioID,PhongChucNangID,
+				   ThongTinID,LyDoKham,TrangThai,NgayDat,NgayKham,GhiChu
+			FROM CaKham 
+			WHERE CaKhamID=@Id";
 
 		using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
