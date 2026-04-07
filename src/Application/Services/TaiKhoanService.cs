@@ -49,7 +49,7 @@ public class TaiKhoanService
 		}
 	}
 
-	public async Task<ApiResponse<bool>> ChangePasswordAsync(
+    public async Task<ApiResponse<bool>> ChangePasswordAsync(
 		int id,
 		ChangePasswordRequestDTO dto)
 	{
@@ -188,8 +188,15 @@ public class TaiKhoanService
 
 		return ApiResponse<TaiKhoanReadModel>.SuccessResponse(result);
 	}
+    public async Task<ApiResponse<int>> GetIdByEmailAsync(string email)
+    {
+        if (email == null)
+            return ApiResponse<int>.Fail("Email không hợp lệ");
+        var result = await _repo.GetIdByEmailAsync(email);
+        return ApiResponse<int>.SuccessResponse(result);
+    }
 
-	public async Task<ApiResponse<bool>> UpdateFcmTokenAsync(int taiKhoanId, string? token)
+    public async Task<ApiResponse<bool>> UpdateFcmTokenAsync(int taiKhoanId, string? token)
 	{
 		var tk = await _repo.GetByIdAsync(taiKhoanId);
 

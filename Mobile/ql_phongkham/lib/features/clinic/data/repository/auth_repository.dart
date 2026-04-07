@@ -12,7 +12,7 @@ class AuthRepository {
   }
 
   Future<void> signup(String email, String password, String vaitro) async {
-    final response = await ApiClient.post('taiKhoan', {
+    final response = await ApiClient.post('taikhoan', {
       "email": email,
       "matKhau": password,
       "vaiTro": vaitro,
@@ -20,8 +20,28 @@ class AuthRepository {
     return response;
   }
 
+  Future<void> resetpassword(
+    String password,
+    String newpassword,
+    int taiKhoanId,
+  ) async {
+    final response = await ApiClient.put('taikhoan/$taiKhoanId/password', {
+      "matKhauCu": password,
+      "matKhauMoi": newpassword,
+    });
+    return response;
+  }
+
+  Future<void> forgetpassword(int taiKhoanId) async {
+    final response = await ApiClient.put(
+      'taikhoan/$taiKhoanId/reset-password',
+      {},
+    );
+    return response;
+  }
+
   Future<void> updateFCM(String fcmToken, int taiKhoanId) async {
-    final response = await ApiClient.put('taiKhoan/$taiKhoanId/fcm-token', {
+    final response = await ApiClient.put('taikhoan/$taiKhoanId/fcm-token', {
       "fcmToken": fcmToken,
     });
     return response;

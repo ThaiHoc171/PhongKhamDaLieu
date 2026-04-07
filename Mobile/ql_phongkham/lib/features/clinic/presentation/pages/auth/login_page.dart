@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(context, OtpEmailPage.route());
@@ -178,6 +178,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (user.thongTinId == null || user.thongTinId == 0) {
         Navigator.pushAndRemoveUntil(
+          // ← đổi push → pushAndRemoveUntil
           context,
           MaterialPageRoute(builder: (_) => ProfileUpdateScreen()),
           (route) => false,

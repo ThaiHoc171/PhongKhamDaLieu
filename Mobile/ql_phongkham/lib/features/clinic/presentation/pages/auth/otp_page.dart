@@ -77,31 +77,29 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
 
     try {
       setState(() => isLoading = true);
+
+      // Bước 1: Xác thực OTP trước
       await AuthRepository().verifyOtp(widget.email, code);
 
       if (!mounted) return;
 
+      // Bước 2: OTP đúng → mới tạo tài khoản
       if (widget.password != null && widget.loai != null) {
-        try {
-          await AuthRepository().signup(
-            widget.email,
-            widget.password!,
-            widget.loai!,
-          );
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => LoginPage()),
-            (route) => false,
-          );
-        } catch (e) {
-          if (!mounted) return;
-          DialogHelper.showSnacFailed(
-            context,
-            e.toString().replaceFirst('Exception: ', ''),
-          );
-        }
+        await AuthRepository().signup(
+          widget.email,
+          widget.password!,
+          widget.loai!,
+        );
+
+        if (!mounted) return;
+        DialogHelper.showSnackSuccess(context, 'Đăng ký thành công');
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => LoginPage()),
+          (route) => false,
+        );
       } else {
-        // Không có password → luồng quên mật khẩu
+        // Luồng quên mật khẩu
         // Navigator.pushAndRemoveUntil(
         //   context,
         //   ResetPasswordPage.route(email: widget.email),

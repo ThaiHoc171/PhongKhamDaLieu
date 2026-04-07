@@ -56,9 +56,17 @@ public class TaiKhoanController : ControllerBase
 
 		return Ok(result);
 	}
-
-	// ==================== UPDATE STATUS ====================
-	[Authorize(Policy = "USER_UPDATE")]
+    // ==================== GET ID ====================
+    [HttpGet("getIdByEmail")]
+    public async Task<ActionResult<ApiResponse<int>>> GetIdByEmail([FromQuery] string email)
+    {
+        var response = await _service.GetIdByEmailAsync(email);
+        if (!response.Success)
+            return BadRequest(response);
+        return Ok(response);
+    }
+    // ==================== UPDATE STATUS ====================
+    [Authorize(Policy = "USER_UPDATE")]
 	[HttpPut("{id}/status")]
 	public async Task<ActionResult<ApiResponse<bool>>> UpdateStatus(
 		int id,
