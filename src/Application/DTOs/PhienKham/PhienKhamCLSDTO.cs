@@ -16,7 +16,7 @@ public class PkClsUpdateRequestDTO
 	public string? FileDinhKem { get; set; }
 	public string? GhiChu { get; set; }
 }
-public class PhienKhamClsListReadModel
+public class PhienKhamClsReadListModel
 {
 	public int PhienKhamCLSID { get; init; }
 	public string TenCLS { get; init; } = default!;
@@ -33,7 +33,7 @@ public class PhienKhamClsReadModel
 	public string? KetQua { get; init; }
 	public string? FileDinhKem { get; init; }
 	public DateTime? NgayThucHien { get; init; }
-	public string NhanVienChiDinh { get; init; }
+	public string? NhanVienChiDinh { get; init; }
 	public NameResponseDTO? NhanVienThucHien { get; init; }
 	public string? GhiChu { get; init; }
 }

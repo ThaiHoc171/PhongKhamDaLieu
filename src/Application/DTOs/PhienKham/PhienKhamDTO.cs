@@ -26,7 +26,7 @@ public class PhienKhamReadModel
 	public DateTime NgayKham { get; set; }
 	public string TrangThai { get; set; } = default!;
 }
-public class PhienKhamListReadModel
+public class PhienKhamReadListModel
 {
 	public int PhienKhamID { get; set; }
 	public int CaKhamID { get; set; }

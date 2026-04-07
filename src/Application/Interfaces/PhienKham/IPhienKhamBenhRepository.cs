@@ -4,8 +4,8 @@ namespace Application.Interfaces;
 public interface IPhienKhamBenhRepository
 {
 	// CUD
-	Task AddAsync (PhienKhamBenh phienKhamBenh);
-	Task UpdateAsync (PhienKhamBenh phienKhamBenh);
+	Task<int> AddAsync (PhienKhamBenh phienKhamBenh);
+	Task<int> UpdateAsync (PhienKhamBenh phienKhamBenh);
 	// Query
 	Task<int> CountAsync(int phienKhamID);
 	Task<bool> PrimaryExistsAsync(int phienKhamID);

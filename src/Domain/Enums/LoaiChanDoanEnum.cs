@@ -9,7 +9,7 @@ public enum LoaiChanDoanEnum
 	ChanDoanChinh,
 	ChanDoanPhatSinh
 }
-public static class LoaiChanDoanEnumExtensions
+public static class LoaiChanDoanExtensions
 {
 	public static string ToDbValue(this LoaiChanDoanEnum val)
 	{
@@ -20,7 +20,7 @@ public static class LoaiChanDoanEnumExtensions
 			_ => throw new ArgumentOutOfRangeException(nameof(val), val, null)
 		};
 	}
-	public static LoaiChanDoanEnum ToEnum(string description)
+	public static LoaiChanDoanEnum FromDb(string description)
 	{
 		return description switch
 		{

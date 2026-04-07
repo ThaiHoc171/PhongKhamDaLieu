@@ -2,54 +2,99 @@
 using Application.Interfaces;
 using Application.Common;
 using Domain.Entities;
+
 namespace Application.Services;
+
 public class PhienKhamThietBiService
 {
 	private readonly IPhienKhamThietBiRepository _repo;
+
 	public PhienKhamThietBiService(IPhienKhamThietBiRepository repo)
 	{
 		_repo = repo;
 	}
-	public async Task<ApiResponse<List<PhienKhamThietBiReadModel>>> DanhSachTheoPhienKhamAsync(int phienKhamID)
+
+	public async Task<ApiResponse<List<PhienKhamThietBiReadModel>>> GetByPhienKhamAsync(int phienKhamID)
 	{
+		if (phienKhamID <= 0)
+			return ApiResponse<List<PhienKhamThietBiReadModel>>
+				.Fail("ID phiên khám không hợp lệ");
+
 		var data = await _repo.GetByPhienKhamAsync(phienKhamID);
-		return ApiResponse<List<PhienKhamThietBiReadModel>>.SuccessResponse(
-			data,
-			"Lấy danh sách thiết bị thành công"
-		);
+
+		return ApiResponse<List<PhienKhamThietBiReadModel>>
+			.SuccessResponse(data);
 	}
-	public async Task<ApiResponse<object>> ThemMoiAsync(PhienKhamThietBiRequestDTO dto)
+
+	public async Task<ApiResponse<bool>> AddAsync(PhienKhamThietBiRequestDTO dto)
 	{
-		// Rule: 1 ChiTietID chỉ xuất hiện 1 lần trong 1 phiên khám
-		var existed = await _repo.GetByPhienKhamAndChiTietAsync(
-			dto.PhienKhamID,
-			dto.ChiTietID
-		);
-		if (existed != null)
-			return ApiResponse<object>.Fail(
-				"Thiết bị này đã được sử dụng trong phiên khám"
+		try
+		{
+			if (dto == null)
+				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
+
+			// Rule: 1 ChiTietID chỉ xuất hiện 1 lần trong 1 phiên khám
+			var existed = await _repo.GetByPhienKhamAndChiTietAsync(
+				dto.PhienKhamID,
+				dto.ChiTietID
 			);
-		var entity = new PhienKhamThietBi(
-			dto.PhienKhamID,
-			dto.ChiTietID,
-			dto.GhiChu
-		);
-		await _repo.AddAsync(entity);
-		return ApiResponse<object>.SuccessResponse(
-			null,
-			"Thêm thiết bị vào phiên khám thành công"
-		);
+
+			if (existed != null)
+				return ApiResponse<bool>.Fail(
+					"Thiết bị này đã được sử dụng trong phiên khám"
+				);
+
+			var entity = new PhienKhamThietBi(
+				dto.PhienKhamID,
+				dto.ChiTietID,
+				dto.GhiChu
+			);
+
+			int row = await _repo.AddAsync(entity);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Thêm thiết bị vào phiên khám thất bại");
+
+			return ApiResponse<bool>.SuccessResponse(
+				true,
+				"Thêm thiết bị vào phiên khám thành công"
+			);
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
 	}
-	public async Task<ApiResponse<object>> CapNhatAsync(int id, string? ghiChu)
+
+	public async Task<ApiResponse<bool>> UpdateAsync(int id, string? ghiChu)
 	{
-		var entity = await _repo.GetByIdAsync(id);
-		if (entity == null)
-			return ApiResponse<object>.Fail("Không tìm thấy thiết bị trong phiên khám");
-		entity.CapNhatGhiChu(ghiChu);
-		await _repo.UpdateAsync(entity);
-		return ApiResponse<object>.SuccessResponse(
-			null,
-			"Cập nhật ghi chú thiết bị thành công"
-		);
+		try
+		{
+			if (id <= 0)
+				return ApiResponse<bool>.Fail("ID không hợp lệ");
+
+			var entity = await _repo.GetByIdAsync(id);
+
+			if (entity == null)
+				return ApiResponse<bool>.Fail(
+					"Không tìm thấy thiết bị trong phiên khám"
+				);
+
+			entity.CapNhatGhiChu(ghiChu);
+
+			int row = await _repo.UpdateAsync(entity);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Cập nhật ghi chú thiết bị thất bại");
+
+			return ApiResponse<bool>.SuccessResponse(
+				true,
+				"Cập nhật ghi chú thiết bị thành công"
+			);
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
 	}
 }

@@ -3,51 +3,77 @@ using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-namespace Infrastructure.Repository;
+using System.Data;
+
+namespace Infrastructure.Repositories;
+
 public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 {
 	private readonly string _connectionString;
-	public PhienKhamThietBiRepository(IConfiguration config)
+
+	public PhienKhamThietBiRepository(IConfiguration configuration)
 	{
-		_connectionString = config.GetConnectionString("DefaultConnection")
-			?? throw new ArgumentNullException("Connection string not found");
+		_connectionString = configuration.GetConnectionString("DefaultConnection")!;
 	}
-	public async Task AddAsync(PhienKhamThietBi pk)
+
+	#region Queries
+
+	private const string BaseSelect = @"
+        SELECT PhienKham_ThietBiID,
+               PhienKhamID,
+               ChiTietID,
+               GhiChu
+        FROM PhienKham_ThietBi";
+
+	private const string BaseSelectJoin = @"
+        SELECT pktb.PhienKham_ThietBiID,
+               tb.TenTB,
+               pcn.TenPhong,
+               pktb.GhiChu
+        FROM PhienKham_ThietBi pktb
+        JOIN ChiTiet_PCNTB ct ON pktb.ChiTietID = ct.ChiTietID
+        JOIN PhongChucNang_ThietBi pcntb ON ct.PCN_TB_ID = pcntb.PCN_TB_ID
+        JOIN ThietBi tb ON pcntb.ThietBiID = tb.ThietBiID
+        JOIN PhongChucNang pcn ON pcntb.PhongChucNangID = pcn.PhongChucNangID";
+
+	#endregion
+
+	public async Task<int> AddAsync(PhienKhamThietBi pk)
 	{
-		const string sql = @"
-			INSERT INTO PhienKham_ThietBi (PhienKhamID, ChiTietID, GhiChu)
-			VALUES (@PhienKhamID, @ChiTietID, @GhiChu)
-		";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@PhienKhamID", System.Data.SqlDbType.Int).Value = pk.PhienKhamID;
-		cmd.Parameters.Add("@ChiTietID", System.Data.SqlDbType.Int).Value = pk.ChiTietID;
-		cmd.Parameters.Add("@GhiChu", System.Data.SqlDbType.NVarChar).Value =
-			(object?)pk.GhiChu ?? DBNull.Value;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await cmd.ExecuteNonQueryAsync();
+
+		var sql = @"
+        INSERT INTO PhienKham_ThietBi (PhienKhamID, ChiTietID, GhiChu)
+        VALUES (@PhienKhamID, @ChiTietID, @GhiChu)";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = pk.PhienKhamID;
+		cmd.Parameters.Add("@ChiTietID", SqlDbType.Int).Value = pk.ChiTietID;
+		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar).Value =
+			(object?)pk.GhiChu ?? DBNull.Value;
+
+		int row = await cmd.ExecuteNonQueryAsync();
+		return row;
 	}
+
 	public async Task<List<PhienKhamThietBiReadModel>> GetByPhienKhamAsync(int phienKhamID)
 	{
-		const string sql = @"
-			SELECT pktb.PhienKham_ThietBiID,
-				   tb.TenTB,
-				   pcn.TenPhong,
-				   pktb.GhiChu
-			FROM PhienKham_ThietBi pktb
-			JOIN ChiTiet_PCNTB ct ON pktb.ChiTietID = ct.ChiTietID
-			JOIN PhongChucNang_ThietBi pcntb ON ct.PCN_TB_ID = pcntb.PCN_TB_ID
-			JOIN ThietBi tb ON pcntb.ThietBiID = tb.ThietBiID
-			JOIN PhongChucNang pcn ON pcntb.PhongChucNangID = pcn.PhongChucNangID
-			WHERE pktb.PhienKhamID = @PhienKhamID
-			ORDER BY tb.TenTB
-		";
 		var list = new List<PhienKhamThietBiReadModel>();
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@PhienKhamID", System.Data.SqlDbType.Int).Value = phienKhamID;
+
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
+
+		var sql = BaseSelectJoin + @"
+        WHERE pktb.PhienKhamID = @PhienKhamID
+        ORDER BY tb.TenTB";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamID;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
 		{
 			list.Add(new PhienKhamThietBiReadModel
@@ -58,70 +84,82 @@ public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 				GhiChu = reader.IsDBNull(3) ? null : reader.GetString(3)
 			});
 		}
+
 		return list;
 	}
+
 	public async Task<PhienKhamThietBi?> GetByPhienKhamAndChiTietAsync(int phienKhamID, int chiTietID)
 	{
-		const string sql = @"
-			SELECT PhienKham_ThietBiID,
-				   PhienKhamID,
-				   ChiTietID,
-				   GhiChu
-			FROM PhienKham_ThietBi
-			WHERE PhienKhamID = @PhienKhamID
-			  AND ChiTietID = @ChiTietID
-		";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@PhienKhamID", System.Data.SqlDbType.Int).Value = phienKhamID;
-		cmd.Parameters.Add("@ChiTietID", System.Data.SqlDbType.Int).Value = chiTietID;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return MapToEntity(reader);
+
+		var sql = BaseSelect + @"
+        WHERE PhienKhamID = @PhienKhamID
+          AND ChiTietID = @ChiTietID";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamID;
+		cmd.Parameters.Add("@ChiTietID", SqlDbType.Int).Value = chiTietID;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToEntity(reader);
+
+		return null;
 	}
+
 	public async Task<PhienKhamThietBi?> GetByIdAsync(int id)
 	{
-		const string sql = @"
-			SELECT PhienKham_ThietBiID,
-				   PhienKhamID,
-				   ChiTietID,
-				   GhiChu
-			FROM PhienKham_ThietBi
-			WHERE PhienKham_ThietBiID = @ID
-		";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@ID", System.Data.SqlDbType.Int).Value = id;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return MapToEntity(reader);
+
+		var sql = BaseSelect + " WHERE PhienKham_ThietBiID=@ID";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@ID", SqlDbType.Int).Value = id;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		if (await reader.ReadAsync())
+			return MapToEntity(reader);
+
+		return null;
 	}
-	public async Task UpdateAsync(PhienKhamThietBi pk)
+
+	public async Task<int> UpdateAsync(PhienKhamThietBi pk)
 	{
-		const string sql = @"
-			UPDATE PhienKham_ThietBi
-			SET GhiChu = @GhiChu
-			WHERE PhienKham_ThietBiID = @ID
-		";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@GhiChu", System.Data.SqlDbType.NVarChar).Value =
-			(object?)pk.GhiChu ?? DBNull.Value;
-		cmd.Parameters.Add("@ID", System.Data.SqlDbType.Int).Value = pk.PhienKhamThietBiID;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await cmd.ExecuteNonQueryAsync();
+
+		var sql = @"
+        UPDATE PhienKham_ThietBi
+        SET GhiChu = @GhiChu
+        WHERE PhienKham_ThietBiID = @ID";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar).Value =
+			(object?)pk.GhiChu ?? DBNull.Value;
+
+		cmd.Parameters.Add("@ID", SqlDbType.Int).Value = pk.PhienKhamThietBiID;
+
+		int row = await cmd.ExecuteNonQueryAsync();
+		return row;
 	}
-	private static PhienKhamThietBi MapToEntity(SqlDataReader reader)
+
+	#region Mapping
+
+	private PhienKhamThietBi MapToEntity(SqlDataReader r)
 	{
 		return new PhienKhamThietBi(
-			reader.GetInt32(0),
-			reader.GetInt32(1),
-			reader.GetInt32(2),
-			reader.IsDBNull(3) ? null : reader.GetString(3)
+			r.GetInt32(r.GetOrdinal("PhienKham_ThietBiID")),
+			r.GetInt32(r.GetOrdinal("PhienKhamID")),
+			r.GetInt32(r.GetOrdinal("ChiTietID")),
+			r.IsDBNull(r.GetOrdinal("GhiChu")) ? null : r.GetString(r.GetOrdinal("GhiChu"))
 		);
 	}
+
+	#endregion
 }

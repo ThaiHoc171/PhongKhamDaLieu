@@ -4,9 +4,9 @@ namespace Application.Interfaces;
 public interface IPhienKhamCLSRepository
 {
 	Task<PhienKhamCLS?> GetByIdAsync(int id);
-	Task<List<PhienKhamClsListReadModel>> GetByPhienKhamAsync(int phienKhamID);
+	Task<List<PhienKhamClsReadListModel>> GetByPhienKhamAsync(int phienKhamID);
 	Task<PhienKhamClsReadModel?> GetDetailAsync(int id);
-	Task<List<PhienKhamClsListReadModel>> GetListAsync();
-	Task AddAsync(PhienKhamCLS phienKhamCLS);
-	Task UpdateAsync(PhienKhamCLS phienKhamCLS);
+	Task<List<PhienKhamClsReadListModel>> GetListAsync();
+	Task<int> AddAsync(PhienKhamCLS phienKhamCLS);
+	Task<int> UpdateAsync(PhienKhamCLS phienKhamCLS);
 }
