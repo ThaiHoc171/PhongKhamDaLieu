@@ -46,4 +46,9 @@ public class PCNThietBiService
 		};
 		return ApiResponse<PagedResult<PCNThietBiReadModel>>.SuccessResponse(result);
 	}
+	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync(int pcnId)
+	{
+		var data = await _repo.GetComboboxAsync(pcnId);
+		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
+	}
 }

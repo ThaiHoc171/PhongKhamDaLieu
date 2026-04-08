@@ -37,4 +37,13 @@ public class PCNThietBiController : ControllerBase
 		var result = await _service.SearchAsync(keyword, page, size, phongChucNangID);
 		return Ok(result);
 	}
+
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet("combobox")]
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox([FromQuery] int pcnId)
+	{
+		var result = await _service.GetComboboxAsync(pcnId);
+
+		return Ok(result);
+	}
 }

@@ -158,6 +158,37 @@ public class PCNThietBiRepository : IPCNThietBiRepository
 
 		return null;
 	}
+	public async Task<List<NameResponseDTO>> GetComboboxAsync(int pcnId)
+	{
+		var list = new List<NameResponseDTO>();
+
+		await using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"
+		SELECT tb.ThietBiID, tb.TenTB AS TenHienThi
+        FROM PhongChucNang_ThietBi ptb
+        JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID
+        WHERE (@PCNID = 0 OR ptb.PhongChucNangID = @PCNID)
+        ORDER BY tb.TenTB";
+
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@PCNID", SqlDbType.Int).Value = pcnId;
+
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add(new NameResponseDTO
+			{
+				Id = reader.GetInt32(reader.GetOrdinal("ThietBiID")),
+				Name = reader.GetString(reader.GetOrdinal("TenHienThi"))
+			});
+		}
+
+		return list;
+	}
 	public async Task<int> AddAsync(PCNThietBi entity)
 	{
 		using var conn = new SqlConnection(_connectionString);

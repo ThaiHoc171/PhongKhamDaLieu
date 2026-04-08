@@ -14,4 +14,5 @@ public interface IPCNThietBiRepository
     Task<PCNThietBi?> GetByPhongAndThietBiAsync(int phongChucNangId, int thietBiId);
     Task<(List<PCNThietBiReadModel>, int)> GetPagedAsync(int page, int size, int? phongChucNangID);
     Task<(List<PCNThietBiReadModel>, int)> SearchPagedAsync(string keyword, int page,int size, int? phongChucNangID);
+	Task<List<NameResponseDTO>> GetComboboxAsync(int pcnId);
 }

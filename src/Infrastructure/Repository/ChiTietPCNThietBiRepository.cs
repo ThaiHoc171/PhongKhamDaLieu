@@ -123,8 +123,7 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 		await conn.OpenAsync();
 
 		var sql = @"
-		SELECT ptb.PCN_TB_ID,
-               tb.TenTB + N' - ' + ct.MaTaiSan AS TenHienThi
+		SELECT ct.ChiTietID, tb.TenTB + N' - ' + ct.MaTaiSan AS TenHienThi
         FROM ChiTiet_PCNTB ct
         JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
         JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID
@@ -143,7 +142,7 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 		{
 			list.Add(new NameResponseDTO
 			{
-				Id = reader.GetInt32(reader.GetOrdinal("PCN_TB_ID")),
+				Id = reader.GetInt32(reader.GetOrdinal("ChiTietID")),
 				Name = reader.GetString(reader.GetOrdinal("TenHienThi"))
 			});
 		}
