@@ -1,17 +1,19 @@
-﻿using Application.DTOs;
+﻿using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
-using Application.Common;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.Services;
 
 public class PhienKhamThietBiService
 {
 	private readonly IPhienKhamThietBiRepository _repo;
-
-	public PhienKhamThietBiService(IPhienKhamThietBiRepository repo)
+	private readonly IPhienKhamRepository _phienKhamRepo;
+	public PhienKhamThietBiService(IPhienKhamThietBiRepository repo, IPhienKhamRepository phienKhamRepo)
 	{
 		_repo = repo;
+		_phienKhamRepo = phienKhamRepo;
 	}
 
 	public async Task<ApiResponse<List<PhienKhamThietBiReadModel>>> GetByPhienKhamAsync(int phienKhamID)
@@ -76,10 +78,12 @@ public class PhienKhamThietBiService
 			var entity = await _repo.GetByIdAsync(id);
 
 			if (entity == null)
-				return ApiResponse<bool>.Fail(
-					"Không tìm thấy thiết bị trong phiên khám"
-				);
-
+				return ApiResponse<bool>.Fail("Không tìm thấy thiết bị trong phiên khám");
+			var phienKham = await _phienKhamRepo.GetByIdAsync(entity.PhienKhamID);
+			if (phienKham == null)
+				return ApiResponse<bool>.Fail("Không tìm thấy phiên khám");
+			if(phienKham.TrangThai != TrangThaiKhamEnum.DangKham)
+				return ApiResponse<bool>.Fail("Phiên khám đã kết thúc");
 			entity.CapNhatGhiChu(ghiChu);
 
 			int row = await _repo.UpdateAsync(entity);
@@ -90,6 +94,33 @@ public class PhienKhamThietBiService
 			return ApiResponse<bool>.SuccessResponse(
 				true,
 				"Cập nhật ghi chú thiết bị thành công"
+			);
+		}
+		catch (ArgumentException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+	}
+	public async Task<ApiResponse<bool>> DeleteAsync(int id)
+	{
+		try
+		{
+			if (id <= 0)
+				return ApiResponse<bool>.Fail("ID không hợp lệ");
+			var entity = await _repo.GetByIdAsync(id);
+			if (entity == null)
+				return ApiResponse<bool>.Fail("Không tìm thấy thiết bị trong phiên khám");
+			var phienKham = await _phienKhamRepo.GetByIdAsync(entity.PhienKhamID);
+			if (phienKham == null)
+				return ApiResponse<bool>.Fail("Không tìm thấy phiên khám");
+			if (phienKham.TrangThai != TrangThaiKhamEnum.DangKham)
+				return ApiResponse<bool>.Fail("Phiên khám đã kết thúc");
+			int row = await _repo.DeleteAsync(id);
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Xóa thiết bị khỏi phiên khám thất bại");
+			return ApiResponse<bool>.SuccessResponse(
+				true,
+				"Xóa thiết bị khỏi phiên khám thành công"
 			);
 		}
 		catch (ArgumentException ex)

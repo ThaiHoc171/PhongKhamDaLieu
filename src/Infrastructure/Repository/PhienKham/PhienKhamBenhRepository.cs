@@ -163,7 +163,24 @@ public class PhienKhamBenhRepository : IPhienKhamBenhRepository
 		int row = await cmd.ExecuteNonQueryAsync();
 		return row;
 	}
+	// ================= DELETE =================
 
+	public async Task<int> DeleteAsync(int id)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"
+		DELETE FROM PhienKham_Benh
+		WHERE PhienKham_BenhID = @Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		int row = await cmd.ExecuteNonQueryAsync();
+		return row;
+	}
 	#region Mapping
 
 	private PhienKhamBenh MapToEntity(SqlDataReader r)

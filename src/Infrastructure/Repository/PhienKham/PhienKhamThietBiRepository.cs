@@ -148,7 +148,16 @@ public class PhienKhamThietBiRepository : IPhienKhamThietBiRepository
 		int row = await cmd.ExecuteNonQueryAsync();
 		return row;
 	}
-
+	public async Task<int> DeleteAsync(int id)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+		var sql = "DELETE FROM PhienKham_ThietBi WHERE PhienKham_ThietBiID=@ID";
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@ID", SqlDbType.Int).Value = id;
+		int row = await cmd.ExecuteNonQueryAsync();
+		return row;
+	}
 	#region Mapping
 
 	private PhienKhamThietBi MapToEntity(SqlDataReader r)

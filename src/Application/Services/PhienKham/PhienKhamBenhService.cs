@@ -22,7 +22,7 @@ public class PhienKhamBenhService
 		_loaiBenhRepo = loaiBenhRepo;
 	}
 
-	public async Task<ApiResponse<PhienKhamBenhResponseDTO>> GetByIdAsync(int id)
+	public async Task<ApiResponse<PhienKhamBenhResponseDTO>> GetDetailAsync(int id)
 	{
 		if (id <= 0)
 			return ApiResponse<PhienKhamBenhResponseDTO>.Fail("ID không hợp lệ");
@@ -155,6 +155,28 @@ public class PhienKhamBenhService
 		catch (ArgumentException ex)
 		{
 			return ApiResponse<bool>.Fail(ex.Message);
+		}
+	}
+	public async Task<ApiResponse<bool>> DeleteAsync(int id)
+	{
+		try
+		{
+			if (id <= 0)
+				return ApiResponse<bool>.Fail("ID không hợp lệ");
+			var pkb = await _repo.GetByIdAsync(id);
+			if (pkb == null)
+				return ApiResponse<bool>.Fail("Chẩn đoán không tồn tại");
+			var phienKham = await _phienKhamRepo.GetByIdAsync(pkb.PhienKhamID);
+			if (phienKham == null)
+				return ApiResponse<bool>.Fail("Phiên khám không tồn tại");
+			if (phienKham.TrangThai != TrangThaiKhamEnum.DangKham)
+				return ApiResponse<bool>.Fail("Phiên khám đã kết thúc");
+			await _repo.DeleteAsync(id);
+			return ApiResponse<bool>.SuccessResponse(true, "Xóa chẩn đoán thành công");
+		}
+		catch (Exception)
+		{
+			return ApiResponse<bool>.Fail("Có lỗi xảy ra khi xóa chẩn đoán");
 		}
 	}
 }

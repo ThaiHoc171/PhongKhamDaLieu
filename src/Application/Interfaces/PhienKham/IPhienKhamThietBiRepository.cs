@@ -8,4 +8,5 @@ public interface IPhienKhamThietBiRepository
 	Task<PhienKhamThietBi?> GetByPhienKhamAndChiTietAsync(int phienKhamID, int chiTietID);
 	Task<int> AddAsync(PhienKhamThietBi entity);
 	Task<int> UpdateAsync(PhienKhamThietBi entity);
+	Task<int> DeleteAsync(int id);
 }
