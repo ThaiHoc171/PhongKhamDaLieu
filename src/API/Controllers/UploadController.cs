@@ -16,9 +16,7 @@ public class UploadController : ControllerBase
 
 	[HttpPost("image")]
 	[Authorize]
-	public async Task<IActionResult> UploadImage(
-		IFormFile file,
-		[FromForm] string folder)
+	public async Task<IActionResult> UploadImage(IFormFile file, [FromForm] string folder)
 	{
 		if (file == null || file.Length == 0)
 			return BadRequest("File không hợp lệ");
@@ -26,6 +24,27 @@ public class UploadController : ControllerBase
 		using var stream = file.OpenReadStream();
 
 		var url = await _fileStorage.UploadImageAsync(
+			stream,
+			file.FileName,
+			folder,
+			file.ContentType
+		);
+
+		return Ok(new
+		{
+			url
+		});
+	}
+	[HttpPost("files")]
+	[Authorize]
+	public async Task<IActionResult> UploadFiles(IFormFile file, [FromForm] string folder)
+	{
+		if (file == null || file.Length == 0)
+			return BadRequest("File không hợp lệ");
+
+		using var stream = file.OpenReadStream();
+
+		var url = await _fileStorage.UploadFileAsync(
 			stream,
 			file.FileName,
 			folder,
