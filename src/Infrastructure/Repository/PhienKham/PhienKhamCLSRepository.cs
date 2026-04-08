@@ -99,27 +99,91 @@ public class PhienKhamCLSRepository : IPhienKhamCLSRepository
 
 		return MapToDetailDTO(reader);
 	}
-
-	public async Task<List<PhienKhamClsReadListModel>> GetListAsync()
+	public async Task<(List<PhienKhamClsReadListModel>, int)> 
+		GetPagedAsync(string? trangThai, int page, int size)
 	{
 		var list = new List<PhienKhamClsReadListModel>();
+		int total = 0;
 
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
-		var sql = BaseListJoin + @"
-            WHERE pk.TrangThai = N'Đang chờ'
-               OR pk.TrangThai = N'Đang thực hiện'
-            ORDER BY pk.PhienKham_CanLamSangID DESC";
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+        {BaseListJoin}
+        WHERE (@TrangThai IS NULL OR pk.TrangThai = @TrangThai)
+        ORDER BY pk.PhienKham_CanLamSangID DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+        SELECT COUNT(*)
+        FROM PhienKham_CanLamSang pk
+        WHERE (@TrangThai IS NULL OR pk.TrangThai = @TrangThai)";
 
 		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value =
+			(object?)trangThai ?? DBNull.Value;
+
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
 
 		using var reader = await cmd.ExecuteReaderAsync();
 
 		while (await reader.ReadAsync())
 			list.Add(MapToListDTO(reader));
 
-		return list;
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
+	}
+	public async Task<(List<PhienKhamClsReadListModel>, int)> 
+		SearchPagedAsync(string keyword, string? trangThai, int page, int size)
+	{
+		var list = new List<PhienKhamClsReadListModel>();
+		int total = 0;
+
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+        {BaseListJoin}
+        WHERE cls.TenCLS LIKE @Keyword
+        AND (@TrangThai IS NULL OR pk.TrangThai = @TrangThai)
+        ORDER BY pk.PhienKham_CanLamSangID DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+        SELECT COUNT(*)
+        FROM PhienKham_CanLamSang pk
+        JOIN CanLamSang cls ON pk.CanLamSangID = cls.CanLamSangID
+        WHERE cls.TenCLS LIKE @Keyword
+        AND (@TrangThai IS NULL OR pk.TrangThai = @TrangThai)";
+
+		using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar, 200).Value = $"%{keyword}%";
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value =
+			(object?)trangThai ?? DBNull.Value;
+
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+			list.Add(MapToListDTO(reader));
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
 	}
 
 	public async Task<int> AddAsync(PhienKhamCLS phienKhamCLS)

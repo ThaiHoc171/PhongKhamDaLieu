@@ -35,13 +35,46 @@ public class PhienKhamCLSService
 
 		return ApiResponse<PhienKhamClsReadModel>.SuccessResponse(result);
 	}
-
-	public async Task<ApiResponse<List<PhienKhamClsReadListModel>>> GetListAsync()
+	public async Task<ApiResponse<PagedResult<PhienKhamClsReadListModel>>> 
+		GetPagedAsync( string? trangThai, int page, int size)
 	{
-		var result = await _repo.GetListAsync();
-		return ApiResponse<List<PhienKhamClsReadListModel>>.SuccessResponse(result);
-	}
+		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
 
+		var (items, total) = await _repo.GetPagedAsync(trangThai, page, size);
+
+		var result = new PagedResult<PhienKhamClsReadListModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
+		};
+
+		return ApiResponse<PagedResult<PhienKhamClsReadListModel>>.SuccessResponse(result);
+	}
+	public async Task<ApiResponse<PagedResult<PhienKhamClsReadListModel>>> 
+		SearchAsync(string keyword, string? trangThai, int page, int size)
+	{
+		if (string.IsNullOrWhiteSpace(keyword))
+			return ApiResponse<PagedResult<PhienKhamClsReadListModel>>
+				.Fail("Từ khóa không hợp lệ");
+
+		if (page < 1) page = 1;
+		if (size <= 0) size = 10;
+
+		var (items, total) = await _repo.SearchPagedAsync(keyword.Trim(), trangThai, page, size);
+
+		var result = new PagedResult<PhienKhamClsReadListModel>
+		{
+			Items = items,
+			TotalCount = total,
+			PageNumber = page,
+			PageSize = size
+		};
+
+		return ApiResponse<PagedResult<PhienKhamClsReadListModel>> .SuccessResponse(result);
+	}
 	public async Task<ApiResponse<bool>> AddAsync(PkClsRequestDTO dto)
 	{
 		try

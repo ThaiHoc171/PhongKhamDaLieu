@@ -47,9 +47,24 @@ public class PhienKhamCLSController : ControllerBase
 	// ==================== GET LIST ====================
 	[Authorize(Policy = "PHIENKHAM_VIEW")]
 	[HttpGet]
-	public async Task<ActionResult<ApiResponse<List<PhienKhamClsReadListModel>>>> List()
+	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamClsReadListModel>>>> 
+		Paged([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string? trangThai = null)
 	{
-		var result = await _service.GetListAsync();
+		var result = await _service.GetPagedAsync(trangThai, page, size);
+		return Ok(result);
+	}
+
+	// ==================== SEARCH ====================
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[HttpGet("search")]
+	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamClsReadListModel>>>> 
+		Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string? trangThai = null)
+	{
+		var result = await _service.SearchAsync(keyword, trangThai, page, size);
+
+		if (!result.Success)
+			return BadRequest(result);
+
 		return Ok(result);
 	}
 
