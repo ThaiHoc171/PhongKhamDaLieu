@@ -96,8 +96,21 @@ public class TaiKhoanRepository : ITaiKhoanRepository
 
 		return Convert.ToInt32(await cmd.ExecuteScalarAsync()) > 0;
 	}
-
-	public async Task<(List<TaiKhoanListReadModel>, int)> GetPagedAsync(
+    public async Task<int> GetIdByEmailAsync(string email)
+    {
+        const string sql = @"
+			SELECT TaiKhoanID 
+			FROM TaiKhoan 
+			WHERE Email=@Email
+		";
+        await using var conn = new SqlConnection(_connectionString);
+        await using var cmd = new SqlCommand(sql, conn);
+        cmd.Parameters.Add("@Email", SqlDbType.NVarChar, 100).Value = email;
+        await conn.OpenAsync();
+        var result = await cmd.ExecuteScalarAsync();
+        return result == null ? 0 : Convert.ToInt32(result);
+    }
+    public async Task<(List<TaiKhoanListReadModel>, int)> GetPagedAsync(
 		int page, int size, string? vaiTro, string? trangThai)
 	{
 		var list = new List<TaiKhoanListReadModel>();

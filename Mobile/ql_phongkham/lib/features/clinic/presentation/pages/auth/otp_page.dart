@@ -77,36 +77,40 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
 
     try {
       setState(() => isLoading = true);
+
       await AuthRepository().verifyOtp(widget.email, code);
 
       if (!mounted) return;
 
       if (widget.password != null && widget.loai != null) {
-        try {
-          await AuthRepository().signup(
-            widget.email,
-            widget.password!,
-            widget.loai!,
-          );
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => LoginPage()),
-            (route) => false,
-          );
-        } catch (e) {
-          if (!mounted) return;
-          DialogHelper.showSnacFailed(
-            context,
-            e.toString().replaceFirst('Exception: ', ''),
-          );
-        }
+        await AuthRepository().signup(
+          widget.email,
+          widget.password!,
+          widget.loai!,
+        );
+
+        if (!mounted) return;
+        DialogHelper.showSnackSuccess(context, 'Đăng ký thành công');
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => LoginPage()),
+          (route) => false,
+        );
       } else {
-        // Không có password → luồng quên mật khẩu
-        // Navigator.pushAndRemoveUntil(
-        //   context,
-        //   ResetPasswordPage.route(email: widget.email),
-        //   (route) => false,
-        // );
+        final taikhoanid = await AuthRepository().getIdByEmail(widget.email);
+        await AuthRepository().forgetpassword(taikhoanid);
+        print("Email: ${widget.email}");
+        print("TaiKhoanID: $taikhoanid");
+        if (!mounted) return;
+        DialogHelper.showSnackSuccess(
+          context,
+          'Mật khẩu đã đươc reset, Mật khẩu hiện tại là: 123456, vui lòng đăng nhập và đổi mật khẩu mới',
+        );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => LoginPage()),
+          (route) => false,
+        );
       }
     } catch (e) {
       if (!mounted) return;

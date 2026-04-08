@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/auth/reset_pass_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/medical_record/medical_record_page.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/monitoring/exam_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/profile/profile_Update_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -117,19 +119,31 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
           Divider(),
           ListTile(
             leading: Icon(Icons.password),
-            title: Text('Thay đổi mật khẩu', style: TextStyle(fontSize: 14)),
-            onTap: () {},
+            title: Text('Theo dõi điều trị', style: TextStyle(fontSize: 14)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => DanhSachCaKhamHoanThanhPage(),
+                ),
+              );
+            },
           ),
           Divider(),
           ListTile(
             leading: Icon(Icons.notifications),
-            title: Text('Thông báo', style: TextStyle(fontSize: 14)),
-            onTap: () {},
+            title: Text('Thay đổi mật khẩu', style: TextStyle(fontSize: 14)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ResetPassPage()),
+              );
+            },
           ),
           Divider(),
           ListTile(
             leading: Icon(Icons.settings),
-            title: Text('Cài đặt', style: TextStyle(fontSize: 14)),
+            title: Text('Thông báo', style: TextStyle(fontSize: 14)),
             onTap: () {},
           ),
           Divider(),
