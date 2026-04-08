@@ -58,4 +58,17 @@ public class PhienKhamThietBiController : ControllerBase
 
 		return Ok(result);
 	}
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[HttpPut("delete/{id}")]
+	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
+	{
+		var result = await _service.DeleteAsync(id);
+
+		if (!result.Success)
+			return result.Message.Contains("không tìm thấy")
+				? NotFound(result)
+				: BadRequest(result);
+
+		return Ok(result);
+	}
 }

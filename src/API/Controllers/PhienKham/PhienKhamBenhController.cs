@@ -18,7 +18,7 @@ public class PhienKhamBenhController : ControllerBase
 
 	// ==================== CREATE ====================
 
-	[Authorize(Policy = "PHIENKHAMBENH_CREATE")]
+	[Authorize(Policy = "PHIENKHAM_CREATE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] PhienKhamBenhRequestDTO dto)
 	{
@@ -32,7 +32,7 @@ public class PhienKhamBenhController : ControllerBase
 
 	// ==================== UPDATE ====================
 
-	[Authorize(Policy = "PHIENKHAMBENH_UPDATE")]
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] PhienKhamBenhRequestDTO dto)
 	{
@@ -45,7 +45,7 @@ public class PhienKhamBenhController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "PHIENKHAMBENH_UPDATE")]
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("delete/{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{
@@ -59,7 +59,7 @@ public class PhienKhamBenhController : ControllerBase
 
 	// ==================== GET BY ID ====================
 
-	[Authorize(Policy = "PHIENKHAMBENH_VIEW")]
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<PhienKhamBenhResponseDTO>>> Detail(int id)
 	{
@@ -73,7 +73,7 @@ public class PhienKhamBenhController : ControllerBase
 
 	// ==================== GET BY PHIEN KHAM ====================
 
-	[Authorize(Policy = "PHIENKHAMBENH_VIEW")]
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
 	[HttpGet("phienkham/{phienKhamId}")]
 	public async Task<ActionResult<ApiResponse<List<PhienKhamBenhReadModel>>>> GetByPhienKham(int phienKhamId)
 	{
