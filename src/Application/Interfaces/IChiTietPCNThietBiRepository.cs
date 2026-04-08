@@ -16,4 +16,5 @@ public interface IChiTietPCNThietBiRepository
 	Task<ChiTietPCNThietBi?> GetByIdAsync(int chiTietId);
     Task<ChiTietPCNThietBiReadModel?> GetDetailAsync(int chiTietId);
     Task<List<ChiTietPCNThietBiListReadModel>> GetListAsync(int pcnTbId);
+    Task<List<NameResponseDTO>> GetComboboxAsync(int pcnId, int tbId);
 }

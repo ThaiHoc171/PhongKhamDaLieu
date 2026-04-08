@@ -73,7 +73,7 @@ public class PhienKhamBenhController : ControllerBase
 
 	// ==================== GET BY PHIEN KHAM ====================
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "PHIENKHAM	_VIEW")]
 	[HttpGet("phienkham/{phienKhamId}")]
 	public async Task<ActionResult<ApiResponse<List<PhienKhamBenhReadModel>>>> GetByPhienKham(int phienKhamId)
 	{

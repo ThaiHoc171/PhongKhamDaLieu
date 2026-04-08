@@ -231,4 +231,9 @@ public class ChiTietPCNThietBiService
 
 		return ApiResponse<List<ChiTietPCNThietBiListReadModel>>.SuccessResponse(result);
 	}
+	public async Task<ApiResponse<List<NameResponseDTO>>> GetComboboxAsync(int pcnId, int tbId)
+	{
+		var data = await _repo.GetComboboxAsync(pcnId,tbId);
+		return ApiResponse<List<NameResponseDTO>>.SuccessResponse(data);
+	}
 }

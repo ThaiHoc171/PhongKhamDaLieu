@@ -115,7 +115,41 @@ public class ChiTietPCNThietBiRepository : IChiTietPCNThietBiRepository
 		}
 		return list;
 	}
+	public async Task<List<NameResponseDTO>> GetComboboxAsync(int pcnId, int tbId)
+	{
+		var list = new List<NameResponseDTO>();
 
+		await using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"
+		SELECT ptb.PCN_TB_ID,
+               tb.TenTB + N' - ' + ct.MaTaiSan AS TenHienThi
+        FROM ChiTiet_PCNTB ct
+        JOIN PhongChucNang_ThietBi ptb ON ct.PCN_TB_ID = ptb.PCN_TB_ID
+        JOIN ThietBi tb ON ptb.ThietBiID = tb.ThietBiID
+        WHERE (@PCNID = 0 OR ptb.PhongChucNangID = @PCNID)
+          AND (@TBID = 0 OR ptb.ThietBiID = @TBID)
+        ORDER BY ct.MaTaiSan, tb.TenTB";
+
+		await using var cmd = new SqlCommand(sql, conn);
+
+		cmd.Parameters.Add("@PCNID", SqlDbType.Int).Value = pcnId;
+		cmd.Parameters.Add("@TBID", SqlDbType.Int).Value = tbId;
+
+		await using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add(new NameResponseDTO
+			{
+				Id = reader.GetInt32(reader.GetOrdinal("PCN_TB_ID")),
+				Name = reader.GetString(reader.GetOrdinal("TenHienThi"))
+			});
+		}
+
+		return list;
+	}
 	public async Task BulkInsertAsync(List<ChiTietPCNThietBi> list)
 	{
 		await using var conn = new SqlConnection(_connectionString);

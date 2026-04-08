@@ -135,4 +135,13 @@ public class ChiTietPCNThietBiController : ControllerBase
 
 		return Ok(response);
 	}
+
+	[Authorize(Policy = "CSVC_VIEW")]
+	[HttpGet("combobox")]
+	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox([FromQuery] int pcnId, [FromQuery] int tbId)
+	{
+		var result = await _service.GetComboboxAsync(pcnId,tbId);
+
+		return Ok(result);
+	}
 }
