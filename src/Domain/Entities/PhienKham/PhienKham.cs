@@ -49,7 +49,7 @@ public class PhienKham
 		TrangThai = TrangThaiKhamExtensions.FromDb(trangThai);
 	}
 
-	public void CapNhat(string? trieuChung, string? ghiChu, string? hinhAnh)
+	public void Update(string? trieuChung, string? ghiChu, string? hinhAnh)
 	{
 		if (TrangThai != TrangThaiKhamEnum.DangKham)
 			throw new InvalidOperationException("Phiên khám đã kết thúc");
@@ -58,8 +58,15 @@ public class PhienKham
 		GhiChu = ghiChu;
 		HinhAnh = hinhAnh;
 	}
-
-	public void KetThuc(string chanDoanCuoi)
+	public void Start(TrangThaiKhamEnum trangThai)
+	{
+		if (TrangThai != TrangThaiKhamEnum.DangCho)
+			throw new InvalidOperationException("Không thể bắt đầu");
+		if (trangThai != TrangThaiKhamEnum.DangKham)
+			throw new ArgumentException("Trạng thái không hợp lệ");
+		TrangThai = trangThai;
+	}
+	public void Conplete(string chanDoanCuoi)
 	{
 		if (TrangThai != TrangThaiKhamEnum.DangKham)
 			throw new InvalidOperationException("Không thể kết thúc");
@@ -71,7 +78,7 @@ public class PhienKham
 		TrangThai = TrangThaiKhamEnum.HoanThanh;
 	}
 
-	public void Huy()
+	public void Cancel()
 	{
 		if (TrangThai == TrangThaiKhamEnum.HoanThanh)
 			throw new InvalidOperationException("Không thể huỷ");

@@ -271,42 +271,24 @@ public class PhienKhamRepository : IPhienKhamRepository
 	public async Task<int> UpdateAsync(PhienKham pk)
 	{
 		const string sql = @"
-        UPDATE PhienKham
-        SET TrieuChung=@TrieuChung,
-            GhiChu=@GhiChu,
-            HinhAnh=@HinhAnh
-        WHERE PhienKhamID=@Id";
+			UPDATE PhienKham
+			SET TrieuChung = @TrieuChung,
+				GhiChu = @GhiChu,
+				HinhAnh = @HinhAnh,
+				ChanDoanCuoi = @ChanDoanCuoi,
+				TrangThai = @TrangThai
+			WHERE PhienKhamID = @Id";
 
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-
 		using var cmd = new SqlCommand(sql, conn);
-
 		cmd.Parameters.Add("@TrieuChung", SqlDbType.NVarChar).Value = (object?)pk.TrieuChung ?? DBNull.Value;
 		cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar).Value = (object?)pk.GhiChu ?? DBNull.Value;
 		cmd.Parameters.Add("@HinhAnh", SqlDbType.NVarChar).Value = (object?)pk.HinhAnh ?? DBNull.Value;
-		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = pk.PhienKhamID;
-		var row = await cmd.ExecuteNonQueryAsync();
-		return Convert.ToInt32(row);
-	}
-	public async Task<int> KetThucAsync(PhienKham pk)
-	{
-		const string sql = @"
-        UPDATE PhienKham
-        SET ChanDoanCuoi=@ChanDoanCuoi,
-            TrangThai=@TrangThai
-        WHERE PhienKhamID=@Id";
-
-		using var conn = new SqlConnection(_connectionString);
-		await conn.OpenAsync();
-
-		using var cmd = new SqlCommand(sql, conn);
-
-		cmd.Parameters.Add("@ChanDoanCuoi", SqlDbType.NVarChar).Value = pk.ChanDoanCuoi;
+		cmd.Parameters.Add("@ChanDoanCuoi", SqlDbType.NVarChar).Value = (object?)pk.ChanDoanCuoi ?? DBNull.Value;
 		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = pk.TrangThai.ToDbValue();
 		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = pk.PhienKhamID;
-		var row = await cmd.ExecuteNonQueryAsync();
-		return Convert.ToInt32(row);
+		return await cmd.ExecuteNonQueryAsync();
 	}
 	#region Mapping
 	private PhienKham MapToEntity(SqlDataReader r)

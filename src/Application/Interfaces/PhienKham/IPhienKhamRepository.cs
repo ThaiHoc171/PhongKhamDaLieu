@@ -5,7 +5,6 @@ public interface IPhienKhamRepository
 	//--CUD
     Task<int> AddAsync(PhienKham entity);
 	Task<int> UpdateAsync(PhienKham entity);
-	Task<int> KetThucAsync(PhienKham entity);
 	//--R
 	Task<PhienKham?> GetByIdAsync(int id);
 	Task<PhienKhamReadModel?> GetByCaKhamIdAsync(int id);

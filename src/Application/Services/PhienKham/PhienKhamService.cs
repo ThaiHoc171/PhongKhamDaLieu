@@ -101,7 +101,7 @@ public class PhienKhamService
 			if (pk == null)
 				return ApiResponse<bool>.Fail("Phiên khám không tồn tại");
 
-			pk.CapNhat(dto.TrieuChung, dto.GhiChu, dto.HinhAnh);
+			pk.Update(dto.TrieuChung, dto.GhiChu, dto.HinhAnh);
 
 			var row = await _repo.UpdateAsync(pk);
 
@@ -117,6 +117,36 @@ public class PhienKhamService
 		catch (Exception)
 		{
 			return ApiResponse<bool>.Fail("Có lỗi xảy ra khi cập nhật phiên khám");
+		}
+	}
+	public async Task<ApiResponse<bool>> StartAsync(int phienKhamId)
+	{
+		try
+		{
+			if (phienKhamId <= 0)
+				return ApiResponse<bool>.Fail("ID phiên khám không hợp lệ");
+
+			var pk = await _repo.GetByIdAsync(phienKhamId);
+
+			if (pk == null)
+				return ApiResponse<bool>.Fail("Phiên khám không tồn tại");
+
+			pk.Start(TrangThaiKhamEnum.DangKham);
+
+			var row = await _repo.UpdateAsync(pk);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Bắt đầu phiên khám thất bại");
+
+			return ApiResponse<bool>.SuccessResponse(true, "Bắt đầu phiên khám thành công");
+		}
+		catch (InvalidOperationException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		catch (Exception)
+		{
+			return ApiResponse<bool>.Fail("Có lỗi xảy ra khi bắt đầu phiên khám");
 		}
 	}
 
@@ -156,9 +186,9 @@ public class PhienKhamService
 			if (hs == null)
 				return ApiResponse<bool>.Fail("Chưa có hồ sơ bệnh án");
 
-			pk.KetThuc(chanDoanCuoi);
+			pk.Conplete(chanDoanCuoi);
 
-			var row = await _repo.KetThucAsync(pk);
+			var row = await _repo.UpdateAsync(pk);
 
 			if (row == 0)
 				return ApiResponse<bool>.Fail("Kết thúc phiên khám thất bại");
@@ -174,7 +204,36 @@ public class PhienKhamService
 			return ApiResponse<bool>.Fail("Có lỗi xảy ra khi kết thúc phiên khám");
 		}
 	}
+	public async Task<ApiResponse<bool>> CancelAsync(int phienKhamId)
+	{
+		try
+		{
+			if (phienKhamId <= 0)
+				return ApiResponse<bool>.Fail("ID phiên khám không hợp lệ");
 
+			var pk = await _repo.GetByIdAsync(phienKhamId);
+
+			if (pk == null)
+				return ApiResponse<bool>.Fail("Phiên khám không tồn tại");
+
+			pk.Cancel();
+
+			var row = await _repo.UpdateAsync(pk);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Huỷ phiên khám thất bại");
+
+			return ApiResponse<bool>.SuccessResponse(true, "Huỷ phiên khám thành công");
+		}
+		catch (InvalidOperationException ex)
+		{
+			return ApiResponse<bool>.Fail(ex.Message);
+		}
+		catch (Exception)
+		{
+			return ApiResponse<bool>.Fail("Có lỗi xảy ra khi huỷ phiên khám");
+		}
+	}
 	public async Task<ApiResponse<PhienKhamReadModel>> GetByIdAsync(int id)
 	{
 		if (id <= 0)

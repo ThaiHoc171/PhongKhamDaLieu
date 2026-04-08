@@ -43,10 +43,38 @@ public class PhienKhamController : ControllerBase
 	}
 
 	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[HttpPut("{id}/start")]
+	public async Task<ActionResult<ApiResponse<bool>>> Start(int id)
+	{
+		var result = await _service.StartAsync(id);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	// ================= COMPLETE =================
+
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}/complete")]
 	public async Task<ActionResult<ApiResponse<bool>>> Complete(int id, [FromBody] string chanDoanCuoi)
 	{
 		var result = await _service.CompleteAsync(id, chanDoanCuoi);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	// ================= CANCEL =================
+
+	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[HttpPut("{id}/cancel")]
+	public async Task<ActionResult<ApiResponse<bool>>> Cancel(int id)
+	{
+		var result = await _service.CancelAsync(id);
 
 		if (!result.Success)
 			return BadRequest(result);
