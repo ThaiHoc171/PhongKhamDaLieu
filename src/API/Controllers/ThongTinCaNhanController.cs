@@ -17,7 +17,7 @@ public class ThongTinCaNhanController : ControllerBase
 	}
 	[Authorize(Policy = "USER_CREATE")]
 	[HttpPost]
-	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] ThongTinRequestDTO dto)
+	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ThongTinRequestDTO dto)
 	{
 		var result = await _service.AddKhachAsync(dto);
 

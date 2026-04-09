@@ -16,12 +16,12 @@ public class ThongTinCaNhanService
 		_repo = repo;
 	}
 
-	public async Task<ApiResponse<bool>> AddKhachAsync(ThongTinRequestDTO dto)
+	public async Task<ApiResponse<int>> AddKhachAsync(ThongTinRequestDTO dto)
 	{
 		try
 		{
 			if (dto == null)
-				return ApiResponse<bool>.Fail("Dữ liệu không hợp lệ");
+				return ApiResponse<int>.Fail("Dữ liệu không hợp lệ");
 
 			var entity = new ThongTinCaNhan(
 				dto.HoTen.Trim(),
@@ -35,20 +35,20 @@ public class ThongTinCaNhanService
 				dto.TaiKhoanID
 			);
 
-			int row = await _repo.AddAsync(entity);
+			int res = await _repo.AddAsync(entity);
 
-			if (row == 0)
-				return ApiResponse<bool>.Fail("Tạo thông tin thất bại");
+			if (res == 0)
+				return ApiResponse<int>.Fail("Tạo thông tin thất bại");
 
-			return ApiResponse<bool>.SuccessResponse(true, "Tạo thông tin thành công");
+			return ApiResponse<int>.SuccessResponse(res, "Tạo thông tin thành công");
 		}
 		catch (ArgumentException ex)
 		{
-			return ApiResponse<bool>.Fail(ex.Message);
+			return ApiResponse<int>.Fail(ex.Message);
 		}
 		catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
 		{
-			return ApiResponse<bool>.Fail("Email hoặc số điện thoại đã tồn tại");
+			return ApiResponse<int>.Fail("Email hoặc số điện thoại đã tồn tại");
 		}
 	}
 
