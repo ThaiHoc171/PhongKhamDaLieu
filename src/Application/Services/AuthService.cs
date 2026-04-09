@@ -155,6 +155,29 @@ public class AuthService
 				});
 			}
 		}
+		if (tk.VaiTro == VaiTroEnum.Khach)
+		{
+			var thongTinId = await _thongTinCaNhanRepo.GetIdByTaiKhoanId(tk.TaiKhoanID);
+			var bn = await _benhNhanRepo.GetByThongTinIDAsync(thongTinId);
+			if (bn != null)
+			{
+				info.BenhNhanID = bn.BenhNhanID;
+				info.ThongTinID = bn.ThongTinID;
+				info.HoTen = bn.HoTen;
+				info.Quyen.AddRange(new[]
+				{
+					"USER_VIEW","USER_CREATE","USER_UPDATE",
+					"THONGTINCANHAN_LIST","THONGTINCANHAN_CREATE","THONGTINCANHAN_UPDATE",
+					"BENHNHAN_DETAIL","BENHNHAN_UPDATE",
+					"BACSI_DETAIL","BACSI_LIST",
+					"LICHLAMVIEC_VIEW",
+					"LICHKHAM_VIEW","LICHKHAM_UPDATE",
+					"HOSO_DETAIL","PHIENKHAM_VIEW","PHIENKHAM_UPDATE",
+					"THUOC_LIST","LIEUTRINH_VIEW","THUOC_VIEW",
+					"BAIVIET_VIEW"
+				});
+			}
+		}
 		return info;
 	}
 	private string GenerateAccessToken(TaiKhoan tk, UserInfo info)
