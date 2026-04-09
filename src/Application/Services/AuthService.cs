@@ -157,15 +157,8 @@ public class AuthService
 		}
 		if (tk.VaiTro == VaiTroEnum.Khach)
 		{
-			var thongTinId = await _thongTinCaNhanRepo.GetIdByTaiKhoanId(tk.TaiKhoanID);
-			var bn = await _benhNhanRepo.GetByThongTinIDAsync(thongTinId);
-			if (bn != null)
+			info.Quyen.AddRange(new[]
 			{
-				info.BenhNhanID = bn.BenhNhanID;
-				info.ThongTinID = bn.ThongTinID;
-				info.HoTen = bn.HoTen;
-				info.Quyen.AddRange(new[]
-				{
 					"USER_VIEW","USER_CREATE","USER_UPDATE",
 					"THONGTINCANHAN_LIST","THONGTINCANHAN_CREATE","THONGTINCANHAN_UPDATE",
 					"BENHNHAN_DETAIL","BENHNHAN_UPDATE",
@@ -175,8 +168,7 @@ public class AuthService
 					"HOSO_DETAIL","PHIENKHAM_VIEW","PHIENKHAM_UPDATE",
 					"THUOC_LIST","LIEUTRINH_VIEW","THUOC_VIEW",
 					"BAIVIET_VIEW"
-				});
-			}
+			});
 		}
 		return info;
 	}
