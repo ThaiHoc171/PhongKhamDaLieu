@@ -25,9 +25,9 @@ public class ReminderBackgroundService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             var now = DateTime.Now;
-            var nextRun = now.Date.AddDays(1).AddHours(8);
+            var nextRun = now.Date.AddDays(1).AddHours(6);
             if (now.Hour < 8)
-                nextRun = now.Date.AddHours(8);
+                nextRun = now.Date.AddHours(6);
             var delay = nextRun - now;
             await Task.Delay(delay, stoppingToken);
             await SendRemindersAsync();
@@ -66,7 +66,7 @@ public class ReminderBackgroundService : BackgroundService
             {
                 await _fcmService.SendAsync(
                     fcmToken,
-                    title: "Nhắc nhở lịch khám ngày mai 🔔",
+                    title: "Nhắc nhở lịch khám ngày mai",
                     body: $"Bạn có lịch khám vào ngày {ngayKham:dd/MM/yyyy}. Đừng quên nhé!",
                     data: new Dictionary<string, string>
                     {

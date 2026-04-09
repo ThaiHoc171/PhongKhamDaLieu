@@ -5,7 +5,7 @@ import 'dart:convert';
 
 class AiModel {
   static const String _baseUrl =
-      'https://eddie0307-efficientnetb3-classifier.hf.space';
+      'https://eddie0307-efficientnetb3-classifier-16class.hf.space';
 
   static Future<Map<String, dynamic>> postFile(
     String endpoint,

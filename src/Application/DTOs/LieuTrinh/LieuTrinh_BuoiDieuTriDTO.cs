@@ -3,8 +3,6 @@ public class BuoiDieuTriRequestDTO
 {
 	public int LieuTrinhID { get; set; }
 	public int CaKhamID { get; set; }
-	public int SoBuoi { get; set; }
-	public DateTime? NgayDuKien { get; set; }
 }
 public class BuoiDieuTriUpdateDTO
 {

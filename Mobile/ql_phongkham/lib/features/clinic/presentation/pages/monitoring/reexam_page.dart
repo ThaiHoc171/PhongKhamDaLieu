@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/features/clinic/data/models/reexam_model.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination_page.dart';
+import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
 
 /// Hiển thị lịch tái khám (các ca khám trạng thái != 'Hoàn thành') của bệnh nhân.
 class LichTaiKhamPage extends StatefulWidget {
@@ -12,9 +14,8 @@ class LichTaiKhamPage extends StatefulWidget {
 }
 
 class _LichTaiKhamPageState extends State<LichTaiKhamPage> {
-  List<TaiKhamModel> lichTaiKham = [];
   bool isLoading = true;
-
+  TaiKhamModel? taiKham;
   @override
   void initState() {
     super.initState();
@@ -26,16 +27,11 @@ class _LichTaiKhamPageState extends State<LichTaiKhamPage> {
       final repo = LichKhamRepository();
       final data = await repo.checkTaiKhamPending(widget.benhNhanId);
       setState(() {
-        lichTaiKham = data as List<TaiKhamModel>;
+        taiKham = data;
         isLoading = false;
       });
     } catch (e) {
       setState(() => isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-        );
-      }
     }
   }
 
@@ -57,14 +53,14 @@ class _LichTaiKhamPageState extends State<LichTaiKhamPage> {
   }
 
   Widget _buildContent() {
-    if (lichTaiKham.isEmpty) {
+    final ngay = taiKham!.ngayDuKien.toString().split(' ')[0];
+    final checkNgay = kiemTraLich(taiKham!.ngayDuKien);
+    if (taiKham!.taiKhamID == 0) {
       return _buildEmpty();
     }
-
-    final item = lichTaiKham.first; // lấy lịch gần nhất
-
-    final ngay = item.ngayDuKien.toString().split(' ')[0];
-
+    if (!checkNgay) {
+      return _buildCheck(ngay, taiKham!.taiKhamID);
+    }
     return Center(
       child: Container(
         margin: const EdgeInsets.all(20),
@@ -132,5 +128,63 @@ class _LichTaiKhamPageState extends State<LichTaiKhamPage> {
         ],
       ),
     );
+  }
+
+  Widget _buildCheck(String ngay, int id) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(blurRadius: 10)],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.calendar_today, size: 40, color: Colors.blue),
+            const SizedBox(height: 16),
+            Text(
+              "Bạn đã trễ lịch khám dự kiến!\nLịch khám dự kiến là: ",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              ngay,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            AuthButton(
+              buttonText: 'Đặt lịch ngay',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LichKhamScreen(taiKhamId: id),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool kiemTraLich(DateTime ngayHen) {
+    final now = DateTime.now();
+
+    if (ngayHen.isBefore(now)) {
+      return false;
+    }
+    return true;
   }
 }
