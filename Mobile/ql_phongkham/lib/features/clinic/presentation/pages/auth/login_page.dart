@@ -178,7 +178,6 @@ class _LoginPageState extends State<LoginPage> {
 
       if (user.thongTinId == null || user.thongTinId == 0) {
         Navigator.pushAndRemoveUntil(
-          // ← đổi push → pushAndRemoveUntil
           context,
           MaterialPageRoute(builder: (_) => ProfileUpdateScreen()),
           (route) => false,

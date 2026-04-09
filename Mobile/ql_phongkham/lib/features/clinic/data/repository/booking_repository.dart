@@ -124,6 +124,14 @@ class LichKhamRepository {
     return response["message"];
   }
 
+  Future<List<BuoiDieuTriModel>> getBuoiDieuTri(int lieuTrinhId) async {
+    final response = await ApiClient.get('buoidieutri/lieutrinh/$lieuTrinhId');
+
+    final items = response['data'];
+
+    return (items as List).map((e) => BuoiDieuTriModel.fromJson(e)).toList();
+  }
+
   Future<List<CaKhamModel>> getCaKhamBenhNhan(
     int thongTinId,
     int pageNumber,

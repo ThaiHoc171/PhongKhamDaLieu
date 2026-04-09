@@ -36,3 +36,34 @@ class LieuTrinhDieuTriModel {
     );
   }
 }
+
+class BuoiDieuTriModel {
+  final int buoiDieuTriID;
+  final int lieuTrinhID;
+  final int caKhamID;
+  final int soBuoi;
+  final DateTime ngayDuKien;
+  final String trangThai;
+
+  BuoiDieuTriModel({
+    required this.buoiDieuTriID,
+    required this.lieuTrinhID,
+    required this.caKhamID,
+    required this.soBuoi,
+    required this.ngayDuKien,
+    required this.trangThai,
+  });
+
+  factory BuoiDieuTriModel.fromJson(Map<String, dynamic> json) {
+    return BuoiDieuTriModel(
+      buoiDieuTriID: json['buoiDieuTriID'] ?? 0,
+      lieuTrinhID: json['lieuTrinhID'] ?? 0,
+      caKhamID: json['caKhamID'] ?? 0,
+      soBuoi: json['soBuoi'] ?? 0,
+      trangThai: json['trangThai'] ?? '',
+      ngayDuKien: json['ngayDuKien'] != null
+          ? DateTime.parse(json['ngayDuKien'])
+          : DateTime.now(),
+    );
+  }
+}
