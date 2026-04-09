@@ -23,8 +23,13 @@ public class ToaThuocService
 	}
 
 	// =================== Kiểm tra tồn tại ===================
-	public async Task<bool> KiemTraTonTaiAsync(int phienKhamID)
-		=> await _toaThuocRepo.ExistsByPhienKhamAsync(phienKhamID);
+	public async Task<ApiResponse<bool>> KiemTraTonTaiAsync(int phienKhamID)
+	{
+		var result = await _toaThuocRepo.ExistsByPhienKhamAsync(phienKhamID);
+		if(!result)
+			return ApiResponse<bool>.Fail(result.ToString());
+		return ApiResponse<bool>.SuccessResponse(result);
+	}
 
 	// =================== Tạo toa thuốc ===================
 	public async Task<ApiResponse<int>> CreateAsync(ToaThuocRequestDTO dto)

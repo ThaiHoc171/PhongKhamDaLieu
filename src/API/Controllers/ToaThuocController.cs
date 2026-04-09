@@ -35,10 +35,13 @@ public class ToaThuocController : ControllerBase
 
 	// ==================== KIỂM TRA TOA ====================
 	[Authorize(Policy = "PHIENKHAM_VIEW")]
-	[HttpGet("phienkham/exits/{phienKhamId}")]
-	public async Task<IActionResult> Exists(int phienKhamId)
+	[HttpGet("phienkham/exists/{phienKhamId}")]
+	public async Task<ActionResult<ApiResponse<bool>>> Exists(int phienKhamId)
 	{
 		var exists = await _service.KiemTraTonTaiAsync(phienKhamId);
+		if (!exists.Success)
+			return NotFound(exists);
+
 		return Ok(exists);
 	}
 
