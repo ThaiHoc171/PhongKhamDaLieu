@@ -175,8 +175,12 @@ public class PhienKhamService
 
 			var pkCls = await _pkClsRepo.GetByPhienKhamAsync(phienKhamId);
 
-			if (pkCls != null &&
-				pkCls.Any(c => TrangThaiCLSExtensions.ToEnum(c.TrangThai) != TrangThaiCLSEnum.HoanThanh))
+			if (pkCls != null && pkCls.Any(c =>
+				 {
+					 var status = TrangThaiCLSExtensions.ToEnum(c.TrangThai);
+					 return status != TrangThaiCLSEnum.HoanThanh &&
+							status != TrangThaiCLSEnum.DaHuy;
+				 }))
 			{
 				return ApiResponse<bool>.Fail("Tất cả CLS phải hoàn thành trước khi kết thúc");
 			}
