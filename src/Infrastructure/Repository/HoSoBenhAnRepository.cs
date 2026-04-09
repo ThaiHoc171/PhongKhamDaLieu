@@ -172,11 +172,9 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
 		await conn.OpenAsync();
 
 		var sql = @"INSERT INTO HoSoBenhAn
-                (BenhNhanID,BenhNen,DiUng,TienSuBenh,TienSuGiaDinh,
-                 ThoiQuenSong,ThongTinKhac,NgayTao,NgayCapNhat)
+                (BenhNhanID, BenhNen, DiUng, TienSuBenh, TienSuGiaDinh, ThoiQuenSong,ThongTinKhac)
                 VALUES
-                (@BenhNhanID,@BenhNen,@DiUng,@TienSuBenh,@TienSuGiaDinh,
-                 @ThoiQuenSong,@ThongTinKhac,@NgayTao,@NgayCapNhat)";
+                (@BenhNhanID, @BenhNen, @DiUng, @TienSuBenh, @TienSuGiaDinh, @ThoiQuenSong, @ThongTinKhac)";
 
 		using var cmd = new SqlCommand(sql, conn);
 
@@ -187,9 +185,6 @@ public class HoSoBenhAnRepository : IHoSoBenhAnRepository
 		cmd.Parameters.Add("@TienSuGiaDinh", SqlDbType.NVarChar).Value = (object?)hs.TienSuGiaDinh ?? DBNull.Value;
 		cmd.Parameters.Add("@ThoiQuenSong", SqlDbType.NVarChar).Value = (object?)hs.ThoiQuenSong ?? DBNull.Value;
 		cmd.Parameters.Add("@ThongTinKhac", SqlDbType.NVarChar).Value = (object?)hs.ThongTinKhac ?? DBNull.Value;
-		cmd.Parameters.Add("@NgayTao", SqlDbType.DateTime).Value = hs.NgayTao;
-		cmd.Parameters.Add("@NgayCapNhat", SqlDbType.DateTime).Value = hs.NgayCapNhat;
-
 		int row = await cmd.ExecuteNonQueryAsync();
 
 		return row;
