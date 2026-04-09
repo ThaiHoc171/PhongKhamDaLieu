@@ -20,21 +20,21 @@ class _LieuTrinhDieuTriPageState extends State<LieuTrinhDieuTriPage> {
   @override
   void initState() {
     super.initState();
-    // TODO: load data theo widget.benhNhanId
+    loadData();
   }
 
   Future<void> loadData() async {
     try {
       final repo = LichKhamRepository();
 
-      final results = repo.checkDieuTriPending(widget.benhNhanId);
-      final dieuTri = results as LieuTrinhDieuTriModel?;
+      final results = await repo.checkDieuTriPending(widget.benhNhanId);
+      final dieuTri = results;
 
-      final buoidieutri = repo.getBuoiDieuTri(dieuTri!.lieuTrinhID);
-      caKhamList = buoidieutri as List<BuoiDieuTriModel>;
+      final buoidieutri = await repo.getBuoiDieuTri(dieuTri!.lieuTrinhID);
+      caKhamList = buoidieutri;
 
       setState(() {
-        //soBuoi
+        soBuoi = dieuTri.tongSoBuoi;
       });
     } catch (e) {
       DialogHelper.showThongBao(context, e.toString());
@@ -141,7 +141,7 @@ class _LieuTrinhDieuTriPageState extends State<LieuTrinhDieuTriPage> {
           ),
           const SizedBox(height: 6),
           Text(
-            '$done / $total buổi hoàn thành',
+            '$done / $soBuoi buổi hoàn thành',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 22,
@@ -264,9 +264,8 @@ class _BuoiDieuTriCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
                   shape: BoxShape.circle,
-                  border: Border.all(color: color.withOpacity(0.4)),
+                  border: Border.all(width: 1),
                 ),
                 child: Icon(
                   isHoanThanh ? Icons.check : Icons.access_time,

@@ -23,6 +23,7 @@ dependencies:
   firebase_storage: ^12.0.0
   flutter_markdown: ^0.6.18
   flutter_local_notifications: ^17.0.0
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -41,5 +42,6 @@ flutter_launcher_icons:
 flutter:
   assets:
     - assets/images/
+    - .env
 
   uses-material-design: true

@@ -11,42 +11,40 @@ public class BuoiDieuTriService
 	{
 		_repo = repo;
 	}
-	public async Task<ApiResponse<int>> CreateAsync(BuoiDieuTriRequestDTO dto)
-	{
-		if (dto.LieuTrinhID <= 0)
-			return ApiResponse<int>.Fail("Liệu trình không hợp lệ");
-		if (dto.CaKhamID <= 0)
-			return ApiResponse<int>.Fail("Ca khám không hợp lệ");
-		if (dto.SoBuoi <= 0)
-			return ApiResponse<int>.Fail("Số buổi không hợp lệ");
-		if (await _repo.ExistsByCaKhamAsync(dto.CaKhamID))
-			return ApiResponse<int>.Fail("Ca khám này đã có buổi điều trị");
-		var maxSoBuoi = await _repo.GetMaxSoBuoiAsync(dto.LieuTrinhID);
-		if (dto.SoBuoi <= maxSoBuoi)
-			return ApiResponse<int>.Fail("Số buổi phải lớn hơn buổi hiện tại");
-		// validate lịch dự kiến dựa trên buổi trước
-		var last = await _repo.GetLastAsync(dto.LieuTrinhID);
-		if (last != null && dto.NgayDuKien.HasValue && last.NgayThucHien.HasValue)
-		{
-			if (dto.NgayDuKien <= last.NgayThucHien)
-				return ApiResponse<int>.Fail("Ngày dự kiến phải sau buổi trước");
-		}
-		BuoiDieuTri entity;
-		try
-		{
-			entity = new BuoiDieuTri(
-				dto.LieuTrinhID,
-				dto.CaKhamID,
-				dto.SoBuoi,
-				dto.NgayDuKien);
-		}
-		catch (ArgumentException ex)
-		{
-			return ApiResponse<int>.Fail(ex.Message);
-		}
-		var id = await _repo.AddAsync(entity);
-		return ApiResponse<int>.SuccessResponse(id);
-	}
+	//public async Task<ApiResponse<int>> CreateAsync(BuoiDieuTriRequestDTO dto)
+	//{
+	//	if (dto.LieuTrinhID <= 0)
+	//		return ApiResponse<int>.Fail("Liệu trình không hợp lệ");
+	//	if (dto.CaKhamID <= 0)
+	//		return ApiResponse<int>.Fail("Ca khám không hợp lệ");
+	//	if (await _repo.ExistsByCaKhamAsync(dto.CaKhamID))
+	//		return ApiResponse<int>.Fail("Ca khám này đã có buổi điều trị");
+	//	var maxSoBuoi = await _repo.GetMaxSoBuoiAsync(dto.LieuTrinhID);
+	//	//if (dto.SoBuoi <= maxSoBuoi)
+	//	//	return ApiResponse<int>.Fail("Số buổi phải lớn hơn buổi hiện tại");
+	//	//// validate lịch dự kiến dựa trên buổi trước
+	//	//var last = await _repo.GetLastAsync(dto.LieuTrinhID);
+	//	//if (last != null && dto.NgayDuKien.HasValue && last.NgayThucHien.HasValue)
+	//	//{
+	//	//	if (dto.NgayDuKien <= last.NgayThucHien)
+	//	//		return ApiResponse<int>.Fail("Ngày dự kiến phải sau buổi trước");
+	//	//}
+	//	//BuoiDieuTri entity;
+	//	//try
+	//	//{
+	//	//	entity = new BuoiDieuTri(
+	//	//		dto.LieuTrinhID,
+	//	//		dto.CaKhamID,
+	//	//		dto.SoBuoi,
+	//	//		dto.NgayDuKien);
+	//	//}
+	//	catch (ArgumentException ex)
+	//	{
+	//		return ApiResponse<int>.Fail(ex.Message);
+	//	}
+	//	var id = await _repo.AddAsync(entity);
+	//	return ApiResponse<int>.SuccessResponse(id);
+	//}
 	public async Task<ApiResponse<bool>> StartAsync(int id, int nhanVienID)
 	{
 		if (nhanVienID <= 0)

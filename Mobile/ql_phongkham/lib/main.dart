@@ -7,6 +7,7 @@ import 'package:ql_phongkham/core/theme/theme.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:ql_phongkham/firebase_options.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -14,6 +15,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseApi().initNotifications();
