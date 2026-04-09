@@ -122,6 +122,7 @@ public class ChiTietToaThuocRepository : IChiTietToaThuocRepository
 	{
 		return new ChiTietToaThuocReadModel
 		{
+			ThuocID = r.GetInt32(r.GetOrdinal("ThuocID")),
 			TenThuoc = r.GetString(r.GetOrdinal("TenThuoc")),
 			LieuDung = r.IsDBNull(r.GetOrdinal("LieuDung")) ? null : r.GetString(r.GetOrdinal("LieuDung")),
 			SoLuong = r.GetInt32(r.GetOrdinal("SoLuong"))

@@ -27,6 +27,7 @@ public class ToaThuocReadModel
 }
 public class ChiTietToaThuocReadModel
 {
+	public int ThuocID { get; set; }
 	public string? TenThuoc { get; set; }
 	public string? LieuDung { get; set; }
 	public int SoLuong { get; set; }
