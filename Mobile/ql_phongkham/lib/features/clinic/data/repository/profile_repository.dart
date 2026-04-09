@@ -7,7 +7,7 @@ class ProfileRepository {
     return ProfileModel.fromJson(response['data']);
   }
 
-  Future<int> addProfile(
+  Future<void> addProfile(
     int taiKhoanId,
     String hoTen,
     DateTime ngaySinh,
@@ -16,10 +16,8 @@ class ProfileRepository {
     String emailLienhe,
     String diaChi,
     String avatar,
-    String ghichu,
-    String token,
   ) async {
-    final response = await ApiClient.post('BenhNhan', {
+    await ApiClient.post('thongtincanhan', {
       "taiKhoanID": taiKhoanId,
       "hoTen": hoTen,
       "ngaySinh": ngaySinh.toIso8601String(),
@@ -28,9 +26,7 @@ class ProfileRepository {
       "emailLienHe": emailLienhe,
       "diaChi": diaChi,
       "avatar": avatar,
-      "ghiChu": ghichu,
     });
-    return response['benhNhanID'];
   }
 
   Future<void> putProfile(

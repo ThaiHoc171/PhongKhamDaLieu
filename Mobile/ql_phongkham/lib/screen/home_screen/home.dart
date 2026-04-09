@@ -7,6 +7,7 @@ import 'package:ql_phongkham/features/clinic/data/models/treatment_model.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/article_repository.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/doctor_profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/ai_model/ai_model_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/list_booking_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/treatment_page.dart';
@@ -332,7 +333,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: const Text('Đặt lịch tái khám'),
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => AiModelChat()),
+                          );
+                        },
                         child: const Text(
                           'Tư vấn hỗ trợ',
                           style: TextStyle(fontSize: 15),

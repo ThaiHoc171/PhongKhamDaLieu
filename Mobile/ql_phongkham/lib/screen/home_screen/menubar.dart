@@ -108,6 +108,14 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
             leading: Icon(Icons.article),
             title: Text('Hồ sơ bệnh án', style: TextStyle(fontSize: 14)),
             onTap: () {
+              if (benhnhanid == null) {
+                DialogHelper.showSnacFailed(
+                  context,
+                  'Không tìm thấy bệnh nhân',
+                );
+                return;
+              }
+
               Navigator.push(
                 context,
                 MaterialPageRoute(

@@ -78,24 +78,17 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
 
   Future<void> addProfile() async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+      setState(() => isLoading = true);
 
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('accessToken');
       final taiKhoanId = prefs.getInt('userId');
-      if (token == null || taiKhoanId == null) {
-        DialogHelper.showSnacFailed(context, "Thiếu thông tin đăng nhập");
-        return;
-      }
 
       DateTime ngaySinh = DateFormat(
         'dd/MM/yyyy',
       ).parse(ngaySinhController.text);
 
-      final thongTinId = await ProfileRepository().addProfile(
-        taiKhoanId,
+      await ProfileRepository().addProfile(
+        taiKhoanId!,
         hoTenController.text,
         ngaySinh,
         gioiTinh ?? "",
@@ -103,10 +96,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
         emailController.text,
         diaChiController.text,
         _toRelativePath(linkAvatar),
-        "",
-        token,
       );
-      await prefs.setInt("thongTinId", thongTinId);
 
       DialogHelper.showSnackSuccess(context, "Tạo hồ sơ thành công");
 
@@ -118,9 +108,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
     } catch (e) {
       DialogHelper.showSnacFailed(context, e.toString());
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
@@ -182,7 +170,7 @@ class _ProfileUpdateScreenState extends State<ProfileUpdateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Hồ sơ cá nhân")),
+      appBar: AppBar(centerTitle: true, title: const Text("Hồ sơ cá nhân")),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),

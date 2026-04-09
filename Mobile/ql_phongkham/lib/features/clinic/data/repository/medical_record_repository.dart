@@ -3,7 +3,7 @@ import 'package:ql_phongkham/features/clinic/data/models/medical_record_model.da
 
 class HoSoBenhAnRepository {
   Future<HoSoBenhAnModel> getHoSo(int benhNhanId) async {
-    final response = await ApiClient.get('benhan/$benhNhanId');
+    final response = await ApiClient.get('hosobenhan/benhnhan/$benhNhanId');
     return HoSoBenhAnModel.fromJson(response['data']);
   }
 }
