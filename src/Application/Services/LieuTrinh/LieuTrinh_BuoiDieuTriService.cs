@@ -30,7 +30,6 @@ public class BuoiDieuTriService
 
         var maxSoBuoi = await _repo.GetMaxSoBuoiAsync(dto.LieuTrinhID);
 
-        // Kiểm tra đã đủ số buổi quy định chưa
         if (maxSoBuoi >= lieuTrinh.TongSoBuoi)
             return ApiResponse<int>.Fail($"Liệu trình đã đủ {lieuTrinh.TongSoBuoi} buổi, không thể tạo thêm");
 
