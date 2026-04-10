@@ -116,7 +116,7 @@ class LichKhamRepository {
   }
 
   Future<String> addBuoiDieuTri(int lieuTrinhId, int caKhamId) async {
-    final response = await ApiClient.post("LieuTrinh_BuoiDieuTri", {
+    final response = await ApiClient.post("buoidieutri", {
       "lieuTrinhID": lieuTrinhId,
       "caKhamID": caKhamId,
     });

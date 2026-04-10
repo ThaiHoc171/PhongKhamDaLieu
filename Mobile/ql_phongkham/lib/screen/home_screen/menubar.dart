@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ql_phongkham/core/constants/app_config.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/profile_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
@@ -126,7 +127,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.password),
+            leading: Icon(Icons.health_and_safety),
             title: Text('Theo dõi điều trị', style: TextStyle(fontSize: 14)),
             onTap: () {
               Navigator.push(
@@ -139,7 +140,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.notifications),
+            leading: Icon(Icons.password),
             title: Text('Thay đổi mật khẩu', style: TextStyle(fontSize: 14)),
             onTap: () {
               Navigator.push(
@@ -150,7 +151,7 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.settings),
+            leading: Icon(Icons.notifications),
             title: Text('Thông báo', style: TextStyle(fontSize: 14)),
             onTap: () {},
           ),
@@ -191,6 +192,6 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
     if (avatar == null || avatar.isEmpty) return null;
     if (avatar.startsWith('http')) return avatar;
     final path = avatar.startsWith('/') ? avatar.substring(1) : avatar;
-    return "https://hoanmyclinic.s3.ap-southeast-2.amazonaws.com/$path";
+    return "$AppConfig.baseImageUrl/$path";
   }
 }
