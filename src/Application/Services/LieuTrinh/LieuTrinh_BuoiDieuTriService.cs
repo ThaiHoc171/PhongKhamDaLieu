@@ -8,10 +8,12 @@ public class BuoiDieuTriService
 {
 	private readonly IBuoiDieuTriRepository _repo;
 	private readonly ILieuTrinhDieuTriRepository _lieutrinhrepo;
-	public BuoiDieuTriService(IBuoiDieuTriRepository repo, ILieuTrinhDieuTriRepository lieutrinhrepo)
+	private readonly ICaKhamRepository _cakhamrepo;
+	public BuoiDieuTriService(IBuoiDieuTriRepository repo, ILieuTrinhDieuTriRepository lieutrinhrepo, ICaKhamRepository cakhamrepo)
 	{
 		_repo = repo;
         _lieutrinhrepo = lieutrinhrepo;
+        _cakhamrepo = cakhamrepo;
 
     }
     public async Task<ApiResponse<int>> CreateAsync(BuoiDieuTriRequestDTO dto)
@@ -21,9 +23,8 @@ public class BuoiDieuTriService
         if (dto.CaKhamID <= 0)
             return ApiResponse<int>.Fail("Ca khám không hợp lệ");
         if (await _repo.ExistsByCaKhamAsync(dto.CaKhamID))
-            return ApiResponse<int>.Fail("Ca khám này đã có buổi điều trị");
-
-        
+            return ApiResponse<int>.Fail("Ca khám này đã được đặt");
+		var cakham = await _cakhamrepo.GetByIdAsync(dto.CaKhamID);
         var lieuTrinh = await _lieutrinhrepo.GetByIdAsync(dto.LieuTrinhID);
         if (lieuTrinh == null)
             return ApiResponse<int>.Fail("Liệu trình không tồn tại");
@@ -42,7 +43,7 @@ public class BuoiDieuTriService
                 dto.LieuTrinhID,
                 dto.CaKhamID,
                 soBuoi,
-                DateTime.Now);
+                cakham.NgayKham);
         }
         catch (ArgumentException ex)
         {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/features/clinic/data/models/doctor_profile_model.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/profile/doctor_profile_page.dart';
 
 class DoctorSection extends StatelessWidget {
   final List<BacSiProfileModel> bacSiList;
@@ -38,7 +39,6 @@ class DoctorSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-
           isLoading
               ? const Center(child: CircularProgressIndicator())
               : SizedBox(
@@ -49,42 +49,54 @@ class DoctorSection extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final bacSi = bacSiList[index];
 
-                      return Container(
-                        width: 160,
-                        margin: const EdgeInsets.only(right: 10),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  radius: 35,
-                                  backgroundImage: AssetImage(
-                                    "assets/images/${bacSi.hinhAnh}",
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => NhanVienDetailScreen(
+                                nhanVienId: bacSi.nhanVienID,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 160,
+                          margin: const EdgeInsets.only(right: 10),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 35,
+                                    backgroundImage: AssetImage(
+                                      "assets/images/${bacSi.hinhAnh}",
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  bacSi.chuyenMon,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    bacSi.chuyenMon,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  bacSi.hoTen,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    bacSi.hoTen,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),

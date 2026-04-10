@@ -16,7 +16,7 @@ class DanhSachCaKhamPage extends StatefulWidget {
 class _DanhSachCaKhamPageState extends State<DanhSachCaKhamPage> {
   List<CaKhamModel> caKhamList = [];
   bool isLoadingBacSi = true;
-
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -35,6 +35,22 @@ class _DanhSachCaKhamPageState extends State<DanhSachCaKhamPage> {
         caKhamList = data;
         isLoadingBacSi = false;
       });
+    } catch (e) {
+      DialogHelper.showThongBao(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    }
+  }
+
+  Future<void> huyCaKham(int caKhamId) async {
+    try {
+      await LichKhamRepository().huyCaKham(caKhamId);
+      DialogHelper.showSnackSuccess(context, "Hủy ca khám thành công");
+      setState(() {
+        isLoading = false;
+      });
+      loadCaKham();
     } catch (e) {
       DialogHelper.showThongBao(
         context,
@@ -78,6 +94,13 @@ class _DanhSachCaKhamPageState extends State<DanhSachCaKhamPage> {
                   MaterialPageRoute(
                     builder: (_) => DetailExamScreen(caKhamId: item.caKhamID),
                   ),
+                );
+              }
+              if (item.trangThai == 'Đã đặt' ||
+                  item.trangThai == 'Đã xác nhận') {
+                showDialog(
+                  context: context,
+                  builder: (_) => _buildHuy(item.caKhamID),
                 );
               }
             },
@@ -176,6 +199,63 @@ class _DanhSachCaKhamPageState extends State<DanhSachCaKhamPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildHuy(int cakhamId) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.calendar_today, size: 40, color: Colors.blue),
+            const SizedBox(height: 16),
+            Text(
+              "Bạn xác nhận sẽ hủy ca khám?",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: BorderSide(color: Colors.red),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      huyCaKham(cakhamId);
+                      loadCaKham();
+                    },
+                    child: const Text('Xác nhận hủy'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.blue,
+                      side: BorderSide(color: Colors.blue),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Không hủy nữa'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

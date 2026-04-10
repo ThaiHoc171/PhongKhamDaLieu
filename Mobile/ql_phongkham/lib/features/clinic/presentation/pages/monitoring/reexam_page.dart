@@ -58,7 +58,7 @@ class _LichTaiKhamPageState extends State<LichTaiKhamPage> {
     if (taiKham!.taiKhamID == 0) {
       return _buildEmpty();
     }
-    if (!checkNgay) {
+    if (!checkNgay && taiKham!.trangThai == 'Chờ khám') {
       return _buildCheck(ngay, taiKham!.taiKhamID);
     }
     return Center(

@@ -145,4 +145,12 @@ class LichKhamRepository {
 
     return items.map((e) => CaKhamModel.fromJson(e)).toList();
   }
+
+  Future<void> huyCaKham(int caKhamId) async {
+    final response = await ApiClient.put('cakham/$caKhamId/trang-thai', {
+      "trangThai": "Đã hủy",
+      "ghiChu": "",
+    });
+    return response;
+  }
 }
