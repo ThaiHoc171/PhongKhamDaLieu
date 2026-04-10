@@ -1,0 +1,71 @@
+﻿<Window x:Class="WPF.Windows.ThietBi.ThemThietBi" Title="ThemThietBi"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        FontFamily="Palatino Linotype" FontWeight="Bold" ResizeMode="NoResize"
+        Width="420" Height="330" WindowStartupLocation="CenterScreen" WindowStyle="None">
+    <Border BorderBrush="#D7E6F2" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <!-- Header -->
+            <Border Grid.Row="0" Background="#42A5F5" Padding="16">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="PlusCircle" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
+                    <TextBlock Text=" Thêm Thiết Bị" FontSize="16" FontWeight="Medium" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="1" Background="White">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="400"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBox x:Name="txtName" Grid.Row="0" Height="45" Margin="10" Padding="12,6" FontSize="15"
+                             VerticalContentAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Tên cận lâm sàng" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                    <TextBox x:Name="txtCategory" Grid.Row="1" Height="45" Margin="10" Padding="12,6" FontSize="15"
+                             VerticalContentAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Loại xét nghiệm" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                    <StackPanel Grid.Row="3" Margin="10,0" Orientation="Horizontal">
+                        <TextBlock Text="Hoạt động" Foreground="#6B7280" FontSize="16" Margin="10"/>
+                        <ToggleButton x:Name="btnActive" Style="{StaticResource MaterialDesignSwitchToggleButton}" Margin="10,10">
+                            <ToggleButton.LayoutTransform>
+                                <ScaleTransform ScaleX="1.6" ScaleY="1.6"/>
+                            </ToggleButton.LayoutTransform>
+                        </ToggleButton>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <!-- Footer -->
+            <Border Grid.Row="2" Background="#DEE5E9">
+                <StackPanel Orientation ="Horizontal" VerticalAlignment="Center" HorizontalAlignment ="Right" Margin="0,0,10,0">
+                    <Button x:Name="btnHuy" Click="btnHuy_Click" Width="70" Height="40" Margin="0,0,10,0"
+                           BorderBrush="#E57373" Background="White"
+                           Style="{StaticResource MaterialDesignOutlinedButton}"
+                           materialDesign:ButtonAssist.CornerRadius="20" >
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Hủy" HorizontalAlignment="Center" Foreground="Gray"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="btnLuu" Click="btnLuu_Click" Width="70" Height="40"
+                            BorderBrush="White" Background="#028BDF"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            materialDesign:ButtonAssist.CornerRadius="20">
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Lưu" HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

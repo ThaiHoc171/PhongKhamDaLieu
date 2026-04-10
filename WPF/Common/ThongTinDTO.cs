@@ -1,0 +1,49 @@
+﻿namespace WPF.Models;
+public class ThongTinUpdateRequestDTO
+{
+	public string HoTen { get; set; } = "";
+	public DateTime NgaySinh { get; set; }
+	public string GioiTinh { get; set; } = "";
+	public string SDT { get; set; } = "";
+	public string? EmailLienHe { get; set; }
+	public string DiaChi { get; set; } = "";
+	public string? Avatar { get; set; }
+	public string Loai { get; set; } = "";
+
+}
+public class ThongTinReadListModel
+{
+	public int ThongTinID { get; set; }
+	public int? TaiKhoanID { get; set; }
+	public string HoTen { get; set; } = "";
+	public DateTime NgaySinh { get; set; }
+	public string GioiTinh { get; set; } = "";
+	public string SDT { get; set; } = "";
+	public string? EmailLienHe { get; set; }
+}
+public class ThongTinReadModel
+{
+	public int ThongTinID { get; set; }
+	public int? TaiKhoanID { get; set; }
+	public string HoTen { get; set; } = "";
+	public DateTime NgaySinh { get; set; }
+	public string GioiTinh { get; set; } = "";
+	public string SDT { get; set; } = "";
+	public string? EmailLienHe { get; set; }
+	public string DiaChi { get; set; } = "";
+	public string? Avatar { get; set; }
+	public string Loai { get; set; } = "";
+	public DateTime NgayTao { get; set; }
+	public DateTime? NgayCapNhat { get; set; }
+}
+public class ThongTinRequestDTO
+{
+	public int? TaiKhoanID { get; set; }
+	public string HoTen { get; set; } = "";
+	public DateTime NgaySinh { get; set; }
+	public string GioiTinh { get; set; } = "";  // "Nam" | "Nữ" | "Khác"
+	public string SDT { get; set; } = "";
+	public string? EmailLienHe { get; set; }
+	public string DiaChi { get; set; } = "";
+	public string? Avatar { get; set; }
+}

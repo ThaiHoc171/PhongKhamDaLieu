@@ -1,0 +1,67 @@
+﻿<Window x:Class="WPF.Windows.ChucVu.PhanQuyenChucVu" Loaded="PhanQuyenChucVu_Loaded"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        FontFamily="Palatino Linotype" FontWeight="Bold" ResizeMode="NoResize"
+        Width="600" Height="auto" WindowStartupLocation="CenterScreen" WindowStyle="None" >
+    <Border BorderBrush="#D7E6F2" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Background="#42A5F5" Padding="16">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="PencilCircle" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
+                    <TextBlock Text="Phân Quyền Chức vụ" FontSize="16" FontWeight="Medium" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="txtTenChucVu" FontSize="16" FontWeight="Medium" Foreground="White" VerticalAlignment="Center" Margin="10"/>
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" Background="White">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Modules}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Expander Header="{Binding Module}" IsExpanded="True" Margin="10">
+                                    <ItemsControl ItemsSource="{Binding QuyenList}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Content="{Binding TenQuyen}"
+                                              IsChecked="{Binding Checked, Mode=TwoWay}"
+                                              Margin="5"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+            <!-- Footer -->
+            <Border Grid.Row="2" Background="#DEE5E9">
+                <StackPanel Orientation ="Horizontal" VerticalAlignment="Center" HorizontalAlignment ="Right" Margin="0,0,10,0">
+                    <Button x:Name="btnHuy" Click="btnHuy_Click" Width="70" Height="40" Margin="0,0,10,0"
+                       BorderBrush="#E57373" Background="White"
+                       Style="{StaticResource MaterialDesignOutlinedButton}"
+                       materialDesign:ButtonAssist.CornerRadius="20" >
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Hủy" HorizontalAlignment="Center" Foreground="Gray"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="btnLuu" Click="btnLuu_Click" Width="70" Height="40"
+                        BorderBrush="White" Background="#028BDF"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        materialDesign:ButtonAssist.CornerRadius="20">
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Lưu" HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

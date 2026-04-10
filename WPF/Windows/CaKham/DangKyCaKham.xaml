@@ -1,0 +1,77 @@
+﻿<Window x:Class="WPF.Windows.CaKham.DangKyCaKham" Loaded="DangKyCaKham_Loaded"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        FontFamily="Palatino Linotype" FontSize="16" FontWeight="Bold" ResizeMode="NoResize"
+        Width="420" Height="410" WindowStartupLocation="CenterScreen" WindowStyle="None">
+    <Border BorderBrush="#D7E6F2" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Background="#42A5F5" Padding="16" MouseDown="Header_MouseDown">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="PlusCircle" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
+                    <TextBlock Text="Đăng ký ca khám" FontWeight="Medium" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="1" Background="White">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="250"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBox x:Name="txtID" Grid.Row="0" Grid.Column="0" Height="45" Margin="10" Padding="12,6"
+                             VerticalContentAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsEnabled="False"
+                             materialDesign:HintAssist.Hint="Mã ca khám" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                    <TextBox x:Name="txtName" Grid.Row="0" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                             VerticalContentAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsEnabled="False"
+                             materialDesign:HintAssist.Hint="Khung giờ/ Ngày" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                    <ComboBox x:Name="cboUser" Grid.Row="1" Grid.ColumnSpan="2" Height="45" Margin="10" Padding="12,6"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}" Language="vi-VN"
+                              materialDesign:HintAssist.Hint="Bệnh nhân" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"
+                              IsEditable="True" IsTextSearchEnabled="False" KeyUp="cboUser_KeyUp"/>
+                    <TextBox x:Name="txtLyDo" Grid.Row="2" Grid.ColumnSpan="2" Height="45" Margin="10" Padding="12,6"
+                             VerticalContentAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Lý do khám" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                    <TextBox x:Name="txtNote" Grid.Row="3" Grid.ColumnSpan="2" Height="45" Margin="10" Padding="12,6"
+                             VerticalContentAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             materialDesign:HintAssist.Hint="Ghi chú" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                </Grid>
+            </Border>
+            <!-- Footer -->
+            <Border Grid.Row="2" Background="#DEE5E9">
+                <StackPanel Orientation ="Horizontal" VerticalAlignment="Center" HorizontalAlignment ="Right" Margin="0,0,10,0">
+                    <Button x:Name="btnHuy" Click="btnHuy_Click" Width="70" Height="40" Margin="0,0,10,0"
+                           BorderBrush="#E57373" Background="White"
+                           Style="{StaticResource MaterialDesignOutlinedButton}"
+                           materialDesign:ButtonAssist.CornerRadius="20" >
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Hủy" HorizontalAlignment="Center" Foreground="Gray"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="btnLuu" Click="btnLuu_Click" Width="70" Height="40"
+                            BorderBrush="White" Background="#028BDF"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            materialDesign:ButtonAssist.CornerRadius="20">
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Lưu" HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
+

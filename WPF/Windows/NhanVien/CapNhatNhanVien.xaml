@@ -1,0 +1,211 @@
+﻿<Window x:Class="WPF.Windows.NhanVien.CapNhatNhanVien" Loaded="CapNhatNhanVien_Loaded"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        FontFamily="Palatino Linotype" FontSize="15" FontWeight="Bold" ResizeMode="NoResize"
+        Width="900" Height="630" WindowStartupLocation="CenterScreen" WindowStyle="None">
+    <Window.Resources>
+
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E3EAF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="6">
+
+                            <DockPanel>
+
+                                <!-- Header -->
+                                <Border Background="#D7E6F2"
+                                    Padding="8"
+                                    DockPanel.Dock="Top"
+                                    CornerRadius="6,6,0,0">
+
+                                    <ContentPresenter ContentSource="Header"/>
+                                </Border>
+
+                                <!-- Content -->
+                                <ContentPresenter Margin="5"/>
+
+                            </DockPanel>
+
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+    </Window.Resources>
+    <Border BorderBrush="#D7E6F2" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Background="#42A5F5" Padding="16" MouseDown="Header_MouseDown">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="AccountCircle" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
+                    <TextBlock Text="Cập nhật nhân viên" FontSize="16" FontWeight="Medium" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="1" Background="White">
+                <Grid Margin="20">
+
+                    <!-- 2 cột -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="650"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Avatar -->
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+
+                        <Border Width="150" Height="200" CornerRadius="10" BorderBrush="#DDD" BorderThickness="1" Margin="0,10">
+                            <Image x:Name="imgAvatar" Stretch="UniformToFill"/>
+                        </Border>
+
+                        <Button x:Name="btnChonAVt" Click="btnChonAvt_Click" Width="130" Height="40" Background="#028BDF" BorderBrush="#028BDF" 
+                                Style="{StaticResource MaterialDesignRaisedButton}" materialDesign:ButtonAssist.CornerRadius="20">
+                            <TextBlock Text="Chọn ảnh" Foreground="White" HorizontalAlignment="Center"/>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Form -->
+                    <Grid Grid.Column="1" Margin="10,0,0,0">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- ================= THÔNG TIN CÁ NHÂN ================= -->
+                        <GroupBox Header="Thông tin cá nhân" Margin="0,0,0,15" Background="White" BorderBrush="#E3EAF2" BorderThickness="1" >
+                            <Grid Margin="10">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBox x:Name="txtHoTen" Grid.Row="0" Grid.Column="0" Height="45" Margin="10" Padding="12,6"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="Họ và tên" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                                <ComboBox x:Name="cboGioiTinh" Grid.Row="0" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                          materialDesign:HintAssist.Hint="Giới tính" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                                <DatePicker x:Name="dtpNgaySinh" Grid.Row="0" Grid.Column="2" Height="45" Margin="10" Padding="12,6"
+                                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                            materialDesign:HintAssist.Hint="Ngày sinh" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                                <TextBox x:Name="txtSDT" Grid.Row="1" Grid.Column="0" Height="45" Margin="10" Padding="12,6"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="Số điện thoại" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                                <TextBox x:Name="txtEmail" Grid.Row="1" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="Email liên hệ" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                                <TextBox x:Name="txtDiaChi" Grid.Row="1" Grid.Column="2" Height="45" Margin="10" Padding="12,6"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="Địa chỉ" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="Thông tin nhân viên" Grid.Row="1">
+                            <Grid Margin="10">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <DatePicker x:Name="dtpNgayVaoLam" Grid.Row="0" Grid.Column="0" Height="45" Margin="10" Padding="12,6"
+                                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                            materialDesign:HintAssist.Hint="Ngày vào làm" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                                <ComboBox x:Name="cboChucVu" Grid.Row="0" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                          materialDesign:HintAssist.Hint="Chức vụ" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                                <ComboBox x:Name="cboPhongLamViec" Grid.Row="0" Grid.Column="2" Height="45" Margin="10" Padding="12,6"
+                                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                          materialDesign:HintAssist.Hint="Phòng làm việc" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                                <TextBox x:Name="txtBangCap" Grid.Row="1" Grid.Column="0" Height="45" Margin="10" Padding="12,6"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                                         materialDesign:HintAssist.Hint="Bằng cấp"  materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                                <TextBox x:Name="txtKinhNghiem" Grid.Row="1" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="Kinh nghiệm" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                                <TextBox x:Name="txtTrangThai" Grid.Row="1" Grid.Column="2" Height="45" Margin="10" Padding="12,6"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}" IsEnabled="False"
+                                         materialDesign:HintAssist.Hint="Trạng Thái" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                                <DatePicker x:Name="dtpNgayTao" Grid.Row="2" Grid.Column="0" Height="45" Margin="10" Padding="12,6"
+                                            Style="{StaticResource MaterialDesignOutlinedDatePicker}" IsEnabled="False"
+                                            materialDesign:HintAssist.Hint="Ngày tạo" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                                <DatePicker x:Name="dtpNgayCapNhat" Grid.Row="2" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                                            Style="{StaticResource MaterialDesignOutlinedDatePicker}" IsEnabled="False"
+                                            materialDesign:HintAssist.Hint="Ngày cập nhật" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                            </Grid>
+                        </GroupBox>
+
+                    </Grid>
+                </Grid>
+            </Border>
+            <!-- Footer -->
+            <Border Grid.Row="2" Background="#DEE5E9">
+                <StackPanel Orientation ="Horizontal" VerticalAlignment="Center" HorizontalAlignment ="Right" Margin="0,0,10,0">
+                    <Button x:Name="btnHuy" Click="btnHuy_Click" Width="70" Height="40" Margin="0,0,10,0"
+                           BorderBrush="#E57373" Background="White"
+                           Style="{StaticResource MaterialDesignOutlinedButton}"
+                           materialDesign:ButtonAssist.CornerRadius="20" >
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Hủy" HorizontalAlignment="Center" Foreground="Gray"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="btnLuu" Click="btnLuu_Click" Width="70" Height="40"
+                            BorderBrush="White" Background="#028BDF"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            materialDesign:ButtonAssist.CornerRadius="20">
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Lưu" HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
+
+
+

@@ -1,0 +1,115 @@
+﻿<Window x:Class="WPF.Windows.Khach.CapNhatKhach" Loaded="CapNhatKhach_Loaded"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        FontFamily="Palatino Linotype" FontWeight="Bold" FontSize="15" ResizeMode="NoResize"
+        Width="735" Height="440" WindowStartupLocation="CenterScreen" WindowStyle="None">
+    <Border BorderBrush="#D7E6F2" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Background="#42A5F5" Padding="16">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="AccountCircle" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
+                    <TextBlock Text="Cập nhật khách" FontSize="16" FontWeight="Medium" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="1" Background="White">
+                <Grid Margin="20">
+
+                    <!-- 2 cột -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="480"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Avatar -->
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+
+                        <Border Width="150" Height="200" CornerRadius="10" BorderBrush="#DDD" BorderThickness="1" Margin="0,10">
+                            <Image x:Name="imgAvatar" Stretch="UniformToFill"/>
+                        </Border>
+
+                        <Button x:Name="btnChonAvt" Click="btnChonAvt_Click" Width="130" Height="40" Background="#028BDF" BorderBrush="#028BDF" 
+                                Style="{StaticResource MaterialDesignRaisedButton}" materialDesign:ButtonAssist.CornerRadius="20">
+                            <TextBlock Text="Chọn ảnh" Foreground="White" HorizontalAlignment="Center"/>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Form -->
+                    <Grid Grid.Column="1" Margin="10,0,0,0">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBox x:Name="txtHoTen" Grid.Row="0" Grid.Column="0" Height="45" Margin="10" Padding="12,6"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="Họ và tên"
+                                 materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                        <ComboBox x:Name="cboGioiTinh" Grid.Row="0" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                                  Style="{StaticResource MaterialDesignOutlinedComboBox}" materialDesign:HintAssist.Hint="Giới tính"
+                                  materialDesign:TextFieldAssist.TextFieldCornerRadius="20">
+                        </ComboBox>
+                        <DatePicker x:Name="dtpNgaySinh" Grid.Row="1" Grid.Column="0" Height="45" Margin="10" Padding="12,6"
+                                    Style="{StaticResource MaterialDesignOutlinedDatePicker}" materialDesign:HintAssist.Hint="Ngày sinh"
+                                    materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                        <TextBox x:Name="txtSDT" Grid.Row="1" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="Số điện thoại"
+                                 materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                        <TextBox x:Name="txtEmail" Grid.Row="2" Grid.Column="0" Height="45" Margin="10" Padding="12,6"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="Email liên hệ"
+                                 materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                        <TextBox x:Name="txtDiaChi" Grid.Row="2" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="Địa chỉ"
+                                 materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                        <DatePicker x:Name="dtpDateCreate" Grid.Row="4" Grid.Column="0" Height="45" Margin="10,0" Padding="12,6" SelectedDateFormat="Short" 
+                                    IsEnabled="False" Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                    materialDesign:HintAssist.Hint="Ngày tạo" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                        <DatePicker x:Name="dtpDateUpdate" Grid.Row="4" Grid.Column="1" Height="45" Margin="10,0" Padding="12,6" SelectedDateFormat="Short" 
+                                    IsEnabled="False" Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                    materialDesign:HintAssist.Hint="Ngày cập nhật" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+                    </Grid>
+
+                </Grid>
+            </Border>
+            <!-- Footer -->
+            <Border Grid.Row="2" Background="#DEE5E9">
+                <StackPanel Orientation ="Horizontal" VerticalAlignment="Center" HorizontalAlignment ="Right" Margin="0,0,10,0">
+                    <Button x:Name="btnHuy" Click="btnHuy_Click" Width="70" Height="40" Margin="0,0,10,0"
+                           BorderBrush="#E57373" Background="White"
+                           Style="{StaticResource MaterialDesignOutlinedButton}"
+                           materialDesign:ButtonAssist.CornerRadius="20" >
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Hủy" HorizontalAlignment="Center" Foreground="Gray"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="btnLuu" Click="btnLuu_Click" Width="70" Height="40"
+                            BorderBrush="White" Background="#028BDF"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            materialDesign:ButtonAssist.CornerRadius="20">
+                        <StackPanel Orientation ="Horizontal" HorizontalAlignment ="Center" VerticalAlignment="Center" Margin="2">
+                            <TextBlock Text="Lưu" HorizontalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
+
+

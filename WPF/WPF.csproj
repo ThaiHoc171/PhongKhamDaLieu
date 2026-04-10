@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Icon\user.png" />
+    <None Remove="Assets\Images\System\logo-text.png" />
+    <None Remove="Assets\Images\System\logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="5.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Icon\user.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\System\logo-text.png" />
+    <Resource Include="Assets\Images\System\logo.png" />
+  </ItemGroup>
+
+</Project>

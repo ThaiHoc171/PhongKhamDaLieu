@@ -1,0 +1,325 @@
+﻿<Page x:Class="WPF.Pages.PhienKham.KhamPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      Background="#F5F7FA"
+      FontFamily="Palatino Linotype" FontSize="17"
+      HorizontalAlignment="Stretch"
+      VerticalAlignment="Stretch">
+    <Grid>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- ================= HEADER ================= -->
+            <Border Grid.Row="0" Background="White" CornerRadius="15" Padding="10,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- LEFT -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Click="Back_Click" Style="{StaticResource MaterialDesignOutlinedButton}"
+                                materialDesign:ButtonAssist.CornerRadius="20" Height="36" Margin="10,0" Padding="12,0">
+                            <materialDesign:PackIcon Kind="ArrowBack"/>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- RIGHT -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+
+                        <Button Click="Refresh_Click" Style="{StaticResource MaterialDesignOutlinedButton}"
+                                materialDesign:ButtonAssist.CornerRadius="15" Margin="5,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Refresh"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- SAVE -->
+                        <Button x:Name="btnSave" Click="btnSave_Click" Width="90" Height="36" Margin="5"
+                                Background="#028BDF" Foreground="White" Style="{StaticResource MaterialDesignRaisedButton}"
+                                materialDesign:ButtonAssist.CornerRadius="20">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="ContentSave" Margin="0,0,5,0"/>
+                                <TextBlock Text="Lưu"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="btnAction" Click="btnAction_Click" Width="50" Height="36" Margin="5"
+                                Background="White" BorderBrush="#028BDF" Foreground="#028BDF" Style="{StaticResource MaterialDesignRaisedButton}"
+                                materialDesign:ButtonAssist.CornerRadius="20" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Menu" Margin="0,0,5,0"/>
+                        </Button>
+                        <!-- DROPDOWN -->
+                        <Popup x:Name="ActionPopup" Placement="Relative" HorizontalOffset="-20" VerticalOffset="55"
+                                StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                            <Border Background="#E5E9F8" CornerRadius="12" Padding="8" Width="200" SnapsToDevicePixels="True">
+
+                                <!-- SHADOW -->
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="15"  ShadowDepth="2" Opacity="0.3"/>
+                                </Border.Effect>
+
+                                <StackPanel>
+                                    <!-- MENU ITEM -->
+                                    <Button Content="Cập nhật ảnh" Style="{StaticResource MaterialDesignFlatButton}" 
+                                            Click="btnAddPic_Click" HorizontalContentAlignment="Left"/>
+                                    <Button Content="Thêm chẩn đoán" Style="{StaticResource MaterialDesignFlatButton}" 
+                                            Click="btnAddDiagnosis_Click"  HorizontalContentAlignment="Left"/>
+                                    <Button Content="Thêm thiết bị" Style="{StaticResource MaterialDesignFlatButton}" 
+                                            Click="btnAddEquipment_Click"  HorizontalContentAlignment="Left"/>
+                                    <Button Content="Chỉ định cận lâm sàng" Style="{StaticResource MaterialDesignFlatButton}" 
+                                            Click="btnOrderLabTests_Click"  HorizontalContentAlignment="Left"/>
+                                    <Button Content="Toa thuốc" Style="{StaticResource MaterialDesignFlatButton}" 
+                                            Click="btnMedicine_Click"  HorizontalContentAlignment="Left"/>
+                                    <Button Content="Hồ sơ bệnh án" Style="{StaticResource MaterialDesignFlatButton}" 
+                                            Click="btnPatientRecord_Click"  HorizontalContentAlignment="Left"/>
+                                    <Button Content="Kết thúc" Style="{StaticResource MaterialDesignFlatButton}" 
+                                            Click="btnComplete_Click"  HorizontalContentAlignment="Left"/>
+                                    <Button Content="Hủy" Style="{StaticResource MaterialDesignFlatButton}"
+                                            Click="btnCancel_Click" HorizontalContentAlignment="Left" Foreground="Red"/>
+                                </StackPanel>
+                            </Border>
+                        </Popup>
+
+                    </StackPanel>
+
+                </Grid>
+            </Border>
+            <!-- ================= CONTENT ================= -->
+            <Border Grid.Row="1" Padding="10,0" Background="White" CornerRadius="10">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <!-- ================= DANH SÁCH THIẾT BỊ ================= -->
+                    <Grid Grid.Row="0">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ================= LEFT : DATA ================= -->
+
+                        <Grid Grid.Column="0">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Title -->
+                            <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="Thông tin phiên khám" 
+                                       HorizontalAlignment="Center" FontWeight="Bold" FontSize="18" Margin="5"/>
+
+                            <!-- Bệnh nhân -->
+                            <TextBox x:Name="txtBenhNhan" Grid.Row="1" Grid.ColumnSpan="2" Height="45" Margin="10" Padding="12,6"
+                                     VerticalContentAlignment="Center" IsEnabled="False" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="Bệnh nhân" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                            <!-- Bác sĩ -->
+                            <TextBox x:Name="txtNhanVien" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Height="45" Margin="10" Padding="12,6"
+                                     VerticalContentAlignment="Center" IsEnabled="False" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="Bác sĩ" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                            <!-- Ngày khám -->
+                            <DatePicker x:Name="dtpNgayKham" Grid.Row="2" Height="45" Margin="10" Padding="12,6" SelectedDateFormat="Short"
+                                        Language="vi-VN" IsEnabled="False" Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                                        materialDesign:HintAssist.Hint="Ngày khám" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                            <!-- Trạng thái -->
+                            <TextBox x:Name="txtTrangThai" Grid.Row="2" Grid.Column="1" Height="45" Margin="10" Padding="12,6"
+                                     VerticalContentAlignment="Center" IsEnabled="False" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="Trạng thái" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                            <!-- Phòng -->
+                            <ComboBox x:Name="cboPhong" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Height="45" Margin="10" Padding="12,6"
+                                      Style="{StaticResource MaterialDesignOutlinedComboBox}" IsEnabled="False"
+                                      materialDesign:HintAssist.Hint="Phòng chức năng" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                            <!-- Triệu chứng -->
+                            <TextBox x:Name="txtTrieuChung" Grid.Row="3" Grid.ColumnSpan="2" Height="45" Margin="10" Padding="12,6"
+                                     VerticalContentAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="Triệu chứng" materialDesign:TextFieldAssist.TextFieldCornerRadius="20" TextChanged="txtTrieuChung_TextChanged"/>
+
+                            <!-- Chẩn đoán -->
+                            <TextBox x:Name="txtChanDoanCuoi" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Height="45" Margin="10" Padding="12,6"
+                                     VerticalContentAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="Chẩn đoán cuối" materialDesign:TextFieldAssist.TextFieldCornerRadius="20"/>
+
+                            <!-- Ghi chú -->
+                            <TextBox x:Name="txtGhiChu" Grid.Row="5" Grid.ColumnSpan="4" Height="45" Margin="10" Padding="12,6"
+                                     VerticalContentAlignment="Center" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="Ghi chú" materialDesign:TextFieldAssist.TextFieldCornerRadius="20" TextChanged="txtGhiChu_TextChanged"/>
+                        </Grid>
+
+
+                        <!-- ================= RIGHT : IMAGE ================= -->
+
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                            <Border Width="230" Height="270" CornerRadius="10" BorderBrush="#DDD" BorderThickness="1" Margin="0,10">
+                                <Image x:Name="pic" Stretch="UniformToFill"/>
+                            </Border>
+                        </StackPanel>
+
+                    </Grid>
+                    <Grid Grid.Row="1" Margin="10">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ================= BỆNH ================= -->
+
+                        <Border Grid.Column="0" Background="White" CornerRadius="10" Margin="5">
+
+                            <Grid Margin="10">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Danh sách bệnh" FontWeight="Bold" Margin="5"/>
+                                <Grid Grid.Row="1" MinHeight="60">
+                                    <DataGrid x:Name="gridBenh" AutoGenerateColumns="False" CanUserAddRows="False"/>
+
+                                    <TextBlock Text="Không có dữ liệu" Foreground="#9CA3AF" FontStyle="Italic"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+
+                                                    <DataTrigger Binding="{Binding ItemsSource.Count, ElementName=gridBenh}" Value="0">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+
+                                                    <DataTrigger Binding="{Binding ItemsSource, ElementName=gridBenh}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+
+                                    </TextBlock>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+
+                        <!-- ================= THIẾT BỊ ================= -->
+
+                        <Border Grid.Column="1" Background="White" CornerRadius="10" Margin="5">
+
+                            <Grid Margin="10">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Thiết bị" FontWeight="Bold" Margin="5"/>
+                                <Grid Grid.Row="1" MinHeight="60">
+                                    <DataGrid x:Name="gridThietBi" AutoGenerateColumns="False" CanUserAddRows="False"/>
+                                    <TextBlock Text="Không có dữ liệu" Foreground="#9CA3AF" FontStyle="Italic"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ItemsSource.Count, ElementName=gridThietBi}" Value="0">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ItemsSource, ElementName=gridThietBi}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>   
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <Border Grid.Row="2" Margin="10" Background="White" CornerRadius="10">
+
+                        <Grid Margin="10">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Cận lâm sàng" FontWeight="Bold" Margin="5"/>
+                            <Grid Grid.Row="1" MinHeight="60">
+                                <DataGrid x:Name="gridCLS" AutoGenerateColumns="False" CanUserAddRows="False"/>
+                                <TextBlock Text="Không có dữ liệu" Foreground="#9CA3AF" FontStyle="Italic" 
+                                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ItemsSource.Count, ElementName=gridCLS}" Value="0">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding ItemsSource, ElementName=gridCLS}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+        <!-- ================= LOADING ================= -->
+        <Grid Background="#66000000"
+              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+
+            <materialDesign:PackIcon Kind="Loading" Width="150" Height="150" Foreground="White"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                <materialDesign:PackIcon.RenderTransform>
+                    <RotateTransform x:Name="SpinnerRotate"/>
+                </materialDesign:PackIcon.RenderTransform>
+            </materialDesign:PackIcon>
+
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation Storyboard.TargetName="SpinnerRotate"
+                                             Storyboard.TargetProperty="Angle"
+                                             From="0" To="360"
+                                             Duration="0:0:1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+        </Grid>
+    </Grid>
+</Page>
