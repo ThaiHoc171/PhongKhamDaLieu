@@ -26,7 +26,9 @@ GO
    PHIÊN KHÁM
 ===================================================== */
 
-INSERT INTO PhienKham
+
+
+INSERT INTO PhienKham 
 (
     CaKhamID,
     BenhNhanID,
@@ -34,45 +36,57 @@ INSERT INTO PhienKham
     PhongChucNangID,
     TrieuChung,
     GhiChu,
-    HinhAnhJSON,
     NgayKham,
     TrangThai
 )
 SELECT
     ck.CaKhamID,
-    ck.BenhNhanID,
+    bn.BenhNhanID,
     llv.NhanVienID,
     ck.PhongChucNangID,
     N'Mụn viêm, ngứa, đỏ da',
     N'Bệnh nhân hợp tác tốt',
-    N'["anh1.jpg","anh2.jpg"]',
-    DATEADD(MINUTE,5,CAST(ck.NgayKham AS DATETIME)), -- FIX DATE
+    DATEADD(MINUTE,5,CAST(ck.NgayKham AS DATETIME)),
     N'Hoàn thành'
 FROM CaKham ck
 JOIN LichLamViecNhanVien llv 
      ON ck.LichLamViecID = llv.LichLamViecID
-WHERE ck.TrangThai = N'Hoàn thành';
-GO
-
-
+JOIN BenhNhan bn 
+     ON ck.ThongTinID = bn.ThongTinID
+WHERE ck.TrangThai = N'Hoàn thành'
+AND NOT EXISTS (
+    SELECT 1 
+    FROM PhienKham pk 
+    WHERE pk.CaKhamID = ck.CaKhamID
+);
 /* =====================================================
    THIẾT BỊ SỬ DỤNG (ASSET LEVEL)
 ===================================================== */
 
 
-INSERT INTO PhienKham_ThietBi
-(PhienKhamID, ChiTietID, GhiChu)
+INSERT INTO PhienKham_ThietBi 
+(
+    PhienKhamID,
+    ChiTietID,
+    GhiChu
+)
 SELECT
     pk.PhienKhamID,
     ct.ChiTietID,
     N'Sử dụng trong phiên khám'
 FROM PhienKham pk
-CROSS APPLY (
+CROSS APPLY
+(
     SELECT TOP 2 ChiTietID
     FROM ChiTiet_PCNTB
     ORDER BY NEWID()
-) ct;
-GO
+) ct
+WHERE NOT EXISTS
+(
+    SELECT 1
+    FROM PhienKham_ThietBi tb
+    WHERE tb.PhienKhamID = pk.PhienKhamID
+);
 
 
 /* =====================================================
@@ -183,8 +197,25 @@ WHERE NOT EXISTS (
     FROM PhienKham_Benh pb
     WHERE pb.PhienKhamID = pk.PhienKhamID
 );
-GO
-
+INSERT INTO PhienKham_Benh
+(
+    PhienKhamID,
+    LoaiBenhID,
+    LoaiChanDoan,
+    GhiChu
+)
+SELECT
+    pk.PhienKhamID,
+    lb.LoaiBenhID,
+    N'Chẩn đoán phát sinh',
+    N'Bệnh kèm theo'
+FROM PhienKham pk
+CROSS APPLY (
+    SELECT TOP 1 LoaiBenhID
+    FROM LoaiBenh
+    ORDER BY NEWID()
+) lb
+WHERE ABS(CHECKSUM(NEWID())) % 10 < 3;
 
 select * from CanLamSang;
 select * from PhienKham;

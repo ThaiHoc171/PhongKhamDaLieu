@@ -1,4 +1,6 @@
 ﻿-- phongkhamdalieu
+USE master;
+CREATE DATABASE HoanMyClinic;
 --- TAI KHOAN VA THONG TIN ---
 CREATE TABLE TaiKhoan(
     TaiKhoanID INT IDENTITY PRIMARY KEY,
@@ -6,69 +8,69 @@ CREATE TABLE TaiKhoan(
     MatKhau NVARCHAR(255) NOT NULL,
     VaiTro NVARCHAR(20) NOT NULL
         CONSTRAINT CK_TaiKhoan_VaiTro
-        CHECK (VaiTro IN (N'Bệnh nhân', N'Nhân viên', N'Admin')),
+        CHECK (VaiTro IN (N'Bệnh nhân', N'Nhân viên', N'Admin', N'Khách')),
     TrangThai NVARCHAR(50) NOT NULL
         CONSTRAINT DF_TaiKhoan_TrangThai DEFAULT N'Hoạt động'
         CONSTRAINT CK_TaiKhoan_TrangThai
         CHECK (TrangThai IN (N'Hoạt động', N'Bị khóa')),
     NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
-    NgayCapNhat DATETIME NULL
+    NgayCapNhat DATETIME NULL,
+    FCMToken NVARCHAR(500) NULL
 );
 CREATE TABLE ThongTinCaNhan (
-    ThongTinID INT IDENTITY PRIMARY KEY,
-    TaiKhoanID INT NULL,
+        ThongTinID INT IDENTITY PRIMARY KEY,
+        TaiKhoanID INT NULL,
+        HoTen NVARCHAR(200) NOT NULL,
+        NgaySinh DATE NOT NULL,
+        GioiTinh NVARCHAR(10) NOT NULL
+            CONSTRAINT CK_TTCN_GioiTinh
+            CHECK (GioiTinh IN (N'Nam', N'Nữ', N'Khác')),
+        SDT NVARCHAR(20) NOT NULL,
+        EmailLienHe NVARCHAR(150) NULL,  
+        DiaChi NVARCHAR(255) NOT NULL,
+        Avatar NVARCHAR(300) NULL,
+        Loai NVARCHAR(20) NOT NULL
+            CONSTRAINT FK_TTCN_Loai
+            CHECK (Loai IN (N'Bệnh nhân', N'Nhân viên',N'Admin',N'Khách')),
+        NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
+        NgayCapNhat DATETIME NULL,
 
-    HoTen NVARCHAR(200) NOT NULL,
-    NgaySinh DATE,
-    GioiTinh NVARCHAR(10)
-        CONSTRAINT CK_TTCN_GioiTinh
-        CHECK (GioiTinh IN (N'Nam', N'Nữ', N'Khác')),
-
-    SDT NVARCHAR(20),
-    EmailLienHe NVARCHAR(150) NOT NULL,  
-    DiaChi NVARCHAR(255) NOT NULL,
-    Avatar NVARCHAR(300),
-    Loai NVARCHAR(20) NOT NULL
-        CONSTRAINT FK_TTCN_Loai
-        CHECK (Loai IN (N'Bệnh nhân', N'Nhân viên',N'Admin')),
-    NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
-    NgayCapNhat DATETIME NULL,
-
-    CONSTRAINT FK_TTCN_TaiKhoan
-        FOREIGN KEY (TaiKhoanID)
-        REFERENCES TaiKhoan(TaiKhoanID)
-        ON DELETE SET NULL
+        CONSTRAINT FK_TTCN_TaiKhoan
+            FOREIGN KEY (TaiKhoanID)
+            REFERENCES TaiKhoan(TaiKhoanID)
+            ON DELETE SET NULL,
+        CONSTRAINT UQ_TTCN_Email UNIQUE (EmailLienHe),
+        CONSTRAINT UQ_TTCN_SDT UNIQUE (SDT)
 );
-CREATE TABLE BenhNhan (
-    BenhNhanID INT IDENTITY PRIMARY KEY,
-    ThongTinID INT NOT NULL UNIQUE,
-    NgayTao DATETIME NOT NULL 
-        CONSTRAINT DF_BenhNhan_NgayTao DEFAULT GETDATE(),
-    NgayCapNhat DATETIME NULL,
-    GhiChu NVARCHAR(MAX),
-    CONSTRAINT FK_BenhNhan_TTCN
-        FOREIGN KEY (ThongTinID)
-        REFERENCES ThongTinCaNhan(ThongTinID)
-        ON DELETE CASCADE
-);
+    CREATE TABLE BenhNhan (
+        BenhNhanID INT IDENTITY PRIMARY KEY,
+        ThongTinID INT NOT NULL UNIQUE,
+        NgayTao DATETIME NOT NULL 
+            CONSTRAINT DF_BenhNhan_NgayTao DEFAULT GETDATE(),
+        NgayCapNhat DATETIME NULL,
+        GhiChu NVARCHAR(MAX),
+        CONSTRAINT FK_BenhNhan_TTCN
+            FOREIGN KEY (ThongTinID)
+            REFERENCES ThongTinCaNhan(ThongTinID)
+            ON DELETE CASCADE
+    );
 --- TỔ CHỨC VÀ NHÂN SỰ ---
 CREATE TABLE ChucVu (
     ChucVuID INT IDENTITY(1,1) PRIMARY KEY,
     TenChucVu NVARCHAR(100) NOT NULL,
-    MoTa NVARCHAR(MAX),
-    NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
+    MoTa NVARCHAR(MAX) NOT NULL,
     TrangThai NVARCHAR(50) NOT NULL
         CONSTRAINT DF_ChucVu_TrangThai DEFAULT N'Hoạt động'
         CONSTRAINT CK_ChucVu_TrangThai
-        CHECK (TrangThai IN (N'Hoạt động', N'Không hoạt động')),
+        CHECK (TrangThai IN (N'Hoạt động', N'Vô hiệu')),
+    NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL,
     CONSTRAINT UQ_ChucVu_Ten UNIQUE (TenChucVu)
 );
 CREATE TABLE PhongChucNang (
     PhongChucNangID INT IDENTITY(1,1) PRIMARY KEY,
-    TenPhong NVARCHAR(200) NOT NULL,
-    LoaiPhong NVARCHAR(100),
+    TenPhong NVARCHAR(200) NOT NULL UNIQUE,
     MoTa NVARCHAR(MAX),
-
     TrangThai NVARCHAR(50) NOT NULL
         CONSTRAINT DF_Phong_TrangThai DEFAULT N'Hoạt động'
         CONSTRAINT CK_Phong_TrangThai
@@ -80,35 +82,35 @@ CREATE TABLE PhongChucNang (
 CREATE TABLE NhanVien (
     NhanVienID   INT IDENTITY(1,1) PRIMARY KEY,
     ThongTinID   INT NOT NULL UNIQUE,
-    ChucVuID     INT NOT NULL,
-    NgayVaoLam   DATE,
+    ChucVuID	 INT NOT NULL,
+    NgayVaoLam     DATE,
     BangCap      NVARCHAR(500),
     KinhNghiem   NVARCHAR(500),
-
     TrangThai NVARCHAR(50) NOT NULL
         CONSTRAINT DF_NhanVien_TrangThai DEFAULT N'Đang làm việc'
         CONSTRAINT CK_NhanVien_TrangThai
         CHECK (TrangThai IN (N'Đang làm việc', N'Nghỉ việc')),
-
     PhongChucNangID INT NOT NULL,
-
-    NgayTao DATETIME NOT NULL
+    NgayTao DATETIME NOT NULL 
         CONSTRAINT DF_NhanVien_NgayTao DEFAULT GETDATE(),
-
     NgayCapNhat DATETIME NULL,
-
-    CONSTRAINT FK_NhanVien_TTCN 
-        FOREIGN KEY (ThongTinID) 
-        REFERENCES ThongTinCaNhan(ThongTinID) 
-        ON DELETE CASCADE,
-
-    CONSTRAINT FK_NhanVien_ChucVu 
-        FOREIGN KEY (ChucVuID) 
-        REFERENCES ChucVu(ChucVuID),
-
-    CONSTRAINT FK_NhanVien_PCN 
-        FOREIGN KEY (PhongChucNangID) 
-        REFERENCES PhongChucNang(PhongChucNangID)
+    CONSTRAINT FK_NhanVien_TTCN FOREIGN KEY (ThongTinID) REFERENCES ThongTinCaNhan(ThongTinID) ON DELETE CASCADE,
+    CONSTRAINT FK_NhanVien_ChucVu FOREIGN KEY (ChucVuID) REFERENCES ChucVu(ChucVuID),
+    CONSTRAINT FK_NhanVien_PCN FOREIGN KEY (PhongChucNangID ) REFERENCES PhongChucNang(PhongChucNangID)
+);
+CREATE TABLE BacSiProfile (
+    BacSiProfileID INT IDENTITY(1,1) PRIMARY KEY,
+    NhanVienID INT NOT NULL UNIQUE,
+    GioiThieu NVARCHAR(MAX),
+    ChuyenMon NVARCHAR(300),
+    ThanhTuu NVARCHAR(MAX),
+    HinhAnh NVARCHAR(500),
+    KinhNghiem NVARCHAR(MAX),
+    NgayCapNhat DATETIME NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT FK_BacSiProfile_NhanVien
+        FOREIGN KEY (NhanVienID)
+        REFERENCES NhanVien(NhanVienID)
+        ON DELETE CASCADE
 );
 --- CƠ SỞ VẬT CHẤT ---
 CREATE TABLE PhongKham (
@@ -134,7 +136,13 @@ CREATE TABLE PhongKham (
 CREATE TABLE ThietBi (
     ThietBiID INT IDENTITY(1,1) PRIMARY KEY,
     TenTB NVARCHAR(200) NOT NULL,
-    LoaiTB NVARCHAR(100)
+    LoaiTB NVARCHAR(100) NOT NULL,
+    TrangThai NVARCHAR(50)
+    CONSTRAINT DF_ThietBi_TrangThai DEFAULT N'Hoạt động'
+    CONSTRAINT CK_ThietBi_TrangThai CHECK (TrangThai IN (N'Hoạt động', N'Vô hiệu')),
+    NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL,
+    CONSTRAINT UQ_ThietBi_Ten UNIQUE (TenTB)
 );
 CREATE TABLE PhongChucNang_ThietBi (
     PCN_TB_ID INT IDENTITY(1,1) PRIMARY KEY,
@@ -220,37 +228,46 @@ CREATE TABLE CaKham (
         CONSTRAINT CK_CaKham_Loai
         CHECK (LoaiCaKham IN (N'Khám', N'Điều trị')),
 
-    LichLamViecID INT NOT NULL,
+    LichLamViecID INT NULL,
     KhungGioID INT NOT NULL,
     PhongChucNangID INT NULL,
 
-    BenhNhanID INT NULL,
+    ThongTinID INT NULL,
+
     LyDoKham NVARCHAR(500),
 
     TrangThai NVARCHAR(50) NOT NULL
         CONSTRAINT DF_CaKham_TrangThai DEFAULT N'Trống'
         CONSTRAINT CK_CaKham_TrangThai
-        CHECK (TrangThai IN ( N'Trống', N'Đã đặt', N'Đã xác nhận', N'Hoàn thành', N'Đã hủy', N'Không đến')),
+        CHECK (TrangThai IN (N'Trống',N'Đã đặt',N'Đã xác nhận',N'Đang khám', N'Hoàn thành', N'Đã hủy', N'Không đến')),
 
     NgayDat DATE NULL,
     NgayKham DATE NOT NULL,
     GhiChu NVARCHAR(MAX),
 
-    CONSTRAINT FK_CaKham_LichLamViec FOREIGN KEY (LichLamViecID)
-        REFERENCES LichLamViecNhanVien(LichLamViecID) ON DELETE CASCADE,
+    CONSTRAINT FK_CaKham_LichLamViec
+        FOREIGN KEY (LichLamViecID)
+        REFERENCES LichLamViecNhanVien(LichLamViecID)
+        ON DELETE CASCADE,
 
-    CONSTRAINT FK_CaKham_KhungGio FOREIGN KEY (KhungGioID) REFERENCES KhungGioKham(KhungGioID),
+    CONSTRAINT FK_CaKham_KhungGio
+        FOREIGN KEY (KhungGioID)
+        REFERENCES KhungGioKham(KhungGioID),
 
-    CONSTRAINT FK_CaKham_BenhNhan FOREIGN KEY (BenhNhanID) REFERENCES BenhNhan(BenhNhanID),
+    CONSTRAINT FK_CaKham_ThongTin
+        FOREIGN KEY (ThongTinID)
+        REFERENCES ThongTinCaNhan(ThongTinID),
 
-    CONSTRAINT FK_CaKham_Phong FOREIGN KEY (PhongChucNangID) REFERENCES PhongChucNang(PhongChucNangID),
+    CONSTRAINT FK_CaKham_Phong
+        FOREIGN KEY (PhongChucNangID)
+        REFERENCES PhongChucNang(PhongChucNangID),
 
-    CONSTRAINT CK_CaKham_BenhNhan CHECK (
-        (TrangThai = N'Trống' AND BenhNhanID IS NULL) OR
-        (TrangThai <> N'Trống' AND BenhNhanID IS NOT NULL)
-    )
-);
---- HỒ SƠ Y TẾ VÀ KHÁM BỆNH ---
+    CONSTRAINT CK_CaKham_ThongTin
+        CHECK (
+            (TrangThai = N'Trống' AND ThongTinID IS NULL) OR
+            (TrangThai <> N'Trống' AND ThongTinID IS NOT NULL)
+        )
+);--- HỒ SƠ Y TẾ VÀ KHÁM BỆNH ---
 CREATE TABLE HoSoBenhAn (
     HoSoBenhAnID INT IDENTITY(1,1) PRIMARY KEY,
     BenhNhanID INT NOT NULL UNIQUE,
@@ -273,10 +290,10 @@ CREATE TABLE PhienKham (
     PhongChucNangID INT NULL,
     TrieuChung NVARCHAR(MAX),
     GhiChu NVARCHAR(MAX),
-    HinhAnhJSON NVARCHAR(MAX),
+    HinhAnh NVARCHAR(MAX),
     ChanDoanCuoi NVARCHAR(300),
     NgayKham DATETIME DEFAULT GETDATE(),
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Đang khám', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Đang khám',
+    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Đang chờ',N'Đang khám', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Đang chờ',
     FOREIGN KEY (CaKhamID) REFERENCES CaKham(CaKhamID),
     FOREIGN KEY (BenhNhanID) REFERENCES BenhNhan(BenhNhanID),
     FOREIGN KEY (NhanVienID) REFERENCES NhanVien(NhanVienID),
@@ -301,11 +318,12 @@ GO
 CREATE TABLE CanLamSang (
     CanLamSangID INT IDENTITY(1,1) PRIMARY KEY,
     TenCLS NVARCHAR(200) NOT NULL,
-    MoTa NVARCHAR(MAX),
-    LoaiXetNghiem NVARCHAR(100),
-    Ghichu NVARCHAR(100),
+    MoTa NVARCHAR(MAX) NOT NULL,
+    LoaiXetNghiem NVARCHAR(100) NOT NULL,
+    TrangThai NVARCHAR(50) NOT NULL CHECK (TrangThai IN (N'Hoạt động',  N'Vô hiệu')) DEFAULT N'Hoạt động',
     NgayTao DATETIME DEFAULT GETDATE(),
-    TrangThai NVARCHAR(50) NOT NULL CHECK (TrangThai IN (N'Hoạt động', N'Ngưng sử dụng')) DEFAULT N'Hoạt động'
+    NgayCapNhat DATETIME NULL,
+    CONSTRAINT UQ_CLS_Ten UNIQUE (TenCLS)
 );
 GO
 
@@ -364,16 +382,16 @@ GO
 --- BỆNH LÝ VÀ CHẨN ĐOÁN ---
 CREATE TABLE LoaiBenh (
     LoaiBenhID INT IDENTITY(1,1) PRIMARY KEY,
-    TenBenh NVARCHAR(200) NOT NULL,
-    TenKhoaHoc NVARCHAR(200),
+    TenBenh NVARCHAR(200) NOT NULL UNIQUE,
+    TenKhoaHoc NVARCHAR(200) UNIQUE,
     NhomBenh NVARCHAR(100),
     MoTa NVARCHAR(MAX),
 
     DoPhoBien NVARCHAR(50)
-        CHECK (DoPhoBien IN (N'Phổ biến', N'Ít gặp', N'Hiếm')),
+        CHECK (DoPhoBien IN (N'phổ biến', N'ít gặp', N'hiếm')),
 
     MucDoNghiemTrong NVARCHAR(50)
-        CHECK (MucDoNghiemTrong IN (N'Nhẹ', N'Trung bình', N'Nặng')),
+        CHECK (MucDoNghiemTrong IN (N'nhẹ', N'trung bình', N'nặng')),
 
     NgayTao DATETIME DEFAULT GETDATE()
 );
@@ -416,7 +434,9 @@ CREATE TABLE TaiKham (
     BenhNhanID INT NOT NULL,           -- bệnh nhân được yêu cầu tái khám
     NgayDuKien DATE NOT NULL,          -- ngày bác sĩ chỉ định
     LyDo NVARCHAR(500),                -- lý do tái khám
-    TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
+    TrangThai NVARCHAR(50) 
+        CHECK (TrangThai IN (N'Chờ khám', N'Đã khám', N'Đã hủy')) 
+        DEFAULT N'Chờ khám',
     CaKhamID INT NULL,                 -- nếu đã gán lịch tái khám vào ca khám
     NgayTao DATETIME DEFAULT GETDATE(),
 
@@ -459,7 +479,7 @@ CREATE TABLE LieuTrinh_BuoiDieuTri (
     NhanVienID INT NULL,                       -- bác sĩ thực hiện
     TrangThai NVARCHAR(50) CHECK (TrangThai IN (N'Chờ xử lý', N'Đang xử lý', N'Hoàn thành', N'Đã hủy')) DEFAULT N'Chờ xử lý',
     GhiChu NVARCHAR(MAX),
-    HinhAnhJSON NVARCHAR(MAX),                 -- ảnh theo dõi liệu trình
+    HinhAnh NVARCHAR(MAX),                 -- ảnh theo dõi liệu trình
     FOREIGN KEY (CaKhamID) REFERENCES CaKham(CaKhamID),
     FOREIGN KEY (LieuTrinhID) REFERENCES LieuTrinhDieuTri(LieuTrinhID) ON DELETE CASCADE,
     FOREIGN KEY (NhanVienID) REFERENCES NhanVien(NhanVienID),
@@ -526,27 +546,46 @@ CREATE TABLE BaiViet (
         REFERENCES LoaiBenh(LoaiBenhID)
 );
 GO
-
-CREATE TABLE RefreshTokens
-(
+CREATE TABLE RefreshTokens (
     Id INT IDENTITY(1,1) PRIMARY KEY,
 
     TaiKhoanId INT NOT NULL,
 
-    TokenHash NVARCHAR(MAX) NOT NULL,
+    TokenHash NVARCHAR(500) NOT NULL,
+    ExpiryDate DATETIME2 NOT NULL,
 
-    ExpiryDate DATETIME NOT NULL,
-
-    CreatedAt DATETIME NOT NULL
-        CONSTRAINT DF_RefreshTokens_CreatedAt
-        DEFAULT GETUTCDATE(),
-
-    IsRevoked BIT NOT NULL
-        CONSTRAINT DF_RefreshTokens_IsRevoked
-        DEFAULT 0,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+    IsRevoked BIT NOT NULL DEFAULT 0,
 
     CONSTRAINT FK_RefreshTokens_TaiKhoan
         FOREIGN KEY (TaiKhoanId)
         REFERENCES TaiKhoan(TaiKhoanID)
+        ON DELETE CASCADE
+);
+--Phanquyen
+CREATE TABLE Quyen (
+    QuyenID INT IDENTITY(1,1) PRIMARY KEY,
+    MaQuyen VARCHAR(100) NOT NULL,
+    TenQuyen NVARCHAR(200) NOT NULL,
+    Module NVARCHAR(100) NOT NULL
+);
+ALTER TABLE Quyen
+ADD CONSTRAINT UQ_Quyen_MaQuyen UNIQUE (MaQuyen);
+
+
+CREATE TABLE ChucVu_Quyen (
+    ChucVuID INT NOT NULL,
+    QuyenID INT NOT NULL,
+
+    PRIMARY KEY (ChucVuID, QuyenID),
+
+    CONSTRAINT FK_ChucVuQuyen_ChucVu
+        FOREIGN KEY (ChucVuID)
+        REFERENCES ChucVu(ChucVuID)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_ChucVuQuyen_Quyen
+        FOREIGN KEY (QuyenID)
+        REFERENCES Quyen(QuyenID)
         ON DELETE CASCADE
 );

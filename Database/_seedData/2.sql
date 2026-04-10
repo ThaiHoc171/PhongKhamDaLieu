@@ -5,7 +5,7 @@ INSERT INTO PhongKham
 (TenPhongKham, GioiThieu, DiaChi, Hotline, Email, Website)
 VALUES
 (
-    N'Phòng khám Da Liễu Aura Care',
+    N'Da liễu Hoàn Mỹ',
     N'Phòng khám da liễu chuyên sâu điều trị mụn, nám, thâm, trẻ hóa da và bệnh lý da mạn tính. Ứng dụng công nghệ hiện đại và đội ngũ bác sĩ giàu kinh nghiệm.',
     N'123 Nguyễn Đình Chiểu, Phường 6, Quận 3, TP.HCM',
     N'0901234567',

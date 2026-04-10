@@ -124,10 +124,9 @@ VALUES
 GO
 
 -- BenhNhan--
-INSERT INTO BenhNhan (ThongTinID, GhiChu)
+INSERT INTO BenhNhan (ThongTinID)
 SELECT
-    ThongTinID,
-    N'Dữ liệu seed ban đầu'
+    ThongTinID
 FROM ThongTinCaNhan
 WHERE Loai = N'Bệnh nhân';
 
@@ -137,7 +136,7 @@ VALUES
 (N'Phòng khám bệnh', N'Khám lâm sàng', N'Phòng khám da liễu tổng quát, đánh giá tình trạng da, chẩn đoán ban đầu.'),
 (N'Phòng điều trị', N'Điều trị', N'Không gian thực hiện các liệu trình điều trị theo chỉ định bác sĩ.'),
 (N'Phòng xét nghiệm', N'Xét nghiệm nhanh', N'Thực hiện các xét nghiệm cơ bản như đường huyết, CRP, HbA1c, test nhanh.'),
-(N'Phòng chẩn đoán da liễu', N'Chẩn đoán cận lâm sàng', N'Soi da, soi nấm, kiểm tra sắc tố, tổn thương da.'),
+(N'Phòng chẩn đoán', N'Chẩn đoán cận lâm sàng', N'Soi da, soi nấm, kiểm tra sắc tố, tổn thương da.'),
 (N'Phòng thủ thuật', N'Thủ thuật da liễu', N'Thực hiện thủ thuật nhỏ: đốt điện, lạnh nitơ, lăn kim, RF.'),
 (N'Phòng laser', N'Điều trị laser', N'Sử dụng công nghệ laser CO2, YAG, IPL để điều trị chuyên sâu.');
 

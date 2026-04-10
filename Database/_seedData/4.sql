@@ -39,12 +39,11 @@ INSERT INTO CaKham
     LichLamViecID,
     KhungGioID,
     PhongChucNangID,
-    BenhNhanID,
+    ThongTinID,
     LyDoKham,
     TrangThai,
     NgayDat,
-    NgayKham,
-    GhiChu
+    NgayKham
 )
 SELECT
     CASE 
@@ -72,22 +71,18 @@ SELECT
 
     N'Khám da liễu theo lịch hẹn',
 
-    N'Hoàn thành',
+    CASE ABS(CHECKSUM(NEWID())) % 10
+        WHEN 0 THEN N'Đã hủy'
+        WHEN 1 THEN N'Không đến'
+        ELSE N'Hoàn thành'
+    END,
 
     DATEADD(DAY, -ABS(CHECKSUM(NEWID())) % 20, GETDATE()),
 
-    cs.Ngay,
-
-    N'Dữ liệu seed quá khứ'
+    cs.Ngay
 FROM CaSinh cs;
 GO
-SELECT 
-    llv.Ngay,
-    ck.KhungGioID,
-    COUNT(*) AS SoCa
-FROM CaKham ck
-JOIN LichLamViecNhanVien llv 
-    ON ck.LichLamViecID = llv.LichLamViecID
-GROUP BY llv.Ngay, ck.KhungGioID
-HAVING COUNT(*) <> 5;
+SELECT TrangThai, COUNT(*) 
+FROM CaKham
+GROUP BY TrangThai;
 select * from CaKham;
