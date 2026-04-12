@@ -1,7 +1,10 @@
 ﻿using Amazon.S3;
 using Application.Common;
+using Application.DTOs;
 using Application.Interfaces;
 using Application.Services;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Infrastructure.Repositories;
 using Infrastructure.Repository;
 using Infrastructure.Services;
@@ -12,10 +15,6 @@ using OfficeOpenXml;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
-using Infrastructure.Services;
-using Application.DTOs;
 ExcelPackage.License.SetNonCommercialPersonal("ClinicApp");
 var builder = WebApplication.CreateBuilder(args);
 var firebaseJson = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIAL");
@@ -94,7 +93,7 @@ builder.Services
 			context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 			context.Response.ContentType = "application/json";
 			await context.Response.WriteAsJsonAsync(
-				ApiResponse<bool>.Fail("Bạn chưa đăng nhập")
+				ApiResponse<object>.Fail("Bạn chưa đăng nhập")
 			);
 		},
 		OnForbidden = async context =>
@@ -102,7 +101,7 @@ builder.Services
 			context.Response.StatusCode = StatusCodes.Status403Forbidden;
 			context.Response.ContentType = "application/json";
 			await context.Response.WriteAsJsonAsync(
-				ApiResponse<bool>.Fail("Bạn không có quyền thực hiện hành động này")
+				ApiResponse<object>.Fail("Bạn không có quyền thực hiện hành động này")
 			);
 		}
 	};

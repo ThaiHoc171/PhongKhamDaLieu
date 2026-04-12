@@ -589,3 +589,13 @@ CREATE TABLE ChucVu_Quyen (
         REFERENCES Quyen(QuyenID)
         ON DELETE CASCADE
 );
+
+CREATE TABLE OTP (
+    OtpID       INT IDENTITY(1,1) PRIMARY KEY,
+	Email		NVARCHAR(255) NULL,
+    TaiKhoanID  INT NULL,
+    MaOTP       NVARCHAR(6) NOT NULL,
+    ThoiHanHetHan DATETIME NOT NULL,
+    ConHieuLuc  BIT NOT NULL DEFAULT 1,
+    CONSTRAINT FK_OTP_TaiKhoan FOREIGN KEY (TaiKhoanID) REFERENCES TaiKhoan(TaiKhoanID)
+);
