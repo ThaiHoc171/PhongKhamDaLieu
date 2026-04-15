@@ -4,13 +4,12 @@ namespace Application.Interfaces;
 public interface ITaiKhamRepository
 {
     Task<TaiKham?> GetByIdAsync(int taiKhamID);
-    Task<TaiKhamDetailReadModel?> GetDetailAsync(int taiKhamID);
-	Task<TaiKham?> GetByBenhNhanIdAsync(int benhNhanID);
+    Task<TaiKhamReadModel?> GetDetailAsync(int taiKhamID);
     Task<TaiKham?> GetTaiKhamDangChoAsync(int benhNhanID);
-    Task<(List<TaiKhamReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai);
-    Task<(List<TaiKhamReadModel>, int)> SearchAsync(string? keyword, int page, int size);
-    Task<(List<TaiKhamReadModel>, int)> GetListByBenhNhanAsync(int benhNhanID, int page, int size);
+    Task<(List<TaiKhamReadListModel>, int)> GetPagedAsync(int page, int size, string? trangThai);
+    Task<(List<TaiKhamReadListModel>, int)> SearchAsync(string? keyword, int page, int size);
+    Task<(List<TaiKhamReadListModel>, int)> GetPagedByBenhNhanAsync(int benhNhanID, int page, int size);
 	Task<bool> ExistsByPhienKhamAsync(int phienKhamID);
     Task<int> AddAsync(TaiKham taiKham);
-    Task UpdateAsync(TaiKham taiKham);
+    Task<int> UpdateAsync(TaiKham taiKham);
 }

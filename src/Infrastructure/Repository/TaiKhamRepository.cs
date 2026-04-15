@@ -5,228 +5,296 @@ using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+
 namespace Infrastructure.Repositories;
+
 public class TaiKhamRepository : ITaiKhamRepository
 {
 	private readonly string _connectionString;
+
 	public TaiKhamRepository(IConfiguration configuration)
 	{
-		_connectionString = configuration.GetConnectionString("DefaultConnection")
-			?? throw new ArgumentNullException("Connection string not found");
+		_connectionString = configuration.GetConnectionString("DefaultConnection")!;
 	}
-	public async Task<TaiKham?> GetByIdAsync(int taiKhamID)
+
+	#region Queries
+
+	private const string BaseSelectList = @"
+        SELECT tk.TaiKhamID, bn.BenhNhanID, ttc.HoTen, tk.NgayDuKien, tk.LyDo, tk.TrangThai
+        FROM TaiKham tk
+        JOIN BenhNhan bn ON tk.BenhNhanID = bn.BenhNhanID
+        JOIN ThongTinCaNhan ttc ON bn.ThongTinID = ttc.ThongTinID";
+
+	private const string BaseSelectDetail = @"
+        SELECT tk.TaiKhamID, tk.PhienKhamID, bn.BenhNhanID, ttc.HoTen,
+               tk.NgayDuKien, tk.LyDo, tk.TrangThai, tk.CaKhamID, tk.NgayTao
+        FROM TaiKham tk
+        JOIN BenhNhan bn ON tk.BenhNhanID = bn.BenhNhanID
+        JOIN ThongTinCaNhan ttc ON bn.ThongTinID = ttc.ThongTinID";
+
+	private const string BaseSelectEntity = @"
+        SELECT TaiKhamID, PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai, CaKhamID, NgayTao
+        FROM TaiKham";
+
+	#endregion
+
+	public async Task<TaiKham?> GetByIdAsync(int id)
 	{
-		const string sql = "SELECT TaiKhamID, PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai, CaKhamID, NgayTao FROM TaiKham WHERE TaiKhamID = @Id";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = taiKhamID;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return MapToEntity(reader);
+
+		var sql = BaseSelectEntity + " WHERE TaiKhamID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<TaiKhamDetailReadModel?> GetDetailAsync(int taiKhamID)
+
+	public async Task<TaiKhamReadModel?> GetDetailAsync(int id)
 	{
-		const string sql = "SELECT tk.TaiKhamID, tk.PhienKhamID, bn.BenhNhanID, ttc.HoTen, tk.NgayDuKien, tk.LyDo, tk.TrangThai, tk.CaKhamID, tk.NgayTao FROM TaiKham tk JOIN BenhNhan bn ON tk.BenhNhanID = bn.BenhNhanID JOIN ThongTinCaNhan ttc ON bn.ThongTinID = ttc.ThongTinID WHERE tk.TaiKhamID = @Id";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = taiKhamID;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return new TaiKhamDetailReadModel
-		{
-			TaiKhamID = reader.GetInt32(0),
-			PhienKhamID = reader.GetInt32(1),
-			BenhNhan = new NameResponseDTO
-			{
-				Id = reader.GetInt32(2),
-				Name = reader.GetString(3)
-			},
-			NgayDuKien = reader.GetDateTime(4),
-			LyDo = reader.IsDBNull(5) ? null : reader.GetString(5),
-			TrangThai = reader.IsDBNull(6) ? null : reader.GetString(6),
-			CaKhamID = reader.IsDBNull(7) ? null : reader.GetInt32(7),
-			NgayTao = reader.GetDateTime(8)
-		};
+
+		var sql = BaseSelectDetail + " WHERE tk.TaiKhamID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+		return await reader.ReadAsync() ? MapToDetailDTO(reader) : null;
 	}
-	public async Task<(List<TaiKhamReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai)
+
+	public async Task<(List<TaiKhamReadListModel>, int)> GetPagedAsync(int page, int size, string? trangThai)
 	{
-		const string sql =
-		@"SELECT tk.TaiKhamID, bn.BenhNhanID, ttc.HoTen, tk.NgayDuKien, tk.LyDo, tk.TrangThai
-          FROM TaiKham tk
-          JOIN BenhNhan bn ON tk.BenhNhanID = bn.BenhNhanID
-          JOIN ThongTinCaNhan ttc ON bn.ThongTinID = ttc.ThongTinID
-          WHERE (@TrangThai IS NULL OR tk.TrangThai = @TrangThai)
-          ORDER BY tk.NgayDuKien DESC
-          OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-          SELECT COUNT(*)
-          FROM TaiKham tk
-          WHERE (@TrangThai IS NULL OR tk.TrangThai = @TrangThai)";
-		var list = new List<TaiKhamReadModel>();
+		var list = new List<TaiKhamReadListModel>();
 		int total = 0;
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = (object?)trangThai ?? DBNull.Value;
-		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = (page - 1) * size;
-		cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
+
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+        {BaseSelectList}
+        WHERE (@TrangThai IS NULL OR tk.TrangThai = @TrangThai)
+        ORDER BY tk.NgayDuKien DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+        SELECT COUNT(*) FROM TaiKham
+        WHERE (@TrangThai IS NULL OR TrangThai = @TrangThai)";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = (object?)trangThai ?? DBNull.Value;
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
-		{
 			list.Add(MapToReadModel(reader));
-		}
-		if (await reader.NextResultAsync() && await reader.ReadAsync())
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
 			total = reader.GetInt32(0);
+
 		return (list, total);
 	}
-	public async Task<(List<TaiKhamReadModel>, int)> SearchAsync(string? keyword, int page, int size)
+
+	public async Task<(List<TaiKhamReadListModel>, int)> SearchAsync(string? keyword, int page, int size)
 	{
-		const string sql =
-		@"SELECT tk.TaiKhamID, bn.BenhNhanID, ttc.HoTen, tk.NgayDuKien, tk.LyDo, tk.TrangThai
-          FROM TaiKham tk
-          JOIN BenhNhan bn ON tk.BenhNhanID = bn.BenhNhanID
-          JOIN ThongTinCaNhan ttc ON bn.ThongTinID = ttc.ThongTinID
-          WHERE (@Keyword IS NULL OR ttc.HoTen LIKE @Keyword)
-          ORDER BY tk.NgayDuKien DESC
-          OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-          SELECT COUNT(*)
-          FROM TaiKham tk
-          JOIN BenhNhan bn ON tk.BenhNhanID = bn.BenhNhanID
-          JOIN ThongTinCaNhan ttc ON bn.ThongTinID = ttc.ThongTinID
-          WHERE (@Keyword IS NULL OR ttc.HoTen LIKE @Keyword)";
-		var list = new List<TaiKhamReadModel>();
+		var list = new List<TaiKhamReadListModel>();
 		int total = 0;
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
+
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+        {BaseSelectList}
+        WHERE (@Keyword IS NULL OR ttc.HoTen LIKE @Keyword)
+        ORDER BY tk.NgayDuKien DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+        SELECT COUNT(*)
+        FROM TaiKham tk
+        JOIN BenhNhan bn ON tk.BenhNhanID = bn.BenhNhanID
+        JOIN ThongTinCaNhan ttc ON bn.ThongTinID = ttc.ThongTinID
+        WHERE (@Keyword IS NULL OR ttc.HoTen LIKE @Keyword)";
+
+		using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar, 200).Value =
 			string.IsNullOrWhiteSpace(keyword) ? DBNull.Value : $"%{keyword}%";
-		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = (page - 1) * size;
-		cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
-		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
-		{
 			list.Add(MapToReadModel(reader));
-		}
-		if (await reader.NextResultAsync() && await reader.ReadAsync())
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
 			total = reader.GetInt32(0);
+
 		return (list, total);
 	}
-	public async Task<int> AddAsync(TaiKham taiKham)
+	public async Task<(List<TaiKhamReadListModel>, int)> GetPagedByBenhNhanAsync(int benhNhanID, int page, int size)
 	{
-		const string sql = "INSERT INTO TaiKham (PhienKhamID, BenhNhanID, NgayDuKien, LyDo) OUTPUT INSERTED.TaiKhamID VALUES (@PhienKhamID, @BenhNhanID, @NgayDuKien, @LyDo)";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = taiKham.PhienKhamID;
-		cmd.Parameters.Add("@BenhNhanID", SqlDbType.Int).Value = taiKham.BenhNhanID;
-		cmd.Parameters.Add("@NgayDuKien", SqlDbType.Date).Value = taiKham.NgayDuKien;
-		cmd.Parameters.Add("@LyDo", SqlDbType.NVarChar, 500).Value = (object?)taiKham.LyDo ?? DBNull.Value;
-		await conn.OpenAsync();
-		return (int)await cmd.ExecuteScalarAsync();
-	}
-	public async Task UpdateAsync(TaiKham taiKham)
-	{
-		const string sql = "UPDATE TaiKham SET TrangThai = @TrangThai, CaKhamID = @CaKhamID WHERE TaiKhamID = @Id";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = TaiKhamExtensions.ToDbValue(taiKham.TrangThai);
-		cmd.Parameters.Add("@CaKhamID", SqlDbType.Int).Value = (object?)taiKham.CaKhamID ?? DBNull.Value;
-		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = taiKham.TaiKhamID;
-		await conn.OpenAsync();
-		await cmd.ExecuteNonQueryAsync();
-	}
-	public async Task<bool> ExistsByPhienKhamAsync(int phienKhamID)
-	{
-		const string sql = "SELECT 1 FROM TaiKham WHERE PhienKhamID = @PhienKhamID";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamID;
-		await conn.OpenAsync();
-		var result = await cmd.ExecuteScalarAsync();
-		return result != null;
-	}
-	public async Task<(List<TaiKhamReadModel>, int)> GetListByBenhNhanAsync(int benhNhanID, int page, int size)
-	{
-		const string sql =@"
-			SELECT tk.TaiKhamID, bn.BenhNhanID, ttc.HoTen, tk.NgayDuKien, tk.LyDo, tk.TrangThai
-			FROM TaiKham tk
-			JOIN BenhNhan bn ON tk.BenhNhanID = bn.BenhNhanID
-			JOIN ThongTinCaNhan ttc ON bn.ThongTinID = ttc.ThongTinID
-			WHERE tk.BenhNhanID = @BenhNhanID
-			ORDER BY tk.NgayDuKien DESC
-			OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
-			SELECT COUNT(*)
-			FROM TaiKham
-			WHERE BenhNhanID = @BenhNhanID
-		";
-		var list = new List<TaiKhamReadModel>();
+		var list = new List<TaiKhamReadListModel>();
 		int total = 0;
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@BenhNhanID", SqlDbType.Int).Value = benhNhanID;
-		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = (page - 1) * size;
-		cmd.Parameters.Add("@PageSize", SqlDbType.Int).Value = size;
+
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+		{BaseSelectList}
+		WHERE tk.BenhNhanID=@BenhNhanID
+		ORDER BY tk.NgayDuKien DESC
+		OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+		SELECT COUNT(*)
+		FROM TaiKham
+		WHERE BenhNhanID=@BenhNhanID";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@BenhNhanID", SqlDbType.Int).Value = benhNhanID;
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
 		while (await reader.ReadAsync())
 			list.Add(MapToReadModel(reader));
-		if (await reader.NextResultAsync() && await reader.ReadAsync())
+
+		await reader.NextResultAsync();
+
+		if (await reader.ReadAsync())
 			total = reader.GetInt32(0);
+
 		return (list, total);
-	}
-	public async Task<TaiKham?> GetByBenhNhanIdAsync(int benhNhanID)
-	{
-		const string sql = "SELECT TOP 1 TaiKhamID, PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai, CaKhamID, NgayTao FROM TaiKham WHERE BenhNhanID = @BenhNhanID ORDER BY NgayDuKien DESC";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@BenhNhanID", SqlDbType.Int).Value = benhNhanID;
-		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return MapToEntity(reader);
 	}
 	public async Task<TaiKham?> GetTaiKhamDangChoAsync(int benhNhanID)
 	{
-		const string sql = "SELECT TOP 1 TaiKhamID, PhienKhamID, BenhNhanID, NgayDuKien, LyDo, TrangThai, CaKhamID, NgayTao FROM TaiKham WHERE BenhNhanID = @BenhNhanID AND TrangThai = N'Chờ khám' ORDER BY NgayDuKien DESC";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@BenhNhanID", SqlDbType.Int).Value = benhNhanID;
+		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		await using var reader = await cmd.ExecuteReaderAsync();
-		if (!await reader.ReadAsync())
-			return null;
-		return MapToEntity(reader);
+
+		var sql = BaseSelectEntity + @"
+        WHERE BenhNhanID=@BenhNhanID
+        AND TrangThai = N'Chờ khám'
+        ORDER BY NgayDuKien DESC";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@BenhNhanID", SqlDbType.Int).Value = benhNhanID;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	private static TaiKham MapToEntity(SqlDataReader reader)
+	public async Task<bool> ExistsByPhienKhamAsync(int phienKhamID)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		const string sql = "SELECT 1 FROM TaiKham WHERE PhienKhamID=@PhienKhamID";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamID;
+
+		var result = await cmd.ExecuteScalarAsync();
+		return result != null;
+	}
+	public async Task<int> AddAsync(TaiKham tk)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"INSERT INTO TaiKham (PhienKhamID,BenhNhanID,NgayDuKien,LyDo)
+                    OUTPUT INSERTED.TaiKhamID
+                    VALUES (@PhienKhamID,@BenhNhanID,@NgayDuKien,@LyDo)";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = tk.PhienKhamID;
+		cmd.Parameters.Add("@BenhNhanID", SqlDbType.Int).Value = tk.BenhNhanID;
+		cmd.Parameters.Add("@NgayDuKien", SqlDbType.Date).Value = tk.NgayDuKien;
+		cmd.Parameters.Add("@LyDo", SqlDbType.NVarChar, 500).Value = (object?)tk.LyDo ?? DBNull.Value;
+
+		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
+	}
+
+	public async Task<int> UpdateAsync(TaiKham tk)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"UPDATE TaiKham
+                    SET TrangThai=@TrangThai,
+                        CaKhamID=@CaKhamID
+                    WHERE TaiKhamID=@Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = tk.TaiKhamID;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = TaiKhamExtensions.ToDbValue(tk.TrangThai);
+		cmd.Parameters.Add("@CaKhamID", SqlDbType.Int).Value = (object?)tk.CaKhamID ?? DBNull.Value;
+
+		return await cmd.ExecuteNonQueryAsync();
+	}
+
+	#region Mapping
+
+	private TaiKham MapToEntity(SqlDataReader r)
 	{
 		return new TaiKham(
-			reader.GetInt32(0),
-			reader.GetInt32(1),
-			reader.GetInt32(2),
-			reader.GetDateTime(3),
-			reader.IsDBNull(4) ? null : reader.GetString(4),
-			reader.IsDBNull(5) ? null : reader.GetString(5),
-			reader.IsDBNull(6) ? null : reader.GetInt32(6),
-			reader.GetDateTime(7)
+			r.GetInt32(0),
+			r.GetInt32(1),
+			r.GetInt32(2),
+			r.GetDateTime(3),
+			r.IsDBNull(4) ? null : r.GetString(4),
+			r.IsDBNull(5) ? null : r.GetString(5),
+			r.IsDBNull(6) ? null : r.GetInt32(6),
+			r.GetDateTime(7)
 		);
 	}
-	private static TaiKhamReadModel MapToReadModel(SqlDataReader reader)
+
+	private TaiKhamReadListModel MapToReadModel(SqlDataReader r)
+	{
+		return new TaiKhamReadListModel
+		{
+			TaiKhamID = r.GetInt32(0),
+			BenhNhan = new NameResponseDTO
+			{
+				Id = r.GetInt32(1),
+				Name = r.GetString(2)
+			},
+			NgayDuKien = r.GetDateTime(3),
+			LyDo = r.IsDBNull(4) ? null : r.GetString(4),
+			TrangThai = r.IsDBNull(5) ? null : r.GetString(5)
+		};
+	}
+
+	private TaiKhamReadModel MapToDetailDTO(SqlDataReader r)
 	{
 		return new TaiKhamReadModel
 		{
-			TaiKhamID = reader.GetInt32(0),
+			TaiKhamID = r.GetInt32(0),
+			PhienKhamID = r.GetInt32(1),
 			BenhNhan = new NameResponseDTO
 			{
-				Id = reader.GetInt32(1),
-				Name = reader.GetString(2)
+				Id = r.GetInt32(2),
+				Name = r.GetString(3)
 			},
-			NgayDuKien = reader.GetDateTime(3),
-			LyDo = reader.IsDBNull(4) ? null : reader.GetString(4),
-			TrangThai = reader.IsDBNull(5) ? null : reader.GetString(5)
+			NgayDuKien = r.GetDateTime(4),
+			LyDo = r.IsDBNull(5) ? null : r.GetString(5),
+			TrangThai = r.IsDBNull(6) ? null : r.GetString(6),
+			CaKhamID = r.IsDBNull(7) ? null : r.GetInt32(7),
+			NgayTao = r.GetDateTime(8)
 		};
 	}
+
+	#endregion
 }
