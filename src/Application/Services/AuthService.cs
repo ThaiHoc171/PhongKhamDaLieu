@@ -47,7 +47,7 @@ public class AuthService
         if (!Helper.Password.VerifyPassword(dto.MatKhau, tk.MatKhau))
 			return ApiResponse<LoginResponseDTO>.Fail("Sai mật khẩu");
 		var info = await BuildUserInfoAsync(tk);
-		List<string> quyen = _chucVuQuyenRepo.GetNameByChucVuAsync(info.ChucVu != null ? int.Parse(info.ChucVu) : 0).Result;
+		List<string> quyen = _chucVuQuyenRepo.GetNameByChucVuAsync(info.ChucVuId != null ? info.ChucVuId.Value : 0).Result;
 		var accessToken = GenerateAccessToken(tk, info);
 		var refreshToken = GenerateRefreshToken();
 		await _refreshRepo.SaveAsync(
@@ -87,7 +87,7 @@ public class AuthService
 		await _refreshRepo.SaveAsync(
 			new RefreshToken(taiKhoan.TaiKhoanID, newRefreshToken, DateTime.UtcNow.AddDays(7)));
 		var accessToken = GenerateAccessToken(taiKhoan, info);
-		List<string> quyen = _chucVuQuyenRepo.GetNameByChucVuAsync(info.ChucVu != null ? int.Parse(info.ChucVu) : 0).Result;
+		List<string> quyen = _chucVuQuyenRepo.GetNameByChucVuAsync(info.ChucVuId != null ? info.ChucVuId.Value : 0).Result;
 		return ApiResponse<LoginResponseDTO>.SuccessResponse(
 			new LoginResponseDTO
 			{
@@ -131,6 +131,7 @@ public class AuthService
 				info.HoTen = nv.HoTen;
 				if (nv.ChucVu != null)
 				{
+					info.ChucVuId = nv.ChucVu.Id;
 					info.ChucVu = nv.ChucVu.Name;
 					info.Quyen = await _chucVuQuyenRepo.GetNameByChucVuAsync(nv.ChucVu.Id);
 				}
@@ -218,6 +219,7 @@ public class AuthService
 		public int? NhanVienID;
 		public int? BenhNhanID;
 		public string? HoTen;
+		public int? ChucVuId;
 		public string? ChucVu;
 		public List<string> Quyen = new();
 	}
