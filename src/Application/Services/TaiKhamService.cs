@@ -219,12 +219,12 @@ public class TaiKhamService
 		return ApiResponse<TaiKhamReadModel>.SuccessResponse(res);
 	}
 	//==================== GET ID ====================
-	public async Task<ApiResponse<int>> GetIdAsync(int phienKhamID)
+	public async Task<ApiResponse<int>> GetIdAsync(int caKhamID)
 	{
-		if (phienKhamID <= 0)
+		if (caKhamID <= 0)
 			return ApiResponse<int>.Fail("ID không hợp lệ");
 
-		var res = await _taiKhamRepo.GetIdByPhienKham(phienKhamID);
+		var res = await _taiKhamRepo.GetIdByCaKham(caKhamID);
 
 		if (res == 0)
 			return ApiResponse<int>.Fail("Tái khám không tồn tại");

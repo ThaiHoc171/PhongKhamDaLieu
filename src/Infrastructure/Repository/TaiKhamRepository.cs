@@ -51,14 +51,14 @@ public class TaiKhamRepository : ITaiKhamRepository
 		using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
-	public async Task<int> GetIdByPhienKham(int phienKhamId)
+	public async Task<int> GetIdByCaKham(int caKhamId)
 	{
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
-		var sql = @"SELECT TaiKhamID FROM TaiKham WHERE PhienKhamID=@Id";
+		var sql = @"SELECT TaiKhamID FROM TaiKham WHERE CaKhamID=@Id";
 
 		using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = phienKhamId;
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = caKhamId;
 
 		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
 	}

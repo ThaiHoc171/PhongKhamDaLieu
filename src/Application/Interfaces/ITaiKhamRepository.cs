@@ -4,7 +4,7 @@ namespace Application.Interfaces;
 public interface ITaiKhamRepository
 {
     Task<TaiKham?> GetByIdAsync(int taiKhamID);
-    Task<int> GetIdByPhienKham(int phienKhamId);
+    Task<int> GetIdByCaKham(int phienKhamId);
 	Task<TaiKhamReadModel?> GetDetailAsync(int taiKhamID);
     Task<TaiKham?> GetTaiKhamDangChoAsync(int benhNhanID);
     Task<(List<TaiKhamReadListModel>, int)> GetPagedAsync(int page, int size, string? trangThai);
