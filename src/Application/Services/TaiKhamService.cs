@@ -218,6 +218,19 @@ public class TaiKhamService
 
 		return ApiResponse<TaiKhamReadModel>.SuccessResponse(res);
 	}
+	//==================== GET ID ====================
+	public async Task<ApiResponse<int>> GetIdAsync(int phienKhamID)
+	{
+		if (phienKhamID <= 0)
+			return ApiResponse<int>.Fail("ID không hợp lệ");
+
+		var res = await _taiKhamRepo.GetIdByPhienKham(phienKhamID);
+
+		if (res == 0)
+			return ApiResponse<int>.Fail("Tái khám không tồn tại");
+
+		return ApiResponse<int>.SuccessResponse(res);
+	}
 
 	// ==================== GET PAGED ====================
 	public async Task<ApiResponse<PagedResult<TaiKhamReadListModel>>> GetPagedAsync(

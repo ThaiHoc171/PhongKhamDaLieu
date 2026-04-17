@@ -51,7 +51,17 @@ public class TaiKhamRepository : ITaiKhamRepository
 		using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
+	public async Task<int> GetIdByPhienKham(int phienKhamId)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+		var sql = @"SELECT TaiKhamID FROM TaiKham WHERE PhienKhamID=@Id";
 
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = phienKhamId;
+
+		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
+	}
 	public async Task<TaiKhamReadModel?> GetDetailAsync(int id)
 	{
 		using var conn = new SqlConnection(_connectionString);
@@ -65,7 +75,6 @@ public class TaiKhamRepository : ITaiKhamRepository
 		using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToDetailDTO(reader) : null;
 	}
-
 	public async Task<(List<TaiKhamReadListModel>, int)> GetPagedAsync(int page, int size, string? trangThai)
 	{
 		var list = new List<TaiKhamReadListModel>();

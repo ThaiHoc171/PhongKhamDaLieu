@@ -18,7 +18,6 @@ public class TaiKhamController : ControllerBase
 		_service = service;
 	}
 
-	// ==================== CREATE ====================
 	[Authorize(Policy = "PHIENKHAM_CREATE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create(
@@ -32,7 +31,6 @@ public class TaiKhamController : ControllerBase
 		return CreatedAtAction(nameof(GetDetail), new { id = result.Data }, result);
 	}
 
-	// ==================== UPDATE ====================
 	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(
@@ -49,7 +47,6 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	// ==================== COMPLETE ====================
 	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}/complete")]
 	public async Task<ActionResult<ApiResponse<bool>>> Complete(int id)
@@ -64,7 +61,6 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	// ==================== CANCEL ====================
 	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}/cancel")]
 	public async Task<ActionResult<ApiResponse<bool>>> Cancel(int id)
@@ -79,7 +75,6 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	// ==================== ASSIGN CA KHAM ====================
 	[Authorize(Policy = "PHIENKHAM_UPDATE")]
 	[HttpPut("{id}/cakham/{caKhamId}")]
 	public async Task<ActionResult<ApiResponse<bool>>> AssignCaKham(
@@ -96,7 +91,6 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	// ==================== GET DETAIL ====================
 	[Authorize(Policy = "PHIENKHAM_VIEW")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<TaiKhamReadModel>>> GetDetail(int id)
@@ -108,8 +102,18 @@ public class TaiKhamController : ControllerBase
 
 		return Ok(result);
 	}
+	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[HttpGet("GetId/{id}")]
+	public async Task<ActionResult<ApiResponse<int>>> GetId(int id)
+	{
+		var result = await _service.GetIdAsync(id);
 
-	// ==================== GET PAGED ====================
+		if (!result.Success)
+			return NotFound(result);
+
+		return Ok(result);
+	}
+
 	[Authorize(Policy = "PHIENKHAM_VIEW")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhamReadListModel>>>> GetPaged(
@@ -121,7 +125,6 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	// ==================== SEARCH ====================
 	[Authorize(Policy = "PHIENKHAM_VIEW")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhamReadListModel>>>> Search(
@@ -133,7 +136,6 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	// ==================== GET BY BENH NHAN ====================
 	[Authorize(Policy = "PHIENKHAM_VIEW")]
 	[HttpGet("benhnhan/{benhNhanId}")]
 	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhamReadListModel>>>> GetByBenhNhan(
@@ -141,7 +143,6 @@ public class TaiKhamController : ControllerBase
 		[FromQuery] int page = 1,
 		[FromQuery] int size = 10)
 	{
-		// 🔥 Rule bảo mật
 		if (User.IsInRole("Bệnh nhân"))
 		{
 			var id = int.Parse(User.FindFirst("BenhNhanID")!.Value);
