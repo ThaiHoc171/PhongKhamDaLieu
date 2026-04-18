@@ -14,7 +14,7 @@ public class BuoiDieuTriController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "LIEUTRINH_CREATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] BuoiDieuTriRequestDTO dto)
 	{
@@ -23,7 +23,7 @@ public class BuoiDieuTriController : ControllerBase
 			return BadRequest(result);
 		return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
 	}
-	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/start")]
 	public async Task<ActionResult<ApiResponse<bool>>> Start(
 		int id,
@@ -34,7 +34,7 @@ public class BuoiDieuTriController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/complete")]
 	public async Task<ActionResult<ApiResponse<bool>>> Complete(
 		int id,
@@ -45,7 +45,7 @@ public class BuoiDieuTriController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/cancel")]
 	public async Task<ActionResult<ApiResponse<bool>>> Cancel(
 		int id,
@@ -56,7 +56,7 @@ public class BuoiDieuTriController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/image")]
 	public async Task<ActionResult<ApiResponse<bool>>> UpdateImage(
 		int id,
@@ -67,7 +67,7 @@ public class BuoiDieuTriController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<BuoiDieuTriReadModel>>> GetById(int id)
 	{
@@ -76,7 +76,7 @@ public class BuoiDieuTriController : ControllerBase
 			return NotFound(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("lieutrinh/{lieuTrinhId}")]
 	public async Task<ActionResult<ApiResponse<List<BuoiDieuTriListReadModel>>>> GetByLieuTrinh(int lieuTrinhId)
 	{
@@ -85,7 +85,7 @@ public class BuoiDieuTriController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("lieutrinh/{lieuTrinhId}/count-complete")]
 	public async Task<ActionResult<ApiResponse<int>>> CountComplete(int lieuTrinhId)
 	{

@@ -19,7 +19,7 @@ public class BaiVietController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "BAIVIET_CREATE")]
+	[Authorize(Policy = "PUBLIC_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ThemBaiVietDTO dto)
 	{
@@ -36,7 +36,7 @@ public class BaiVietController : ControllerBase
 	}
 
 	// ==================== UPDATE ====================
-	[Authorize(Policy = "BAIVIET_UPDATE")]
+	[Authorize(Policy = "PUBLIC_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] CapNhatBaiVietDTO dto)
 	{
@@ -51,7 +51,7 @@ public class BaiVietController : ControllerBase
 	}
 
 	// ==================== DELETE ====================
-	[Authorize(Policy = "BAIVIET_UPDATE")]
+	[Authorize(Policy = "PUBLIC_WRITE")]
 	[HttpDelete("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{
@@ -66,7 +66,7 @@ public class BaiVietController : ControllerBase
 	}
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "BAIVIET_VIEW")]
+	[Authorize(Policy = "PUBLIC_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<BaiVietReadModel>>> GetById(int id)
 	{
@@ -79,7 +79,7 @@ public class BaiVietController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "BAIVIET_VIEW")]
+	[Authorize(Policy = "PUBLIC_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<BaiVietListReadModel>>>> GetPaged(
 		[FromQuery] int page = 1,
@@ -90,7 +90,7 @@ public class BaiVietController : ControllerBase
 	}
 
 	// ==================== FILTER ====================
-	[Authorize(Policy = "BAIVIET_VIEW")]
+	[Authorize(Policy = "PUBLIC_READ")]
 	[HttpGet("loaibenh/{loaiBenhId}")]
 	public async Task<ActionResult<ApiResponse<List<BaiVietListReadModel>>>> GetByLoaiBenh(int loaiBenhId)
 	{
@@ -99,7 +99,7 @@ public class BaiVietController : ControllerBase
 	}
 
 	// ==================== TOP ====================
-	[Authorize(Policy = "BAIVIET_VIEW")]
+	[Authorize(Policy = "PUBLIC_READ")]
 	[HttpGet("top")]
 	public async Task<ActionResult<ApiResponse<List<BaiVietListReadModel>>>> GetTop(
 		[FromQuery] int top = 5)

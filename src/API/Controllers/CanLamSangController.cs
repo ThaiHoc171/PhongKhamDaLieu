@@ -17,7 +17,7 @@ public class CanLamSangController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] CanLamSangRequest dto)
 	{
@@ -28,7 +28,7 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "CSVC_UPDATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] CanLamSangRequest dto)
 	{
@@ -39,7 +39,7 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<CanLamSangReadModel>>> Detail(int id)
 	{
@@ -50,7 +50,7 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangReadListModel>>>> Paged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 	{
@@ -58,7 +58,7 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<CanLamSangReadListModel>>>> Search([FromQuery] string keyword, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
 	{
@@ -69,7 +69,7 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("loai")]
 	public async Task<ActionResult<ApiResponse<List<CanLamSangReadListModel>>>> GetByLoai([FromQuery] string loai)
 	{
@@ -77,14 +77,14 @@ public class CanLamSangController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
     [HttpGet("combobox")]
     public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
     {
         var result = await _service.GetComboboxAsync();
         return Ok(result);
     }
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost("import/preview")]
 	public async Task<IActionResult> PreviewImport(IFormFile file,	[FromQuery] string sheet)
 	{
@@ -102,7 +102,7 @@ public class CanLamSangController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost("import/confirm")]
 	public async Task<IActionResult> Import([FromBody] List<CanLamSangImport> list)
 	{

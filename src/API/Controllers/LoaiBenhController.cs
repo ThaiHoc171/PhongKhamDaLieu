@@ -17,7 +17,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "BENH_CREATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] LoaiBenhRequestDTO dto)
 	{
@@ -30,7 +30,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== UPDATE ====================
-	[Authorize(Policy = "BENH_UPDATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] LoaiBenhUpdateDTO dto)
 	{
@@ -45,7 +45,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "BENH_VIEW")]
+	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<LoaiBenhReadModel>>> Detail(int id)
 	{
@@ -58,7 +58,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "BENH_VIEW")]
+	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<LoaiBenhListReadModel>>>> Paged(
 		[FromQuery] int page = 1,
@@ -69,7 +69,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== SEARCH ====================
-	[Authorize(Policy = "BENH_VIEW")]
+	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<LoaiBenhListReadModel>>>> Search(
 		[FromQuery] string keyword,
@@ -85,7 +85,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== COMBOBOX ====================
-	[Authorize(Policy = "BENH_VIEW")]
+	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet("combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
 	{
@@ -94,7 +94,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== GET TEN BENH ====================
-	[Authorize(Policy = "BENH_VIEW")]
+	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet("{id}/ten")]
 	public async Task<ActionResult<ApiResponse<string?>>> GetTenBenh(int id)
 	{
@@ -107,7 +107,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== IMPORT PREVIEW ====================
-	[Authorize(Policy = "BENH_CREATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPost("import/preview")]
 	public async Task<IActionResult> PreviewImport(IFormFile file, [FromQuery] string sheet)
 	{
@@ -128,7 +128,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== IMPORT VALIDATE ====================
-	[Authorize(Policy = "BENH_CREATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPost("import/validate")]
 	public async Task<ActionResult<ApiResponse<ExcelImportResult<LoaiBenhRequestDTO>>>>
 	ValidateImport([FromBody] List<LoaiBenhRequestDTO> list)
@@ -145,7 +145,7 @@ public class LoaiBenhController : ControllerBase
 	}
 
 	// ==================== IMPORT CONFIRM ====================
-	[Authorize(Policy = "BENH_CREATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPost("import/confirm")]
 	public async Task<IActionResult> Import([FromBody] List<LoaiBenhRequestDTO> list)
 	{

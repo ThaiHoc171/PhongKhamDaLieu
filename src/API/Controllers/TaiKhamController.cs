@@ -18,7 +18,7 @@ public class TaiKhamController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize(Policy = "PHIENKHAM_CREATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create(
 		[FromBody] TaiKhamRequestDTO dto)
@@ -31,7 +31,7 @@ public class TaiKhamController : ControllerBase
 		return CreatedAtAction(nameof(GetDetail), new { id = result.Data }, result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(
 		int id,
@@ -47,7 +47,7 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/complete")]
 	public async Task<ActionResult<ApiResponse<bool>>> Complete(int id)
 	{
@@ -61,7 +61,7 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/cancel")]
 	public async Task<ActionResult<ApiResponse<bool>>> Cancel(int id)
 	{
@@ -75,7 +75,7 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/cakham/{caKhamId}")]
 	public async Task<ActionResult<ApiResponse<bool>>> AssignCaKham(
 		int id,
@@ -91,7 +91,7 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<TaiKhamReadModel>>> GetDetail(int id)
 	{
@@ -102,7 +102,7 @@ public class TaiKhamController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("GetId/{id}")]
 	public async Task<ActionResult<ApiResponse<int>>> GetId(int id)
 	{
@@ -114,7 +114,7 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhamReadListModel>>>> GetPaged(
 		[FromQuery] int page = 1,
@@ -125,7 +125,7 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhamReadListModel>>>> Search(
 		[FromQuery] string? keyword,
@@ -136,7 +136,7 @@ public class TaiKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("benhnhan/{benhNhanId}")]
 	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhamReadListModel>>>> GetByBenhNhan(
 		int benhNhanId,

@@ -14,7 +14,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "LIEUTRINH_CREATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] LieuTrinhDieuTriRequestDTO dto)
 	{
@@ -26,7 +26,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 			new { id = result.Data },
 			result);
 	}
-	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update( int id, [FromBody] LieuTrinhDieuTriUpdateDTO dto)
 	{
@@ -35,7 +35,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 			return NotFound(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/complete")]
 	public async Task<ActionResult<ApiResponse<bool>>> Complete(int id)
 	{
@@ -44,7 +44,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/cancel")]
 	public async Task<ActionResult<ApiResponse<bool>>> Cancel( int id, [FromBody] string? ghiChu)
 	{
@@ -53,7 +53,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/status")]
 	public async Task<ActionResult<ApiResponse<bool>>> UpdateStatus( int id, [FromBody] LieuTrinhStatusDTO dto)
 	{
@@ -62,7 +62,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 			return NotFound(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<LieuTrinhDieuTriReadModel>>> GetById(int id)
 	{
@@ -71,7 +71,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 			return NotFound(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("exist/{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> ExistByPhienKham(int id)
 	{
@@ -81,7 +81,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>>> 
 		GetPaged( [FromQuery] int page = 1, [FromQuery] int size = 15, [FromQuery] string? trangThai = null)
@@ -89,7 +89,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 		var result = await _service.GetPagedAsync(page, size, trangThai);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>>> 
 		Search( [FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 15)
@@ -97,7 +97,7 @@ public class LieuTrinhDieuTriController : ControllerBase
 		var result = await _service.SearchAsync(keyword, page, size);
 		return Ok(result);
 	}
-	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("benhnhan/{benhNhanId}")]
 	public async Task<ActionResult<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>>> 
 		GetByBenhNhan( int benhNhanId, [FromQuery] int page = 1, [FromQuery] int size = 15)

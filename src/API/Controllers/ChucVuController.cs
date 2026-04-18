@@ -17,7 +17,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "ROLE_CREATE")]
+	[Authorize(Policy = "NHANSU_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] ChucVuRequest dto)
 	{
@@ -29,7 +29,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== UPDATE ====================
-	[Authorize(Policy = "ROLE_UPDATE")]
+	[Authorize(Policy = "NHANSU_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] ChucVuRequest dto)
 	{
@@ -45,7 +45,7 @@ public class ChucVuController : ControllerBase
 
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "ROLE_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<ChucVuReadModel>>> Detail(int id)
 	{
@@ -58,7 +58,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "ROLE_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<ChucVuListReadModel>>>> Paged([FromQuery] int page = 1, [FromQuery] int size = 10)
 	{
@@ -67,7 +67,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== SEARCH ====================
-	[Authorize(Policy = "ROLE_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<ChucVuListReadModel>>>> Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10)
 	{
@@ -80,7 +80,7 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== GET BY NHAN VIEN ====================
-	[Authorize(Policy = "ROLE_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet("nhanvien/{nhanVienId}")]
 	public async Task<ActionResult<ApiResponse<string?>>> GetByNhanVienId(int nhanVienId)
 	{
@@ -93,14 +93,14 @@ public class ChucVuController : ControllerBase
 	}
 
 	// ==================== COMBOBOX ====================
-	[Authorize(Policy = "ROLE_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet("combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
 	{
 		var result = await _service.GetComboboxAsync();
 		return Ok(result);
 	}
-	[Authorize(Policy = "ROLE_CREATE")]
+	[Authorize(Policy = "NHANSU_WRITE")]
 	[HttpPost("import/preview")]
 	public async Task<IActionResult> PreviewImport(IFormFile file, [FromQuery] string sheet)
 	{
@@ -118,7 +118,7 @@ public class ChucVuController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "ROLE_CREATE")]
+	[Authorize(Policy = "NHANSU_WRITE")]
 	[HttpPost("import/confirm")]
 	public async Task<IActionResult> Import([FromBody] List<ChucVuImport> list)
 	{

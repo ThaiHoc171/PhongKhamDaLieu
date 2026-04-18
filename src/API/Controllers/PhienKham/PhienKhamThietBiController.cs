@@ -19,7 +19,7 @@ public class PhienKhamThietBiController : ControllerBase
 	}
 
 	// ==================== GET BY PHIEN KHAM ====================
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("phienkham/{phienKhamId}")]
 	public async Task<ActionResult<ApiResponse<List<PhienKhamThietBiReadModel>>>> GetByPhienKham(int phienKhamId)
 	{
@@ -32,7 +32,7 @@ public class PhienKhamThietBiController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] PhienKhamThietBiRequestDTO dto)
 	{
@@ -45,7 +45,7 @@ public class PhienKhamThietBiController : ControllerBase
 	}
 
 	// ==================== UPDATE ====================
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] string? ghiChu)
 	{
@@ -58,7 +58,7 @@ public class PhienKhamThietBiController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("delete/{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{

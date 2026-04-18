@@ -16,7 +16,7 @@ public class NgayNghiNhanVienController : ControllerBase
 	}
 	// CREATE
 	[HttpPost]
-	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	public async Task<IActionResult> Create([FromBody] NgayNghiRequestDTO dto)
 	{
 		var result = await _service.AddAsync(dto);
@@ -30,7 +30,7 @@ public class NgayNghiNhanVienController : ControllerBase
 	}
 	// UPDATE
 	[HttpPut("{id}")]
-	[Authorize(Policy = "LICHLAMVIEC_UPDATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	public async Task<IActionResult> Update(int id, [FromBody] NgayNghiUpdateRequestDTO dto)
 	{
 		var result = await _service.UpdateAsync(id, dto);
@@ -40,7 +40,7 @@ public class NgayNghiNhanVienController : ControllerBase
 	}
 	// DETAIL
 	[HttpGet("{id}")]
-	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	[Authorize(Policy = "LICH_READ")]
 	public async Task<IActionResult> GetDetail(int id)
 	{
 		var result = await _service.GetDetailAsync(id);
@@ -50,7 +50,7 @@ public class NgayNghiNhanVienController : ControllerBase
 	}
 	// LIST BY NHANVIEN
 	[HttpGet("nhanvien/{nhanVienID}")]
-	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	[Authorize(Policy = "LICH_READ")]
 	public async Task<IActionResult> GetByNhanVien(int nhanVienID)
 	{
 		var result = await _service.GetByNhanVienAsync(nhanVienID);
@@ -60,7 +60,7 @@ public class NgayNghiNhanVienController : ControllerBase
 	}
 	// LIST BY MONTH
 	[HttpGet("month")]
-	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	[Authorize(Policy = "LICH_READ")]
 	public async Task<IActionResult> GetByMonth([FromQuery] int? thang,	[FromQuery] int? nam)
 	{
 		var now = DateTime.Now;
@@ -73,7 +73,7 @@ public class NgayNghiNhanVienController : ControllerBase
 	}
 	// IMPORT EXCEL
 	[HttpPost("import")]
-	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	public async Task<IActionResult> ImportExcel(IFormFile file)
 	{
 		if (file == null || file.Length == 0)

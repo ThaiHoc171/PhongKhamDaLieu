@@ -19,7 +19,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "THUOC_CREATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] ThuocRequestDTO dto)
 	{
@@ -32,7 +32,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== UPDATE ====================
-	[Authorize(Policy = "THUOC_UPDATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] ThuocUpdateDTO dto)
 	{
@@ -47,7 +47,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== DELETE ====================
-	[Authorize(Policy = "THUOC_UPDATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPut("delete/{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{
@@ -60,7 +60,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "THUOC_VIEW")]
+	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<ThuocReadModel>>> Detail(int id)
 	{
@@ -73,7 +73,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "THUOC_VIEW")]
+	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<ThuocReadModel>>>> Paged(
 		[FromQuery] int page = 1,
@@ -85,7 +85,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== SEARCH ====================
-	[Authorize(Policy = "THUOC_VIEW")]
+	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<ThuocReadModel>>>> Search(
 		[FromQuery] string keyword,
@@ -101,7 +101,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== COMBOBOX ====================
-	[Authorize(Policy = "THUOC_VIEW")]
+	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet("combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
 	{
@@ -111,7 +111,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== IMPORT PREVIEW ====================
-	[Authorize(Policy = "THUOC_CREATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPost("import/preview")]
 	public async Task<IActionResult> PreviewImport(IFormFile file, [FromQuery] string sheet)
 	{
@@ -132,7 +132,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== IMPORT VALIDATE ====================
-	[Authorize(Policy = "THUOC_CREATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPost("import/validate")]
 	public async Task<ActionResult<ApiResponse<ExcelImportResult<ThuocRequestDTO>>>> ValidateImport(
 		[FromBody] List<ThuocRequestDTO> list)
@@ -149,7 +149,7 @@ public class ThuocController : ControllerBase
 	}
 
 	// ==================== IMPORT CONFIRM ====================
-	[Authorize(Policy = "THUOC_CREATE")]
+	[Authorize(Policy = "HETHONG_WRITE")]
 	[HttpPost("import/confirm")]
 	public async Task<IActionResult> Import([FromBody] List<ThuocRequestDTO> list)
 	{

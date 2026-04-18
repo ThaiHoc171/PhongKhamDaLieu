@@ -14,7 +14,7 @@ public class LichLamViecController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	[Authorize(Policy = "LICH_READ")]
 	[HttpGet]
 	public async Task<IActionResult> List([FromQuery] int week = 0)
 	{
@@ -23,7 +23,7 @@ public class LichLamViecController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "LICHLAMVIEC_VIEW")]
+	[Authorize(Policy = "LICH_READ")]
 	[HttpGet("nhan-vien/{nhanVienID}")]
 	public async Task<IActionResult> GetByNhanVien(int nhanVienID, [FromQuery] int week = 0)
 	{
@@ -32,7 +32,7 @@ public class LichLamViecController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	[HttpPost("import/preview")]
 	public async Task<ActionResult<ApiResponse<ExcelImportResult<LichLamViecImport>>>> 
 		PreviewImport( IFormFile file, [FromQuery] string sheet)
@@ -54,7 +54,7 @@ public class LichLamViecController : ControllerBase
 	}
 
 	// ==================== VALIDATE IMPORT ====================
-	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	[HttpPost("import/validate")]
 	public async Task<ActionResult<ApiResponse<ExcelImportResult<LichLamViecImport>>>> 
 		ValidateImport([FromBody] List<LichLamViecImport> list)
@@ -71,7 +71,7 @@ public class LichLamViecController : ControllerBase
 	}
 
 	// ==================== CONFIRM IMPORT ====================
-	[Authorize(Policy = "LICHLAMVIEC_CREATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	[HttpPost("import/confirm")]
 	public async Task<ActionResult<ApiResponse<bool>>> Import(
 		[FromBody] List<LichLamViecImport> list)

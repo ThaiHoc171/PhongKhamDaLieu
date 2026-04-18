@@ -17,7 +17,7 @@ public class ChiTietPCNThietBiController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ChiTietPCNThietBiRequestDTO dto)
 	{
@@ -30,7 +30,7 @@ public class ChiTietPCNThietBiController : ControllerBase
 	}
 
 	// ==================== UPDATE ====================
-	[Authorize(Policy = "CSVC_UPDATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] ChiTietPCNThietBiUpdateDTO dto)
 	{
@@ -45,7 +45,7 @@ public class ChiTietPCNThietBiController : ControllerBase
 	}
 
 	// ==================== DELETE ====================
-	[Authorize(Policy = "CSVC_UPDATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPut("delete/{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{
@@ -60,7 +60,7 @@ public class ChiTietPCNThietBiController : ControllerBase
 	}
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<ChiTietPCNThietBiReadModel>>> Detail(int id)
 	{
@@ -73,7 +73,7 @@ public class ChiTietPCNThietBiController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<List<ChiTietPCNThietBiListReadModel>>>> List([FromQuery] int pcnTbId)
 	{
@@ -86,7 +86,7 @@ public class ChiTietPCNThietBiController : ControllerBase
 	}
 
 	// ==================== IMPORT PREVIEW ====================
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost("import/preview")]
 	public async Task<IActionResult> PreviewImport(IFormFile file, [FromQuery] string sheet)
 	{
@@ -105,7 +105,7 @@ public class ChiTietPCNThietBiController : ControllerBase
 
 		return Ok(response);
 	}
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost("import/validate")]
 	public async Task<ActionResult<ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>>>
 	ValidateImport([FromBody] List<ChiTietPCNThietBiImport> list)
@@ -121,7 +121,7 @@ public class ChiTietPCNThietBiController : ControllerBase
 		return Ok(result);
 	}
 	// ==================== IMPORT CONFIRM ====================
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost("import/confirm")]
 	public async Task<IActionResult> Import([FromBody] List<ChiTietPCNThietBiImport> list)
 	{
@@ -136,7 +136,7 @@ public class ChiTietPCNThietBiController : ControllerBase
 		return Ok(response);
 	}
 
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox([FromQuery] int pcnId, [FromQuery] int tbId)
 	{

@@ -12,14 +12,14 @@ public class ChucVuQuyenController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "ROLE_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet("checklist/{chucVuId}")]
 	public async Task<IActionResult> GetChecklist(int chucVuId)
 	{
 		var result = await _service.GetChecklistAsync(chucVuId);
 		return Ok(result);
 	}
-	[Authorize(Policy = "ROLE_UPDATE")]
+	[Authorize(Policy = "NHANSU_WRITE")]
 	[HttpPut("update")]
 	public async Task<IActionResult> Update(ChucVuQuyenDTO dto)
 	{

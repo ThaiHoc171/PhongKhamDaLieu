@@ -15,7 +15,7 @@ public class ThietBiController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost]
 	public async Task<IActionResult> Create(ThietBiRequest dto)
 	{
@@ -24,7 +24,7 @@ public class ThietBiController : ControllerBase
 			return BadRequest(response);
 		return CreatedAtAction(nameof(Detail), new { id = response.Data }, response);
 	}
-	[Authorize(Policy = "CSVC_UPDATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<IActionResult> Update(int id, ThietBiRequest dto)
 	{
@@ -33,7 +33,7 @@ public class ThietBiController : ControllerBase
 			return NotFound(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("{id}")]
 	public async Task<IActionResult> Detail(int id)
 	{
@@ -42,7 +42,7 @@ public class ThietBiController : ControllerBase
 			return NotFound(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet]
 	public async Task<IActionResult> List(
 		[FromQuery] int page = 1,
@@ -53,7 +53,7 @@ public class ThietBiController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("search")]
 	public async Task<IActionResult> Search(
 		[FromQuery] string keyword,
@@ -65,14 +65,14 @@ public class ThietBiController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> GetCombobox()
 	{
 		var result = await _service.GetComboboxAsync();
 		return Ok(result);
 	}
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost("import/preview")]
 	public async Task<IActionResult> PreviewImport(
 	IFormFile file,
@@ -92,7 +92,7 @@ public class ThietBiController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost("import/confirm")]
 	public async Task<IActionResult> Import(
 	[FromBody] List<ThietBiImport> list)

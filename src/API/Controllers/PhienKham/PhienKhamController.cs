@@ -16,7 +16,7 @@ public class PhienKhamController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize(Policy = "PHIENKHAM_CREATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromQuery] int caKhamId)
 	{
@@ -28,7 +28,7 @@ public class PhienKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] PhienKhamUpdateDTO dto)
 	{
@@ -42,7 +42,7 @@ public class PhienKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/start")]
 	public async Task<ActionResult<ApiResponse<bool>>> Start(int id)
 	{
@@ -56,7 +56,7 @@ public class PhienKhamController : ControllerBase
 
 	// ================= COMPLETE =================
 
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/complete")]
 	public async Task<ActionResult<ApiResponse<bool>>> Complete(int id, [FromBody] string chanDoanCuoi)
 	{
@@ -70,7 +70,7 @@ public class PhienKhamController : ControllerBase
 
 	// ================= CANCEL =================
 
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/cancel")]
 	public async Task<ActionResult<ApiResponse<bool>>> Cancel(int id)
 	{
@@ -82,7 +82,7 @@ public class PhienKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("benhnhan/{benhNhanId}")]
 	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamReadListModel>>>> GetByPatient(
 		int benhNhanId,
@@ -105,7 +105,7 @@ public class PhienKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamReadListModel>>>> GetPaged(
 		[FromQuery] int pageNumber = 1,
@@ -118,7 +118,7 @@ public class PhienKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamReadListModel>>>> Search(
 		[FromQuery] string keyword,
@@ -134,7 +134,7 @@ public class PhienKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<PhienKhamReadModel>>> GetById(int id)
 	{
@@ -146,7 +146,7 @@ public class PhienKhamController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("cakham/{caKhamId}")]
 	public async Task<ActionResult<ApiResponse<PhienKhamReadModel>>> GetByCaKham(int caKhamId)
 	{

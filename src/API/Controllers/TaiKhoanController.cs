@@ -30,7 +30,7 @@ public class TaiKhoanController : ControllerBase
 	}
 
 	// ==================== CHANGE PASSWORD ====================
-	[Authorize(Policy = "USER_UPDATE")]
+	[Authorize(Policy = "USER_WRITE")]
 	[HttpPut("{id}/password")]
 	public async Task<ActionResult<ApiResponse<bool>>> ChangePassword(
 		int id,
@@ -45,6 +45,7 @@ public class TaiKhoanController : ControllerBase
 	}
 
 	// ==================== RESET PASSWORD ====================
+	[Authorize(Policy = "USER_WRITE")]
 	[HttpPut("{id}/reset-password")]
 	public async Task<ActionResult<ApiResponse<bool>>> ResetPassword(int id)
 	{
@@ -55,8 +56,8 @@ public class TaiKhoanController : ControllerBase
 
 		return Ok(result);
 	}
-    // ==================== GET ID ====================
-    [HttpGet("getIdByEmail/{email}")]
+	// ==================== GET ID ====================
+	[HttpGet("getIdByEmail/{email}")]
     public async Task<ActionResult<ApiResponse<int>>> GetIdByEmail(string email)
     {
         var response = await _service.GetIdByEmailAsync(email);
@@ -65,7 +66,7 @@ public class TaiKhoanController : ControllerBase
         return Ok(response);
     }
     // ==================== UPDATE STATUS ====================
-    [Authorize(Policy = "USER_UPDATE")]
+    [Authorize(Policy = "USER_READ")]
 	[HttpPut("{id}/status")]
 	public async Task<ActionResult<ApiResponse<bool>>> UpdateStatus(
 		int id,
@@ -94,7 +95,7 @@ public class TaiKhoanController : ControllerBase
 	}
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "USER_VIEW")]
+	[Authorize(Policy = "USER_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<TaiKhoanReadModel>>> Detail(int id)
 	{
@@ -107,7 +108,7 @@ public class TaiKhoanController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "USER_VIEW")]
+	[Authorize(Policy = "USER_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhoanListReadModel>>>> Paged(
 		[FromQuery] int page = 1,
@@ -119,7 +120,7 @@ public class TaiKhoanController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "USER_VIEW")]
+	[Authorize(Policy = "USER_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<TaiKhoanListReadModel>>>>
 	Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string? vaiTro = null, [FromQuery] string? trangThai = null)

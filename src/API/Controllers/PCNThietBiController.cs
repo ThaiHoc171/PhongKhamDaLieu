@@ -19,7 +19,7 @@ public class PCNThietBiController : ControllerBase
 	}
 
 	// ==================== GET PAGED ====================
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<PCNThietBiReadModel>>>> 
 		GetPaged( [FromQuery] int page = 1, [FromQuery] int size = 15, [FromQuery] int? phongChucNangID = null)
@@ -29,7 +29,7 @@ public class PCNThietBiController : ControllerBase
 	}
 
 	// ==================== SEARCH ====================
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<PCNThietBiReadModel>>>> 
 		Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 15, [FromQuery] int? phongChucNangID = null)
@@ -38,7 +38,7 @@ public class PCNThietBiController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox([FromQuery] int pcnId)
 	{

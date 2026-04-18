@@ -18,7 +18,7 @@ public class NhanVienController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize(Policy = "NHANVIEN_CREATE")]
+	[Authorize(Policy = "NHANSU_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] NhanVienRequestDTO dto)
 	{
@@ -30,7 +30,7 @@ public class NhanVienController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "NHANVIEN_UPDATE")]
+	[Authorize(Policy = "NHANSU_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] NhanVienRequestUpdateDTO dto)
 	{
@@ -44,7 +44,7 @@ public class NhanVienController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "NHANVIEN_UPDATE")]
+	[Authorize(Policy = "NHANSU_WRITE")]
 	[HttpPut("status/{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Status(int id, [FromQuery] string trangThai)
 	{
@@ -58,7 +58,7 @@ public class NhanVienController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<NhanVienReadModel>>> Detail(int id)
 	{
@@ -70,7 +70,7 @@ public class NhanVienController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<NhanVienReadListModel>>>>
 		Paged([FromQuery] int page = 1, [FromQuery] int size = 10)
@@ -79,7 +79,7 @@ public class NhanVienController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<NhanVienReadListModel>>>>
 		Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10)
@@ -92,7 +92,7 @@ public class NhanVienController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet("combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>>
 		Combobox([FromQuery] int chucVuId)
@@ -100,7 +100,7 @@ public class NhanVienController : ControllerBase
 		var result = await _service.GetComboboxAsync(chucVuId);
 		return Ok(result);
 	}
-	[Authorize(Policy = "NHANVIEN_VIEW")]
+	[Authorize(Policy = "NHANSU_READ")]
 	[HttpGet("combobox/doctor")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>>	ComboboxDoctor()
 	{

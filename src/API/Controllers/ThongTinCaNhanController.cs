@@ -15,7 +15,7 @@ public class ThongTinCaNhanController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "USER_CREATE")]
+	[Authorize(Policy = "USER_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ThongTinRequestDTO dto)
 	{
@@ -27,7 +27,7 @@ public class ThongTinCaNhanController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "USER_UPDATE")]
+	[Authorize(Policy = "USER_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] ThongTinUpdateRequestDTO dto)
 	{
@@ -41,7 +41,7 @@ public class ThongTinCaNhanController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "USER_VIEW")]
+	[Authorize(Policy = "USER_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<ThongTinReadModel>>> Detail(int id)
 	{
@@ -53,7 +53,7 @@ public class ThongTinCaNhanController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "USER_VIEW")]
+	[Authorize(Policy = "USER_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<ThongTinReadListModel>>>> KhachPaged(
 		[FromQuery] int page = 1,
@@ -62,7 +62,7 @@ public class ThongTinCaNhanController : ControllerBase
 		var result = await _service.GetPagedAsync(page, size);
 		return Ok(result);
 	}
-	[Authorize(Policy = "USER_VIEW")]
+	[Authorize(Policy = "USER_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<ThongTinReadListModel>>>> Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10)
 	{
@@ -73,7 +73,7 @@ public class ThongTinCaNhanController : ControllerBase
 
 		return Ok(result);
 	}
-	[Authorize(Policy = "USER_UPDATE")]
+	[Authorize(Policy = "USER_WRITE")]
 	[HttpPut("{thongTinId}/taikhoan/{taiKhoanId}")]
 	public async Task<ActionResult<ApiResponse<bool>>> LinkTaiKhoan(
 		int thongTinId,

@@ -18,7 +18,7 @@ public class BacSiProfileController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize(Policy = "BACSI_CREATE")]
+	[Authorize(Policy = "PUBLIC_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] BacSiProfileRequestDTO dto)
 	{
@@ -26,7 +26,7 @@ public class BacSiProfileController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "BACSI_UPDATE")]
+	[Authorize(Policy = "PUBLIC_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(
 		int id,
@@ -36,7 +36,7 @@ public class BacSiProfileController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "BACSI_LIST")]
+	[Authorize(Policy = "PUBLIC_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<BacSiProfileListReadModel>>>> GetPaged(
 		[FromQuery] int pageNumber = 1,
@@ -46,7 +46,7 @@ public class BacSiProfileController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "BACSI_DETAIL")]
+	[Authorize(Policy = "PUBLIC_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<BacSiProfileReadModel>>> GetById(int id)
 	{
@@ -54,7 +54,7 @@ public class BacSiProfileController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "BACSI_DETAIL")]
+	[Authorize(Policy = "PUBLIC_READ")]
 	[HttpGet("nhanvien/{nhanVienId}")]
 	public async Task<ActionResult<ApiResponse<BacSiProfileReadModel>>> GetByNhanVien(int nhanVienId)
 	{
@@ -62,7 +62,7 @@ public class BacSiProfileController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "BACSI_DETAIL")]
+	[Authorize(Policy = "PUBLIC_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<BacSiProfileListReadModel>>>> Search(
 		[FromQuery] string keyword,

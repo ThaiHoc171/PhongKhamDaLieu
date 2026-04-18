@@ -14,7 +14,7 @@ public class BenhNhanController : ControllerBase
 	{
 		_service = service;
 	}
-	[Authorize(Policy = "BENHNHAN_CREATE")]
+	[Authorize(Policy = "BENHNHAN_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] BenhNhanRequestDTO dto)
 	{
@@ -23,7 +23,7 @@ public class BenhNhanController : ControllerBase
 			return BadRequest(result);
 		return CreatedAtAction(nameof(Detail), new { id = result.Data }, result);
 	}
-	[Authorize(Policy = "BENHNHAN_UPDATE")]
+	[Authorize(Policy = "BENHNHAN_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] BenhNhanUpdateRequestDTO dto)
 	{
@@ -32,7 +32,7 @@ public class BenhNhanController : ControllerBase
 			return BadRequest(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "BENHNHAN_DETAIL")]
+	[Authorize(Policy = "BENHNHAN_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<BenhNhanReadModel>>> Detail(int id)
 	{
@@ -47,7 +47,7 @@ public class BenhNhanController : ControllerBase
 			return NotFound(result);
 		return Ok(result);
 	}
-	[Authorize(Policy = "BENHNHAN_LIST")]
+	[Authorize(Policy = "BENHNHAN_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadListModel>>>> List(
 		[FromQuery] int pageNumber = 1,
@@ -56,7 +56,7 @@ public class BenhNhanController : ControllerBase
 		var result = await _service.GetPagedAsync(pageNumber, pageSize);
 		return Ok(result);
 	}
-	[Authorize(Policy = "BENHNHAN_LIST")]
+	[Authorize(Policy = "BENHNHAN_READ")]
 	[HttpGet("Search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<BenhNhanReadListModel>>>> Search(
 		[FromQuery] string? keyword,
@@ -66,7 +66,7 @@ public class BenhNhanController : ControllerBase
 		var result = await _service.SearchAsync(keyword, pageNumber, pageSize);
 		return Ok(result);
 	}
-	[Authorize(Policy = "BENHNHAN_LIST")]
+	[Authorize(Policy = "BENHNHAN_READ")]
 	[HttpGet("Combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
 	{

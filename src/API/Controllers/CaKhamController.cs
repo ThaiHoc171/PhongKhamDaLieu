@@ -16,7 +16,7 @@ public class CaKhamController : ControllerBase
 		_service = service;
 	}
 	[HttpPost]
-	[Authorize(Policy = "LICHKHAM_CREATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] CaKhamRequest request)
 	{
 		var response = await _service.GenerateAsync(request);
@@ -26,7 +26,7 @@ public class CaKhamController : ControllerBase
 	}
 
     [HttpPut("{id}/trang-thai")]
-    [Authorize(Policy = "LICHKHAM_UPDATE")]
+    [Authorize(Policy = "LICH_WRITE")]
     public async Task<IActionResult> UpdateTrangThai(int id, [FromBody] CaKhamTrangThaiDTO request)
     {
 		var result = await _service.StatusAsync(id, request.TrangThai, request.GhiChu);
@@ -36,7 +36,7 @@ public class CaKhamController : ControllerBase
         return Ok(result);
     }
     [HttpGet("{id}")]
-	[Authorize(Policy = "LICHKHAM_VIEW")]
+	[Authorize(Policy = "LICH_READ")]
 	public async Task<ActionResult<ApiResponse<CaKhamReadModel>>> GetDetail(int id)
 	{
 		var response = await _service.GetDetailAsync(id);
@@ -45,7 +45,7 @@ public class CaKhamController : ControllerBase
 		return Ok(response);
 	}
 	[HttpGet]
-	[Authorize(Policy = "LICHKHAM_VIEW")]
+	[Authorize(Policy = "LICH_READ")]
 	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> 
 		List([FromQuery] DateTime ngayKham, [FromQuery] string trangThai,[FromQuery] string loaiCaKham,
 		[FromQuery] int pageNumber = 1,	[FromQuery] int pageSize = 15)
@@ -54,7 +54,7 @@ public class CaKhamController : ControllerBase
 		return Ok(response);
 	}
 	[HttpGet("search/by-thongtin/{thongTinId}")]
-	[Authorize(Policy = "LICHKHAM_VIEW")]
+	[Authorize(Policy = "LICH_READ")]
 	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> 
 		SearchByThongTin(int thongTinId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 	{
@@ -64,14 +64,14 @@ public class CaKhamController : ControllerBase
 		return Ok(response);
 	}
 	[HttpGet("choxacnhan")]
-	[Authorize(Policy = "LICHKHAM_VIEW")]
+	[Authorize(Policy = "LICH_READ")]
 	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> CaKhamChoXacNhan([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 15)
 	{
 		var response = await _service.GetChoXacNhanAsync(pageNumber, pageSize);
 		return Ok(response);
 	}
 	[HttpGet("khunggio-trong")]
-    [Authorize(Policy = "LICHKHAM_VIEW")]
+    [Authorize(Policy = "LICH_READ")]
     public async Task<ActionResult<ApiResponse<List<int>>>>GetKhungGioConTrong([FromQuery] DateTime ngayKham, [FromQuery] string loaiCaKham)
     {
         var response = await _service.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
@@ -80,7 +80,7 @@ public class CaKhamController : ControllerBase
         return Ok(response);
     }
     [HttpGet("ca-trong")]
-    [Authorize(Policy = "LICHKHAM_VIEW")]
+    [Authorize(Policy = "LICH_READ")]
     public async Task<ActionResult<ApiResponse<int>>>GetCaKhamTrong([FromQuery] DateTime ngayKham,[FromQuery] int khungGioId,[FromQuery] string loaiCaKham)
     {
         var response = await _service.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham);
@@ -89,8 +89,8 @@ public class CaKhamController : ControllerBase
         return Ok(response);
     }
     [HttpGet("check-dadangky")]
-    [Authorize]
-    public async Task<ActionResult<ApiResponse<bool>>>CheckDaDangKy([FromQuery] DateTime ngay, [FromQuery] int khungGioId, [FromQuery] string loaiCaKham, [FromQuery] int thongTinId)
+	[Authorize(Policy = "LICH_READ")]
+	public async Task<ActionResult<ApiResponse<bool>>>CheckDaDangKy([FromQuery] DateTime ngay, [FromQuery] int khungGioId, [FromQuery] string loaiCaKham, [FromQuery] int thongTinId)
     {
         var response = await _service.CheckThongTinDaDangKyAsync(
             ngay,
@@ -100,7 +100,7 @@ public class CaKhamController : ControllerBase
         return Ok(response);
     }
     [HttpPut("{id}/register")]
-	[Authorize(Policy = "LICHKHAM_UPDATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	public async Task<ActionResult<ApiResponse<bool>>> Register(int id, [FromBody] CaKhamRegisterDTO request)
 	{
 		var response = await _service.RegisterAsync(id, request);
@@ -109,7 +109,7 @@ public class CaKhamController : ControllerBase
 		return Ok(response);
 	}
 	[HttpPut("{id}/cancel")]
-	[Authorize(Policy = "LICHKHAM_UPDATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	public async Task<ActionResult<ApiResponse<bool>>> Cancel(int id)
 	{
 		var response = await _service.CancelAsync(id);
@@ -118,7 +118,7 @@ public class CaKhamController : ControllerBase
 		return Ok(response);
 	}
     [HttpPost("assign-lich")]
-	[Authorize(Policy = "LICHKHAM_UPDATE")]
+	[Authorize(Policy = "LICH_WRITE")]
 	public async Task<ActionResult<ApiResponse<AssignLichLamViecReport>>> 
 		AssignLichLamViec([FromBody] CaKhamRequest request)
 	{

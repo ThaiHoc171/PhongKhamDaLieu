@@ -19,7 +19,7 @@ public class PhienKhamCLSController : ControllerBase
 	}
 
 	// ==================== GET BY PHIEN KHAM ====================
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("phienkham/{phienKhamID}")]
 	public async Task<ActionResult<ApiResponse<List<PhienKhamClsReadListModel>>>> GetByPhienKham(int phienKhamID)
 	{
@@ -32,7 +32,7 @@ public class PhienKhamCLSController : ControllerBase
 	}
 
 	// ==================== GET DETAIL ====================
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<PhienKhamClsReadModel>>> Detail(int id)
 	{
@@ -45,7 +45,7 @@ public class PhienKhamCLSController : ControllerBase
 	}
 
 	// ==================== GET LIST ====================
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamClsReadListModel>>>> 
 		Paged([FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string? trangThai = null)
@@ -55,7 +55,7 @@ public class PhienKhamCLSController : ControllerBase
 	}
 
 	// ==================== SEARCH ====================
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<PhienKhamClsReadListModel>>>> 
 		Search([FromQuery] string keyword, [FromQuery] int page = 1, [FromQuery] int size = 10, [FromQuery] string? trangThai = null)
@@ -69,7 +69,7 @@ public class PhienKhamCLSController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] PkClsRequestDTO dto)
 	{
@@ -82,7 +82,7 @@ public class PhienKhamCLSController : ControllerBase
 	}
 
 	// ==================== ACCEPT CLS ====================
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/accept")]
 	public async Task<ActionResult<ApiResponse<bool>>> Accept(int id, [FromBody] AcceptClsDTO dto)
 	{
@@ -97,7 +97,7 @@ public class PhienKhamCLSController : ControllerBase
 	}
 
 	// ==================== COMPLETE CLS ====================
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/complete")]
 	public async Task<ActionResult<ApiResponse<bool>>> Complete(int id, [FromBody] PkClsUpdateRequestDTO dto)
 	{
@@ -112,7 +112,7 @@ public class PhienKhamCLSController : ControllerBase
 	}
 
 	// ==================== CANCEL CLS ====================
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{id}/cancel")]
 	public async Task<ActionResult<ApiResponse<bool>>> Cancel(int id)
 	{

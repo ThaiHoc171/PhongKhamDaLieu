@@ -19,7 +19,7 @@ public class PhongChucNangController : ControllerBase
 		_service = service;
 	}
 
-	[Authorize(Policy = "CSVC_CREATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<bool>>> Create([FromBody] PhongChucNangRequestDTO dto)
 	{
@@ -31,7 +31,7 @@ public class PhongChucNangController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "CSVC_UPDATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(
 		int id,
@@ -50,7 +50,7 @@ public class PhongChucNangController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "CSVC_UPDATE")]
+	[Authorize(Policy = "CSVC_WRITE")]
 	[HttpPut("{id}/status")]
 	public async Task<ActionResult<ApiResponse<bool>>> ChangeStatus(
 		int id,
@@ -69,7 +69,7 @@ public class PhongChucNangController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<PhongChucNangReadModel>>> GetById(int id)
 	{
@@ -81,7 +81,7 @@ public class PhongChucNangController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<PhongChucNangReadListModel>>>> GetPaged(
 		[FromQuery] int page = 1,
@@ -93,7 +93,7 @@ public class PhongChucNangController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<PhongChucNangReadListModel>>>> Search(
 		[FromQuery] string? keyword,
@@ -105,7 +105,7 @@ public class PhongChucNangController : ControllerBase
 		return Ok(result);
 	}
 
-	[Authorize(Policy = "CSVC_VIEW")]
+	[Authorize(Policy = "CSVC_READ")]
 	[HttpGet("combobox")]
 	public async Task<ActionResult<ApiResponse<List<NameResponseDTO>>>> Combobox()
 	{

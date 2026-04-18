@@ -19,7 +19,7 @@ public class ToaThuocController : ControllerBase
 	}
 
 	// ==================== CREATE ====================
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ToaThuocRequestDTO dto)
 	{
@@ -34,7 +34,7 @@ public class ToaThuocController : ControllerBase
 	}
 
 	// ==================== KIỂM TRA TOA ====================
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("phienkham/exists/{phienKhamId}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Exists(int phienKhamId)
 	{
@@ -46,7 +46,7 @@ public class ToaThuocController : ControllerBase
 	}
 
 	// ==================== LẤY TOA THEO PHIÊN KHÁM ====================
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("phienkham/{phienKhamId}")]
 	public async Task<ActionResult<ApiResponse<ToaThuocReadModel>>> GetByPhienKham(int phienKhamId)
 	{
@@ -58,7 +58,7 @@ public class ToaThuocController : ControllerBase
 	}
 
 	// ==================== GET PAGED ====================
-	[Authorize(Policy = "PHIENKHAM_VIEW")]
+	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<ToaThuocListReadModel>>>> GetPaged(
 		[FromQuery] int page = 1,
@@ -69,7 +69,7 @@ public class ToaThuocController : ControllerBase
 	}
 
 	// ==================== UPDATE ====================
-	[Authorize(Policy = "PHIENKHAM_UPDATE")]
+	[Authorize(Policy = "KHAMBENH_WRITE")]
 	[HttpPut("{toaThuocId}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(
 		int toaThuocId,
