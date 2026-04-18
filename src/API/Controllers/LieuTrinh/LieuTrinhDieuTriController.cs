@@ -72,6 +72,16 @@ public class LieuTrinhDieuTriController : ControllerBase
 		return Ok(result);
 	}
 	[Authorize(Policy = "LIEUTRINH_VIEW")]
+	[HttpGet("exist/{id}")]
+	public async Task<ActionResult<ApiResponse<bool>>> ExistByPhienKham(int id)
+	{
+		var result = await _service.ExistByPhienKham(id);
+		if (!result.Success)
+			return NotFound(result);
+		return Ok(result);
+	}
+
+	[Authorize(Policy = "LIEUTRINH_VIEW")]
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>>> 
 		GetPaged( [FromQuery] int page = 1, [FromQuery] int size = 15, [FromQuery] string? trangThai = null)

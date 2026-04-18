@@ -4,6 +4,7 @@ namespace Application.Interfaces;
 public interface ILieuTrinhDieuTriRepository
 {
 	Task<LieuTrinhDieuTri?> GetByIdAsync(int id);
+	Task<int> ExistByPhienKham(int phienKhamID);
 	Task<LieuTrinhDieuTri?> GetByBenhNhanIdAsync(int benhNhanID);
 	Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID);
 	Task<LieuTrinhDieuTriReadModel?> GetDetailAsync(int id);

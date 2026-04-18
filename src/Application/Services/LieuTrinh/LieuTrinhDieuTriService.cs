@@ -106,6 +106,15 @@ public class LieuTrinhDieuTriService
 			return ApiResponse<LieuTrinhDieuTriReadModel>.Fail("Liệu trình không tồn tại");
 		return ApiResponse<LieuTrinhDieuTriReadModel>.SuccessResponse(result);
 	}
+
+	public async Task<ApiResponse<bool>> ExistByPhienKham(int phienKhamID)
+	{
+		var res = await	_repo.ExistByPhienKham(phienKhamID);
+		if(res == 0)
+			return ApiResponse<bool>.Fail("Phiên khám chưa tồn tại liệu trình!");
+		return ApiResponse<bool>.SuccessResponse(true);
+	}
+
 	public async Task<ApiResponse<PagedResult<LieuTrinhDieuTriListReadModel>>> GetPagedAsync(
 		int page,
 		int size,

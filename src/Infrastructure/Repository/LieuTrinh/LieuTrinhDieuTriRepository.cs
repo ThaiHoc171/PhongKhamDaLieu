@@ -59,6 +59,20 @@ public class LieuTrinhDieuTriRepository : ILieuTrinhDieuTriRepository
 		await using var reader = await cmd.ExecuteReaderAsync();
 		return await reader.ReadAsync() ? MapToEntity(reader) : null;
 	}
+	public async Task<int> ExistByPhienKham(int phienKhamID)
+	{
+		const string sql = @"
+			SELECT 1
+			FROM LieuTrinhDieuTri
+			WHERE PhienKhamID=@PhienKhamID
+		";
+		await using var conn = CreateConnection();
+		await using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = phienKhamID;
+		await conn.OpenAsync();
+		var result = await cmd.ExecuteNonQueryAsync();
+		return result;
+	}
 	public async Task<int?> GetIdByBenhNhanIdAsync(int benhNhanID)
 	{
 		const string sql =@"
