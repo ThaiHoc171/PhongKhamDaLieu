@@ -28,6 +28,7 @@ public class AssignLichLamViecReport
 public class CaKhamListReadModel
 {
 	public int CaKhamID { get; set; }
+	public string LoaiCaKham { get; set; } = string.Empty;
 	public DateTime NgayKham { get; set; }
 	public string TenKhungGio { get; set; } = string.Empty;
 	public string? TenPhong { get; set; }

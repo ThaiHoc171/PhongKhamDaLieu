@@ -19,7 +19,7 @@ public class CaKhamRepository : ICaKhamRepository
 	#region Queries
 
 	private const string BaseSelectList = @"
-        SELECT ck.CaKhamID,ck.NgayKham,kg.TenKhung,pc.TenPhong,tt.HoTen,ck.LyDoKham,ck.TrangThai
+        SELECT ck.CaKhamID, ck.LoaiCaKham, ck.NgayKham,kg.TenKhung,pc.TenPhong,tt.HoTen,ck.LyDoKham,ck.TrangThai
         FROM CaKham ck
         LEFT JOIN KhungGioKham kg ON ck.KhungGioID = kg.KhungGioID
         LEFT JOIN PhongChucNang pc ON ck.PhongChucNangID = pc.PhongChucNangID
@@ -436,6 +436,7 @@ public class CaKhamRepository : ICaKhamRepository
 		return new CaKhamListReadModel
 		{
 			CaKhamID = r.GetInt32(r.GetOrdinal("CaKhamID")),
+			LoaiCaKham = r.GetString(r.GetOrdinal("LoaiCaKham")),
 			NgayKham = r.GetDateTime(r.GetOrdinal("NgayKham")),
 			TenKhungGio = r.GetString(r.GetOrdinal("TenKhung")),
 			TenPhong = r.IsDBNull(r.GetOrdinal("TenPhong")) ? null : r.GetString(r.GetOrdinal("TenPhong")),
