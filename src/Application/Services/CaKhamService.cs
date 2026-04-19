@@ -136,13 +136,13 @@ public class CaKhamService
 		return ApiResponse<CaKhamReadModel>.SuccessResponse(data);
 	}
 	public async Task<ApiResponse<PagedResult<CaKhamListReadModel>>> 
-		GetPagedAsync( DateTime ngayKham, string trangThai, string loaiCaKham, int? nhanViednId, int pageNumber, int pageSize)
+		GetPagedAsync( DateTime ngayKham, string trangThai, string loaiCaKham, int? nhanVienId, int pageNumber, int pageSize)
 	{
 		var (items, total) = await _repo.GetPagedAsync(
 			ngayKham,
 			trangThai,
 			loaiCaKham,
-			nhanViednId,
+			nhanVienId,
 			pageNumber,
 			pageSize);
 		var result = new PagedResult<CaKhamListReadModel>
