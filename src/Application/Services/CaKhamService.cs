@@ -35,7 +35,6 @@ public class CaKhamService
 
 		for (var day = request.TuNgay.Date; day <= request.DenNgay.Date; day = day.AddDays(1))
 		{
-			// 🔥 lấy toàn bộ lịch làm việc trong ngày
 			var lichs = await _lich.GetByDateAsync(day);
 
 			foreach (var khung in khungGios)
@@ -47,16 +46,14 @@ public class CaKhamService
 				if (!bacSiTrongCa.Any())
 					continue;
 
-				// 👉 tách bác sĩ khám / điều trị
 				var bsKham = bacSiTrongCa.Where(x => x.ChucVuID == 1).ToList();
 				var bsDieuTri = bacSiTrongCa.Where(x => x.ChucVuID == 2).ToList();
 
-				// ================= KHÁM =================
 				if (bsKham.Any())
 				{
 					for (int i = 0; i < MAX_KHAM_PER_SLOT; i++)
 					{
-						var bs = bsKham[i % bsKham.Count]; // 🔥 round-robin
+						var bs = bsKham[i % bsKham.Count];
 
 						await _repo.InsertAsync(new CaKham
 						(
@@ -66,11 +63,9 @@ public class CaKhamService
 						created++;
 					}
 				}
-
-				// ================= ĐIỀU TRỊ =================
 				if (bsDieuTri.Any())
 				{
-					var bs = bsDieuTri.First(); // 1 slot
+					var bs = bsDieuTri.First(); 
 
 					await _repo.InsertAsync(new CaKham
 					(
@@ -141,12 +136,13 @@ public class CaKhamService
 		return ApiResponse<CaKhamReadModel>.SuccessResponse(data);
 	}
 	public async Task<ApiResponse<PagedResult<CaKhamListReadModel>>> 
-		GetPagedAsync( DateTime ngayKham, string trangThai, string loaiCaKham, int pageNumber, int pageSize)
+		GetPagedAsync( DateTime ngayKham, string trangThai, string loaiCaKham, int? nhanViednId, int pageNumber, int pageSize)
 	{
 		var (items, total) = await _repo.GetPagedAsync(
 			ngayKham,
 			trangThai,
 			loaiCaKham,
+			nhanViednId,
 			pageNumber,
 			pageSize);
 		var result = new PagedResult<CaKhamListReadModel>

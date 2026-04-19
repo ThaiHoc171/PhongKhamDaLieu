@@ -47,10 +47,10 @@ public class CaKhamController : ControllerBase
 	[HttpGet]
 	[Authorize(Policy = "LICH_READ")]
 	public async Task<ActionResult<ApiResponse<PagedResult<CaKhamListReadModel>>>> 
-		List([FromQuery] DateTime ngayKham, [FromQuery] string trangThai,[FromQuery] string loaiCaKham,
+		List([FromQuery] DateTime ngayKham, [FromQuery] string trangThai,[FromQuery] string loaiCaKham, [FromQuery] int? nhanViednId,
 		[FromQuery] int pageNumber = 1,	[FromQuery] int pageSize = 15)
 	{
-		var response = await _service.GetPagedAsync( ngayKham,trangThai, loaiCaKham, pageNumber, pageSize);
+		var response = await _service.GetPagedAsync(ngayKham, trangThai, loaiCaKham, nhanViednId, pageNumber, pageSize);
 		return Ok(response);
 	}
 	[HttpGet("search/by-thongtin/{thongTinId}")]

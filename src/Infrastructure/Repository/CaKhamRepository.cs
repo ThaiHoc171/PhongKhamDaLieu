@@ -86,7 +86,7 @@ public class CaKhamRepository : ICaKhamRepository
 		return null;
 	}
 
-	public async Task<(List<CaKhamListReadModel>, int)> GetPagedAsync(DateTime ngayKham, string trangThai, string loaiCaKham, int page, int size)
+	public async Task<(List<CaKhamListReadModel>, int)> GetPagedAsync(DateTime ngayKham, string trangThai, string loaiCaKham, int? nhanVienId, int page, int size)
 	{
 		var list = new List<CaKhamListReadModel>();
 		int total = 0;
@@ -101,6 +101,7 @@ public class CaKhamRepository : ICaKhamRepository
         WHERE ck.NgayKham=@Ngay
         AND ck.TrangThai=@TrangThai
         AND ck.LoaiCaKham=@Loai
+		AND (@NhanVienID IS NULL OR ck.NhanVienID = @NhanVienID)
         ORDER BY ck.CaKhamID
         OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
 
@@ -115,6 +116,7 @@ public class CaKhamRepository : ICaKhamRepository
 		cmd.Parameters.Add("@Ngay", SqlDbType.Date).Value = ngayKham.Date;
 		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar, 50).Value = trangThai;
 		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar, 50).Value = loaiCaKham;
+		cmd.Parameters.Add("@NhanVienID", SqlDbType.Int) .Value = (object?)nhanVienId ?? DBNull.Value;
 		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
 		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
 

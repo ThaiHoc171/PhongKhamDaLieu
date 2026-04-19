@@ -227,7 +227,7 @@ CREATE TABLE CaKham (
     LoaiCaKham NVARCHAR(50) NOT NULL
         CONSTRAINT CK_CaKham_Loai
         CHECK (LoaiCaKham IN (N'Khám', N'Điều trị')),
-
+    NhanVienID INT NULL
     LichLamViecID INT NULL,
     KhungGioID INT NOT NULL,
     PhongChucNangID INT NULL,
@@ -244,7 +244,10 @@ CREATE TABLE CaKham (
     NgayDat DATE NULL,
     NgayKham DATE NOT NULL,
     GhiChu NVARCHAR(MAX),
-
+    CONSTRAINT FK_CaKham_NhanVien
+        FOREIGN KEY (NhanVienID)
+        REFERENCES NhanVien(NhanVienID)
+        ON DELETE CASCADE,
     CONSTRAINT FK_CaKham_LichLamViec
         FOREIGN KEY (LichLamViecID)
         REFERENCES LichLamViecNhanVien(LichLamViecID)

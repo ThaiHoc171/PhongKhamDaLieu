@@ -8,7 +8,7 @@ public interface ICaKhamRepository
 	Task<CaKhamReadModel?> GetDetailAsync(int caKhamId);
 	//Xuất danh sách tất cả ca khám	
 	Task<(List<CaKhamListReadModel>, int)> GetPagedAsync(
-		DateTime ngayKham, string trangThai, string loaiCaKham, int pageNumber, int pageSize);
+		DateTime ngayKham, string trangThai, string loaiCaKham, int? nhanVienId,int pageNumber, int pageSize);
 	Task<int> CountAsync(DateTime ngay, int khungGioId, string loaiCa);
 	Task<int> InsertAsync(CaKham entity);
 	Task<int> CountNotAssignedAsync(DateTime tuNgay, DateTime denNgay);
