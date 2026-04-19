@@ -119,21 +119,25 @@ public class CaKhamRepository : ICaKhamRepository
 
 		return (list, total);
 	}
-	public async Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham)
+	public async Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham, int? nhanVienId)
 	{
 		const string sql = @"
-			SELECT KhungGioID 
-			FROM CaKham 
-			WHERE CAST(NgayKham AS DATE)=@NgayKham AND LoaiCaKham=@LoaiCaKham AND TrangThai!=N'Đã hủy' 
-			GROUP BY KhungGioID 
-			HAVING ((@LoaiCaKham=N'Khám' AND COUNT(CASE WHEN TrangThai!=N'Trống' THEN 1 END)<5) 
-				OR (@LoaiCaKham=N'Điều trị' AND COUNT(CASE WHEN TrangThai!=N'Trống' THEN 1 END)<1))
+			SELECT ck.KhungGioID 
+			FROM CaKham ck
+			JOIN LichLamViecNhanVien llv ON ck.LichLamViecID = llv.LichLamViecID
+			WHERE CAST(ck.NgayKham AS DATE)=@NgayKham 
+			AND ck.LoaiCaKham=@LoaiCaKham AND ck.TrangThai!=N'Đã hủy'
+			AND (@NhanVienID IS NULL OR llv.NhanVienID = @NhanVienID)
+			GROUP BY ck.KhungGioID 
+			HAVING ((@LoaiCaKham=N'Khám' AND COUNT(CASE WHEN ck.TrangThai!=N'Trống' THEN 1 END)<5) 
+				OR (@LoaiCaKham=N'Điều trị' AND COUNT(CASE WHEN ck.TrangThai!=N'Trống' THEN 1 END)<1))
 		";
 		var list = new List<int>();
 		await using var conn = new SqlConnection(_connectionString);
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@NgayKham", SqlDbType.Date).Value = ngayKham.Date;
 		cmd.Parameters.Add("@LoaiCaKham", SqlDbType.NVarChar, 50).Value = loaiCaKham;
+		cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId;
 		await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
 		while (await reader.ReadAsync())
@@ -143,13 +147,15 @@ public class CaKhamRepository : ICaKhamRepository
 		return list;
 	}
 	
-	public async Task<int> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
+	public async Task<int> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham, int? nhanVienId)
 	{
 		const string sql = @"
-			SELECT TOP 1 CaKhamID 
-			FROM CaKham 
-			WHERE CAST(NgayKham AS DATE)=@NgayKham AND KhungGioID=@KhungGioID 
-			AND LoaiCaKham=@LoaiCaKham AND TrangThai=N'Trống' 
+			SELECT TOP 1 ck.CaKhamID 
+			FROM CaKham ck
+			JOIN LichLamViecNhanVien llv ON ck.LichLamViecID = llv.LichLamViecID
+			WHERE CAST(ck.NgayKham AS DATE)=@NgayKham AND ck.KhungGioID=@KhungGioID
+				AND (@NhanVienID IS NULL OR llv.NhanVienID = @NhanVienID)
+				AND ck.LoaiCaKham=@LoaiCaKham AND TrangThai=N'Trống' 
 			ORDER BY CaKhamID ASC
 		";
 		await using var conn = new SqlConnection(_connectionString);
@@ -157,6 +163,7 @@ public class CaKhamRepository : ICaKhamRepository
 		cmd.Parameters.Add("@NgayKham", SqlDbType.Date).Value = ngayKham.Date;
 		cmd.Parameters.Add("@KhungGioID", SqlDbType.Int).Value = khungGioId;
 		cmd.Parameters.Add("@LoaiCaKham", SqlDbType.NVarChar, 50).Value = loaiCaKham;
+		cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId;
 		await conn.OpenAsync();
 		var result = await cmd.ExecuteScalarAsync();
 		return result == null ? 0 : Convert.ToInt32(result);

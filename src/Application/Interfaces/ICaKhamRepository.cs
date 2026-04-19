@@ -18,10 +18,10 @@ public interface ICaKhamRepository
 	Task<(List<CaKhamListReadModel>, int)> GetByThongTinAsync(int thongTinID, int pageNumber, int pageSize);
     //Kiểm tra bệnh nhân đã đăng ký khám trong 1 khung giờ
     Task<bool> CheckThongTinDaDangKyAsync(DateTime ngay, int khungGioId, string loaiCaKham, int benhNhanId);
-    //Đếm các khung giờ còn ca khám trống
-    Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham);
-    //Lấy ca khám gần nhất còn trống
-    Task<int> GetCaKhamAsync(DateTime ngay, int khungGioId, string loaiCaKham);
+	//Đếm các khung giờ còn ca khám trống
+	Task<List<int>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham, int? nhanVienId);
+	//Lấy ca khám gần nhất còn trống
+	Task<int> GetCaKhamAsync(DateTime ngay, int khungGioId, string loaiCaKham, int? nhanVienId);
 	//Lấy FCM Token qua CaKhamID, xác nhận thiết bị của tài khoản đã đăng ký khám
     Task<string?> GetFcmTokenByCaKhamIdAsync(int caKhamId);
 	//Update ca khám sau khi bệnh nhân đăng ký lịch

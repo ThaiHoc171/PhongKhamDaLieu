@@ -215,14 +215,14 @@ public class CaKhamService
 			return ApiResponse<AssignLichLamViecReport>.Fail(ex.Message);
 		}
 	}
-    public async Task<ApiResponse<List<int>>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham)
+    public async Task<ApiResponse<List<int>>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham, int? nhanVienId)
     {
         if (string.IsNullOrWhiteSpace(loaiCaKham))
             return ApiResponse<List<int>>.Fail("Loại ca khám không hợp lệ");
 
         try
         {
-            var result = await _repo.GetKhungGioConTrongAsync(ngayKham, loaiCaKham);
+            var result = await _repo.GetKhungGioConTrongAsync(ngayKham, loaiCaKham, nhanVienId);
             return ApiResponse<List<int>>.SuccessResponse(result);
         }
         catch (Exception ex)
@@ -230,12 +230,12 @@ public class CaKhamService
             return ApiResponse<List<int>>.Fail(ex.Message);
         }
     }
-    public async Task<ApiResponse<int>> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham)
+    public async Task<ApiResponse<int>> GetCaKhamAsync(DateTime ngayKham, int khungGioId, string loaiCaKham, int? nhanVienId)
     {
         if (khungGioId <= 0)
             return ApiResponse<int>.Fail("Khung giờ không hợp lệ");
 
-        var result = await _repo.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham);
+        var result = await _repo.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham, nhanVienId);
 
         if (result == 0)
             return ApiResponse<int>.Fail("Không còn ca trống");
