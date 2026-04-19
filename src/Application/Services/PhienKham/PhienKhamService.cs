@@ -16,6 +16,7 @@ public class PhienKhamService
 	private readonly IBenhNhanRepository _benhNhanRepo;
 	private readonly IHoSoBenhAnRepository _hoSoBenhAnRepo;
 	private readonly INhanVienRepository _nhanVienRepo;
+	private readonly ITaiKhamRepository _taiKhamRepo;
 
 	public PhienKhamService(
 		IPhienKhamRepository repo,
@@ -25,7 +26,8 @@ public class PhienKhamService
 		IHoSoBenhAnRepository hoSoBenhAnRepo,
 		ICaKhamRepository caKhamRepo,
 		ILichLamViecRepository lichRepo,
-		INhanVienRepository nhanVienRepo)
+		INhanVienRepository nhanVienRepo,
+		ITaiKhamRepository taiKhamRepo)
 	{
 		_repo = repo;
 		_pkBenhrepo = pkBenhrepo;
@@ -35,6 +37,7 @@ public class PhienKhamService
 		_caKhamRepo = caKhamRepo;
 		_lichRepo = lichRepo;
 		_nhanVienRepo = nhanVienRepo;
+		_taiKhamRepo = taiKhamRepo;
 	}
 
 	public async Task<ApiResponse<int>> CreateAsync(int caKhamID)
@@ -196,6 +199,18 @@ public class PhienKhamService
 
 			if (row == 0)
 				return ApiResponse<bool>.Fail("Kết thúc phiên khám thất bại");
+			var checkTaiKham = await _taiKhamRepo.ExistsByPhienKhamAsync(phienKhamId);
+			if(checkTaiKham)
+			{
+				int taiKhamId = await _taiKhamRepo.GetIdByCaKham(pk.CaKhamID);
+				var taiKham = await _taiKhamRepo.GetByIdAsync(taiKhamId);
+				if(taiKham != null)
+				{
+					taiKham.Complete();
+					await _taiKhamRepo.UpdateAsync(taiKham);
+				}
+			}	
+				
 
 			return ApiResponse<bool>.SuccessResponse(true, "Kết thúc phiên khám thành công");
 		}

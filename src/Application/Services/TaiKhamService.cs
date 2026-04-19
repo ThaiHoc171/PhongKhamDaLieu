@@ -56,6 +56,7 @@ public class TaiKhamService
 
 			var entity = new TaiKham(
 				dto.PhienKhamID,
+				dto.CaKhamID,
 				benhNhanId.Value,
 				dto.NgayDuKien,
 				dto.LyDo

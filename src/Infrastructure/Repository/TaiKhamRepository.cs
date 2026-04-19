@@ -223,12 +223,13 @@ public class TaiKhamRepository : ITaiKhamRepository
 		using var conn = new SqlConnection(_connectionString);
 		await conn.OpenAsync();
 
-		var sql = @"INSERT INTO TaiKham (PhienKhamID,BenhNhanID,NgayDuKien,LyDo)
+		var sql = @"INSERT INTO TaiKham (PhienKhamID,CaKhamID,BenhNhanID,NgayDuKien,LyDo)
                     OUTPUT INSERTED.TaiKhamID
-                    VALUES (@PhienKhamID,@BenhNhanID,@NgayDuKien,@LyDo)";
+                    VALUES (@PhienKhamID,@CaKhamID,@BenhNhanID,@NgayDuKien,@LyDo)";
 
 		using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@PhienKhamID", SqlDbType.Int).Value = tk.PhienKhamID;
+		cmd.Parameters.Add("@CaKhamID", SqlDbType.Int).Value = tk.CaKhamID;
 		cmd.Parameters.Add("@BenhNhanID", SqlDbType.Int).Value = tk.BenhNhanID;
 		cmd.Parameters.Add("@NgayDuKien", SqlDbType.Date).Value = tk.NgayDuKien;
 		cmd.Parameters.Add("@LyDo", SqlDbType.NVarChar, 500).Value = (object?)tk.LyDo ?? DBNull.Value;

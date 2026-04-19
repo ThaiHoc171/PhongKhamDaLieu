@@ -2,7 +2,8 @@
 public class TaiKhamRequestDTO
 {
     public int PhienKhamID { get; set; }
-    public DateTime NgayDuKien { get; set; }
+	public int CaKhamID { get; set; }
+	public DateTime NgayDuKien { get; set; }
     public string? LyDo { get; set; }
 }
 public class TaiKhamUpdateRequestDTO

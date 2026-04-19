@@ -14,11 +14,12 @@ public class TaiKham
 	public DateTime NgayTao { get; private set; }
 
 	// ==================== CONSTRUCTOR CREATE ====================
-	public TaiKham(int phienKhamID, int benhNhanID, DateTime ngayDuKien, string? lyDo)
+	public TaiKham(int phienKhamID, int caKhamID,int benhNhanID, DateTime ngayDuKien, string? lyDo)
 	{
 		Validate(phienKhamID, benhNhanID, ngayDuKien);
 
 		PhienKhamID = phienKhamID;
+		CaKhamID = caKhamID;
 		BenhNhanID = benhNhanID;
 		NgayDuKien = ngayDuKien;
 		LyDo = lyDo;
