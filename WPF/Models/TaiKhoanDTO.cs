@@ -16,6 +16,7 @@ public class LoginResponseDTO
 	public int? NhanVienId { get; set; }
 	public int? BenhNhanId { get; set; }
 	public string ChucVu { get; set; } = "";
+	public List<string> Quyen { get; set; } = new List<string>();
 }
 public class ChangePasswordRequestDTO
 {

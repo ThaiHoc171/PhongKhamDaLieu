@@ -1,7 +1,6 @@
 ﻿using Microsoft.Win32;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using WPF.Client;
 using WPF.Common;
 using WPF.Models;
@@ -44,7 +43,7 @@ public partial class ThucHienCLS : Window
 		txtResult.IsEnabled = false;
 		txtNotes.IsEnabled = false;
 		btnUploadFile.IsEnabled = false;
-		btnLuu.IsEnabled = false;
+		btnSave.IsEnabled = false;
 	}
 
 	private bool ValidateInput()
@@ -56,9 +55,20 @@ public partial class ThucHienCLS : Window
 		}
 		return true;
 	}
+	private void Header_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+	{
+		if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+		{
+			this.DragMove();
+		}
+	}
+	private void ToggleUI(bool isEnabled)
+	{
+		btnSave.IsEnabled = isEnabled;
+		btnClose.IsEnabled = isEnabled;
+	}
 
-
-	private async void btnLuu_Click(object sender, EventArgs e)
+	private async void btnSave_Click(object sender, EventArgs e)
 	{
 		if (!ValidateInput())
 			return;
@@ -90,8 +100,7 @@ public partial class ThucHienCLS : Window
 
 		try
 		{
-			btnLuu.IsEnabled = false;
-			btnHuy.IsEnabled = false;
+			ToggleUI(false);
 
 			var result = await _client.Complete(_id,req);
 
@@ -111,23 +120,15 @@ public partial class ThucHienCLS : Window
 		}
 		finally
 		{
-			btnLuu.IsEnabled = true;
-			btnHuy.IsEnabled = true;
+			ToggleUI(true);
 		}
 	}
 
-	private void btnHuy_Click(object sender, RoutedEventArgs e)
+	private void btnClose_Click(object sender, RoutedEventArgs e)
 	{
 		this.Close();
 	}
 
-	private void Header_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-	{
-		if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
-		{
-			this.DragMove();
-		}
-	}
 	private void btnViewFile_Click(object sender, RoutedEventArgs e)
 	{
 		if(_filePath == null)

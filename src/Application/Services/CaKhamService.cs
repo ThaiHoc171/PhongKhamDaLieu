@@ -8,13 +8,15 @@ public class CaKhamService
 {
 	private readonly ICaKhamRepository _repo;
 	private readonly IKhungGioKhamRepository _khunggio;
+	private readonly ITaiKhamRepository _taiKham;
     private readonly IFcmService _fcmService;
 	private const int MAX_KHAM_PER_SLOT = 5;
 	private const int MAX_DIEUTRI_PER_SLOT = 1;
-	public CaKhamService(ICaKhamRepository repo, IKhungGioKhamRepository khungGio, IFcmService fcmService)
+	public CaKhamService(ICaKhamRepository repo, IKhungGioKhamRepository khungGio, ITaiKhamRepository taiKham,IFcmService fcmService)
 	{
 		_repo = repo;
 		_khunggio = khungGio;
+		_taiKham = taiKham;
 		_fcmService = fcmService;
     }
 	public async Task<ApiResponse<int>> GenerateAsync(CaKhamRequest request)
@@ -174,11 +176,25 @@ public class CaKhamService
 		var entity = await _repo.GetByIdAsync(caKhamId);
 		if (entity == null)
 			return ApiResponse<bool>.Fail("Không tìm thấy ca khám");
+
 		try
 		{
 			entity.HuyDangKy();
 			await _repo.UpdateAsync(entity);
-			return ApiResponse<bool>.SuccessResponse(true,"Hủy đăng ký thành công");
+
+			var taiKhamId = await _taiKham.GetIdByCaKham(caKhamId);
+
+			if (taiKhamId != 0)
+			{
+				var taikham = await _taiKham.GetByIdAsync(taiKhamId);
+				if (taikham != null)
+				{
+					taikham.Cancel();
+					await _taiKham.UpdateAsync(taikham);
+				}
+			}
+
+			return ApiResponse<bool>.SuccessResponse(true, "Hủy đăng ký thành công");
 		}
 		catch (Exception ex)
 		{

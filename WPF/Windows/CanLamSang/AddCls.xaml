@@ -1,0 +1,84 @@
+﻿<Window x:Class="WPF.Windows.CanLamSang.AddCls"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Width="480" Height="420"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent">
+
+    <Border BorderBrush="#8F8FAF" BorderThickness="1">
+        <Grid Background="AliceBlue">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+
+            <!-- HEADER -->
+            <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}" Padding="12,6">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="FlaskPlus" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
+                    <TextBlock Text="THÊM CẬN LÂM SÀNG" FontSize="20" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- CONTENT -->
+            <Grid Grid.Row="1" Margin="20">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBox x:Name="txtName" Grid.Row="0"
+                         Margin="10" Height="40" Padding="12,6"
+                         materialDesign:HintAssist.Hint="Tên cận lâm sàng"/>
+
+                <TextBox x:Name="txtDescription" Grid.Row="1"
+                         Margin="10" Height="40" Padding="12,6"
+                         materialDesign:HintAssist.Hint="Mô tả"/>
+
+                <TextBox x:Name="txtCategory" Grid.Row="2"
+                         Margin="10" Height="40" Padding="12,6"
+                         materialDesign:HintAssist.Hint="Loại xét nghiệm"/>
+
+                <!-- Toggle -->
+                <StackPanel Grid.Row="3" Margin="10"
+                            Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Hoạt động" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                    <ToggleButton x:Name="btnActive" Style="{StaticResource MaterialDesignSwitchToggleButton}">
+                        <ToggleButton.LayoutTransform>
+                            <ScaleTransform ScaleX="1.4" ScaleY="1.4"/>
+                        </ToggleButton.LayoutTransform>
+                    </ToggleButton>
+                </StackPanel>
+
+            </Grid>
+
+            <!-- FOOTER -->
+            <Border Grid.Row="2" Background="#E5E9F8" Padding="5">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="btnClose" Click="btnClose_Click" Width="100" Margin="5">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Close"/>
+                            <TextBlock Text="Đóng" Margin="5,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="btnSave" Click="btnSave_Click" Width="100" Margin="5"
+                            Style="{StaticResource PrimaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave"/>
+                            <TextBlock Text="Lưu" Margin="5,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

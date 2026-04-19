@@ -9,6 +9,7 @@ public static class Session
 	public static NameHelper HoTen { get; set; } = default!;
 	public static int? NhanVienId { get; set; } 
 	public static string? ChucVu { get; set; }
+	public static List<string> Permissions { get; set; } = new List<string>();
 
 	public static void Clear()
 	{
@@ -20,5 +21,6 @@ public static class Session
 		HoTen = new NameHelper();
 		NhanVienId = 0;
 		ChucVu = "";
+		Permissions = new List<string>();
 	}
 }

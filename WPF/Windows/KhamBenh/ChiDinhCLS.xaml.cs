@@ -43,7 +43,19 @@ public partial class ChiDinhCLS : Window
 		}
 		return true;
 	}
-	private async void btnLuu_Click(object sender, EventArgs e)
+	private void Header_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+	{
+		if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+		{
+			this.DragMove();
+		}
+	}
+	private void ToggleUI(bool isEnabled)
+	{
+		btnSave.IsEnabled = isEnabled;
+		btnClose.IsEnabled = isEnabled;
+	}
+	private async void btnSave_Click(object sender, EventArgs e)
 	{
 		if (!ValidateInput())
 			return;
@@ -57,8 +69,7 @@ public partial class ChiDinhCLS : Window
 
 		try
 		{
-			btnLuu.IsEnabled = false;
-			btnHuy.IsEnabled = false;
+			ToggleUI(false);
 
 			var result = await _client.Create(req);
 
@@ -78,22 +89,13 @@ public partial class ChiDinhCLS : Window
 		}
 		finally
 		{
-			btnLuu.IsEnabled = true;
-			btnHuy.IsEnabled = true;
+			ToggleUI(true);
 		}
 	}
 
-	private void btnHuy_Click(object sender, RoutedEventArgs e)
+	private void btnClose_Click(object sender, RoutedEventArgs e)
 	{
 		this.Close();
-	}
-
-	private void Header_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-	{
-		if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
-		{
-			this.DragMove();
-		}
 	}
 }
 

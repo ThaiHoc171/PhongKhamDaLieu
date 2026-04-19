@@ -10,8 +10,6 @@ namespace WPF.Windows
 	{
 		private readonly Auth _authClient = new Auth();
 
-		public LoginResponseDTO LoginResult { get; private set; }
-
 		public loginWindow()
 		{
 			InitializeComponent();
@@ -104,7 +102,7 @@ namespace WPF.Windows
 					Name = result.HoTen?.Name ?? ""
 				};
 				Session.VaiTro = result.VaiTro;
-
+				Session.Permissions = result.Quyen ?? new List<string>();
 				DialogResult = true;
 				Close();
 			}

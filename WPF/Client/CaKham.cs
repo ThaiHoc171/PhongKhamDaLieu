@@ -54,4 +54,24 @@ public class CaKhamClient : AppClientBase
 		var url = $"{BASE}/assign-lich";
 		return PostAsync<AssignLichLamViecReport>(url, req);
 	}
+	//GET CAKHAM TRONG THEO NHANVIEN
+	public Task<ApiResult<List<int>>> GetKhungGioTrong(DateTime ngay, string loai, int nhanVienId)
+	{
+		var url = $"{BASE}/khunggio-trong?" +
+				  $"ngayKham={ngay:yyyy-MM-dd}" +
+				  $"&loaiCaKham={loai}" +
+				  $"&nhanVienId={nhanVienId}";
+
+		return GetAsync<List<int>>(url);
+	}
+	public Task<ApiResult<int>> GetCaKhamTrong(DateTime ngay, int khungGioId, string loai, int? nhanVienId)
+	{
+		var url = $"{BASE}/ca-trong?" +
+				  $"ngayKham={ngay:yyyy-MM-dd}" +
+				  $"&khungGioId={khungGioId}" +
+				  $"&loaiCaKham={loai}" +
+				  $"&nhanVienId={nhanVienId}";
+
+		return GetAsync<int>(url);
+	}
 }

@@ -3,10 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using WPF.Common;
-using WPF.Pages;
-using WPF.Pages.CaKham;
-using WPF.Pages.LichLamViec;
-using WPF.Pages.PhienKham;
 
 namespace WPF.Windows
 {
@@ -18,7 +14,7 @@ namespace WPF.Windows
 			SnackbarHelper.Init(MainSnackbar!);
 			txtName.Text = Session.HoTen.Name;
 		}
-
+		private readonly NavigationHelper _nav = new NavigationHelper();
 		public void OpenPage(Page page, string title)
 		{
 			txtHeader.Text = title;
@@ -31,6 +27,7 @@ namespace WPF.Windows
 			foreach (var exp in new[]
 			{
 				expBenhNhan,
+				expDieuTri,
 				expCaKham,
 				expLichLamViec,
 				expNhanSu,
@@ -45,7 +42,7 @@ namespace WPF.Windows
 		}
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new Dashboard(), "Dashboard");
+			_nav.Navigate("dashboard");
 		}
 		private void Header_MouseDown(object sender, MouseButtonEventArgs e)
 		{
@@ -101,57 +98,57 @@ namespace WPF.Windows
 
 		private void BtnChucVu_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new ChucVuPage(), "Quản lý chức vụ");
+			_nav.Navigate("ChucVu");
 		}
 
 		private void btnCls_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new CanLamSangPage(), "Quản lý cận lâm sàng");
-        }
+			_nav.Navigate("CanLamSang");
+		}
 
 		private void btnThietBi_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new ThietBiPage(), "Quản lý danh mục thiết bị");
+			_nav.Navigate("ThietBi");
 		}
 
 		private void CaKhamTrong_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new CaKhamTrongPage(), "Danh sách ca khám còn trống");
+			_nav.Navigate("CaKhamTrong");
 		}
 
 		private void btnXemLichCaNhan_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new XemLichCaNhan(), "Lịch làm việc cá nhân");
+			_nav.Navigate("XemLichCaNhan");
 		}
 
 		private void btnXemLichChung_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new XemLichChung(), "Lịch làm việc phòng khám");
+			_nav.Navigate("XemLichChung");
 		}
 
 		private void btnNhapLichLam_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new NhapLichLamViec(), "Nhập làm việc phòng khám từ Excel");
+			_nav.Navigate("NhapLichLam");
 		}
 
 		private void btnBenhNhan_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new BenhNhanPage(), "Quản lý bệnh nhân");
+			_nav.Navigate("BenhNhan");
 		}
 
 		private void btnKhach_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new KhachPage(), "Quản lý khách");
+			_nav.Navigate("Khach");
 		}
 
 		private void btnTaiKhoan_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new TaiKhoanPage(), "Quản lý tài khoản");
+			_nav.Navigate("TaiKhoan");
 		}
 
 		private void btnPhong_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new PhongChucNangPage(), "Quản lý phòng chức năng");
+			_nav.Navigate("Phong");
 		}
 
 		private void btnDangXuat_Click(object sender, RoutedEventArgs e)
@@ -161,52 +158,56 @@ namespace WPF.Windows
 
 		private void btnNhanVien_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new NhanVienPage(), "Quản lý nhân viên");
+			_nav.Navigate("NhanVien");
 		}
 
 		private void CaKhamCho_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new CaKhamChoPage(), "Danh sách ca khám chờ xác nhận");
+			_nav.Navigate("CaKhamCho");
 		}
 
 		private void CaKhamDaXacNhan_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new CaKhamDaXacNhan(), "Danh sách ca khám đang chờ khám");
+			_nav.Navigate("CaKhamDaXacNhan");
         }
 		private void LichSuCaKham_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new LichSuCaKhamPage(), "Lịch sử ca khám");
+			_nav.Navigate("LichSuCaKham");
 		}
 
 		private void btnThuoc_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new ThuocPage(), "Quản lý thuốc");
+			_nav.Navigate("Thuoc");
 		}
 
 		private void btnLoaiBenh_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new LoaiBenhPage(), "Quản lý loại bệnh");
-		}	
+			_nav.Navigate("LoaiBenh");
+		}
 
 		private void btnPhienKham_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new PhienKhamPage(), "Quản lý phiên khám");
+			_nav.Navigate("PhienKham");
 		}
 
 		private void btnPhienKhamCaNhan_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new PhienKhamCaNhanPage(), "Quản lý phiên khám cá nhân");
+			_nav.Navigate("PhienKhamCaNhan");
 		}
 
 		private void btnPkCls_Click(object sender, RoutedEventArgs e)
 		{
-			OpenPage(new PhienKhamCLSPage(), "Quản lý phiên khám cận lâm sàng");
+			_nav.Navigate("PhienKhamCLS");
 		}
 
 		private void btnTaiKham_Click(object sender, RoutedEventArgs e)
 		{
-			SnackbarHelper.ShowWarning("Chức năng đang phát triển");
+			_nav.Navigate("TaiKham");
         }
 
-    }
+		private void btnDieuTri_Click(object sender, RoutedEventArgs e)
+		{
+			_nav.Navigate("LieuTrinh");
+		}
+	}
 }

@@ -2,10 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Input;
 using WPF.Client;
 using WPF.Common;
-using WPF.Models;
 
 namespace WPF.Windows.ToaThuoc;
 

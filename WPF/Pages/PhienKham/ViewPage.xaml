@@ -1,0 +1,261 @@
+﻿<Page x:Class="WPF.Pages.PhienKham.ViewPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      Background="{StaticResource BackgroundBrush}">
+
+    <Grid Margin="10">
+        <Grid>
+
+            <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ================= HEADER ================= -->
+        <Border Grid.Row="0"
+                Style="{StaticResource CardStyle}"
+                Margin="0,0,0,10">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- LEFT -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Margin="5" Padding="12,6"
+                            Command="{Binding BackCommand}">
+                        <materialDesign:PackIcon Kind="ArrowLeft"/>
+                    </Button>
+                </StackPanel>
+
+                <!-- RIGHT -->
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+
+                    <Button Margin="5" Padding="12,6"
+                            Command="{Binding RefreshCommand}">
+                        <materialDesign:PackIcon Kind="Refresh"/>
+                    </Button>
+
+                    <Button Margin="5" Padding="12,6"
+                            Command="{Binding SaveCommand}"
+                            Style="{StaticResource PrimaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave"/>
+                            <TextBlock Text="Lưu" Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Margin="5" Padding="12,6"
+                            Command="{Binding ToggleMenuCommand}">
+                        <materialDesign:PackIcon Kind="DotsVertical"/>
+                    </Button>
+
+                    <!-- MENU -->
+                    <Popup IsOpen="{Binding IsMenuOpen}" StaysOpen="False" Placement="Bottom">
+                        <Border Style="{StaticResource PopupStyle}">
+                            <StackPanel>
+                                <Button Content="Toa thuốc"
+                                        Command="{Binding MedicineCommand}"
+                                        Style="{StaticResource MaterialDesignFlatButton}"/>
+
+                                <Button Content="Hồ sơ bệnh án"
+                                        Command="{Binding RecordCommand}"
+                                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
+
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ================= CONTENT ================= -->
+        <Border Grid.Row="1"
+                Style="{StaticResource CardStyle}"
+                Padding="10">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- ================= INFO ================= -->
+                <Grid Grid.Row="0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- LEFT -->
+                    <UniformGrid Columns="2">
+
+                        <TextBox Text="{Binding BenhNhan}" IsEnabled="False"
+                                 Margin="5" Padding="12,6"
+                                 materialDesign:HintAssist.Hint="Bệnh nhân"/>
+
+                        <TextBox Text="{Binding BacSi}" IsEnabled="False"
+                                 Margin="5" Padding="12,6"
+                                 materialDesign:HintAssist.Hint="Bác sĩ"/>
+
+                        <DatePicker SelectedDate="{Binding NgayKham}" IsEnabled="False"
+                                    Margin="5" Padding="12,6"
+                                    materialDesign:HintAssist.Hint="Ngày khám"/>
+
+                        <TextBox Text="{Binding TrangThai}" IsEnabled="False"
+                                 Margin="5" Padding="12,6"
+                                 materialDesign:HintAssist.Hint="Trạng thái"/>
+
+                        <ComboBox ItemsSource="{Binding Phongs}"
+                                  DisplayMemberPath="Name" SelectedValuePath="Id" 
+                                  Margin="5" Padding="12,6" IsEnabled="False"
+                                  materialDesign:HintAssist.Hint="Phòng"/>
+
+                        <TextBox Text="{Binding TrieuChung}"
+                                 Margin="5" Padding="12,6" IsEnabled="False"
+                                 materialDesign:HintAssist.Hint="Triệu chứng"/>
+
+                        <TextBox Text="{Binding ChanDoan}"
+                                 Margin="5" Padding="12,6" IsEnabled="False"
+                                 materialDesign:HintAssist.Hint="Chẩn đoán"/>
+
+                        <TextBox Text="{Binding GhiChu}"
+                                 Margin="5" Padding="12,6" IsEnabled="False"
+                                 materialDesign:HintAssist.Hint="Ghi chú"/>
+
+                    </UniformGrid>
+
+                    <!-- IMAGE -->
+                    <StackPanel Grid.Column="1"
+                                HorizontalAlignment="Center">
+
+                        <Border Width="230" Height="270"
+                                CornerRadius="10"
+                                BorderBrush="#DDD"
+                                BorderThickness="1"
+                                Margin="0,10">
+
+                            <Image Source="{Binding Image}" Stretch="UniformToFill"/>
+                        </Border>
+                    </StackPanel>
+
+                </Grid>
+
+                <!-- ================= GRID 1 ================= -->
+                <Grid Grid.Row="1" Margin="10">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- BENH -->
+                    <Border Grid.Column="0" Style="{StaticResource CardStyle}" Margin="5">
+                        <Grid>
+                            <DataGrid x:Name="DataGridBenh" ItemsSource="{Binding BenhList}"/>
+
+                            <TextBlock Text="Không có dữ liệu"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding BenhList.Count}" Value="0">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+
+                    <!-- THIET BI -->
+                    <Border Grid.Column="1" Style="{StaticResource CardStyle}" Margin="5">
+                        <Grid>
+                            <DataGrid x:Name="DataGridThietBi" ItemsSource="{Binding ThietBiList}"/>
+
+                            <TextBlock Text="Không có dữ liệu"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ThietBiList.Count}" Value="0">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+
+                            </TextBlock>
+                        </Grid>
+                    </Border>
+
+                </Grid>
+
+                <!-- ================= GRID 2 ================= -->
+                <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="10">
+                    <Grid>
+                        <DataGrid x:Name="DataGridCLS" ItemsSource="{Binding CLSList}"/>
+
+                        <TextBlock Text="Không có dữ liệu"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center">
+
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CLSList.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+
+                        </TextBlock>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Border>
+        </Grid>
+        <!-- ================= LOADING ================= -->
+        <Grid Background="#66000000" Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <materialDesign:PackIcon Kind="Loading" Width="150" Height="150" Foreground="White"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                                     RenderTransformOrigin="0.5,0.5">
+
+                <materialDesign:PackIcon.RenderTransform>
+                    <RotateTransform x:Name="SpinnerRotate"/>
+                </materialDesign:PackIcon.RenderTransform>
+
+            </materialDesign:PackIcon>
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation Storyboard.TargetName="SpinnerRotate"
+                                             Storyboard.TargetProperty="Angle"
+                                             From="0" To="360"
+                                             Duration="0:0:1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+        </Grid>
+    </Grid>
+</Page>

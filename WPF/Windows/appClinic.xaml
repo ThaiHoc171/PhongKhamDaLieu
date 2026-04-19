@@ -5,8 +5,6 @@
         Title="Clinic App"
         Height="800"
         Width="1300"
-        FontSize="16"
-        FontFamily="Palatino Linotype"
         WindowStartupLocation="CenterScreen"
         Background="White"
         Loaded="Window_Loaded" 
@@ -52,7 +50,7 @@
                                 <Expander.Header>
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Stethoscope"/>
-                                        <TextBlock x:Name="txtKham" Text=" Khám bệnh" Margin="10,0,0,0"/>
+                                        <TextBlock x:Name="txtKham" Text=" Khám bệnh" Margin="10,0,0,0" />
                                     </StackPanel>
                                 </Expander.Header>
 
@@ -88,6 +86,23 @@
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="Refresh"/>
                                             <TextBlock x:Name="txtTaiKham" Text=" Tái khám" Margin="10,0,0,0"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Expander>
+                            <Expander x:Name="expDieuTri" Expanded="Expander_Expanded" Background="Transparent" Foreground="White">
+                                <Expander.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Stethoscope"/>
+                                        <TextBlock x:Name="txtDieuTri" Text="Điều trị" Margin="10,0,0,0" />
+                                    </StackPanel>
+                                </Expander.Header>
+
+                                <StackPanel>
+                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnDieuTri_Click" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Prescription"/>
+                                            <TextBlock x:Name="txtLieuTrinh" Text="Liệu trình" Margin="10,0,0,0"/>
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
