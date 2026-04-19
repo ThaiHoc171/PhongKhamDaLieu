@@ -84,14 +84,13 @@ public class CaKham
 
 	public void HuyDangKy()
 	{
-		if (TrangThai != TrangThaiCaKham.DaDat.ToDbValue())
+		if (TrangThai == TrangThaiCaKham.Trong.ToDbValue() || TrangThai == TrangThaiCaKham.HoanThanh.ToDbValue() || TrangThai == TrangThaiCaKham.DaHuy.ToDbValue())
 			throw new InvalidOperationException("Ca khám chưa được đặt");
 
 		ThongTinID = null;
 		LyDoKham = null;
 		NgayDat = null;
 		GhiChu = null;
-
 		TrangThai = TrangThaiCaKham.Trong.ToDbValue();
 	}
 
