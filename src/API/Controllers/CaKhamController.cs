@@ -72,7 +72,7 @@ public class CaKhamController : ControllerBase
 	}
 	[HttpGet("khunggio-trong")]
     [Authorize(Policy = "LICH_READ")]
-    public async Task<ActionResult<ApiResponse<List<int>>>>GetKhungGioConTrong([FromQuery] DateTime ngayKham, [FromQuery] string loaiCaKham,int? nhanVienId)
+    public async Task<ActionResult<ApiResponse<List<int>>>>GetKhungGioConTrong([FromQuery] DateTime ngayKham, [FromQuery] string loaiCaKham, [FromQuery] int? nhanVienId)
     {
         var response = await _service.GetKhungGioConTrongAsync(ngayKham, loaiCaKham,nhanVienId);
         if (!response.Success)
@@ -81,7 +81,7 @@ public class CaKhamController : ControllerBase
     }
     [HttpGet("ca-trong")]
     [Authorize(Policy = "LICH_READ")]
-    public async Task<ActionResult<ApiResponse<int>>>GetCaKhamTrong([FromQuery] DateTime ngayKham,[FromQuery] int khungGioId,[FromQuery] string loaiCaKham,int? nhanVienId)
+    public async Task<ActionResult<ApiResponse<int>>>GetCaKhamTrong([FromQuery] DateTime ngayKham,[FromQuery] int khungGioId,[FromQuery] string loaiCaKham, [FromQuery] int? nhanVienId)
     {
         var response = await _service.GetCaKhamAsync(ngayKham, khungGioId, loaiCaKham, nhanVienId);
         if (!response.Success)
