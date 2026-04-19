@@ -6,6 +6,7 @@ public class CaKham
 {
 	public int CaKhamID { get; private set; }
 	public string LoaiCaKham { get; private set; }
+	public int? NhanVienID { get; private set; }
 	public int? LichLamViecID { get; private set; }
 	public int KhungGioID { get; private set; }
 	public int? PhongChucNangID { get; private set; }
@@ -16,22 +17,25 @@ public class CaKham
 	public DateTime NgayKham { get; private set; }
 	public string? GhiChu { get; private set; }
 
-	public CaKham(string loaiCaKham, int khungGioID, DateTime ngayKham)
+	public CaKham(string loaiCaKham,int? nhanVienID, int? lichLamViecID,int? phongChucNangID, int khungGioID, DateTime ngayKham)
 	{
 		Validate(loaiCaKham, khungGioID, ngayKham);
 
 		LoaiCaKham = loaiCaKham;
 		KhungGioID = khungGioID;
 		NgayKham = ngayKham.Date;
-
+		NhanVienID = nhanVienID;
+		LichLamViecID = lichLamViecID;
+		PhongChucNangID = phongChucNangID;
 		TrangThai = TrangThaiCaKham.Trong.ToDbValue();
 	}
 
-	public CaKham(int caKhamID, string loaiCaKham, int? lichLamViecID, int khungGioID, int? phongChucNangID, int? thongTinID,
+	public CaKham(int caKhamID, string loaiCaKham,int? nhanVienID, int? lichLamViecID, int khungGioID, int? phongChucNangID, int? thongTinID,
 		string? lyDoKham, string trangThai, DateTime? ngayDat, DateTime ngayKham, string? ghiChu)
 	{
 		CaKhamID = caKhamID;
 		LoaiCaKham = loaiCaKham;
+		NhanVienID = nhanVienID;
 		LichLamViecID = lichLamViecID;
 		KhungGioID = khungGioID;
 		PhongChucNangID = phongChucNangID;

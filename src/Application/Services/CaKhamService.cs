@@ -9,50 +9,82 @@ public class CaKhamService
 	private readonly ICaKhamRepository _repo;
 	private readonly IKhungGioKhamRepository _khunggio;
 	private readonly ITaiKhamRepository _taiKham;
+	private readonly ILichLamViecRepository _lich;
     private readonly IFcmService _fcmService;
 	private const int MAX_KHAM_PER_SLOT = 5;
 	private const int MAX_DIEUTRI_PER_SLOT = 1;
-	public CaKhamService(ICaKhamRepository repo, IKhungGioKhamRepository khungGio, ITaiKhamRepository taiKham,IFcmService fcmService)
+	public CaKhamService(ICaKhamRepository repo, IKhungGioKhamRepository khungGio, ITaiKhamRepository taiKham, ILichLamViecRepository lich,IFcmService fcmService)
 	{
 		_repo = repo;
 		_khunggio = khungGio;
 		_taiKham = taiKham;
+		_lich = lich;
 		_fcmService = fcmService;
     }
 	public async Task<ApiResponse<int>> GenerateAsync(CaKhamRequest request)
 	{
-		List<int> khungGio = await _khunggio.ListKhungGioID();
-		int created = 0;
 		if (request.TuNgay > request.DenNgay)
 			return ApiResponse<int>.Fail("Khoảng ngày không hợp lệ");
 
-		if (request.TuNgay.Date < DateTime.Today.Date)
-			return ApiResponse<int>.Fail("Không thể tạo ca cho ngày trong quá khứ");
+		if (request.TuNgay.Date < DateTime.Today)
+			return ApiResponse<int>.Fail("Không tạo ca trong quá khứ");
+
+		int created = 0;
+
+		var khungGios = await _khunggio.GetAllAsync();
+
 		for (var day = request.TuNgay.Date; day <= request.DenNgay.Date; day = day.AddDays(1))
 		{
-			foreach (var khungId in khungGio)
-			{
-				int currentKham = await _repo.CountAsync(day, khungId, "Khám");
-				int needKham = MAX_KHAM_PER_SLOT - currentKham;
+			// 🔥 lấy toàn bộ lịch làm việc trong ngày
+			var lichs = await _lich.GetByDateAsync(day);
 
-				for (int i = 0; i < needKham; i++)
+			foreach (var khung in khungGios)
+			{
+				var bacSiTrongCa = lichs
+					.Where(x => x.CaLamViec == khung.CaLamViec)
+					.ToList();
+
+				if (!bacSiTrongCa.Any())
+					continue;
+
+				// 👉 tách bác sĩ khám / điều trị
+				var bsKham = bacSiTrongCa.Where(x => x.ChucVuID == 1).ToList();
+				var bsDieuTri = bacSiTrongCa.Where(x => x.ChucVuID == 2).ToList();
+
+				// ================= KHÁM =================
+				if (bsKham.Any())
 				{
-					await _repo.InsertAsync("Khám", khungId, day);
-					created++;
+					for (int i = 0; i < MAX_KHAM_PER_SLOT; i++)
+					{
+						var bs = bsKham[i % bsKham.Count]; // 🔥 round-robin
+
+						await _repo.InsertAsync(new CaKham
+						(
+							"Khám", bs.NhanVienID, bs.LichLamViecID, bs.PhongChucNangID, khung.KhungGioID, day
+						));
+
+						created++;
+					}
 				}
 
-				int currentDieuTri = await _repo.CountAsync(day, khungId, "Điều trị");
-
-				if (currentDieuTri < MAX_DIEUTRI_PER_SLOT)
+				// ================= ĐIỀU TRỊ =================
+				if (bsDieuTri.Any())
 				{
-					await _repo.InsertAsync("Điều trị", khungId, day);
+					var bs = bsDieuTri.First(); // 1 slot
+
+					await _repo.InsertAsync(new CaKham
+					(
+						"Điều trị", bs.NhanVienID, bs.LichLamViecID, bs.PhongChucNangID, khung.KhungGioID, day
+					));
+
 					created++;
 				}
 			}
 		}
+
 		return ApiResponse<int>.SuccessResponse(created, "Tạo ca khám thành công");
 	}
-    public async Task<ApiResponse<bool>> StatusAsync(int caKhamId, string trangThai, string? ghiChu)
+	public async Task<ApiResponse<bool>> StatusAsync(int caKhamId, string trangThai, string? ghiChu)
     {
         if (caKhamId <= 0)
             return ApiResponse<bool>.Fail("Ca khám không hợp lệ");
@@ -199,36 +231,6 @@ public class CaKhamService
 		catch (Exception ex)
 		{
 			return ApiResponse<bool>.Fail(ex.Message);
-		}
-	}
-	public async Task<ApiResponse<AssignLichLamViecReport>> AssignLichLamViecAsync(CaKhamRequest request)
-	{
-		if (request.TuNgay > request.DenNgay)
-			return ApiResponse<AssignLichLamViecReport>.Fail("Khoảng ngày không hợp lệ");
-		try
-		{
-			var report = new AssignLichLamViecReport
-			{
-				TuNgay = request.TuNgay,
-				DenNgay = request.DenNgay
-			};
-			// 1 kiểm tra ca chưa gán lịch
-			var count = await _repo.CountNotAssignedAsync(request.TuNgay, request.DenNgay);
-			report.TongCaChuaGan = count;
-			if (count == 0)
-			{
-				report.Message = "Tất cả ca khám trong khoảng ngày này đã có lịch làm việc.";
-				return ApiResponse<AssignLichLamViecReport>.SuccessResponse(report);
-			}
-			// 2 assign
-			var updated = await _repo.AssignAsync(request.TuNgay, request.DenNgay);
-			report.SoCaDaCapNhat = updated;
-			report.Message = $"Đã gán lịch làm việc cho {updated} ca khám.";
-			return ApiResponse<AssignLichLamViecReport>.SuccessResponse(report);
-		}
-		catch (Exception ex)
-		{
-			return ApiResponse<AssignLichLamViecReport>.Fail(ex.Message);
 		}
 	}
     public async Task<ApiResponse<List<int>>> GetKhungGioConTrongAsync(DateTime ngayKham, string loaiCaKham, int? nhanVienId)

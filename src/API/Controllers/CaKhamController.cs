@@ -117,15 +117,5 @@ public class CaKhamController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
-    [HttpPost("assign-lich")]
-	[Authorize(Policy = "LICH_WRITE")]
-	public async Task<ActionResult<ApiResponse<AssignLichLamViecReport>>> 
-		AssignLichLamViec([FromBody] CaKhamRequest request)
-	{
-		var response = await _service.AssignLichLamViecAsync(request);
-		if (!response.Success)
-			return BadRequest(response);
-		return Ok(response);
-	}
 
 }

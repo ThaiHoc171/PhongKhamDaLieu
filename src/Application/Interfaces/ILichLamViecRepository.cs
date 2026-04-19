@@ -5,6 +5,7 @@ public interface ILichLamViecRepository
 {
 	Task BulkInsertAsync(List<LichLamViec> list);
 	Task<LichLamViec?> GetByIdAsync(int id);
+	Task<List<LichLamViecForGenerateDTO>> GetByDateAsync(DateTime date);
 	Task<List<LichLamViecReadListModel>> GetWeekByNhanVienAsync(int nhanVienID, DateTime tuNgay, DateTime denNgay);
 	Task<List<LichLamViecReadListModel>> GetWeekAsync(DateTime tuNgay, DateTime denNgay);
 	Task<bool> ExistsAsync(int nhanVienID, DateTime ngay, int caLamViec);

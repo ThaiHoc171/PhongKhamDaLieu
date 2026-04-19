@@ -79,7 +79,42 @@ public class LichLamViecRepository : ILichLamViecRepository
 
 		return null;
 	}
+	public async Task<List<LichLamViecForGenerateDTO>> GetByDateAsync(DateTime date)
+	{
+		var list = new List<LichLamViecForGenerateDTO>();
 
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = @"
+			SELECT llv.LichLamViecID,
+				   llv.NhanVienID,
+				   nv.ChucVuID,
+				   nv.PhongChucNangID,
+				   llv.CaLamViec
+			FROM LichLamViecNhanVien llv
+			JOIN NhanVien nv ON nv.NhanVienID = llv.NhanVienID
+			WHERE CAST(llv.Ngay AS DATE) = @Ngay";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Ngay", SqlDbType.Date).Value = date.Date;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+		{
+			list.Add(new LichLamViecForGenerateDTO
+			{
+				LichLamViecID = reader.GetInt32(0),
+				NhanVienID = reader.GetInt32(1),
+				ChucVuID = reader.GetInt32(2),
+				PhongChucNangID = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+				CaLamViec = reader.GetInt32(4)
+			});
+		}
+
+		return list;
+	}
 
 	public async Task<List<LichLamViecReadListModel>> GetWeekByNhanVienAsync(int nhanVienID, DateTime tuNgay, DateTime denNgay)
 	{

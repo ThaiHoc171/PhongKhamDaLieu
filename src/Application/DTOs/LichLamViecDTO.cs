@@ -27,3 +27,11 @@ public class LichLamViecReadWeekModel
 	public DateTime TuanKetThuc { get; set; }
 	public List<LichLamViecReadListModel> LichLamViecs { get; set; } = new();
 }
+public class LichLamViecForGenerateDTO
+{
+	public int LichLamViecID { get; set; }
+	public int NhanVienID { get; set; }
+	public int ChucVuID { get; set; }
+	public int? PhongChucNangID { get; set; }
+	public int CaLamViec { get; set; }
+}

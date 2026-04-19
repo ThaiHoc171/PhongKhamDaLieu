@@ -19,20 +19,31 @@ public class CaKhamRepository : ICaKhamRepository
 	#region Queries
 
 	private const string BaseSelectList = @"
-        SELECT ck.CaKhamID, ck.LoaiCaKham, ck.NgayKham,kg.TenKhung,pc.TenPhong,tt.HoTen,ck.LyDoKham,ck.TrangThai
-        FROM CaKham ck
-        LEFT JOIN KhungGioKham kg ON ck.KhungGioID = kg.KhungGioID
-        LEFT JOIN PhongChucNang pc ON ck.PhongChucNangID = pc.PhongChucNangID
-        LEFT JOIN ThongTinCaNhan tt ON ck.ThongTinID = tt.ThongTinID";
-
-	private const string BaseSelectDetail = @"
-		SELECT ck.CaKhamID, ck.LoaiCaKham, ck.LichLamViecID, ck.KhungGioID, ck.PhongChucNangID, ck.ThongTinID,
-			   ck.LyDoKham, ck.TrangThai, ck.NgayDat, ck.NgayKham, ck.GhiChu, kg.TenKhung, pc.TenPhong, tt.HoTen
+		SELECT ck.CaKhamID, ck.LoaiCaKham, ck.NgayKham, kg.TenKhung, pc.TenPhong,
+			   tt.HoTen AS TenBenhNhan,
+			   bs.HoTen AS TenBacSi,
+			   ck.LyDoKham, ck.TrangThai, ck.NhanVienID
 		FROM CaKham ck
 		LEFT JOIN KhungGioKham kg ON ck.KhungGioID = kg.KhungGioID
 		LEFT JOIN PhongChucNang pc ON ck.PhongChucNangID = pc.PhongChucNangID
-		LEFT JOIN ThongTinCaNhan tt ON ck.ThongTinID = tt.ThongTinID";
+		LEFT JOIN ThongTinCaNhan tt ON ck.ThongTinID = tt.ThongTinID
+		LEFT JOIN NhanVien nv ON ck.NhanVienID = nv.NhanVienID
+		LEFT JOIN ThongTinCaNhan bs ON nv.ThongTinID = bs.ThongTinID";
 
+
+	private const string BaseSelectDetail = @"
+		SELECT ck.CaKhamID, ck.LoaiCaKham, ck.LichLamViecID, ck.KhungGioID, ck.PhongChucNangID, ck.ThongTinID,
+			   ck.LyDoKham, ck.TrangThai, ck.NgayDat, ck.NgayKham, ck.GhiChu,
+			   kg.TenKhung, pc.TenPhong,
+			   tt.HoTen AS TenBenhNhan,
+			   bs.HoTen AS TenBacSi,
+			   ck.NhanVienID
+		FROM CaKham ck
+		LEFT JOIN KhungGioKham kg ON ck.KhungGioID = kg.KhungGioID
+		LEFT JOIN PhongChucNang pc ON ck.PhongChucNangID = pc.PhongChucNangID
+		LEFT JOIN ThongTinCaNhan tt ON ck.ThongTinID = tt.ThongTinID
+		LEFT JOIN NhanVien nv ON ck.NhanVienID = nv.NhanVienID
+		LEFT JOIN ThongTinCaNhan bs ON nv.ThongTinID = bs.ThongTinID";
 	#endregion
 
 	public async Task<CaKham?> GetByIdAsync(int id)
@@ -41,7 +52,7 @@ public class CaKhamRepository : ICaKhamRepository
 		await conn.OpenAsync();
 
 		var sql = @"
-			SELECT CaKhamID,LoaiCaKham,LichLamViecID,KhungGioID,PhongChucNangID,
+			SELECT CaKhamID,LoaiCaKham,NhanVienID,LichLamViecID,KhungGioID,PhongChucNangID,
 				   ThongTinID,LyDoKham,TrangThai,NgayDat,NgayKham,GhiChu
 			FROM CaKham 
 			WHERE CaKhamID=@Id";
@@ -127,7 +138,7 @@ public class CaKhamRepository : ICaKhamRepository
 			JOIN LichLamViecNhanVien llv ON ck.LichLamViecID = llv.LichLamViecID
 			WHERE CAST(ck.NgayKham AS DATE)=@NgayKham 
 			AND ck.LoaiCaKham=@LoaiCaKham AND ck.TrangThai!=N'Đã hủy'
-			AND (@NhanVienID IS NULL OR llv.NhanVienID = @NhanVienID)
+			AND (@NhanVienID IS NULL OR ck.NhanVienID = @NhanVienID)
 			GROUP BY ck.KhungGioID 
 			HAVING ((@LoaiCaKham=N'Khám' AND COUNT(CASE WHEN ck.TrangThai!=N'Trống' THEN 1 END)<5) 
 				OR (@LoaiCaKham=N'Điều trị' AND COUNT(CASE WHEN ck.TrangThai!=N'Trống' THEN 1 END)<1))
@@ -154,8 +165,8 @@ public class CaKhamRepository : ICaKhamRepository
 			FROM CaKham ck
 			JOIN LichLamViecNhanVien llv ON ck.LichLamViecID = llv.LichLamViecID
 			WHERE CAST(ck.NgayKham AS DATE)=@NgayKham AND ck.KhungGioID=@KhungGioID
-				AND (@NhanVienID IS NULL OR llv.NhanVienID = @NhanVienID)
-				AND ck.LoaiCaKham=@LoaiCaKham AND TrangThai=N'Trống' 
+				AND ck.LoaiCaKham=@LoaiCaKham AND TrangThai=N'Trống'
+				AND (@NhanVienID IS NULL OR ck.NhanVienID = @NhanVienID)
 			ORDER BY CaKhamID ASC
 		";
 		await using var conn = new SqlConnection(_connectionString);
@@ -281,19 +292,21 @@ public class CaKhamRepository : ICaKhamRepository
 		return (list, total);
 	}
 
-	public async Task<int> InsertAsync(string loaiCa, int khungGioId, DateTime ngay)
+	public async Task<int> InsertAsync(CaKham entity)
 	{
+		const string sql = @"
+        INSERT INTO CaKham (LoaiCaKham, KhungGioID, NgayKham, TrangThai, NhanVienID, LichLamViecID, PhongChucNangID )
+        VALUES (@Loai, @Khung, @Ngay, N'Trống', @NhanVien, @Lich, @Phong )";
+
 		using var conn = new SqlConnection(_connectionString);
-
-		var sql = @"
-        INSERT INTO CaKham (LoaiCaKham,KhungGioID,NgayKham,TrangThai)
-        VALUES(@Loai,@Khung,@Ngay,N'Trống')";
-
 		using var cmd = new SqlCommand(sql, conn);
 
-		cmd.Parameters.Add("@Loai", SqlDbType.NVarChar, 50).Value = loaiCa;
-		cmd.Parameters.Add("@Khung", SqlDbType.Int).Value = khungGioId;
-		cmd.Parameters.Add("@Ngay", SqlDbType.Date).Value = ngay.Date;
+		cmd.Parameters.AddWithValue("@Loai", entity.LoaiCaKham);
+		cmd.Parameters.AddWithValue("@Khung", entity.KhungGioID);
+		cmd.Parameters.AddWithValue("@Ngay", entity.NgayKham);
+		cmd.Parameters.Add("@NhanVien", SqlDbType.Int) .Value = (object?)entity.NhanVienID ?? DBNull.Value;
+		cmd.Parameters.Add("@Lich", SqlDbType.Int) .Value = (object?)entity.LichLamViecID ?? DBNull.Value;
+		cmd.Parameters.Add("@Phong", SqlDbType.Int) .Value = (object?)entity.PhongChucNangID ?? DBNull.Value;
 
 		await conn.OpenAsync();
 		return await cmd.ExecuteNonQueryAsync();
@@ -396,29 +409,6 @@ public class CaKhamRepository : ICaKhamRepository
 		await conn.OpenAsync();
 		await cmd.ExecuteNonQueryAsync();
 	}
-	public async Task<int> AssignAsync(DateTime tuNgay, DateTime denNgay)
-	{
-		const string sql = @"
-			UPDATE ck
-			SET 
-				ck.LichLamViecID = llv.LichLamViecID,
-				ck.PhongChucNangID = nv.PhongChucNangID
-			FROM CaKham ck
-			JOIN KhungGioKham kg ON ck.KhungGioID = kg.KhungGioID
-			JOIN LichLamViecNhanVien llv 
-				ON llv.CaLamViec = kg.CaLamViec
-				AND llv.Ngay = ck.NgayKham
-			JOIN NhanVien nv ON nv.NhanVienID = llv.NhanVienID
-			WHERE ck.NgayKham BETWEEN @TuNgay AND @DenNgay
-				AND ck.LichLamViecID IS NULL
-		";
-		await using var conn = new SqlConnection(_connectionString);
-		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@TuNgay", SqlDbType.Date).Value = tuNgay.Date;
-		cmd.Parameters.Add("@DenNgay", SqlDbType.Date).Value = denNgay.Date;
-		await conn.OpenAsync();
-		return await cmd.ExecuteNonQueryAsync();
-	}
 	#region Mapping
 
 	private CaKham MapToEntity(SqlDataReader r)
@@ -426,6 +416,7 @@ public class CaKhamRepository : ICaKhamRepository
 		return new CaKham(
 			r.GetInt32(r.GetOrdinal("CaKhamID")),
 			r.GetString(r.GetOrdinal("LoaiCaKham")),
+			r.IsDBNull("NhanVienID") ? null : r.GetInt32("NhanVienID"),
 			r.IsDBNull(r.GetOrdinal("LichLamViecID")) ? null : r.GetInt32(r.GetOrdinal("LichLamViecID")),
 			r.GetInt32(r.GetOrdinal("KhungGioID")),
 			r.IsDBNull(r.GetOrdinal("PhongChucNangID")) ? null : r.GetInt32(r.GetOrdinal("PhongChucNangID")),
@@ -443,11 +434,16 @@ public class CaKhamRepository : ICaKhamRepository
 		return new CaKhamListReadModel
 		{
 			CaKhamID = r.GetInt32(r.GetOrdinal("CaKhamID")),
+			NhanVien = r.IsDBNull(r.GetOrdinal("NhanVienID")) ? null : new NameResponseDTO
+			{
+				Id = r.GetInt32(r.GetOrdinal("NhanVienID")),
+				Name = r.IsDBNull(r.GetOrdinal("TenBacSi")) ? null : r.GetString(r.GetOrdinal("TenBacSi"))
+			},
 			LoaiCaKham = r.GetString(r.GetOrdinal("LoaiCaKham")),
 			NgayKham = r.GetDateTime(r.GetOrdinal("NgayKham")),
 			TenKhungGio = r.GetString(r.GetOrdinal("TenKhung")),
 			TenPhong = r.IsDBNull(r.GetOrdinal("TenPhong")) ? null : r.GetString(r.GetOrdinal("TenPhong")),
-			HoTen = r.IsDBNull(r.GetOrdinal("HoTen")) ? null : r.GetString(r.GetOrdinal("HoTen")),
+			HoTen = r.IsDBNull(r.GetOrdinal("TenBenhNhan")) ? null : r.GetString(r.GetOrdinal("TenBenhNhan")),
 			LyDoKham = r.IsDBNull(r.GetOrdinal("LyDoKham")) ? null : r.GetString(r.GetOrdinal("LyDoKham")),
 			TrangThai = r.GetString(r.GetOrdinal("TrangThai"))
 		};
@@ -458,12 +454,19 @@ public class CaKhamRepository : ICaKhamRepository
 		return new CaKhamReadModel
 		{
 			CaKhamID = r.GetInt32(r.GetOrdinal("CaKhamID")),
+
+			NhanVien = r.IsDBNull(r.GetOrdinal("NhanVienID")) ? null : new NameResponseDTO
+				{
+					Id = r.GetInt32(r.GetOrdinal("NhanVienID")),
+					Name = r.IsDBNull(r.GetOrdinal("TenBacSi")) ? null : r.GetString(r.GetOrdinal("TenBacSi"))
+				},
+
 			LichLamViecID = r.IsDBNull(r.GetOrdinal("LichLamViecID")) ? null : r.GetInt32(r.GetOrdinal("LichLamViecID")),
 			LoaiCaKham = r.GetString(r.GetOrdinal("LoaiCaKham")),
 			NgayKham = r.GetDateTime(r.GetOrdinal("NgayKham")),
 			TenKhungGio = r.GetString(r.GetOrdinal("TenKhung")),
 			TenPhong = r.IsDBNull(r.GetOrdinal("TenPhong")) ? null : r.GetString(r.GetOrdinal("TenPhong")),
-			HoTen = r.IsDBNull(r.GetOrdinal("HoTen")) ? null : r.GetString(r.GetOrdinal("HoTen")),
+			HoTen = r.IsDBNull(r.GetOrdinal("TenBenhNhan")) ? null : r.GetString(r.GetOrdinal("TenBenhNhan")),
 			LyDoKham = r.IsDBNull(r.GetOrdinal("LyDoKham")) ? null : r.GetString(r.GetOrdinal("LyDoKham")),
 			TrangThai = r.GetString(r.GetOrdinal("TrangThai")),
 			NgayDat = r.IsDBNull(r.GetOrdinal("NgayDat")) ? null : r.GetDateTime(r.GetOrdinal("NgayDat")),
