@@ -86,12 +86,17 @@ public class CaKham
 	{
 		if (TrangThai == TrangThaiCaKham.Trong.ToDbValue() || TrangThai == TrangThaiCaKham.HoanThanh.ToDbValue() || TrangThai == TrangThaiCaKham.DaHuy.ToDbValue())
 			throw new InvalidOperationException("Ca khám chưa được đặt");
-
-		ThongTinID = null;
-		LyDoKham = null;
-		NgayDat = null;
-		GhiChu = null;
-		TrangThai = TrangThaiCaKham.Trong.ToDbValue();
+		var cutOffTime = NgayKham.AddDays(-1);
+		if (DateTime.Now <= cutOffTime)
+		{
+			ThongTinID = null;
+			LyDoKham = null;
+			NgayDat = null;
+			GhiChu = null;
+			TrangThai = TrangThaiCaKham.Trong.ToDbValue(); 
+		}
+		else
+			TrangThai = TrangThaiCaKham.DaHuy.ToDbValue();
 	}
 
 	public void CapNhatTrangThai(string trangThaiMoi)
