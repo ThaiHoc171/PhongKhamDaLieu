@@ -150,8 +150,8 @@ public class CaKhamRepository : ICaKhamRepository
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@NgayKham", SqlDbType.Date).Value = ngayKham.Date;
 		cmd.Parameters.Add("@LoaiCaKham", SqlDbType.NVarChar, 50).Value = loaiCaKham;
-		cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId;
-		await conn.OpenAsync();
+        cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId.HasValue ? nhanVienId.Value : DBNull.Value;
+        await conn.OpenAsync();
 		await using var reader = await cmd.ExecuteReaderAsync();
 		while (await reader.ReadAsync())
 		{
@@ -176,8 +176,8 @@ public class CaKhamRepository : ICaKhamRepository
 		cmd.Parameters.Add("@NgayKham", SqlDbType.Date).Value = ngayKham.Date;
 		cmd.Parameters.Add("@KhungGioID", SqlDbType.Int).Value = khungGioId;
 		cmd.Parameters.Add("@LoaiCaKham", SqlDbType.NVarChar, 50).Value = loaiCaKham;
-		cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId;
-		await conn.OpenAsync();
+        cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId.HasValue ? nhanVienId.Value : DBNull.Value;
+        await conn.OpenAsync();
 		var result = await cmd.ExecuteScalarAsync();
 		return result == null ? 0 : Convert.ToInt32(result);
 	}
