@@ -3,6 +3,7 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using static Amazon.S3.Util.S3EventNotification;
 
 namespace Application.Services;
 
@@ -17,6 +18,7 @@ public class PhienKhamService
 	private readonly IHoSoBenhAnRepository _hoSoBenhAnRepo;
 	private readonly INhanVienRepository _nhanVienRepo;
 	private readonly ITaiKhamRepository _taiKhamRepo;
+	private readonly IBuoiDieuTriRepository _buoiDieuTri;
 
 	public PhienKhamService(
 		IPhienKhamRepository repo,
@@ -27,7 +29,8 @@ public class PhienKhamService
 		ICaKhamRepository caKhamRepo,
 		ILichLamViecRepository lichRepo,
 		INhanVienRepository nhanVienRepo,
-		ITaiKhamRepository taiKhamRepo)
+		ITaiKhamRepository taiKhamRepo,
+		IBuoiDieuTriRepository buoiDieuTri)
 	{
 		_repo = repo;
 		_pkBenhrepo = pkBenhrepo;
@@ -38,6 +41,7 @@ public class PhienKhamService
 		_lichRepo = lichRepo;
 		_nhanVienRepo = nhanVienRepo;
 		_taiKhamRepo = taiKhamRepo;
+		_buoiDieuTri = buoiDieuTri;
 	}
 
 	public async Task<ApiResponse<int>> CreateAsync(int caKhamID)
@@ -69,14 +73,12 @@ public class PhienKhamService
 
 			if (bn == null)
 				return ApiResponse<int>.Fail("Bệnh nhân không tồn tại");
-
 			var entity = new PhienKham(
 				caKhamID,
 				bn.BenhNhanID,
 				nv.NhanVienID,
 				nv.PhongChucNangID
 			);
-
 			var id = await _repo.AddAsync(entity);
 
 			if (id <= 0)
@@ -135,6 +137,12 @@ public class PhienKhamService
 				return ApiResponse<bool>.Fail("Phiên khám không tồn tại");
 
 			pk.Start(TrangThaiKhamEnum.DangKham);
+			var buoiDieuTri = await _buoiDieuTri.GetByCaKhamAsync(pk.CaKhamID);
+			if (buoiDieuTri != null)
+			{
+				buoiDieuTri.Start(pk.CaKhamID);
+				await _buoiDieuTri.UpdateAsync(buoiDieuTri);
+			}
 
 			var row = await _repo.UpdateAsync(pk);
 
@@ -209,8 +217,14 @@ public class PhienKhamService
 					taiKham.Complete();
 					await _taiKhamRepo.UpdateAsync(taiKham);
 				}
-			}	
-				
+			}
+			var buoiDieuTri = await _buoiDieuTri.GetByCaKhamAsync(pk.CaKhamID);
+			if (buoiDieuTri != null)
+			{
+				buoiDieuTri.Complete(DateTime.Now);
+				await _buoiDieuTri.UpdateAsync(buoiDieuTri);
+			}
+
 
 			return ApiResponse<bool>.SuccessResponse(true, "Kết thúc phiên khám thành công");
 		}
@@ -237,8 +251,35 @@ public class PhienKhamService
 
 			pk.Cancel();
 
-			var row = await _repo.UpdateAsync(pk);
+			var caKham= await _caKhamRepo.GetByIdAsync(pk.CaKhamID);
+			if(caKham != null)
+			{
+				caKham.HuyDangKy();
+				await _caKhamRepo.UpdateAsync(caKham);
+			}
 
+			var taiKhamId = await _taiKhamRepo.GetIdByCaKham(pk.CaKhamID);
+
+			if (taiKhamId != 0)
+			{
+				var taikham = await _taiKhamRepo.GetByIdAsync(taiKhamId);
+				if (taikham != null)
+				{
+					taikham.Cancel();
+					await _taiKhamRepo.UpdateAsync(taikham);
+				}
+			}
+			var buoiDieuTri = await _buoiDieuTri.GetByCaKhamAsync(pk.CaKhamID);
+			if (buoiDieuTri != null)
+			{
+				buoiDieuTri.Cancel();
+				await _buoiDieuTri.UpdateAsync(buoiDieuTri);
+			}
+
+
+
+			var row = await _repo.UpdateAsync(pk);
+			
 			if (row == 0)
 				return ApiResponse<bool>.Fail("Huỷ phiên khám thất bại");
 

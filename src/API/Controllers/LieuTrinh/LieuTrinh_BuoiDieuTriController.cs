@@ -23,50 +23,6 @@ public class BuoiDieuTriController : ControllerBase
 			return BadRequest(result);
 		return CreatedAtAction(nameof(GetById), new { id = result.Data }, result);
 	}
-	[Authorize(Policy = "KHAMBENH_WRITE")]
-	[HttpPut("{id}/start")]
-	public async Task<ActionResult<ApiResponse<bool>>> Start(
-		int id,
-		[FromQuery] int nhanVienID)
-	{
-		var result = await _service.StartAsync(id, nhanVienID);
-		if (!result.Success)
-			return BadRequest(result);
-		return Ok(result);
-	}
-	[Authorize(Policy = "KHAMBENH_WRITE")]
-	[HttpPut("{id}/complete")]
-	public async Task<ActionResult<ApiResponse<bool>>> Complete(
-		int id,
-		[FromBody] BuoiDieuTriUpdateDTO dto)
-	{
-		var result = await _service.CompleteAsync(id, dto);
-		if (!result.Success)
-			return BadRequest(result);
-		return Ok(result);
-	}
-	[Authorize(Policy = "KHAMBENH_WRITE")]
-	[HttpPut("{id}/cancel")]
-	public async Task<ActionResult<ApiResponse<bool>>> Cancel(
-		int id,
-		[FromQuery] string? ghiChu)
-	{
-		var result = await _service.CancleAsync(id, ghiChu);
-		if (!result.Success)
-			return BadRequest(result);
-		return Ok(result);
-	}
-	[Authorize(Policy = "KHAMBENH_WRITE")]
-	[HttpPut("{id}/image")]
-	public async Task<ActionResult<ApiResponse<bool>>> UpdateImage(
-		int id,
-		[FromBody] string? hinhAnhJson)
-	{
-		var result = await _service.UpdateImageAsync(id, hinhAnhJson);
-		if (!result.Success)
-			return BadRequest(result);
-		return Ok(result);
-	}
 	[Authorize(Policy = "KHAMBENH_READ")]
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ApiResponse<BuoiDieuTriReadModel>>> GetById(int id)

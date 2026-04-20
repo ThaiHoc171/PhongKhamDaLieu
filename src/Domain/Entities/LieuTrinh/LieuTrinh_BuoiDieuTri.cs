@@ -53,14 +53,14 @@ public class BuoiDieuTri
 		GhiChu = ghiChu;
 		HinhAnhJSON = hinhAnhJSON;
 	}
-	public void BatDauDieuTri(int nhanVienID)
+	public void Start(int nhanVienID)
 	{
 		if (TrangThai != TrangThaiBuoiDieuTriEnum.ChoXuLy)
 			throw new InvalidOperationException("Buổi điều trị không thể bắt đầu");
 		NhanVienID = nhanVienID;
 		TrangThai = TrangThaiBuoiDieuTriEnum.DangThucHien;
 	}
-	public void HoanThanh(DateTime ngayThucHien, string? ghiChu)
+	public void Complete(DateTime ngayThucHien)
 	{
 		if (TrangThai != TrangThaiBuoiDieuTriEnum.DangThucHien)
 			throw new InvalidOperationException("Buổi điều trị chưa được bắt đầu");
@@ -69,14 +69,12 @@ public class BuoiDieuTri
 				$"Không thể thực hiện trước ngày dự kiến ({NgayDuKien:dd/MM/yyyy})"
 			);
 		NgayThucHien = ngayThucHien;
-		GhiChu = ghiChu;
 		TrangThai = TrangThaiBuoiDieuTriEnum.HoanThanh;
 	}
-	public void Huy(string? ghiChu)
+	public void Cancel()
 	{
 		if (TrangThai == TrangThaiBuoiDieuTriEnum.HoanThanh)
 			throw new InvalidOperationException("Không thể huỷ buổi điều trị đã hoàn thành");
-		GhiChu = ghiChu;
 		TrangThai = TrangThaiBuoiDieuTriEnum.DaHuy;
 	}
 	public void CapNhatHinhAnh(string? hinhAnhJSON)

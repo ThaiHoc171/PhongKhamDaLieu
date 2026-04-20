@@ -64,18 +64,19 @@ public class BuoiDieuTriRepository : IBuoiDieuTriRepository
 			list.Add(MapList(reader));
 		return list;
 	}
-	public async Task<bool> ExistsByCaKhamAsync(int caKhamID)
+	public async Task<BuoiDieuTri?> GetByCaKhamAsync(int caKhamId)
 	{
-		const string sql =@"
-			SELECT 1
+		var sql = $@"
+			{BaseSelect}
 			FROM LieuTrinh_BuoiDieuTri
-			WHERE CaKhamID=@CaKhamID
+			WHERE CaKhamID=@Id
 		";
 		await using var conn = CreateConnection();
 		await using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@CaKhamID", SqlDbType.Int).Value = caKhamID;
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = caKhamId;
 		await conn.OpenAsync();
-		return await cmd.ExecuteScalarAsync() != null;
+		await using var reader = await cmd.ExecuteReaderAsync();
+		return await reader.ReadAsync() ? MapEntity(reader) : null;
 	}
 	public async Task<int> CountHoanThanhAsync(int lieuTrinhID)
 	{
@@ -88,7 +89,7 @@ public class BuoiDieuTriRepository : IBuoiDieuTriRepository
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@LieuTrinhID", SqlDbType.Int).Value = lieuTrinhID;
 		await conn.OpenAsync();
-		return (int)await cmd.ExecuteScalarAsync();
+		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
 	}
 	public async Task<int> GetMaxSoBuoiAsync(int lieuTrinhID)
 	{
@@ -101,7 +102,7 @@ public class BuoiDieuTriRepository : IBuoiDieuTriRepository
 		await using var cmd = new SqlCommand(sql, conn);
 		cmd.Parameters.Add("@LieuTrinhID", SqlDbType.Int).Value = lieuTrinhID;
 		await conn.OpenAsync();
-		return (int)await cmd.ExecuteScalarAsync();
+		return Convert.ToInt32(await cmd.ExecuteScalarAsync());
 	}
 	public async Task<BuoiDieuTri?> GetLastAsync(int lieuTrinhID)
 	{

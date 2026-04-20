@@ -8,7 +8,7 @@ public interface IBuoiDieuTriRepository
 	Task<BuoiDieuTriReadModel?> GetDetailAsync(int id);
 	Task<int> GetMaxSoBuoiAsync(int lieuTrinhID);
 	Task<int> CountHoanThanhAsync(int lieuTrinhID);
-	Task<bool> ExistsByCaKhamAsync(int caKhamID);
+	Task<BuoiDieuTri?> GetByCaKhamAsync(int caKhamId);
 	Task<BuoiDieuTri?> GetLastAsync(int lieuTrinhID);
 	Task<int> AddAsync(BuoiDieuTri buoi);
 	Task UpdateAsync(BuoiDieuTri buoi);
