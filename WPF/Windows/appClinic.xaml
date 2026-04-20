@@ -55,16 +55,16 @@
                                 </Expander.Header>
 
                                 <StackPanel>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnPhienKham_Click" >
+                                    <Button x:Name="btnPhienKham" Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnPhienKham_Click" >
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="Prescription"/>
-                                            <TextBlock x:Name="txtPhienKham" Text="Phiên khám" Margin="10,0,0,0"/>
+                                            <TextBlock Text="Phiên khám" Margin="10,0,0,0"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnPhienKhamCaNhan_Click" >
+                                    <Button x:Name="btnPhienKhamCaNhan" Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnPhienKhamCaNhan_Click" >
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="Prescription"/>
-                                            <TextBlock x:Name="txtPhienKhamCaNhan" Text="Phiên khám cá nhân" Margin="10,0,0,0"/>
+                                            <TextBlock  Text="Phiên khám cá nhân" Margin="10,0,0,0"/>
                                         </StackPanel>
                                     </Button>
                                     <!--

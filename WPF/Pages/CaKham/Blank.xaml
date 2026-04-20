@@ -23,7 +23,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Margin="5">
+                    <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Left">
                         <DatePicker x:Name="dtpDate" Padding="12,6" Width="150"
                                     SelectedDateFormat="Short" Language="vi-VN" 
                                     materialDesign:HintAssist.Hint="Ngày khám" 
@@ -44,13 +44,6 @@
                             </StackPanel>
                         </Button>
                         <Button Margin="5" Padding="12,6" Command="{Binding AddCommand}"
-                                Style="{StaticResource PrimaryButton}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Plus"/>
-                                <TextBlock Text="Thêm ca" Margin="5,0,0,0"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Margin="5" Padding="12,6" Command="{Binding AssignCommand}"
                                 Style="{StaticResource PrimaryButton}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Plus"/>

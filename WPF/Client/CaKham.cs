@@ -25,7 +25,14 @@ public class CaKhamClient : AppClientBase
 		int page = 1,
 		int size = 15)
 	{
-		var url = $"{BASE}?ngayKham={ngayKham:yyyy-MM-dd}&trangThai={trangThai}&loaiCaKham={loaiCaKham}&pageNumber={page}&pageSize={size}";
+		var url =
+			$"{BASE}" +
+			$"?ngayKham={ngayKham:yyyy-MM-dd}" +
+			$"&trangThai={Uri.EscapeDataString(trangThai)}" +
+			$"&loaiCaKham={Uri.EscapeDataString(loaiCaKham)}" +
+			$"&pageNumber={page}" +
+			$"&pageSize={size}";
+
 		return GetAsync<PagedResult<CaKhamListReadModel>>(url);
 	}
 
@@ -49,11 +56,6 @@ public class CaKhamClient : AppClientBase
 	public Task<ApiResult<bool>> Cancel(int id)
 		=> PutAsync<bool>($"{BASE}/{id}/cancel", null);
 
-	public Task<ApiResult<AssignLichLamViecReport>> AssignLichLamViec(CaKhamGenerate req)
-	{
-		var url = $"{BASE}/assign-lich";
-		return PostAsync<AssignLichLamViecReport>(url, req);
-	}
 	//GET CAKHAM TRONG THEO NHANVIEN
 	public Task<ApiResult<List<int>>> GetKhungGioTrong(DateTime ngay, string loai, int nhanVienId)
 	{

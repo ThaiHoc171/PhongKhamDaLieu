@@ -39,10 +39,11 @@ public static class NavigationRoutes
 
 		{ "TaiKham", () => new TaiKhamPage() },
 		{ "LieuTrinh", () => new LieuTrinhPage() }
+
 	};
 	public static readonly Dictionary<string, string> Permissions = new()
 	{
-		{ "Dashboard", "" },
+		{ "Dashboard", "HETHONG_READ" },
 		{ "ChucVu", "NHANSU_READ" },
 		{ "CanLamSang", "CSVC_READ" },
 		{ "ThietBi", "CSVC_READ" },

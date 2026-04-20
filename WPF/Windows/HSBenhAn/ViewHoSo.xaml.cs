@@ -13,19 +13,20 @@ public partial class ViewHoSo : Window
 		InitializeComponent();
 		_id = id;
 		txtName.Text = name;
+		Loaded += async (_,__) => await LoadData();
 	}
 	private readonly int _id;
 	private HoSoBenhAnReadModel? _data;
 	private readonly HoSoBenhAnClient _client = new();
-	private async void XemHoSo_Loaded(object sender, RoutedEventArgs e)
+	private async Task LoadData()
 	{
 		try
 		{
 			var result = await _client.GetByBenhNhanId(_id);
 
-			if (!result.Success || result.Data == null)
+			if (result?.Data == null)
 			{
-				SnackbarHelper.ShowError(result.Message ?? "Không tìm thấy dữ liệu!");
+				SnackbarHelper.ShowError(result?.Message ?? "Không tìm thấy dữ liệu!");
 				Close();
 				return;
 			}

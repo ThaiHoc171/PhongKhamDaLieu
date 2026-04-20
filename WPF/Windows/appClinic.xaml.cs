@@ -14,12 +14,13 @@ namespace WPF.Windows
 			SnackbarHelper.Init(MainSnackbar!);
 			txtName.Text = Session.HoTen.Name;
 		}
-		private readonly NavigationHelper _nav = new NavigationHelper();
+		public readonly NavigationHelper _nav = new NavigationHelper();
 		public void OpenPage(Page page, string title)
 		{
 			txtHeader.Text = title;
 			MainFrame.Navigate(page);
 		}
+
 		private void Expander_Expanded(object sender, RoutedEventArgs e)
 		{
 			var current = sender as Expander;
@@ -40,9 +41,21 @@ namespace WPF.Windows
 					exp.IsExpanded = false;
 			}
 		}
+		
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			_nav.Navigate("dashboard");
+			
+			if (Session.VaiTro == "Admin")
+			{
+				btnPhienKham.Visibility = Visibility.Visible;
+				btnPhienKhamCaNhan.Visibility = Visibility.Collapsed;
+			}
+			else
+			{
+				btnPhienKham.Visibility = Visibility.Collapsed;
+				btnPhienKhamCaNhan.Visibility = Visibility.Visible;
+			}
+			_nav.Navigate("Dashboard");
 		}
 		private void Header_MouseDown(object sender, MouseButtonEventArgs e)
 		{

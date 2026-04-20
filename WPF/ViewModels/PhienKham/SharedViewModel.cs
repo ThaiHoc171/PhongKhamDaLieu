@@ -40,15 +40,14 @@ public class SharedViewModel : PagedViewModel
 		}
 	}
 
-	private NameHelper? _selectedDoctor;
-	public NameHelper? SelectedDoctor
+	private int? _selectedDoctorId;
+	public int? SelectedDoctorId
 	{
-		get => _selectedDoctor;
+		get => _selectedDoctorId;
 		set
 		{
-			_selectedDoctor = value;
+			_selectedDoctorId = value;
 			OnPropertyChanged();
-
 			_ = Reload();
 		}
 	}
@@ -70,13 +69,13 @@ public class SharedViewModel : PagedViewModel
 
 	#region COMMAND
 
-	public ICommand RefreshCommand => new RelayCommand(() =>
+	public ICommand RefreshCommand => new RelayCommand(async() =>
 	{
 		Keyword = "";
-		SelectedDoctor = null;
-		SelectedStatus = null;
+		SelectedDoctorId = 0;
+		SelectedStatus = Statuses.FirstOrDefault();
 		Page = 1;
-		return Task.CompletedTask;
+		await LoadData();
 	});
 
 	public ICommand ViewCommand => new RelayCommandWithParam<PhienKhamReadListModel>(item =>
@@ -135,7 +134,7 @@ public class SharedViewModel : PagedViewModel
 		{
 			IsLoading = true;
 
-			int? doctorId = SelectedDoctor?.Id == 0 ? null : SelectedDoctor?.Id;
+			int? doctorId = SelectedDoctorId == 0 ? null : SelectedDoctorId;
 			string? status = SelectedStatus == "Tất cả" ? null : SelectedStatus;
 
 			var res = string.IsNullOrWhiteSpace(Keyword)

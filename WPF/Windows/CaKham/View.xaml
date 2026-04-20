@@ -53,8 +53,10 @@
 
                 <TextBox x:Name="txtStatus" Grid.Row="1" Grid.Column="1" Margin="10" Height="40" Padding="12,6"
                          IsReadOnly="True" materialDesign:HintAssist.Hint="Trạng thái"/>
-
-                <TextBox x:Name="txtLyDo" Grid.Row="2" Grid.ColumnSpan="2" 
+                <TextBox x:Name="txtDoctor" Grid.Row="2" Grid.Column="0" 
+                         Margin="10" Height="40" Padding="12,6"
+                         IsReadOnly="True" materialDesign:HintAssist.Hint="Bác sĩ"/>
+                <TextBox x:Name="txtLyDo" Grid.Row="2" Grid.Column="1" 
                          Margin="10" Height="40" Padding="12,6"
                          IsReadOnly="True" materialDesign:HintAssist.Hint="Lý do"/>
 

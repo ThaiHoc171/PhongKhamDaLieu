@@ -16,6 +16,17 @@ public class BlankViewModel : PagedViewModel
 
 	#region FILTER
 
+	private int? _selectedDoctorId;
+	public int? SelectedDoctorId
+	{
+		get => _selectedDoctorId;
+		set
+		{
+			_selectedDoctorId = value;
+			OnPropertyChanged();
+			Reload();
+		}
+	}
 	private DateTime _selectedDate = DateTime.Today;
 	public DateTime SelectedDate
 	{
@@ -75,24 +86,6 @@ public class BlankViewModel : PagedViewModel
 		OverlayHelper.Hide(overlay);
 	});
 
-	public ICommand AssignCommand => new RelayCommand(async () =>
-	{
-		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
-		OverlayHelper.Show(overlay);
-
-		await DialogHelper.OpenDialogAsync(
-			new AssignLich()
-			{
-				Owner = Application.Current.MainWindow
-			},
-			async () =>
-			{
-				await LoadData();
-			});
-
-		OverlayHelper.Hide(overlay);
-	});
-
 	public ICommand RegisterCommand => new RelayCommandWithParam<CaKhamListReadModel>(async item =>
 	{
 		if (item == null) return;
@@ -101,7 +94,7 @@ public class BlankViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new Register(item.CaKhamID, item.TenKhungGio, item.NgayKham)
+			new Register(item.CaKhamID, item.TenKhungGio, item.NgayKham, item.NhanVien.Name)
 			{
 				Owner = Application.Current.MainWindow
 			},

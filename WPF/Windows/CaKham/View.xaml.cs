@@ -27,6 +27,7 @@ public partial class View : Window
 			txtID.Text = _id.ToString();
 			txtName.Text = result.Data.TenKhungGio + " / " + result.Data.NgayKham.ToString("dd/MM/yyyy");
 			txtUser.Text = result.Data.HoTen;
+			txtDoctor.Text = result.Data.NhanVien?.Name ?? null;
 			txtStatus.Text = result.Data.TrangThai;
 			txtLyDo.Text = result.Data.LyDoKham;
 			txtGhiChu.Text = result.Data.GhiChu;

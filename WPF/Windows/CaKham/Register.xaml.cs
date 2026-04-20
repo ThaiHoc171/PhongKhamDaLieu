@@ -9,12 +9,13 @@ namespace WPF.Windows.CaKham;
 
 public partial class Register : Window
 {
-	public Register(int id, string name , DateTime ngay)
+	public Register(int id, string name , DateTime ngay, string nhanVien)
 	{
 		InitializeComponent();
 		_id = id;
 		_name = name;
 		_ngay = ngay;
+		txtDoctor.Text = nhanVien;
 	}
 	private readonly int _id;
 	private readonly string _name;

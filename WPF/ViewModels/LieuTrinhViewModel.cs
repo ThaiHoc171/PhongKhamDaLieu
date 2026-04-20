@@ -1,9 +1,11 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows.Input;
 using System.Windows;
+using System.Windows.Input;
 using WPF.Client;
 using WPF.Common;
 using WPF.Models;
+using WPF.Pages;
+using WPF.Windows;
 
 namespace WPF.ViewModels;
 
@@ -107,23 +109,15 @@ public class LieuTrinhViewModel : PagedViewModel
 	});
 
 	public ICommand ViewCommand =>
-		new RelayCommandWithParam<TaiKhamReadListModel>(item =>
+		new RelayCommandWithParam<LieuTrinhDieuTriListReadModel>(item =>
 		{
 			if (item == null) return Task.CompletedTask;
 
-			var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
-			OverlayHelper.Show(overlay);
-
-			try
+			if (Application.Current.MainWindow is appClinic app)
 			{
-				new WPF.Windows.TaiKham.ViewDetail(item.TaiKhamID)
-				{
-					Owner = Application.Current.MainWindow
-				}.ShowDialog();
-			}
-			finally
-			{
-				OverlayHelper.Hide(overlay);
+				app.OpenPage(new LieuTrinhDetailPage(item.LieuTrinhID),
+					$"Quản lý liệu trình / {item.TenLieuTrinh}"
+				);
 			}
 
 			return Task.CompletedTask;

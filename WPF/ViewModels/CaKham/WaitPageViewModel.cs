@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Input;
 using WPF.Client;
@@ -74,26 +75,35 @@ public class WaitPageViewModel : PagedViewModel
 		});
 
 	public ICommand CancelCommand =>
-		new RelayCommandWithParam<CaKhamListReadModel>(async item =>
+	new RelayCommandWithParam<CaKhamListReadModel>(async item =>
+	{
+		if (item == null) return;
+
+		var confirm = await MessageHelper.Confirm("Bạn có chắc muốn hủy ca khám này?");
+		if (!confirm) return;
+
+		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
+		OverlayHelper.Show(overlay);
+
+		try
 		{
-			if (item == null) return;
+			var result = await _client.Cancel(item.CaKhamID);
 
-			var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
-			OverlayHelper.Show(overlay);
-
-			await DialogHelper.OpenDialogAsync(
-				new Cancel(item.CaKhamID)
-				{
-					Owner = Application.Current.MainWindow
-				},
-				async () =>
-				{
-					await LoadData();
-					SnackbarHelper.ShowSuccess("Đã hủy ca khám!");
-				});
-
+			if (result.Success)
+			{
+				await LoadData();
+				SnackbarHelper.ShowSuccess("Đã hủy ca khám!");
+			}
+			else
+			{
+				SnackbarHelper.ShowError(result.Message);
+			}
+		}
+		finally
+		{
 			OverlayHelper.Hide(overlay);
-		});
+		}
+	});
 
 	#endregion
 

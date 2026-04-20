@@ -4,7 +4,6 @@ using System.Windows.Input;
 using WPF.Client;
 using WPF.Common;
 using WPF.Models;
-using WPF.Windows.CaKham;
 
 namespace WPF.ViewModels.CaKham;
 
@@ -90,26 +89,36 @@ public class AcceptedViewModel : PagedViewModel
 		OverlayHelper.Hide(overlay);
 	});
 
-	public ICommand CancelCommand => new RelayCommandWithParam<CaKhamListReadModel>(async item =>
-	{
-		if (item == null) return;
+	public ICommand CancelCommand =>
+		new RelayCommandWithParam<CaKhamListReadModel>(async item =>
+		{
+			if (item == null) return;
 
-		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
-		OverlayHelper.Show(overlay);
+			var confirm = await MessageHelper.Confirm("Bạn có chắc muốn hủy ca khám này?");
+			if (!confirm) return;
 
-		await DialogHelper.OpenDialogAsync(
-			new Cancel(item.CaKhamID)
+			var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
+			OverlayHelper.Show(overlay);
+
+			try
 			{
-				Owner = Application.Current.MainWindow
-			},
-			async () =>
-			{
-				await LoadData();
-				SnackbarHelper.ShowSuccess("Đã hủy ca khám");
-			});
+				var result = await _client.Cancel(item.CaKhamID);
 
-		OverlayHelper.Hide(overlay);
-	});
+				if (result.Success)
+				{
+					await LoadData();
+					SnackbarHelper.ShowSuccess("Đã hủy ca khám!");
+				}
+				else
+				{
+					SnackbarHelper.ShowError(result.Message);
+				}
+			}
+			finally
+			{
+				OverlayHelper.Hide(overlay);
+			}
+		});
 
 	public ICommand NoShowCommand => new RelayCommandWithParam<CaKhamListReadModel>(async item =>
 	{
@@ -134,13 +143,13 @@ public class AcceptedViewModel : PagedViewModel
 		if (!confirm) return;
 
 		var res = await _client.UpdateTrangThai(item.CaKhamID,
-			new CaKhamTrangThaiDTO { TrangThai = "Không đến" });
-
+			new CaKhamTrangThaiDTO { TrangThai = item.TrangThai, GhiChu = "Không đến" });
 		if (res.Success)
 		{
 			await LoadData();
-			SnackbarHelper.ShowSuccess("Đã cập nhật");
+			SnackbarHelper.ShowSuccess("Đã hủy ca khám");
 		}
+		await _client.Cancel(item.CaKhamID);
 	});
 
 	#endregion

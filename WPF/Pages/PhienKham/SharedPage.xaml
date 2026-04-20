@@ -37,11 +37,12 @@
                         <ComboBox x:Name="cboDoctor" Width="200" Margin="5" 
                                   materialDesign:HintAssist.Hint="Bác sĩ" 
                                   ItemsSource="{Binding Doctors}"
-                                  SelectedItem="{Binding Doctors}"/>
+                                  DisplayMemberPath="Name" SelectedValuePath="Id"
+                                  SelectedValue="{Binding SelectedDoctorId}"/>
                         <ComboBox x:Name="cboStatus" Width="150" Margin="5" Padding="12,6"
                                   materialDesign:HintAssist.Hint="Trạng thái" 
                                   ItemsSource="{Binding Statuses}"
-                                  SelectedItem="{Binding Status}"/>
+                                  SelectedItem="{Binding SelectedStatus}"/>
                         <Button Margin="5" Padding="12,6" Command="{Binding RefreshCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Refresh"/>

@@ -5,12 +5,7 @@ public class BuoiDieuTriRequestDTO
 	public int LieuTrinhID { get; set; }
 	public int CaKhamID { get; set; }
 }
-public class BuoiDieuTriUpdateDTO
-{
-	public int? NhanVienID { get; set; }
-	public DateTime? NgayThucHien { get; set; }
-	public string? GhiChu { get; set; }
-}
+
 public class BuoiDieuTriReadModel
 {
 	public int BuoiDieuTriID { get; set; }

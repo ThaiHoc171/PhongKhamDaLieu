@@ -8,6 +8,7 @@ using WPF.Common;
 using WPF.Models;
 using WPF.Windows.HSBenhAn;
 using WPF.Windows.TaiKham;
+using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace WPF.ViewModels.PhienKham;
 
@@ -31,6 +32,7 @@ public class ConsultationViewModel : BaseViewModel
 	private readonly CaKhamClient _caKhamClient = new();
 	private readonly ToaThuocClient _toaThuocClient = new();
 	private readonly TaiKhamClient _taiKham = new();
+	private readonly HoSoBenhAnClient _hoso = new();
 	#endregion
 
 	#region STATE
@@ -442,12 +444,21 @@ public class ConsultationViewModel : BaseViewModel
 		});
 	});
 
-	public ICommand RecordCommand => new RelayCommand(() =>
+	public ICommand RecordCommand => new RelayCommand(async() =>
 	{
-		OpenWindow(() =>
-		{
-			return new UpdateHoSo(_id, BenhNhan);
-		});
+		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
+		OverlayHelper.Show(overlay);
+
+		var res = await _hoso.GetByBenhNhanId(_benhNhanId);
+
+		Window win = res.Success && res.Data != null
+			? new WPF.Windows.HSBenhAn.UpdateHoSo(_benhNhanId, BenhNhan)
+			: new WPF.Windows.HSBenhAn.AddHoSo(_benhNhanId, BenhNhan);
+
+		win.Owner = Application.Current.MainWindow;
+		win.ShowDialog();
+
+		OverlayHelper.Hide(overlay);
 	});
 	public ICommand RecheckCommand => new RelayCommand(() =>
 	{
