@@ -153,7 +153,7 @@ public class AuthService
 					"NHANSU_READ",
 					"KHAMBENH_READ","KHAMBENH_WRITE",
 					"BENHNHAN_WRITE","BENHNHAN_READ",
-					"LICH_READ",
+					"LICH_READ", "LICH_WRITE",
 					"HETHONG_READ",
 				});
 			}
@@ -167,7 +167,7 @@ public class AuthService
 					"NHANSU_READ",
 					"KHAMBENH_READ","KHAMBENH_WRITE",
 					"BENHNHAN_WRITE","BENHNHAN_READ",
-					"LICH_READ",
+					"LICH_READ", "LICH_WRITE",
 					"HETHONG_READ",
 			});
 		}
