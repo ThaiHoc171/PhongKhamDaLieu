@@ -89,7 +89,7 @@ public class BaiVietController : ControllerBase
 		return Ok(result);
 	}
 	[Authorize(Policy = "PUBLIC_READ")]
-	[HttpGet]
+	[HttpGet("search")]
 	public async Task<ActionResult<ApiResponse<PagedResult<BaiVietListReadModel>>>> Search([FromQuery] string keyword,
 		[FromQuery] int page = 1,
 		[FromQuery] int size = 10)
