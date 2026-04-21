@@ -23,7 +23,7 @@ public class BaiVietController : ControllerBase
 	[HttpPost]
 	public async Task<ActionResult<ApiResponse<int>>> Create([FromBody] ThemBaiVietDTO dto)
 	{
-		var result = await _service.ThemAsync(dto);
+		var result = await _service.CreateAsync(dto);
 
 		if (!result.Success)
 			return BadRequest(result);
@@ -40,7 +40,46 @@ public class BaiVietController : ControllerBase
 	[HttpPut("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Update(int id, [FromBody] CapNhatBaiVietDTO dto)
 	{
-		var result = await _service.CapNhatAsync(id, dto);
+		var result = await _service.UpdateAsync(id, dto);
+
+		if (!result.Success)
+			return result.Message.Contains("không tồn tại")
+				? NotFound(result)
+				: BadRequest(result);
+
+		return Ok(result);
+	}
+	[Authorize(Policy = "PUBLIC_WRITE")]
+	[HttpPut("post/{id}")]
+	public async Task<ActionResult<ApiResponse<bool>>> Post(int id)
+	{
+		var result = await _service.PostAsync(id);
+
+		if (!result.Success)
+			return result.Message.Contains("không tồn tại")
+				? NotFound(result)
+				: BadRequest(result);
+
+		return Ok(result);
+	}
+	[Authorize(Policy = "PUBLIC_WRITE")]
+	[HttpPut("hide/{id}")]
+	public async Task<ActionResult<ApiResponse<bool>>> Hide(int id)
+	{
+		var result = await _service.HideAsync(id);
+
+		if (!result.Success)
+			return result.Message.Contains("không tồn tại")
+				? NotFound(result)
+				: BadRequest(result);
+
+		return Ok(result);
+	}
+	[Authorize(Policy = "PUBLIC_WRITE")]
+	[HttpPut("save/{id}")]
+	public async Task<ActionResult<ApiResponse<bool>>> Save(int id)
+	{
+		var result = await _service.SaveAsync(id);
 
 		if (!result.Success)
 			return result.Message.Contains("không tồn tại")
@@ -55,7 +94,7 @@ public class BaiVietController : ControllerBase
 	[HttpDelete("{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{
-		var result = await _service.XoaAsync(id);
+		var result = await _service.DeleteAsync(id);
 
 		if (!result.Success)
 			return result.Message.Contains("không tồn tại")
@@ -83,18 +122,21 @@ public class BaiVietController : ControllerBase
 	[HttpGet]
 	public async Task<ActionResult<ApiResponse<PagedResult<BaiVietListReadModel>>>> GetPaged(
 		[FromQuery] int page = 1,
-		[FromQuery] int size = 10)
+		[FromQuery] int size = 10,
+		[FromQuery] string? trangThai = null)
 	{
-		var result = await _service.GetPagedAsync(page, size);
+		var result = await _service.GetPagedAsync(page, size, trangThai);
 		return Ok(result);
 	}
 	[Authorize(Policy = "PUBLIC_READ")]
 	[HttpGet("search")]
-	public async Task<ActionResult<ApiResponse<PagedResult<BaiVietListReadModel>>>> Search([FromQuery] string keyword,
+	public async Task<ActionResult<ApiResponse<PagedResult<BaiVietListReadModel>>>> Search(
+		[FromQuery] string keyword,
 		[FromQuery] int page = 1,
-		[FromQuery] int size = 10)
+		[FromQuery] int size = 10,
+		[FromQuery] string? trangThai = null)
 	{
-		var result = await _service.SearchPagedAsync(keyword, page, size);
+		var result = await _service.SearchPagedAsync(keyword, page, size,trangThai);
 		return Ok(result);
 	}
 

@@ -11,8 +11,8 @@ public interface IBaiVietRepository
     Task DeleteAsync(int id);
     //--R
     Task<BaiViet?> GetByIdAsync(int id);
-    Task<(List<BaiVietListReadModel>, int)> GetPagedAsync(int page, int size);
-    Task<(List<BaiVietListReadModel>, int)> SearcPagedAsync(string keyword, int page, int size);
+    Task<(List<BaiVietListReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai);
+    Task<(List<BaiVietListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size, string? trangThai);
 
 	Task<List<BaiVietListReadModel>> GetByLoaiBenhAsync(int loaiBenhID);
     Task<List<BaiVietListReadModel>> GetTopLuotXemAsync(int top);

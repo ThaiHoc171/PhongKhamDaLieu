@@ -23,7 +23,8 @@ public class BaiViet
         TacGiaID = tacGiaID;
         LoaiBenhID = loaiBenhID;
     }
-    public BaiViet(int baiVietID, string tieuDe, string? tomTat, string? noiDung, string? hinhAnh, int? tacGiaID, int? loaiBenhID, int luotXem, DateTime ngayDang, DateTime? ngayCapNhat, string trangThai)
+    public BaiViet(int baiVietID, string tieuDe, string? tomTat, string? noiDung, string? hinhAnh, int? tacGiaID,
+        int? loaiBenhID, int luotXem, DateTime ngayDang, DateTime? ngayCapNhat, string trangThai)
     {
         BaiVietID = baiVietID;
         TieuDe = tieuDe;
@@ -37,7 +38,7 @@ public class BaiViet
         NgayCapNhat = ngayCapNhat;
         TrangThai = trangThai;
     }
-    public void CapNhat(string tieuDe, string? tomTat, string? noiDung, string? hinhAnh, int? loaiBenhID)
+    public void Update(string tieuDe, string? tomTat, string? noiDung, string? hinhAnh, int? loaiBenhID)
     {
         TieuDe = tieuDe;
         TomTat = tomTat;
@@ -46,4 +47,19 @@ public class BaiViet
         LoaiBenhID = loaiBenhID;
         NgayCapNhat = DateTime.Now;
     }
+    public void Post()
+    {
+        TrangThai = "Đã đăng";
+        NgayCapNhat = DateTime.Now;
+	}
+    public void Hide()
+    {
+		TrangThai = "Ẩn";
+		NgayCapNhat = DateTime.Now;
+	}
+    public void Save()
+    {
+		TrangThai = "Lưu trữ";
+		NgayCapNhat = DateTime.Now;
+	}
 }

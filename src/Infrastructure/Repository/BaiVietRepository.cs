@@ -46,6 +46,7 @@ public class BaiVietRepository : IBaiVietRepository
             NoiDung=@NoiDung,
             HinhAnh=@HinhAnh,
             LoaiBenhID=@LoaiBenhID,
+            TrangThai = @TrangThai,
             NgayCapNhat=GETDATE()
         WHERE BaiVietID=@Id";
         using var cmd = new SqlCommand(sql, conn);
@@ -55,7 +56,8 @@ public class BaiVietRepository : IBaiVietRepository
         cmd.Parameters.Add("@NoiDung", SqlDbType.NVarChar).Value = (object?)entity.NoiDung ?? DBNull.Value;
         cmd.Parameters.Add("@HinhAnh", SqlDbType.NVarChar).Value = (object?)entity.HinhAnh ?? DBNull.Value;
         cmd.Parameters.Add("@LoaiBenhID", SqlDbType.Int).Value = (object?)entity.LoaiBenhID ?? DBNull.Value;
-        await cmd.ExecuteNonQueryAsync();
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = (object?)entity.TrangThai ?? DBNull.Value;
+		await cmd.ExecuteNonQueryAsync();
     }
     public async Task DeleteAsync(int id)
     {
@@ -78,30 +80,7 @@ public class BaiVietRepository : IBaiVietRepository
             return MapToEntity(reader);
         return null;
     }
-    public async Task<(List<BaiVietListReadModel>, int)> GetPagedAsync(int page, int size)
-    {
-        var list = new List<BaiVietListReadModel>();
-        int total = 0;
-        using var conn = new SqlConnection(_connectionString);
-        await conn.OpenAsync();
-        int offset = (page - 1) * size;
-        var sql = $@"
-        {BaseSelectList}
-        ORDER BY NgayDang DESC
-        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
-        SELECT COUNT(*) FROM BaiViet";
-        using var cmd = new SqlCommand(sql, conn);
-        cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
-        cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
-        using var reader = await cmd.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-            list.Add(MapToListDTO(reader));
-        await reader.NextResultAsync();
-        if (await reader.ReadAsync())
-            total = reader.GetInt32(0);
-        return (list, total);
-    }
-	public async Task<(List<BaiVietListReadModel>, int)> SearcPagedAsync(string keyword, int page, int size)
+	public async Task<(List<BaiVietListReadModel>, int)> GetPagedAsync(int page, int size, string? trangThai)
 	{
 		var list = new List<BaiVietListReadModel>();
 		int total = 0;
@@ -112,27 +91,64 @@ public class BaiVietRepository : IBaiVietRepository
 		int offset = (page - 1) * size;
 
 		var sql = $@"
-            {BaseSelectList}
-            WHERE TieuDe LIKE N'%' + @Keyword + '%'
-            ORDER BY NgayDang DESC
-            OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+        {BaseSelectList}
+        WHERE (@TrangThai IS NULL OR TrangThai = @TrangThai)
+        ORDER BY NgayDang DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
 
-            SELECT COUNT(*) 
-            FROM BaiViet 
-            WHERE TieuDe LIKE N'%' + @Keyword + '%';";
+        SELECT COUNT(*) 
+        FROM BaiViet
+        WHERE (@TrangThai IS NULL OR TrangThai = @TrangThai);";
 
 		using var cmd = new SqlCommand(sql, conn);
-		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = keyword;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = (object?)trangThai ?? DBNull.Value;
 		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
 		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
 
 		using var reader = await cmd.ExecuteReaderAsync();
 
-		// list
 		while (await reader.ReadAsync())
 			list.Add(MapToListDTO(reader));
 
-		// total
+		await reader.NextResultAsync();
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
+	}
+	public async Task<(List<BaiVietListReadModel>, int)> SearchPagedAsync(string keyword, int page, int size, string? trangThai)
+	{
+		var list = new List<BaiVietListReadModel>();
+		int total = 0;
+
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+        {BaseSelectList}
+        WHERE TieuDe LIKE N'%' + @Keyword + '%'
+          AND (@TrangThai IS NULL OR TrangThai = @TrangThai)
+        ORDER BY NgayDang DESC
+        OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+        SELECT COUNT(*) 
+        FROM BaiViet
+        WHERE TieuDe LIKE N'%' + @Keyword + '%'
+          AND (@TrangThai IS NULL OR TrangThai = @TrangThai);";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = keyword;
+		cmd.Parameters.Add("@TrangThai", SqlDbType.NVarChar).Value = (object?)trangThai ?? DBNull.Value;
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		while (await reader.ReadAsync())
+			list.Add(MapToListDTO(reader));
+
 		await reader.NextResultAsync();
 		if (await reader.ReadAsync())
 			total = reader.GetInt32(0);

@@ -12,7 +12,7 @@ public class BaiVietService
     {
         _repo = repo;
     }
-    public async Task<ApiResponse<int>> ThemAsync(ThemBaiVietDTO dto)
+    public async Task<ApiResponse<int>> CreateAsync(ThemBaiVietDTO dto)
     {
         if (string.IsNullOrWhiteSpace(dto.TieuDe))
             return ApiResponse<int>.Fail("Tiêu đề không hợp lệ");
@@ -28,14 +28,14 @@ public class BaiVietService
         var id = await _repo.AddAsync(entity);
         return ApiResponse<int>.SuccessResponse(id, "Tạo bài viết thành công");
     }
-    public async Task<ApiResponse<bool>> CapNhatAsync(int id, CapNhatBaiVietDTO dto)
+    public async Task<ApiResponse<bool>> UpdateAsync(int id, CapNhatBaiVietDTO dto)
     {
         if (id <= 0)
             return ApiResponse<bool>.Fail("ID không hợp lệ");
         var entity = await _repo.GetByIdAsync(id);
         if (entity == null)
             return ApiResponse<bool>.Fail("Bài viết không tồn tại");
-        entity.CapNhat(
+        entity.Update(
             dto.TieuDe,
             dto.TomTat,
             dto.NoiDung,
@@ -44,7 +44,42 @@ public class BaiVietService
         await _repo.UpdateAsync(entity);
         return ApiResponse<bool>.SuccessResponse(true, "Cập nhật bài viết thành công");
     }
-    public async Task<ApiResponse<bool>> XoaAsync(int id)
+    public async Task<ApiResponse<bool>> PostAsync(int id)
+    {
+        if (id <= 0)
+            return ApiResponse<bool>.Fail("ID không hợp lệ");
+        var entity = await _repo.GetByIdAsync(id);
+        if (entity == null)
+            return ApiResponse<bool>.Fail("Bài viết không tồn tại");
+        entity.Post();
+        await _repo.UpdateAsync(entity);
+        return ApiResponse<bool>.SuccessResponse(true, "Đã đăng bài viết!");
+    }
+    public async Task<ApiResponse<bool>> HideAsync(int id)
+    {
+        if (id <= 0)
+            return ApiResponse<bool>.Fail("ID không hợp lệ");
+        var entity = await _repo.GetByIdAsync(id);
+        if (entity == null)
+            return ApiResponse<bool>.Fail("Bài viết không tồn tại");
+        entity.Hide();
+        await _repo.UpdateAsync(entity);
+        return ApiResponse<bool>.SuccessResponse(true, "Đã ẩn bài viết!");
+    }
+    public async Task<ApiResponse<bool>> SaveAsync(int id)
+    {
+        if (id <= 0)
+            return ApiResponse<bool>.Fail("ID không hợp lệ");
+        var entity = await _repo.GetByIdAsync(id);
+        if (entity == null)
+            return ApiResponse<bool>.Fail("Bài viết không tồn tại");
+        entity.Save();
+        await _repo.UpdateAsync(entity);
+        return ApiResponse<bool>.SuccessResponse(true, "Đã lưu bài viết!");
+    }
+
+
+    public async Task<ApiResponse<bool>> DeleteAsync(int id)
     {
         if (id <= 0)
             return ApiResponse<bool>.Fail("ID không hợp lệ");
@@ -61,9 +96,9 @@ public class BaiVietService
             return ApiResponse<BaiVietReadModel>.Fail("Bài viết không tồn tại");
         return ApiResponse<BaiVietReadModel>.SuccessResponse(result);
     }
-    public async Task<ApiResponse<PagedResult<BaiVietListReadModel>>> GetPagedAsync(int page, int size)
+    public async Task<ApiResponse<PagedResult<BaiVietListReadModel>>> GetPagedAsync(int page, int size, string? trangThai)
     {
-        var (items, total) = await _repo.GetPagedAsync(page, size);
+        var (items, total) = await _repo.GetPagedAsync(page, size, trangThai);
         return ApiResponse<PagedResult<BaiVietListReadModel>>.SuccessResponse(
             new PagedResult<BaiVietListReadModel>
             {
@@ -73,9 +108,9 @@ public class BaiVietService
                 PageSize = size
             });
     }
-    public async Task<ApiResponse<PagedResult<BaiVietListReadModel>>> SearchPagedAsync(string keyword, int page, int size)
+    public async Task<ApiResponse<PagedResult<BaiVietListReadModel>>> SearchPagedAsync(string keyword, int page, int size, string? trangThai)
     {
-        var (items, total) = await _repo.SearcPagedAsync(keyword, page, size);
+        var (items, total) = await _repo.SearchPagedAsync(keyword, page, size, trangThai);
         return ApiResponse<PagedResult<BaiVietListReadModel>>.SuccessResponse(
             new PagedResult<BaiVietListReadModel>
             {
