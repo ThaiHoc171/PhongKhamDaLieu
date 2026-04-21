@@ -67,7 +67,7 @@ public class BacSiProfileRepository : IBacSiProfileRepository
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
-        var sql = BaseSelectDetail + " WHERE NhanVienID = @NhanVienID";
+        var sql = BaseSelectDetail + " WHERE nv.NhanVienID = @NhanVienID";
         using var cmd = new SqlCommand(sql, conn);
         cmd.Parameters.Add("@NhanVienID", SqlDbType.Int).Value = nhanVienId;
         using var reader = await cmd.ExecuteReaderAsync();

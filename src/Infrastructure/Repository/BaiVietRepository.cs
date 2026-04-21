@@ -101,7 +101,45 @@ public class BaiVietRepository : IBaiVietRepository
             total = reader.GetInt32(0);
         return (list, total);
     }
-    public async Task<List<BaiVietListReadModel>> GetByLoaiBenhAsync(int loaiBenhID)
+	public async Task<(List<BaiVietListReadModel>, int)> SearcPagedAsync(string keyword, int page, int size)
+	{
+		var list = new List<BaiVietListReadModel>();
+		int total = 0;
+
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		int offset = (page - 1) * size;
+
+		var sql = $@"
+            {BaseSelectList}
+            WHERE TieuDe LIKE N'%' + @Keyword + '%'
+            ORDER BY NgayDang DESC
+            OFFSET @Offset ROWS FETCH NEXT @Size ROWS ONLY;
+
+            SELECT COUNT(*) 
+            FROM BaiViet 
+            WHERE TieuDe LIKE N'%' + @Keyword + '%';";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Keyword", SqlDbType.NVarChar).Value = keyword;
+		cmd.Parameters.Add("@Offset", SqlDbType.Int).Value = offset;
+		cmd.Parameters.Add("@Size", SqlDbType.Int).Value = size;
+
+		using var reader = await cmd.ExecuteReaderAsync();
+
+		// list
+		while (await reader.ReadAsync())
+			list.Add(MapToListDTO(reader));
+
+		// total
+		await reader.NextResultAsync();
+		if (await reader.ReadAsync())
+			total = reader.GetInt32(0);
+
+		return (list, total);
+	}
+	public async Task<List<BaiVietListReadModel>> GetByLoaiBenhAsync(int loaiBenhID)
     {
         var list = new List<BaiVietListReadModel>();
         using var conn = new SqlConnection(_connectionString);

@@ -88,6 +88,15 @@ public class BaiVietController : ControllerBase
 		var result = await _service.GetPagedAsync(page, size);
 		return Ok(result);
 	}
+	[Authorize(Policy = "PUBLIC_READ")]
+	[HttpGet]
+	public async Task<ActionResult<ApiResponse<PagedResult<BaiVietListReadModel>>>> Search([FromQuery] string keyword,
+		[FromQuery] int page = 1,
+		[FromQuery] int size = 10)
+	{
+		var result = await _service.SearchPagedAsync(keyword, page, size);
+		return Ok(result);
+	}
 
 	// ==================== FILTER ====================
 	[Authorize(Policy = "PUBLIC_READ")]

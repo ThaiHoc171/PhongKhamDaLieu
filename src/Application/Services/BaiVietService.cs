@@ -73,6 +73,18 @@ public class BaiVietService
                 PageSize = size
             });
     }
+    public async Task<ApiResponse<PagedResult<BaiVietListReadModel>>> SearchPagedAsync(string keyword, int page, int size)
+    {
+        var (items, total) = await _repo.SearcPagedAsync(keyword, page, size);
+        return ApiResponse<PagedResult<BaiVietListReadModel>>.SuccessResponse(
+            new PagedResult<BaiVietListReadModel>
+            {
+                Items = items,
+                TotalCount = total,
+                PageNumber = page,
+                PageSize = size
+            });
+    }
     public async Task<ApiResponse<List<BaiVietListReadModel>>> GetByLoaiBenhAsync(int loaiBenhID)
     {
         var result = await _repo.GetByLoaiBenhAsync(loaiBenhID);
