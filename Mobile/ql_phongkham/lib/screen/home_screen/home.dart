@@ -9,10 +9,9 @@ import 'package:ql_phongkham/features/clinic/data/repository/doctor_profile_repo
 import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/ai_model/ai_model_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/booking/list_booking_page.dart';
-import 'package:ql_phongkham/features/clinic/presentation/pages/booking/examination_page.dart';
-import 'package:ql_phongkham/features/clinic/presentation/pages/booking/treatment_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/profile/proflie_page.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/home/article.dart';
+import 'package:ql_phongkham/features/clinic/presentation/widgets/home/choose_doctor.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/home/profile_doctor.dart';
 import 'package:ql_phongkham/screen/home_screen/menubar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -254,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               alignment: Alignment.topLeft,
               padding: const EdgeInsets.all(10),
-              height: 165,
+              height: 105,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -289,7 +288,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => LichKhamScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => ChooseDoctorSection(
+                                bacSiList: bacSiList,
+                                isLoading: isLoadingBacSi,
+                              ),
+                            ),
                           );
                         },
                         child: const Text(
@@ -297,41 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(fontSize: 15),
                         ),
                       ),
-                      ElevatedButton(
-                        onPressed: hasDieuTri
-                            ? () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => LichDieuTriScreen(
-                                      lieuTrinhID: lieuTrinhId!,
-                                    ),
-                                  ),
-                                );
-                              }
-                            : null,
-                        child: const Text('Đặt lịch điều trị'),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ElevatedButton(
-                        onPressed: hasTaiKham
-                            ? () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        LichKhamScreen(taiKhamId: taiKhamId!),
-                                  ),
-                                );
-                              }
-                            : null,
-                        child: const Text('Đặt lịch tái khám'),
-                      ),
+                      SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(

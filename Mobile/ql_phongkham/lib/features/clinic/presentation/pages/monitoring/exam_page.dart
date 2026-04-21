@@ -218,7 +218,6 @@ class _DanhSachCaKhamHoanThanhPageState
   }
 }
 
-// ── Widget nút hành động ──────────────────────────────────────────────────────
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;

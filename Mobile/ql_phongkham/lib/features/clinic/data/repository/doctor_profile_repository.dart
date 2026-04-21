@@ -10,11 +10,21 @@ class BacsiProfileRepository {
 
     return (items as List).map((e) => BacSiProfileModel.fromJson(e)).toList();
   }
+
+  Future<BacSiProfileModel> geChiTiettBacSi(int bacSiId) async {
+    final response = await ApiClient.get('bacsi/$bacSiId');
+    return BacSiProfileModel.fromJson(response['data']);
+  }
 }
 
 class NhanVienRepository {
   Future<NhanVienModel> getNhanVien(int nhanVienId) async {
     final response = await ApiClient.get('nhanvien/$nhanVienId');
     return NhanVienModel.fromJson(response['data']);
+  }
+
+  Future<List<int>> getIdBacSiKham() async {
+    final response = await ApiClient.get("nhanvien/combobox?chucVuId=1");
+    return response['data']['id'];
   }
 }
