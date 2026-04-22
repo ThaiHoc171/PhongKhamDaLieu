@@ -167,9 +167,7 @@ class _LichTaiKhamPageState extends State<LichTaiKhamPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => LichKhamScreen(taiKhamId: id),
-                  ),
+                  MaterialPageRoute(builder: (_) => LichKhamScreen()),
                 );
               },
             ),

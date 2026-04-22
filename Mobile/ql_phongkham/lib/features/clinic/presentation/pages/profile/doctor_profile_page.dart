@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
+import 'package:ql_phongkham/features/clinic/data/models/doctor_profile_model.dart';
 import 'package:ql_phongkham/features/clinic/data/models/employ_model.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/doctor_profile_repository.dart';
 
 class NhanVienDetailScreen extends StatefulWidget {
   final int nhanVienId;
-  const NhanVienDetailScreen({super.key, required this.nhanVienId});
+  final int bacSiId;
+  const NhanVienDetailScreen({
+    super.key,
+    required this.nhanVienId,
+    required this.bacSiId,
+  });
 
   @override
   State<NhanVienDetailScreen> createState() => _NhanVienDetailScreenState();
@@ -14,7 +20,7 @@ class NhanVienDetailScreen extends StatefulWidget {
 
 class _NhanVienDetailScreenState extends State<NhanVienDetailScreen> {
   NhanVienModel? nhanVien;
-
+  BacSiProfileModel? profile;
   @override
   void initState() {
     super.initState();
@@ -24,8 +30,12 @@ class _NhanVienDetailScreenState extends State<NhanVienDetailScreen> {
   Future<void> loadNhanVien() async {
     try {
       final data = await NhanVienRepository().getNhanVien(widget.nhanVienId);
+      final data2 = await BacsiProfileRepository().geChiTiettBacSi(
+        widget.nhanVienId,
+      );
       setState(() {
         nhanVien = data;
+        profile = data2;
       });
     } catch (e) {
       DialogHelper.showSnacFailed(
@@ -113,11 +123,25 @@ class _NhanVienDetailScreenState extends State<NhanVienDetailScreen> {
   }
 
   Widget imageProfile() {
+    final linkAvatar = _buildAvatarUrl(profile?.hinhAnh);
     return Center(
-      child: CircleAvatar(
-        radius: 60,
-        backgroundImage: const AssetImage("assets/images/user.png"),
+      child: Stack(
+        children: [
+          CircleAvatar(
+            radius: 60,
+            backgroundImage: linkAvatar != null && linkAvatar.isNotEmpty
+                ? NetworkImage(linkAvatar)
+                : const AssetImage("assets/images/user.png") as ImageProvider,
+          ),
+        ],
       ),
     );
+  }
+
+  String? _buildAvatarUrl(String? avatar) {
+    if (avatar == null || avatar.isEmpty) return null;
+    if (avatar.startsWith('http')) return avatar;
+    final path = avatar.startsWith('/') ? avatar.substring(1) : avatar;
+    return "https://hoanmyclinic.s3.ap-southeast-2.amazonaws.com/$path";
   }
 }

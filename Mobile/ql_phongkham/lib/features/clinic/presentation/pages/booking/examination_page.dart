@@ -5,15 +5,14 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
 
 class LichKhamScreen extends StatefulWidget {
-  final int? taiKhamId;
-  const LichKhamScreen({super.key, this.taiKhamId});
+  final int? nhanVienId;
+  const LichKhamScreen({super.key, this.nhanVienId});
 
   @override
   State<LichKhamScreen> createState() => _LichKhamScreenState();
 }
 
 class _LichKhamScreenState extends State<LichKhamScreen> {
-  // 12 khung giờ cố định
   final List<Map<String, dynamic>> danhSachKhungGio = [
     {"id": 1, "gio": "07:00"},
     {"id": 2, "gio": "07:30"},
@@ -164,7 +163,10 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('accessToken');
       if (token == null) return;
-      final data = await _repository.getKhungGioConTrong(_currentDay);
+      final data = await _repository.getKhungGioConTrong(
+        _currentDay,
+        widget.nhanVienId,
+      );
 
       setState(() {
         khungGioConTrong = data;
@@ -240,13 +242,8 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
         _currentDay,
         selectedKhungGioId!,
       );
-
       caKhamId = id;
-
       final message = await _repository.dangKyKham(caKhamId!, thongTinId);
-      if (widget.taiKhamId != null) {
-        await _repository.updateTaiKham(widget.taiKhamId!, caKhamId!);
-      }
       DialogHelper.showSnackSuccess(context, message);
     } catch (e) {
       DialogHelper.showSnacFailed(context, e.toString());

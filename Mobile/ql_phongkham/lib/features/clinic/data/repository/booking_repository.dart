@@ -5,23 +5,18 @@ import 'package:ql_phongkham/features/clinic/data/models/treatment_model.dart';
 import 'package:ql_phongkham/features/clinic/data/models/booking_model.dart';
 
 class LichKhamRepository {
-  Future<List<int>> getKhungGioConTrong(DateTime date) async {
+  Future<List<int>> getKhungGioConTrong(DateTime date, int? nhanVienId) async {
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-
-    final response = await ApiClient.get(
-      "CaKham/khunggio-trong?ngayKham=$formattedDate&loaiCaKham=Khám",
-    );
-
-    return List<int>.from(response['data']);
-  }
-
-  Future<List<int>> getKhungGioConTrongDieuTri(DateTime date) async {
-    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-
-    final response = await ApiClient.get(
-      "CaKham/khunggio-trong?ngayKham=$formattedDate&loaiCaKham=Điều trị",
-    );
-
+    final response;
+    if (nhanVienId == null) {
+      response = await ApiClient.get(
+        "CaKham/khunggio-trong?ngayKham=$formattedDate&loaiCaKham=Khám",
+      );
+    } else {
+      response = await ApiClient.get(
+        "CaKham/khunggio-trong?ngayKham=$formattedDate&loaiCaKham=Khám&nhanVienId=$nhanVienId",
+      );
+    }
     return List<int>.from(response['data']);
   }
 
@@ -30,16 +25,6 @@ class LichKhamRepository {
 
     final response = await ApiClient.get(
       "CaKham/ca-trong?ngayKham=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Khám",
-    );
-
-    return response['data'];
-  }
-
-  Future<int> getCaKhamIdDieuTri(DateTime date, int khungGioId) async {
-    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-
-    final response = await ApiClient.get(
-      "CaKham/ca-trong?ngayKham=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Điều trị",
     );
 
     return response['data'];
@@ -55,20 +40,6 @@ class LichKhamRepository {
     final response = await ApiClient.get(
       "caKham/check-dadangky?ngay=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Khám&thongTinId=$thongTinId",
     );
-    return response['data'];
-  }
-
-  Future<bool> checkDangKyDieuTri(
-    DateTime date,
-    int khungGioId,
-    int thongTinId,
-  ) async {
-    final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-
-    final response = await ApiClient.get(
-      "CaKham/kiemtra-dadangky?ngay=$formattedDate&khungGioId=$khungGioId&loaiCaKham=Điều trị&thongTinId=$thongTinId",
-    );
-
     return response['data'];
   }
 
@@ -94,14 +65,6 @@ class LichKhamRepository {
     return TaiKhamModel.fromJson(items[0]);
   }
 
-  Future<String> updateTaiKham(int taiKhamId, int caKhamId) async {
-    final response = await ApiClient.put("taiKham/$taiKhamId", {
-      "trangThai": "Đang xử lý",
-      "caKhamID": caKhamId,
-    });
-    return response["message"] ?? "Cập nhật thành công";
-  }
-
   Future<LieuTrinhDieuTriModel?> checkDieuTriPending(int benhNhanId) async {
     final response = await ApiClient.get("lieutrinh/benhnhan/$benhNhanId");
 
@@ -113,15 +76,6 @@ class LichKhamRepository {
       return null;
     }
     return LieuTrinhDieuTriModel.fromJson(items[0]);
-  }
-
-  Future<String> addBuoiDieuTri(int lieuTrinhId, int caKhamId) async {
-    final response = await ApiClient.post("buoidieutri", {
-      "lieuTrinhID": lieuTrinhId,
-      "caKhamID": caKhamId,
-    });
-
-    return response["message"];
   }
 
   Future<List<BuoiDieuTriModel>> getBuoiDieuTri(int lieuTrinhId) async {
