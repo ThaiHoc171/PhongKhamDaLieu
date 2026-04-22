@@ -41,8 +41,7 @@ public class BenhNhanRepository : IBenhNhanRepository
 		cmd.Parameters.Add("@ThongTinID", SqlDbType.Int).Value = thongTinId;
 
 		await conn.OpenAsync();
-		int count = await cmd.ExecuteNonQueryAsync();
-
+		int count = Convert.ToInt32(await cmd.ExecuteScalarAsync());
 		return count > 0;
 	}
 
@@ -249,7 +248,7 @@ public class BenhNhanRepository : IBenhNhanRepository
 		return new BenhNhan(
 			r.GetInt32(r.GetOrdinal("BenhNhanID")),
 			r.GetInt32(r.GetOrdinal("ThongTinID")),
-			 r.GetString(r.GetOrdinal("GhiChu")),
+			r.IsDBNull(r.GetOrdinal("GhiChu")) ? "" : r.GetString(r.GetOrdinal("GhiChu")),
 			r.GetDateTime(r.GetOrdinal("NgayTao")),
 			r.IsDBNull(r.GetOrdinal("NgayCapNhat"))
 				? null
@@ -279,21 +278,19 @@ public class BenhNhanRepository : IBenhNhanRepository
 		{
 			BenhNhanID = r.GetInt32(r.GetOrdinal("BenhNhanID")),
 			ThongTinID = r.GetInt32(r.GetOrdinal("ThongTinID")),
-			TaiKhoanID = r.IsDBNull(r.GetOrdinal("TaiKhoanID")) ? null : r.GetInt32(r.GetOrdinal("TaiKhoanID")),
+			TaiKhoanID = r.IsDBNull(r.GetOrdinal("TaiKhoanID"))
+				? null : r.GetInt32(r.GetOrdinal("TaiKhoanID")),
 			HoTen = r.GetString(r.GetOrdinal("HoTen")),
 			NgaySinh = r.GetDateTime(r.GetOrdinal("NgaySinh")),
 			GioiTinh = r.GetString(r.GetOrdinal("GioiTinh")),
 			SDT = r.GetString(r.GetOrdinal("SDT")),
-			EmailLienHe = r.IsDBNull(r.GetOrdinal("EmailLienHe"))
-				? null
-				: r.GetString(r.GetOrdinal("EmailLienHe")),
+			EmailLienHe = r.IsDBNull(r.GetOrdinal("EmailLienHe")) 
+				? null : r.GetString(r.GetOrdinal("EmailLienHe")),
 			DiaChi = r.GetString(r.GetOrdinal("DiaChi")),
 			Avatar = r.IsDBNull(r.GetOrdinal("Avatar"))
-				? null
-				: r.GetString(r.GetOrdinal("Avatar")),
+				? null : r.GetString(r.GetOrdinal("Avatar")),
 			GhiChu = r.IsDBNull(r.GetOrdinal("GhiChu"))
-				? ""
-				: r.GetString(r.GetOrdinal("GhiChu")),
+				? "" : r.GetString(r.GetOrdinal("GhiChu")),
 			NgayTao = r.GetDateTime(r.GetOrdinal("NgayTao")),
 			NgayCapNhat = r.IsDBNull(r.GetOrdinal("NgayCapNhat"))
 				? r.GetDateTime(r.GetOrdinal("NgayTao"))

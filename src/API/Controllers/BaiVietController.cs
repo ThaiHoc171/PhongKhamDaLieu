@@ -91,7 +91,7 @@ public class BaiVietController : ControllerBase
 
 	// ==================== DELETE ====================
 	[Authorize(Policy = "PUBLIC_WRITE")]
-	[HttpDelete("{id}")]
+	[HttpPut("delete/{id}")]
 	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
 	{
 		var result = await _service.DeleteAsync(id);
