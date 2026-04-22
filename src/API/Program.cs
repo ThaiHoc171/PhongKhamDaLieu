@@ -197,12 +197,17 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IPhongKhamRepository, PhongKhamRepository>();
 builder.Services.AddScoped<PhongKhamService>();
 builder.Services.AddSingleton<IFcmService, FcmService>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<IThongKeRepository, ThongKeRepository>();
+builder.Services.AddScoped<ThongKeService>();
 builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection("EmailSettings"));
+builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IOtpRepository, OtpRepository>();
 builder.Services.AddScoped<OtpService>();
-builder.Services.AddHostedService<ReminderBackgroundService>(); var app = builder.Build();
+builder.Services.AddHostedService<ReminderBackgroundService>();var app = builder.Build();
+
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
