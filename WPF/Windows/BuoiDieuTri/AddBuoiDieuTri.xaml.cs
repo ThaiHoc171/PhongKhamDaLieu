@@ -15,7 +15,6 @@ public partial class AddBuoiDieuTri : Window
 		Loaded += async (_, __) => await LoadData();
 	}
 	private readonly int _id;
-	private int _thongTinId;
 	private readonly BuoiDieuTriClient _client = new();
 	private readonly KhungGioKhamClient _khungGio = new();
 	private readonly CaKhamClient _caKham = new();

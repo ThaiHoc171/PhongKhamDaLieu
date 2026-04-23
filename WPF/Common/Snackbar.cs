@@ -40,17 +40,18 @@ namespace WPF.Common
 			_snackbar.Background = background;
 			_snackbar.Foreground = foreground;
 
-			var panel = new StackPanel
-			{
-				Orientation = Orientation.Horizontal
-			};
+			var grid = new Grid();
+			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
 			var icon = new PackIcon
 			{
 				Kind = iconKind,
-				Margin = new Thickness(0, 0, 8, 0),
-				Foreground = foreground
+				Margin = new Thickness(0, 2, 8, 0),
+				Foreground = foreground,
+				VerticalAlignment = VerticalAlignment.Top
 			};
+			Grid.SetColumn(icon, 0);
 
 			var text = new TextBlock
 			{
@@ -59,12 +60,12 @@ namespace WPF.Common
 				VerticalAlignment = VerticalAlignment.Center,
 				TextWrapping = TextWrapping.Wrap
 			};
+			Grid.SetColumn(text, 1);
 
-			panel.Children.Add(icon);
-			panel.Children.Add(text);
+			grid.Children.Add(icon);
+			grid.Children.Add(text);
 
-			_messageQueue.Enqueue(panel);
-
+			_messageQueue.Enqueue(grid);
 		}
 	}
 }

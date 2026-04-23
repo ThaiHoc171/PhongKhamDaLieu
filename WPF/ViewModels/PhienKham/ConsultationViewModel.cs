@@ -1,14 +1,13 @@
 ﻿using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.IO;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WPF.Client;
 using WPF.Common;
 using WPF.Models;
-using WPF.Windows.HSBenhAn;
 using WPF.Windows.TaiKham;
-using static MaterialDesignThemes.Wpf.Theme.ToolBar;
 
 namespace WPF.ViewModels.PhienKham;
 
@@ -281,6 +280,35 @@ public class ConsultationViewModel : BaseViewModel
 			await _taiKham.Complete(taikham.Data);
 
 		SnackbarHelper.ShowSuccess("Đã hoàn thành!");
+
+		var export = await MessageHelper.Confirm("Bạn có muốn xuất PDF không?");
+		if (!export) return;
+		var dto = new PhienKhamPdfDto
+		{
+			BenhNhan = BenhNhan,
+			BacSi = BacSi,
+			NgayKham = NgayKham,
+			TrangThai = TrangThai,
+			TrieuChung = TrieuChung,
+			ChanDoan = ChanDoan,
+			GhiChu = GhiChu,
+			BenhList = BenhList.ToList(),
+			CLSList = CLSList.ToList(),
+			ThietBiList = ThietBiList.ToList()
+		};
+
+		try
+		{
+			var helper = new PdfHelper();
+
+			var path = new PdfHelper().ExportPdf(dto);
+			if (path != null)
+				SnackbarHelper.ShowSuccess($"Đã lưu: {path}");
+		}
+		catch (Exception ex)
+		{
+			SnackbarHelper.ShowError("Xuất PDF thất bại: " + ex.Message);
+		}
 	});
 	public ICommand CancelCommand => new RelayCommand(async () =>
 	{
@@ -467,7 +495,7 @@ public class ConsultationViewModel : BaseViewModel
 			return new AddTaiKham(_id, _benhNhanId);
 		});
 	});
-	
+
 	#endregion
 	private void OpenWindow(Func<Window> factory)
 	{

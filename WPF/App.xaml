@@ -26,6 +26,10 @@
 
             <!-- ================= COLOR ================= -->
             <SolidColorBrush x:Key="PrimaryBrush" Color="#3B82F6"/>
+            <SolidColorBrush x:Key="SuccessBrush"    Color="#10B981"/>
+            <SolidColorBrush x:Key="WarningBrush"    Color="#F59E0B"/>
+            <SolidColorBrush x:Key="DangerBrush"     Color="#EF4444"/>
+            <SolidColorBrush x:Key="InfoBrush"       Color="#0EA5E9"/>
             <SolidColorBrush x:Key="BackgroundBrush" Color="#F5F7FA"/>
             <SolidColorBrush x:Key="CardBrush" Color="White"/>
             <SolidColorBrush x:Key="TextPrimary" Color="#01050F"/>
@@ -114,6 +118,7 @@
                 <Setter Property="Background" Value="{StaticResource CardBrush}"/>
                 <Setter Property="CornerRadius" Value="{StaticResource RadiusLarge}"/>
                 <Setter Property="Padding" Value="12"/>
+                <Setter Property="Margin" Value="6"/>
                 <Setter Property="Effect">
                     <Setter.Value>
                         <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.15"/>

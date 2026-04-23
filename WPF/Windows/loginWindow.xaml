@@ -10,7 +10,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize"
-        Background="#E9EEF5" Icon="/Assets/Images/System/logo.png">
+        Background="#E9EEF5" Icon="/Assets/Images/logo.png">
 
     <!-- ROOT GRID -->
     <materialDesign:DialogHost
@@ -83,7 +83,7 @@
                         <Border Height="260"
                                 Width="260">
 
-                            <Image Source="/Assets/Images/System/logo-text.png"
+                            <Image Source="/Assets/Images/logo-text.png"
                                    Stretch="Uniform"/>
 
                         </Border>

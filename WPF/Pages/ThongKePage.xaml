@@ -1,0 +1,480 @@
+﻿<Page x:Class="WPF.Pages.ThongKePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      Background="{StaticResource BackgroundBrush}">
+
+    <Grid Margin="10">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- ================= HEADER ================= -->
+            <Border Grid.Row="0" Style="{StaticResource CardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Thống kê" FontSize="16" FontWeight="Bold"
+                                   Foreground="{StaticResource PrimaryBrush}"/>
+                        <TextBlock Text="Phân tích dữ liệu phòng khám"
+                                   Foreground="{StaticResource TextMuted}" FontSize="12" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding LoadingText}"
+                                   Foreground="{StaticResource TextMuted}"
+                                   FontStyle="Italic" FontSize="12"
+                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <Button Margin="5" Padding="12,6" Command="{Binding ApplyFilterCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Refresh"/>
+                                <TextBlock Text="Làm mới" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ================= FILTER BAR ================= -->
+            <Border Grid.Row="1" Style="{StaticResource CardStyle}">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+                    <TextBlock Text="Khoảng:" VerticalAlignment="Center"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,8,0"/>
+                    <ComboBox Width="110" Margin="0,0,16,0" Padding="10,6"
+                              ItemsSource="{Binding LoaiKhoangList}"
+                              SelectedItem="{Binding SelectedLoaiKhoang, Mode=TwoWay}"
+                              materialDesign:HintAssist.Hint="Khoảng"/>
+
+                    <TextBlock Text="Từ ngày:" VerticalAlignment="Center"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,8,0"/>
+                    <DatePicker Width="130" Margin="0,0,16,0"
+                                SelectedDate="{Binding TuNgay, Mode=TwoWay}"
+                                materialDesign:HintAssist.Hint="Từ ngày"/>
+
+                    <TextBlock Text="Đến ngày:" VerticalAlignment="Center"
+                               Foreground="{StaticResource TextMuted}" Margin="0,0,8,0"/>
+                    <DatePicker Width="130" Margin="0,0,16,0"
+                                SelectedDate="{Binding DenNgay, Mode=TwoWay}"
+                                materialDesign:HintAssist.Hint="Đến ngày"/>
+
+                    <Button Padding="12,6" Command="{Binding ApplyFilterCommand}"
+                            Style="{StaticResource PrimaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FilterCheck"/>
+                            <TextBlock Text="Áp dụng" Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                </StackPanel>
+            </Border>
+
+            <!-- ================= TAB BAR ================= -->
+            <Border Grid.Row="2" Style="{StaticResource CardStyle}">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton Content="👤  Bệnh nhân"  GroupName="ThongKeTab"
+                                 IsChecked="{Binding IsTabBenhNhan,  Mode=TwoWay}"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}" Margin="0,0,4,0"/>
+                    <RadioButton Content="🗓  Ca khám"     GroupName="ThongKeTab"
+                                 IsChecked="{Binding IsTabCaKham,    Mode=TwoWay}"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}" Margin="0,0,4,0"/>
+                    <RadioButton Content="🏥  Phiên khám" GroupName="ThongKeTab"
+                                 IsChecked="{Binding IsTabPhienKham, Mode=TwoWay}"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}" Margin="0,0,4,0"/>
+                    <RadioButton Content="💊  Toa thuốc"  GroupName="ThongKeTab"
+                                 IsChecked="{Binding IsTabToaThuoc,  Mode=TwoWay}"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}" Margin="0,0,4,0"/>
+                    <RadioButton Content="🧑‍⚕️  Nhân viên" GroupName="ThongKeTab"
+                                 IsChecked="{Binding IsTabNhanVien,  Mode=TwoWay}"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ================= TAB CONTENT ================= -->
+            <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+
+                    <!-- ── TAB: BỆNH NHÂN ── -->
+                    <StackPanel Visibility="{Binding BenhNhanVisibility}">
+                        <UniformGrid Columns="4">
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Tổng bệnh nhân" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanBN.TongBenhNhan}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Bệnh nhân mới" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanBN.BenhNhanMoi}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource SuccessBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Tái khám" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanBN.BenhNhanTaiKham}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource WarningBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Có tài khoản" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanBN.BenhNhanCoTaiKhoan}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource InfoBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.4*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Bệnh nhân theo ngày" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridBenhNhanTheoNgay"
+                                              ItemsSource="{Binding BenhNhanTheoNgay}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Theo giới tính" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridGioiTinh"
+                                              ItemsSource="{Binding BenhNhanTheoGioiTinh}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Theo độ tuổi" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridDoTuoi"
+                                              ItemsSource="{Binding BenhNhanTheoDoTuoi}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- ── TAB: CA KHÁM ── -->
+                    <StackPanel Visibility="{Binding CaKhamVisibility}">
+                        <UniformGrid Columns="5">
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Tổng ca khám" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanCK.TongCaKham}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Hoàn thành" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanCK.HoanThanh}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource SuccessBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Đã hủy" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanCK.DaHuy}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource DangerBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Không đến" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanCK.KhongDen}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource WarningBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Đang khám" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanCK.DangKham}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource InfoBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Ca khám theo khoảng thời gian" FontWeight="SemiBold"
+                                           Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                <DataGrid x:Name="GridCaKhamTheoKhoang"
+                                          ItemsSource="{Binding CaKhamTheoKhoang}"
+                                          HeadersVisibility="Column" IsReadOnly="True"
+                                          AutoGenerateColumns="False"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- ── TAB: PHIÊN KHÁM ── -->
+                    <StackPanel Visibility="{Binding PhienKhamVisibility}">
+                        <UniformGrid Columns="5">
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Tổng phiên khám" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanPK.TongPhienKham}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Hoàn thành" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanPK.HoanThanh}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource SuccessBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Đang khám" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanPK.DangKham}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource InfoBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Đang chờ" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanPK.DangCho}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource WarningBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Đã hủy" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanPK.DaHuy}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource DangerBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Phiên khám theo ngày" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridPhienKhamTheoNgay"
+                                              ItemsSource="{Binding PhienKhamTheoNgay}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Theo phòng" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridPhienKhamTheoPhong"
+                                              ItemsSource="{Binding PhienKhamTheoPhong}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Theo loại bệnh" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridPhienKhamTheoLoaiBenh"
+                                              ItemsSource="{Binding PhienKhamTheoLoaiBenh}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- ── TAB: TOA THUỐC ── -->
+                    <StackPanel Visibility="{Binding ToaThuocVisibility}">
+                        <UniformGrid Columns="3">
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Tổng toa thuốc" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanTT.TongToaThuoc}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource SuccessBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Tổng lượt thuốc" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanTT.TongLuotThuoc}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="TB thuốc / toa" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanTT.TrungBinhThuocPerToa}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource InfoBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1.4*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Toa theo khoảng" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridToaThuocTheoKhoang"
+                                              ItemsSource="{Binding ToaThuocTheoKhoang}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Top thuốc sử dụng nhiều" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridTopThuoc"
+                                              ItemsSource="{Binding TopThuoc}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Top bác sĩ kê đơn" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridTopBacSiKeDon"
+                                              ItemsSource="{Binding TopBacSiKeDon}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- ── TAB: NHÂN VIÊN ── -->
+                    <StackPanel Visibility="{Binding NhanVienVisibility}">
+                        <UniformGrid Columns="3">
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Tổng nhân viên" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanNV.TongNhanVien}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Đang làm việc" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanNV.DangLamViec}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource SuccessBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Nghỉ việc" Foreground="{StaticResource TextMuted}" FontSize="12"/>
+                                    <TextBlock Text="{Binding TongQuanNV.NghiViec}" FontSize="28" FontWeight="Bold"
+                                               Foreground="{StaticResource DangerBrush}" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </UniformGrid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1.6*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Theo chức vụ" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridNhanVienTheoChucVu"
+                                              ItemsSource="{Binding NhanVienTheoChucVu}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Theo phòng" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridNhanVienTheoPhong"
+                                              ItemsSource="{Binding NhanVienTheoPhong}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Hiệu suất bác sĩ" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridHieuSuatBacSi"
+                                              ItemsSource="{Binding HieuSuatBacSi}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="3" Style="{StaticResource CardStyle}">
+                                <StackPanel>
+                                    <TextBlock Text="Ngày nghỉ nhân viên" FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,10"/>
+                                    <DataGrid x:Name="GridNgayNghiNhanVien"
+                                              ItemsSource="{Binding NgayNghiNhanVien}"
+                                              HeadersVisibility="Column" IsReadOnly="True"
+                                              AutoGenerateColumns="False" MaxHeight="400"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+
+        <!-- ================= LOADING OVERLAY ================= -->
+        <Grid Background="#66000000"
+              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <materialDesign:PackIcon Kind="Loading" Width="150" Height="150" Foreground="White"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center"
+                                     RenderTransformOrigin="0.5,0.5">
+                <materialDesign:PackIcon.RenderTransform>
+                    <RotateTransform x:Name="SpinnerRotate"/>
+                </materialDesign:PackIcon.RenderTransform>
+            </materialDesign:PackIcon>
+            <Grid.Triggers>
+                <EventTrigger RoutedEvent="Loaded">
+                    <BeginStoryboard>
+                        <Storyboard RepeatBehavior="Forever">
+                            <DoubleAnimation Storyboard.TargetName="SpinnerRotate"
+                                             Storyboard.TargetProperty="Angle"
+                                             From="0" To="360" Duration="0:0:1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Grid.Triggers>
+        </Grid>
+
+    </Grid>
+</Page>

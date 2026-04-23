@@ -1,0 +1,502 @@
+﻿<Page x:Class="WPF.Pages.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="#F0F4FA">
+
+    <Page.Resources>
+
+        <!-- Shadows -->
+        <DropShadowEffect x:Key="CardShadow"  BlurRadius="18" ShadowDepth="1" Direction="270" Color="#B8C4D8" Opacity="0.35"/>
+        <DropShadowEffect x:Key="KpiShadow"   BlurRadius="22" ShadowDepth="2" Direction="270" Color="#6366F1"  Opacity="0.18"/>
+
+        <!-- Base card -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background"     Value="White"/>
+            <Setter Property="CornerRadius"   Value="14"/>
+            <Setter Property="Padding"        Value="22,18"/>
+            <Setter Property="Margin"         Value="8"/>
+            <Setter Property="Effect"         Value="{StaticResource CardShadow}"/>
+        </Style>
+
+        <!-- Section title -->
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontFamily"     Value="Segoe UI Semibold"/>
+            <Setter Property="FontSize"       Value="13"/>
+            <Setter Property="Foreground"     Value="#1E293B"/>
+            <Setter Property="Margin"         Value="0,0,0,14"/>
+        </Style>
+
+        <!-- Column header -->
+        <Style x:Key="ColHead" TargetType="TextBlock">
+            <Setter Property="FontFamily"     Value="Segoe UI"/>
+            <Setter Property="FontSize"       Value="11"/>
+            <Setter Property="FontWeight"     Value="SemiBold"/>
+            <Setter Property="Foreground"     Value="#94A3B8"/>
+        </Style>
+
+        <!-- Divider -->
+        <Style x:Key="Divider" TargetType="Border">
+            <Setter Property="Height"         Value="1"/>
+            <Setter Property="Background"     Value="#F1F5F9"/>
+            <Setter Property="Margin"         Value="0,4,0,4"/>
+        </Style>
+
+        <!-- Badge pill -->
+        <Style x:Key="Badge" TargetType="Border">
+            <Setter Property="CornerRadius"   Value="20"/>
+            <Setter Property="Padding"        Value="10,3"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Padding="10,10,10,20">
+        <StackPanel Margin="6">
+
+            <!-- ═══════════════════  HEADER BAR  ═══════════════════ -->
+            <Border Background="White" CornerRadius="14" Padding="24,16" Margin="8,8,8,4"
+                    Effect="{StaticResource CardShadow}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Logo / brand mark -->
+                    <Border Grid.Column="0" Width="40" Height="40" CornerRadius="10"
+                            Margin="0,0,14,0" VerticalAlignment="Center">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="AliceBlue" Offset="0"/>
+                                <GradientStop Color="White" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Image x:Name="btnDashboard"
+                                Source="/Assets/Images/logo.png"
+                                Width="60"/>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="HoanMy Clinic"
+                                   FontFamily="Segoe UI Black" FontSize="17"
+                                   Foreground="#0F172A"/>
+                        <TextBlock Text="Dashboard tổng quan"
+                                   FontFamily="Segoe UI" FontSize="12"
+                                   Foreground="#94A3B8" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <!-- Clock -->
+                    <Border Grid.Column="2" CornerRadius="8" Padding="14,6"
+                            VerticalAlignment="Center">
+                        <Border.Background>
+                            <SolidColorBrush Color="#F0FDF4"/>
+                        </Border.Background>
+                        <TextBlock Text="{Binding CurrentTime}"
+                                   FontFamily="Segoe UI Semibold" FontSize="14"
+                                   Foreground="#10B981"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <UniformGrid Columns="3" Margin="0,4,0,4">
+
+                <Border Margin="8" CornerRadius="14" Padding="20,18" Effect="{StaticResource KpiShadow}">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#6366F1" Offset="0"/>
+                            <GradientStop Color="#818CF8" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Bệnh nhân hôm nay"
+                                       FontFamily="Segoe UI" FontSize="12"
+                                       Foreground="#C7D2FE"/>
+                            <TextBlock Text="{Binding Kpi.BenhNhanHomNay}"
+                                       FontFamily="Segoe UI Black" FontSize="36"
+                                       Foreground="White" Margin="0,6,0,0"/>
+                        </StackPanel>
+                        <Border Grid.Column="1" Width="44" Height="44" CornerRadius="22"
+                                VerticalAlignment="Center"
+                                Background="#FFFFFF20">
+                            <TextBlock Text="👤" FontSize="20"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- KPI 2 – Ca khám còn lại -->
+                <Border Margin="8" CornerRadius="14" Padding="20,18" Effect="{StaticResource CardShadow}">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#0EA5E9" Offset="0"/>
+                            <GradientStop Color="#38BDF8" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Ca khám còn lại"
+                                       FontFamily="Segoe UI" FontSize="12"
+                                       Foreground="#BAE6FD"/>
+                            <TextBlock Text="{Binding Kpi.CaKhamConLai}"
+                                       FontFamily="Segoe UI Black" FontSize="36"
+                                       Foreground="White" Margin="0,6,0,0"/>
+                        </StackPanel>
+                        <Border Grid.Column="1" Width="44" Height="44" CornerRadius="22"
+                                VerticalAlignment="Center"
+                                Background="#FFFFFF20">
+                            <TextBlock Text="🗓" FontSize="20"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- KPI 3 – Toa thuốc hôm nay -->
+                <Border Margin="8" CornerRadius="14" Padding="20,18" Effect="{StaticResource CardShadow}">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#10B981" Offset="0"/>
+                            <GradientStop Color="#34D399" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Toa thuốc hôm nay"
+                                       FontFamily="Segoe UI" FontSize="12"
+                                       Foreground="#A7F3D0"/>
+                            <TextBlock Text="{Binding Kpi.ToaThuocHomNay}"
+                                       FontFamily="Segoe UI Black" FontSize="36"
+                                       Foreground="White" Margin="0,6,0,0"/>
+                        </StackPanel>
+                        <Border Grid.Column="1" Width="44" Height="44" CornerRadius="22"
+                                VerticalAlignment="Center"
+                                Background="#FFFFFF20">
+                            <TextBlock Text="💊" FontSize="20"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+            </UniformGrid>
+
+            <!-- ═══════════════════  ROW 2: 3 TABLES  ═══════════════════ -->
+            <Grid Margin="0,4,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Ca khám tuần -->
+                <Border Grid.Column="0" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Border Width="4" CornerRadius="2" Margin="0,0,10,0">
+                                <Border.Background>
+                                    <SolidColorBrush Color="#6366F1"/>
+                                </Border.Background>
+                            </Border>
+                            <TextBlock Text="Ca khám tuần" Style="{StaticResource SectionTitle}" Margin="0"/>
+                        </StackPanel>
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="52"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="NGÀY"    Style="{StaticResource ColHead}"/>
+                            <TextBlock Grid.Column="1" Text="KHÁM"    Style="{StaticResource ColHead}" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="2" Text="ĐIỀU TRỊ" Style="{StaticResource ColHead}" TextAlignment="Right"/>
+                        </Grid>
+
+                        <ItemsControl ItemsSource="{Binding CaKhamTuan}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Border Style="{StaticResource Divider}"/>
+                                        <Grid Margin="0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="52"/>
+                                                <ColumnDefinition Width="60"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding Ngay, StringFormat=dd/MM}"
+                                                       FontFamily="Segoe UI" FontSize="13"
+                                                       Foreground="#475569" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding SoKham}"
+                                                       FontFamily="Segoe UI Semibold" FontSize="13"
+                                                       Foreground="#1E293B" TextAlignment="Right"/>
+                                            <Border Grid.Column="2" CornerRadius="6" Padding="6,2"
+                                                    HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#EEF2FF"/>
+                                                </Border.Background>
+                                                <TextBlock Text="{Binding SoDieuTri}"
+                                                           FontFamily="Segoe UI Semibold" FontSize="12"
+                                                           Foreground="#6366F1"/>
+                                            </Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tiến độ trạng thái -->
+                <Border Grid.Column="1" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Border Width="4" CornerRadius="2" Margin="0,0,10,0">
+                                <Border.Background>
+                                    <SolidColorBrush Color="#0EA5E9"/>
+                                </Border.Background>
+                            </Border>
+                            <TextBlock Text="Tiến độ" Style="{StaticResource SectionTitle}" Margin="0"/>
+                        </StackPanel>
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="70"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="TRẠNG THÁI" Style="{StaticResource ColHead}"/>
+                            <TextBlock Grid.Column="1" Text="SỐ LƯỢNG" Style="{StaticResource ColHead}" TextAlignment="Right"/>
+                        </Grid>
+
+                        <ItemsControl ItemsSource="{Binding TrangThai}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Border Style="{StaticResource Divider}"/>
+                                        <Grid Margin="0,7">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="70"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding TrangThai}"
+                                                       FontFamily="Segoe UI" FontSize="13"
+                                                       Foreground="#475569" VerticalAlignment="Center"/>
+                                            <Border Grid.Column="1" CornerRadius="6" Padding="8,2"
+                                                    HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#F0F9FF"/>
+                                                </Border.Background>
+                                                <TextBlock Text="{Binding SoLuong}"
+                                                           FontFamily="Segoe UI Semibold" FontSize="13"
+                                                           Foreground="#0EA5E9"/>
+                                            </Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Top bệnh -->
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Border Width="4" CornerRadius="2" Margin="0,0,10,0">
+                                <Border.Background>
+                                    <SolidColorBrush Color="#F59E0B"/>
+                                </Border.Background>
+                            </Border>
+                            <TextBlock Text="Top bệnh" Style="{StaticResource SectionTitle}" Margin="0"/>
+                        </StackPanel>
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="LOẠI BỆNH" Style="{StaticResource ColHead}"/>
+                            <TextBlock Grid.Column="1" Text="SỐ CA" Style="{StaticResource ColHead}" TextAlignment="Right"/>
+                        </Grid>
+
+                        <ItemsControl ItemsSource="{Binding TopBenh}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Border Style="{StaticResource Divider}"/>
+                                        <Grid Margin="0,7">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="50"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding TenBenh}"
+                                                       FontFamily="Segoe UI" FontSize="13"
+                                                       Foreground="#475569"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                            <Border Grid.Column="1" CornerRadius="6" Padding="6,2"
+                                                    HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#FFFBEB"/>
+                                                </Border.Background>
+                                                <TextBlock Text="{Binding SoLuong}"
+                                                           FontFamily="Segoe UI Semibold" FontSize="13"
+                                                           Foreground="#D97706"/>
+                                            </Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+
+            <!-- ═══════════════════  ROW 3: ACTIVITY + LIỆU TRÌNH  ═══════════════════ -->
+            <Grid Margin="0,4,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.7*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Hoạt động gần đây -->
+                <Border Grid.Column="0" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Border Width="4" CornerRadius="2" Margin="0,0,10,0">
+                                <Border.Background>
+                                    <SolidColorBrush Color="#10B981"/>
+                                </Border.Background>
+                            </Border>
+                            <TextBlock Text="Hoạt động gần đây" Style="{StaticResource SectionTitle}" Margin="0"/>
+                        </StackPanel>
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="140"/>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="THỜI GIAN"  Style="{StaticResource ColHead}"/>
+                            <TextBlock Grid.Column="1" Text="SỰ KIỆN"   Style="{StaticResource ColHead}"/>
+                            <TextBlock Grid.Column="2" Text="CHI TIẾT"  Style="{StaticResource ColHead}"/>
+                        </Grid>
+
+                        <ItemsControl ItemsSource="{Binding HoatDong}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Border Style="{StaticResource Divider}"/>
+                                        <Grid Margin="0,9">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="140"/>
+                                                <ColumnDefinition Width="130"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Time chip -->
+                                            <Border CornerRadius="6" Padding="8,3"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                    Background="#F8FAFC">
+                                                <TextBlock Text="{Binding ThoiGian, StringFormat=HH:mm dd/MM/yyyy}"
+                                                           FontFamily="Consolas" FontSize="11"
+                                                           Foreground="#64748B"/>
+                                            </Border>
+
+                                            <!-- Event badge -->
+                                            <Border Grid.Column="1" CornerRadius="6" Padding="8,3"
+                                                    HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                    Background="#F0FDF4" Margin="0,0,8,0">
+                                                <TextBlock Text="{Binding LoaiSuKien}"
+                                                           FontFamily="Segoe UI Semibold" FontSize="12"
+                                                           Foreground="#059669"/>
+                                            </Border>
+
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding MoTa}"
+                                                       FontFamily="Segoe UI" FontSize="13"
+                                                       Foreground="#475569"
+                                                       VerticalAlignment="Center"
+                                                       TextWrapping="Wrap"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Liệu trình progress -->
+                <Border Grid.Column="1" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Border Width="4" CornerRadius="2" Margin="0,0,10,0">
+                                <Border.Background>
+                                    <SolidColorBrush Color="#8B5CF6"/>
+                                </Border.Background>
+                            </Border>
+                            <TextBlock Text="Liệu trình" Style="{StaticResource SectionTitle}" Margin="0"/>
+                        </StackPanel>
+
+                        <ItemsControl ItemsSource="{Binding LieuTrinh}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,0,0,16">
+
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding TenLieuTrinh}"
+                                                           FontFamily="Segoe UI Semibold" FontSize="13"
+                                                           Foreground="#1E293B"/>
+                                                <TextBlock Text="{Binding TenBenhNhan}"
+                                                           FontFamily="Segoe UI" FontSize="11"
+                                                           Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding PhanTramTienDo, StringFormat={}{0}%}"
+                                                       FontFamily="Segoe UI Semibold" FontSize="12"
+                                                       Foreground="#8B5CF6"
+                                                       VerticalAlignment="Bottom"/>
+                                        </Grid>
+
+                                        <!-- Progress bar -->
+                                        <ProgressBar Value="{Binding PhanTramTienDo}"
+                                                     Minimum="0" Maximum="100"
+                                                     Height="7"
+                                                     BorderThickness="0"
+                                                     Background="#EDE9FE"
+                                                     Foreground="#8B5CF6"/>
+
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

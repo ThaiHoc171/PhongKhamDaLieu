@@ -18,10 +18,10 @@ public partial class NhanVienPage : Page
 		Loaded += async (_, __) => await vm.Init();
 
 		SetupDataGrid.ApplyStyle(GridContent);
-		SetupColumns(vm);
+		SetupColumns();
 	}
 
-	private void SetupColumns(NhanVienViewModel vm)
+	private void SetupColumns()
 	{
 		GridContent.Columns.Clear();
 
@@ -65,6 +65,6 @@ public partial class NhanVienPage : Page
 			SetupDataGrid.CreateIconButtonColumnVer2("Pencil", "EditCommand", "Sửa"));
 
 		GridContent.Columns.Add(
-			SetupDataGrid.CreateIconButtonColumnVer2("Plus", "AddCommand", "Thêm"));
+			SetupDataGrid.CreateIconButtonColumnVer2("Public", "PublicCommand", "Tạo hồ sơ công khai"));
 	}
 }

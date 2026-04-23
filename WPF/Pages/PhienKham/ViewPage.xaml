@@ -66,6 +66,9 @@
                                 <Button Content="Hồ sơ bệnh án"
                                         Command="{Binding RecordCommand}"
                                         Style="{StaticResource MaterialDesignFlatButton}"/>
+                                <Button Content="Xuất kết quả"
+                                        Command="{Binding ExportCommand}"
+                                        Style="{StaticResource MaterialDesignFlatButton}"/>
                             </StackPanel>
                         </Border>
                     </Popup>

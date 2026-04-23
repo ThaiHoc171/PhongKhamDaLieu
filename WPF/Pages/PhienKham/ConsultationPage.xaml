@@ -83,11 +83,10 @@
                                         <Button Content="Hồ sơ bệnh án"
                                             Command="{Binding RecordCommand}"
                                             Style="{StaticResource MaterialDesignFlatButton}"/>
-                                        
+
                                         <Button Content="Tạo phiếu tái khám"
                                             Command="{Binding RecheckCommand}"
                                             Style="{StaticResource MaterialDesignFlatButton}"/>
-
                                         <Button Content="Kết thúc"
                                             Command="{Binding CompleteCommand}"
                                             Style="{StaticResource MaterialDesignFlatButton}"/>

@@ -1,0 +1,93 @@
+﻿<Window x:Class="WPF.Windows.Public.AddBaiViet"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Width="1020" Height="650"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent">
+
+    <Border BorderBrush="#8F8FAF" BorderThickness="1">
+        <Grid Background="AliceBlue">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+
+            <!-- HEADER -->
+            <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}" Padding="12,6" MouseDown="Header_MouseDown">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="AccountPlus" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
+                    <TextBlock Text="THÊM BÀI VIẾT" FontSize="20" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- CONTENT -->
+            <Grid Grid.Row="1" Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Border Width="400" Height="300" CornerRadius="12" Margin="0,10"
+            BorderBrush="#E5E7EB" BorderThickness="1" Background="#F9FAFB">
+                        <Image x:Name="imgAvatar" Stretch="UniformToFill"/>
+                    </Border>
+
+                    <Button x:Name="btnChoosePic" Click="btnChoosePic_Click" Width="140" Style="{StaticResource PrimaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Image"/>
+                            <TextBlock Text="Chọn ảnh" Margin="5,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <Grid Grid.Column="1" Margin="0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBox x:Name="txtName" Grid.Row="0" Margin="10"
+                         materialDesign:HintAssist.Hint="Tiêu đề"/>
+                    <TextBox x:Name="txtTomtat" Grid.Row="1" Margin="10"
+                         materialDesign:HintAssist.Hint="Tóm tắt"/>
+                    <TextBox x:Name="txtContent" Grid.Row="3" Height="200" Margin="10"
+                         materialDesign:HintAssist.Hint="Nội dung"  AcceptsReturn="True"
+                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                    <ComboBox x:Name="cboDisease" Grid.Row="2" Margin="10" Height="40" Padding="12,6"
+                              materialDesign:HintAssist.Hint="Loại bệnh"/>
+                </Grid>
+            </Grid>
+
+            <!-- ================= FOOTER ================= -->
+            <Border Grid.Row="2" Background="#E5E9F8" Padding="5">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                    <Button x:Name="btnClose" Click="btnClose_Click" Width="100" Margin="5">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Close"/>
+                            <TextBlock Text="Đóng" Margin="5,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="btnSave" Click="btnSave_Click" Width="100" Margin="5" 
+                            Style="{StaticResource PrimaryButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave"/>
+                            <TextBlock Text="Lưu" Margin="5,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

@@ -5,21 +5,19 @@ using WPF.Client;
 using WPF.Common;
 using WPF.Models;
 using WPF.Windows.ChucVu;
-using WPF.Windows.NhanVien;
 using WPF.Windows.Public;
 
 namespace WPF.ViewModels;
 
-public class NhanVienViewModel : PagedViewModel
+public class BaiVietViewModel : PagedViewModel
 {
-	private readonly NhanVienClient _client = new();
-	private readonly BacSiProfileClient _bacsi = new();
-	private readonly DebounceDispatcher _searchDebounce = new();
-	private readonly DebounceDispatcher _sizeDebounce = new();
+	private readonly BaiVietClient _client = new();
+	private readonly DebounceDispatcher _search = new();
+	private readonly DebounceDispatcher _pageSize = new();
 
-	public ObservableCollection<NhanVienReadListModel> Items { get; set; } = new();
+	public ObservableCollection<BaiVietListReadModel> Items { get; set; } = new();
 
-	// ================= SEARCH =================
+	#region SEARCH
 	private string _keyword = "";
 	public string Keyword
 	{
@@ -29,7 +27,7 @@ public class NhanVienViewModel : PagedViewModel
 			_keyword = value;
 			OnPropertyChanged();
 
-			_searchDebounce.Debounce(400, async () =>
+			_search.Debounce(400, async () =>
 			{
 				await Ui.RunAsync(async () =>
 				{
@@ -39,8 +37,9 @@ public class NhanVienViewModel : PagedViewModel
 			});
 		}
 	}
+	#endregion
 
-	// ================= PAGE SIZE =================
+	#region PAGE SIZE
 	private string _pageSizeInput = "15";
 	public string PageSizeInput
 	{
@@ -52,7 +51,7 @@ public class NhanVienViewModel : PagedViewModel
 			_pageSizeInput = value;
 			OnPropertyChanged();
 
-			_sizeDebounce.Debounce(400, async () =>
+			_pageSize.Debounce(400, async () =>
 			{
 				if (!int.TryParse(_pageSizeInput, out int size) || size <= 0)
 					return;
@@ -66,8 +65,30 @@ public class NhanVienViewModel : PagedViewModel
 			});
 		}
 	}
+	#endregion
+	public List<string> StatusList { get; } =
+	new() { "Tất cả", "Đang điều trị", "Hoàn thành", "Đã hủy" };
 
-	// ================= COMMANDS =================
+	private string _selectedStatus = "Tất cả";
+	public string SelectedStatus
+	{
+		get => _selectedStatus;
+		set
+		{
+			_selectedStatus = value;
+			OnPropertyChanged();
+
+			Ui.RunAsync(async () =>
+			{
+				Page = 1;
+				await LoadData();
+			});
+		}
+	}
+
+	private string? GetStatus()
+		=> SelectedStatus == "Tất cả" ? null : SelectedStatus;
+	#region COMMANDS
 
 	public ICommand RefreshCommand => new RelayCommand(() =>
 	{
@@ -76,26 +97,27 @@ public class NhanVienViewModel : PagedViewModel
 		return Task.CompletedTask;
 	});
 
+
 	public ICommand AddCommand => new RelayCommand(async () =>
 	{
 		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new AddNhanVien
+			new AddBaiViet
 			{
 				Owner = Application.Current.MainWindow
 			},
 			async () =>
 			{
 				await LoadData();
-				SnackbarHelper.ShowSuccess("Thêm nhân viên thành công!");
+				SnackbarHelper.ShowSuccess("Thêm bài viết thành công!");
 			});
 
 		OverlayHelper.Hide(overlay);
 	});
 
-	public ICommand EditCommand => new RelayCommandWithParam<NhanVienReadListModel>(async item =>
+	public ICommand EditCommand => new RelayCommandWithParam<BaiVietListReadModel>(async item =>
 	{
 		if (item == null) return;
 
@@ -103,80 +125,60 @@ public class NhanVienViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new UpdateNhanVien(item.NhanVienID)
+			new UpdateBaiViet(item.BaiVietID)
 			{
 				Owner = Application.Current.MainWindow
 			},
 			async () =>
 			{
 				await LoadData();
-				SnackbarHelper.ShowSuccess("Cập nhật nhân viên thành công!");
+				SnackbarHelper.ShowSuccess("Cập nhật thành công!");
 			});
 
 		OverlayHelper.Hide(overlay);
 	});
-	public ICommand PublicCommand => new RelayCommandWithParam<NhanVienReadListModel>(async item =>
-	{
-		if (item == null) return;
-		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
-		OverlayHelper.Show(overlay);
-		var res = await _bacsi.GetByNhanVien(item.NhanVienID);
-		if (!res.Success)
-		{
-			await DialogHelper.OpenDialogAsync(
-			new AddBacSi(item.NhanVienID,item.HoTen)
-			{
-				Owner = Application.Current.MainWindow
-			},
-			async () =>
-			{
-				await LoadData();
-				SnackbarHelper.ShowSuccess("Thêm thông tin bác sĩ công khai thành công!");
-			});
-		}
-		else
-		{
-			await DialogHelper.OpenDialogAsync(
-			new UpdateBacSi(item.NhanVienID)
-			{
-				Owner = Application.Current.MainWindow
-			},
-			async () =>
-			{
-				await LoadData();
-			});
-		}
-		OverlayHelper.Hide(overlay);
-	});
 
-	// ================= LOAD DATA =================
+
+	#endregion
+
+	#region LOAD DATA
 	protected override async Task LoadData()
 	{
 		try
 		{
 			IsLoading = true;
+			var status = GetStatus();
 
 			var res = string.IsNullOrWhiteSpace(Keyword)
-				? await _client.GetPaged(Page, SizePage)
-				: await _client.Search(Keyword, Page, SizePage);
+				? await _client.GetPaged(Page, SizePage,status)
+				: await _client.Search(Keyword, Page, SizePage, status);
 
 			if (!res.Success)
 			{
 				await MessageHelper.ShowMessage(res.Message);
 				return;
 			}
+
 			await Ui.Run(() =>
 			{
 				Items.Clear();
-				foreach (var item in res.Data!.Items)
+
+				if (res.Data == null) return;
+
+				foreach (var item in res.Data.Items)
 					Items.Add(item);
 			});
 
-			TotalPages = (int)Math.Ceiling((double)res.Data!.TotalCount / res.Data.PageSize);
+			if (res.Data != null)
+			{
+				TotalPages = (int)Math.Ceiling(
+					(double)res.Data.TotalCount / res.Data.PageSize);
+			}
 		}
 		finally
 		{
 			IsLoading = false;
 		}
 	}
+	#endregion
 }

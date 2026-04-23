@@ -92,6 +92,8 @@ namespace WPF.Windows
 				}
 
 				// 4. Lưu session
+				Session.UserId = result.Id;
+				Session.Email = result.Email;
 				Session.Token = result.AccessToken;
 				Session.ChucVu = result.ChucVu;
 				Session.NhanVienId = result.NhanVienId;

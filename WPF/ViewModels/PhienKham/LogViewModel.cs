@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+using System.IO;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WPF.Client;
@@ -108,6 +109,34 @@ public class LogViewModel : BaseViewModel
 		{
 			return new WPF.Windows.HSBenhAn.ViewHoSo(_benhNhanObj.Id, _benhNhanObj.Name);
 		});
+	});
+	public ICommand ExportCommand => new RelayCommand(() =>
+	{
+		try
+		{
+			var helper = new PdfHelper();
+
+			var dto = new PhienKhamPdfDto
+			{
+				BenhNhan = BenhNhan,
+				BacSi = BacSi,
+				NgayKham = NgayKham,
+				TrangThai = TrangThai,
+				TrieuChung = TrieuChung,
+				ChanDoan = ChanDoan,
+				GhiChu = GhiChu,
+				BenhList = BenhList?.ToList(),
+				CLSList = CLSList?.ToList(),
+				ThietBiList = ThietBiList?.ToList()
+			};
+			var path = new PdfHelper().ExportPdf(dto);
+			if (path != null)
+				SnackbarHelper.ShowSuccess($"Đã lưu: {path}");
+		}
+		catch (Exception ex)
+		{
+			SnackbarHelper.ShowError("Xuất PDF thất bại: " + ex.Message);
+		}
 	});
 
 	public ICommand BackCommand => new RelayCommand(() =>

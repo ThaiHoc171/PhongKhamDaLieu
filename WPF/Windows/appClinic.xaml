@@ -3,17 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="Clinic App"
-        Height="800"
-        Width="1300"
+        Height="800" Width="1300"
         WindowStartupLocation="CenterScreen"
         Background="White"
-        Loaded="Window_Loaded" 
+        Loaded="Window_Loaded"
         WindowStyle="None"
-        AllowsTransparency="True" Icon="/Assets/Images/System/logo.png">
-        
+        AllowsTransparency="True"
+        Icon="/Assets/Images/logo.png">
+
     <Grid>
         <materialDesign:DialogHost Identifier="RootDialog">
-
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="220"/>
@@ -22,378 +21,437 @@
 
                 <!-- ================= SIDEBAR ================= -->
                 <Border Background="#5B5FEF" Grid.Column="0">
-                    <DockPanel>
+                    <DockPanel LastChildFill="True">
 
-                        <!-- LOGO -->
-                        <StackPanel DockPanel.Dock="Top" Margin="10">
-                            <Border Background="#FFFFFF"
-                            CornerRadius="35"
-                            Padding="5"
-                            HorizontalAlignment="Center">
-
-                                <Image x:Name="btnDashboard"
-                               Source="/Assets/Images/System/logo.png"
-                               Width="60"/>
+                        <!-- LOGO (Top) -->
+                        <StackPanel DockPanel.Dock="Top" Margin="10,16,10,8">
+                            <Border Background="#FFFFFF" CornerRadius="35"
+                                    Padding="5" HorizontalAlignment="Center">
+                                <Image Source="/Assets/Images/logo.png" Width="60"/>
                             </Border>
-                            <TextBlock x:Name="txtLogo"
-                               Text="Clinic"
-                               Foreground="White"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               Margin="0,5,0,10"/>
+                            <TextBlock Text="Clinic"
+                                       Foreground="White" FontWeight="Bold"
+                                       FontSize="16"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,6,0,0"/>
                         </StackPanel>
 
-                        <!-- MENU -->
-                        <StackPanel>
-                            <!-- ================= KHÁM BỆNH ================= -->
-                            <Expander x:Name="expKham" Expanded="Expander_Expanded" Background="Transparent" Foreground="White">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Stethoscope"/>
-                                        <TextBlock x:Name="txtKham" Text=" Khám bệnh" Margin="10,0,0,0" />
+                        <Separator DockPanel.Dock="Top"
+                                   Background="#FFFFFF30"
+                                   Margin="12,0,12,4"/>
+
+                        <!-- MENU (Scrollable) -->
+                        <ScrollViewer DockPanel.Dock="Top"
+              VerticalScrollBarVisibility="Auto"
+              HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="0,4,0,8">
+
+                                <!-- ===== KHÁM BỆNH ===== -->
+                                <Expander x:Name="expKham"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="Stethoscope" Width="18" Height="18"/>
+                                            <TextBlock Text=" Khám bệnh" Margin="8,0,0,0" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button x:Name="btnPhienKham"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnPhienKham_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="ClipboardPulse" Width="16" Height="16"/>
+                                                <TextBlock Text="Phiên khám" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="btnPhienKhamCaNhan"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnPhienKhamCaNhan_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="ClipboardAccount" Width="16" Height="16"/>
+                                                <TextBlock Text="Phiên khám cá nhân" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnPkCls_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Microscope" Width="16" Height="16"/>
+                                                <TextBlock Text="Xét nghiệm / CLS" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnTaiKham_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="CalendarRefresh" Width="16" Height="16"/>
+                                                <TextBlock Text="Tái khám" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
-                                </Expander.Header>
+                                </Expander>
 
-                                <StackPanel>
-                                    <Button x:Name="btnPhienKham" Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnPhienKham_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Prescription"/>
-                                            <TextBlock Text="Phiên khám" Margin="10,0,0,0"/>
+                                <!-- ===== ĐIỀU TRỊ ===== -->
+                                <Expander x:Name="expDieuTri"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="MedicalBag" Width="18" Height="18"/>
+                                            <TextBlock Text=" Điều trị" Margin="8,0,0,0" FontWeight="SemiBold"/>
                                         </StackPanel>
-                                    </Button>
-                                    <Button x:Name="btnPhienKhamCaNhan" Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnPhienKhamCaNhan_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Prescription"/>
-                                            <TextBlock  Text="Phiên khám cá nhân" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <!--
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Prescription"/>
-                                            <TextBlock x:Name="txtToaThuoc" Text=" Toa thuốc" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                    -->
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnPkCls_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="TestTube"/>
-                                            <TextBlock x:Name="txtCLS2" Text="Cận lâm sàng" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnTaiKham_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Refresh"/>
-                                            <TextBlock x:Name="txtTaiKham" Text=" Tái khám" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
-                            </Expander>
-                            <Expander x:Name="expDieuTri" Expanded="Expander_Expanded" Background="Transparent" Foreground="White">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Stethoscope"/>
-                                        <TextBlock x:Name="txtDieuTri" Text="Điều trị" Margin="10,0,0,0" />
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnDieuTri_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="TimerPlay" Width="16" Height="16"/>
+                                                <TextBlock Text="Liệu trình" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
-                                </Expander.Header>
+                                </Expander>
 
-                                <StackPanel>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnDieuTri_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Prescription"/>
-                                            <TextBlock x:Name="txtLieuTrinh" Text="Liệu trình" Margin="10,0,0,0"/>
+                                <!-- ===== BỆNH NHÂN ===== -->
+                                <Expander x:Name="expBenhNhan"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="AccountHeart" Width="18" Height="18"/>
+                                            <TextBlock Text=" Bệnh nhân" Margin="8,0,0,0" FontWeight="SemiBold"/>
                                         </StackPanel>
-                                    </Button>
-                                </StackPanel>
-                            </Expander>
-                            <Expander x:Name="expBenhNhan" Expanded="Expander_Expanded" Background="Transparent" Foreground="White">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="AccountGroup"/>
-                                        <TextBlock x:Name="txtBenhNhanHeader" Text="Bệnh Nhân" Margin="10,0,0,0"/>
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnBenhNhan_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="AccountInjury" Width="16" Height="16"/>
+                                                <TextBlock Text="Bệnh nhân" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnKhach_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="AccountClock" Width="16" Height="16"/>
+                                                <TextBlock Text="Khách vãng lai" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
-                                </Expander.Header>
+                                </Expander>
 
-                                <StackPanel>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnBenhNhan_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtBenhNhan" Text="Bệnh nhân" Margin="10,0,0,0"/>
+                                <!-- ===== CA KHÁM ===== -->
+                                <Expander x:Name="expCaKham"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="CalendarClock" Width="18" Height="18"/>
+                                            <TextBlock Text=" Ca khám" Margin="8,0,0,0" FontWeight="SemiBold"/>
                                         </StackPanel>
-                                    </Button>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnKhach_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtKhach" Text="Khách" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
-                            </Expander>
-                            <!--Ca Khám-->
-                            <Expander x:Name="expCaKham" Expanded="Expander_Expanded" Background="Transparent" Foreground="White">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="AccountGroup"/>
-                                        <TextBlock x:Name="txtCaKham" Text="Ca Khám" Margin="10,0,0,0"/>
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="CaKhamTrong_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="CalendarBlank" Width="16" Height="16"/>
+                                                <TextBlock Text="Ca khám trống" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="CaKhamCho_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="CalendarQuestion" Width="16" Height="16"/>
+                                                <TextBlock Text="Chờ xác nhận" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="CaKhamDaXacNhan_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="CalendarCheck" Width="16" Height="16"/>
+                                                <TextBlock Text="Đã xác nhận" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="LichSuCaKham_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="History" Width="16" Height="16"/>
+                                                <TextBlock Text="Lịch sử ca khám" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
-                                </Expander.Header>
+                                </Expander>
 
-                                <StackPanel>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="CaKhamTrong_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtCaKhamTrong" Text="Ca khám trống" Margin="10,0,0,0"/>
+                                <!-- ===== LỊCH LÀM VIỆC ===== -->
+                                <Expander x:Name="expLichLamViec"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="CalendarMonth" Width="18" Height="18"/>
+                                            <TextBlock Text=" Lịch làm việc" Margin="8,0,0,0" FontWeight="SemiBold"/>
                                         </StackPanel>
-                                    </Button>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="CaKhamCho_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtCaKhamCho" Text="Ca khám chờ xác nhận" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="CaKhamDaXacNhan_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtCaKhamDaXacNhan" Text="Ca khám đã xác nhận" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="LichSuCaKham_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtLichSuCaKham" Text="Lịch sử ca khám" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
-                            </Expander>
-                            <!--Lịch làm việc-->
-                            <Expander x:Name="expLichLamViec" Expanded="Expander_Expanded" Background="Transparent" Foreground="White">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="AccountGroup"/>
-                                        <TextBlock x:Name="txtlichLamViec" Text="Lịch làm việc" Margin="10,0,0,0"/>
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnXemLichCaNhan_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="CalendarAccount" Width="16" Height="16"/>
+                                                <TextBlock Text="Lịch của tôi" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnXemLichChung_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="CalendarMultiple" Width="16" Height="16"/>
+                                                <TextBlock Text="Lịch phòng khám" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnNhapLichLam_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="CalendarEdit" Width="16" Height="16"/>
+                                                <TextBlock Text="Đăng ký lịch làm" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
-                                </Expander.Header>
-                                <StackPanel>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnXemLichCaNhan_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtXemLich" Text="Xem lịch làm" Margin="10,0,0,0"/>
+                                </Expander>
+
+                                <!-- ===== NHÂN SỰ ===== -->
+                                <Expander x:Name="expNhanSu"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="AccountMultiple" Width="18" Height="18"/>
+                                            <TextBlock Text=" Nhân sự" Margin="8,0,0,0" FontWeight="SemiBold"/>
                                         </StackPanel>
-                                    </Button>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnXemLichChung_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtXemLichAll" Text="Lịch làm phòng khám" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnNhapLichLam_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtNhapLichLam" Text="Nhập lịch làm việc" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
-                            </Expander>
-                            <!-- ================= NHÂN SỰ ================= -->
-                            <Expander x:Name="expNhanSu" Expanded="Expander_Expanded" Background="Transparent" Foreground="White">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="AccountGroup"/>
-                                        <TextBlock x:Name="txtNhanSu" Text=" Nhân sự" Margin="10,0,0,0"/>
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnNhanVien_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="AccountTie" Width="16" Height="16"/>
+                                                <TextBlock Text="Nhân viên" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="BtnChucVu_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="BadgeAccount" Width="16" Height="16"/>
+                                                <TextBlock Text="Chức vụ" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnTaiKhoan_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="AccountKey" Width="16" Height="16"/>
+                                                <TextBlock Text="Tài khoản" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
-                                </Expander.Header>
+                                </Expander>
 
-                                <StackPanel>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnNhanVien_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Account"/>
-                                            <TextBlock x:Name="txtNhanVien" Text=" Nhân viên" Margin="10,0,0,0"/>
+                                <!-- ===== CƠ SỞ VẬT CHẤT ===== -->
+                                <Expander x:Name="expCSVC"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="HospitalBuilding" Width="18" Height="18"/>
+                                            <TextBlock Text=" Cơ sở vật chất" Margin="8,0,0,0" FontWeight="SemiBold"/>
                                         </StackPanel>
-                                    </Button>
-
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="BtnChucVu_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="BadgeAccount"/>
-                                            <TextBlock x:Name="txtChucVu" Text=" Chức vụ" Margin="10,0,0,0"/>
-                                        </StackPanel>
-
-                                    </Button>
-
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnTaiKhoan_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="AccountKey"/>
-                                            <TextBlock x:Name="txtTaiKhoan" Text=" Tài khoản" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-<!--
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="ShieldAccount"/>
-                                            <TextBlock x:Name="txtPhanQuyen" Text=" Phân quyền" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
--->                                   
-                                </StackPanel>
-                            </Expander>
-
-                            <!-- ================= DANH MỤC ================= -->
-                            <Expander x:Name="expDanhMuc" Expanded="Expander_Expanded" Background="Transparent" Foreground="White">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="ViewList"/>
-                                        <TextBlock x:Name="txtDanhMuc" Text=" Danh mục" Margin="10,0,0,0"/>
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnPhong_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Door" Width="16" Height="16"/>
+                                                <TextBlock Text="Phòng chức năng" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnThietBi_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Devices" Width="16" Height="16"/>
+                                                <TextBlock Text="Thiết bị y tế" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnCls_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Flask" Width="16" Height="16"/>
+                                                <TextBlock Text="Dịch vụ CLS" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
-                                </Expander.Header>
+                                </Expander>
 
-                                <StackPanel>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnThuoc_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Pill"/>
-                                            <TextBlock x:Name="txtThuoc" Text=" Thuốc" Margin="10,0,0,0"/>
+                                <!-- ===== DANH MỤC ===== -->
+                                <Expander x:Name="expDanhMuc"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="ViewList" Width="18" Height="18"/>
+                                            <TextBlock Text=" Danh mục" Margin="8,0,0,0" FontWeight="SemiBold"/>
                                         </StackPanel>
-                                    </Button>
-
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnLoaiBenh_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Virus"/>
-                                            <TextBlock x:Name="txtLoaiBenh" Text=" Loại bệnh" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-<!--
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Post"/>
-                                            <TextBlock x:Name="txtBaiViet" Text=" Bài viết" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
- -->                                   
-                                </StackPanel>
-                            </Expander>
-
-                            <!-- ================= CƠ SỞ VẬT CHẤT ================= -->
-                            <Expander x:Name="expCSVC" Expanded="Expander_Expanded" Background="Transparent" Foreground="White">
-                                <Expander.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="HospitalBuilding"/>
-                                        <TextBlock x:Name="txtCSVC" Text=" Cơ sở vật chất" Margin="10,0,0,0"/>
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnThuoc_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Pill" Width="16" Height="16"/>
+                                                <TextBlock Text="Thuốc" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnLoaiBenh_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Virus" Width="16" Height="16"/>
+                                                <TextBlock Text="Loại bệnh / ICD" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
                                     </StackPanel>
-                                </Expander.Header>
+                                </Expander>
 
-                                <StackPanel>
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnPhong_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Door"/>
-                                            <TextBlock x:Name="txtPhong" Text=" Phòng chức năng" Margin="10,0,0,0"/>
+                                <!-- ===== THỐNG KÊ - BÁO CÁO ===== -->
+                                <Expander x:Name="expThongKe"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="ChartBar" Width="18" Height="18"/>
+                                            <TextBlock Text=" Thống kê / Báo cáo" Margin="8,0,0,0" FontWeight="SemiBold"/>
                                         </StackPanel>
-                                    </Button>
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnThongKe_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="ChartLine" Width="16" Height="16"/>
+                                                <TextBlock Text="Thống kê tổng quan" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Expander>
 
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnThietBi_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Tools"/>
-                                            <TextBlock x:Name="txtThietBi" Text=" Thiết bị" Margin="10,0,0,0"/>
+                                <!-- ===== CÔNG KHAI ===== -->
+                                <Expander x:Name="expPublic"
+                  Expanded="Expander_Expanded"
+                  Background="Transparent" Foreground="White">
+                                    <Expander.Header>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6">
+                                            <materialDesign:PackIcon Kind="Earth" Width="18" Height="18"/>
+                                            <TextBlock Text=" Nội dung công khai" Margin="8,0,0,0" FontWeight="SemiBold"/>
                                         </StackPanel>
-                                    </Button>
+                                    </Expander.Header>
+                                    <StackPanel Margin="16,0,0,4">
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnBacSi_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Doctor" Width="16" Height="16"/>
+                                                <TextBlock Text="Hồ sơ bác sĩ" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="White" HorizontalContentAlignment="Left"
+                        Click="btnBaiViet_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Newspaper" Width="16" Height="16"/>
+                                                <TextBlock Text="Bài viết / Tin tức" Margin="8,0,0,0"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Expander>
 
-                                    <Button Style="{StaticResource MaterialDesignFlatButton}" Foreground="White" Click="btnCls_Click">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Flask"/>
-                                            <TextBlock x:Name="txtCLS" Text=" Cận lâm sàng" Margin="10,0,0,0"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
-                            </Expander>
-                        </StackPanel>
-
-
-
+                            </StackPanel>
+                        </ScrollViewer>
                     </DockPanel>
                 </Border>
 
-                <!-- ================= MAIN ================= -->
+                <!-- ================= MAIN AREA ================= -->
                 <Grid Grid.Column="1">
-
                     <Grid.RowDefinitions>
                         <RowDefinition Height="25"/>
                         <RowDefinition Height="70"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
+
+                    <!-- TITLE BAR -->
                     <Grid Grid.Row="0" MouseDown="Header_MouseDown" Background="#CFCFCF">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Center"
                                     Margin="0,0,10,0">
-
-                            <!-- MINIMIZE -->
                             <Button Width="50" Height="20" Margin="2,2,0,0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    Foreground="Black"
-                                    BorderThickness="0"
-                                    Click="BtnMinimize_Click">
+                                    Background="Transparent" Foreground="Black"
+                                    BorderThickness="0" Click="BtnMinimize_Click">
                                 <materialDesign:PackIcon Kind="WindowMinimize"/>
                             </Button>
-
-                            <!-- MAXIMIZE -->
                             <Button Width="50" Height="20" Margin="2,2,0,0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    Foreground="Black"
-                                    BorderThickness="0"
-                                    Click="BtnMaximize_Click">
+                                    Background="Transparent" Foreground="Black"
+                                    BorderThickness="0" Click="BtnMaximize_Click">
                                 <materialDesign:PackIcon x:Name="iconMaximize" Kind="WindowMaximize"/>
                             </Button>
-
-                            <!-- CLOSE -->
                             <Button Width="50" Height="20" Margin="2,2,0,0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    Foreground="Red"
-                                    BorderThickness="0"
-                                    Click="BtnClose_Click">
+                                    Background="Transparent" Foreground="Red"
+                                    BorderThickness="0" Click="BtnClose_Click">
                                 <materialDesign:PackIcon Kind="Close"/>
                             </Button>
-
                         </StackPanel>
                     </Grid>
-                    <!-- HEADER -->
-                    <Border Background="White" CornerRadius="0,0,20,20" Margin="10" Grid.Row="1"
-                    Effect="{DynamicResource MaterialDesignElevation2}">
 
+                    <!-- HEADER -->
+                    <Border Grid.Row="1"
+                            Background="White" CornerRadius="0,0,20,20"
+                            Margin="10" Effect="{DynamicResource MaterialDesignElevation2}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- TITLE -->
                             <TextBlock x:Name="txtHeader"
-                               Text="Dashboard"
-                               FontSize="20"
-                               FontWeight="Bold"
-                               VerticalAlignment="Center"
-                               Margin="20,0"/>
+                                       Text="Dashboard"
+                                       FontSize="20" FontWeight="Bold"
+                                       VerticalAlignment="Center"
+                                       Margin="20,0"/>
 
-                            <!-- USER + AVATAR -->
-                            <Grid Grid.Column="1"
-                                  VerticalAlignment="Center"
-                                  Margin="0,-5,0,0">
-
+                            <Grid Grid.Column="1" VerticalAlignment="Center" Margin="0,-5,0,0">
                                 <StackPanel Orientation="Horizontal">
-
                                     <TextBlock x:Name="txtName" Text="Hi"
                                                VerticalAlignment="Center"
                                                Margin="0,0,-10,0"/>
-
-                                    <!-- AVATAR -->
-                                    <Button x:Name="btnAvatar" Width="100" Height="60" Background="Transparent" BorderThickness="0" Click="btnAvatar_Click" Cursor="Hand">
-
+                                    <Button x:Name="btnAvatar"
+                                            Width="100" Height="60"
+                                            Background="Transparent" BorderThickness="0"
+                                            Click="btnAvatar_Click" Cursor="Hand">
                                         <Ellipse Width="45" Height="45"
-                                         Stroke="White"
-                                         StrokeThickness="2">
+                                                 Stroke="White" StrokeThickness="2">
                                             <Ellipse.Fill>
                                                 <ImageBrush ImageSource="/Assets/Icon/user.png"/>
                                             </Ellipse.Fill>
@@ -401,55 +459,69 @@
                                     </Button>
                                 </StackPanel>
 
-                                <!-- DROPDOWN -->
-                                <Popup x:Name="AvatarPopup" Placement="Relative" PlacementTarget="{Binding ElementName=btnAvatar}"
-                                       HorizontalOffset="-120" VerticalOffset="55" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
-
-                                    <Border Background="#E5E9F8" CornerRadius="12" Padding="8" Width="200" SnapsToDevicePixels="True">
-
-                                        <!-- SHADOW -->
+                                <Popup x:Name="AvatarPopup"
+                                       Placement="Relative"
+                                       PlacementTarget="{Binding ElementName=btnAvatar}"
+                                       HorizontalOffset="-120" VerticalOffset="55"
+                                       StaysOpen="False" AllowsTransparency="True"
+                                       PopupAnimation="Fade">
+                                    <Border Background="#E5E9F8" CornerRadius="12"
+                                            Padding="8" Width="200" SnapsToDevicePixels="True">
                                         <Border.Effect>
-                                            <DropShadowEffect BlurRadius="15"
-                                                      ShadowDepth="2"
-                                                      Opacity="0.3"/>
+                                            <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.3"/>
                                         </Border.Effect>
-
                                         <StackPanel>
-
-                                            <!-- HEADER -->
                                             <TextBlock Text="Admin" FontWeight="Bold" Margin="8" FontSize="14"/>
                                             <Separator Margin="0,5"/>
-                                            <!-- MENU ITEM -->
-                                            <Button Content="Hồ sơ" Style="{StaticResource MaterialDesignFlatButton}" HorizontalContentAlignment="Left"/>
-                                            <Button Content="Đổi mật khẩu" Style="{StaticResource MaterialDesignFlatButton}" HorizontalContentAlignment="Left"/>
-                                            <Button Content="Đăng xuất" Style="{StaticResource MaterialDesignFlatButton}" 
-                                                    Click ="btnDangXuat_Click" HorizontalContentAlignment="Left" Foreground="Red"/>
+                                            <Button Content="Hồ sơ"
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    HorizontalContentAlignment="Left"
+                                                    Click="HoSo_Click"/>
+                                            <Button Content="Đổi mật khẩu"
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    HorizontalContentAlignment="Left"
+                                                    Click="Password_Click"/>
+                                            <Button Content="Đăng xuất"
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    HorizontalContentAlignment="Left"
+                                                    Foreground="Red"
+                                                    Click="btnDangXuat_Click"/>
                                         </StackPanel>
                                     </Border>
                                 </Popup>
-
                             </Grid>
                         </Grid>
                     </Border>
 
-                    <!-- CONTENT -->
+                    <!-- CONTENT FRAME -->
                     <Frame x:Name="MainFrame"
                            Grid.Row="2"
                            Margin="10"
-                           NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated"
-                           HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                           NavigationUIVisibility="Hidden"
+                           Navigated="MainFrame_Navigated"
+                           HorizontalAlignment="Stretch"
+                           VerticalAlignment="Stretch"/>
                 </Grid>
             </Grid>
-
         </materialDesign:DialogHost>
+
+        <!-- OVERLAY -->
         <Border x:Name="Overlay"
-            Background="#80000000"
-            IsHitTestVisible="True"
-            Visibility="Collapsed"/>
-        <materialDesign:Snackbar
-            x:Name="MainSnackbar"
-            MessageQueue="{materialDesign:MessageQueue}"
-            HorizontalAlignment="Right" VerticalAlignment="Top"
-            Margin="30" MaxWidth="600" Padding="10"/>
+                Background="#80000000"
+                IsHitTestVisible="True"
+                Visibility="Collapsed"/>
+
+        <!-- SNACKBAR -->
+        <materialDesign:Snackbar x:Name="MainSnackbar"
+                                 MessageQueue="{materialDesign:MessageQueue}"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Top"
+                                 Margin="30" Width="500" Height="auto" Padding="10">
+            <materialDesign:Snackbar.Resources>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                    <Setter Property="TextWrapping" Value="Wrap"/>
+                </Style>
+            </materialDesign:Snackbar.Resources>
+        </materialDesign:Snackbar>
     </Grid>
 </Window>

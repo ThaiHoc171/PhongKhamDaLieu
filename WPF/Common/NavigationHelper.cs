@@ -54,7 +54,7 @@ public class NavigationHelper
 				if (main.MainFrame.CanGoBack)
 					main.MainFrame.GoBack();
 				else
-					main.MainFrame.Navigate(new Dashboard());
+					main.MainFrame.Navigate(new DashboardPage());
 			}
 		}));
 	}

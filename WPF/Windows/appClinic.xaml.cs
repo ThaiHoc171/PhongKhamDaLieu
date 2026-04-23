@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using WPF.Common;
+using WPF.Windows.CaNhan;
 
 namespace WPF.Windows
 {
@@ -27,21 +28,23 @@ namespace WPF.Windows
 
 			foreach (var exp in new[]
 			{
-				expBenhNhan,
+				expKham,
 				expDieuTri,
+				expBenhNhan,
 				expCaKham,
 				expLichLamViec,
 				expNhanSu,
-				expDanhMuc,
 				expCSVC,
-				expKham
+				expDanhMuc,
+				expThongKe,
+				expPublic
 			})
 			{
 				if (exp != current)
 					exp.IsExpanded = false;
 			}
 		}
-		
+
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			
@@ -221,6 +224,62 @@ namespace WPF.Windows
 		private void btnDieuTri_Click(object sender, RoutedEventArgs e)
 		{
 			_nav.Navigate("LieuTrinh");
+		}
+		private void btnBacSi_Click(object sender, RoutedEventArgs e)
+		{
+			_nav.Navigate("BacSi");
+        }
+
+		private void btnBaiViet_Click(object sender, RoutedEventArgs e)
+		{
+			_nav.Navigate("BaiViet");
+		}
+
+		private void btnThongKe_Click(object sender, RoutedEventArgs e)
+		{
+			_nav.Navigate("ThongKe");
+		}
+
+		private async void HoSo_Click(object sender, RoutedEventArgs e)
+		{
+			if (Session.VaiTro == "Admin")
+			{
+				SnackbarHelper.ShowWarning("Bạn đang sử dụng tài khoản admin");
+				return;
+			}
+
+			var overlay = OverlayHelper.GetOverlay(this);
+			OverlayHelper.Show(overlay);
+
+			try
+			{
+				await DialogHelper.OpenDialogAsync(
+					new HoSoCaNhan { Owner = this },
+					() => Task.CompletedTask
+				);
+			}
+			finally
+			{
+				OverlayHelper.Hide(overlay);
+			}
+		}
+
+		private async void Password_Click(object sender, RoutedEventArgs e)
+		{
+			var overlay = OverlayHelper.GetOverlay(this);
+			OverlayHelper.Show(overlay);
+
+			try
+			{
+				await DialogHelper.OpenDialogAsync(
+					new DoiMatKhau { Owner = this },
+					() => Task.CompletedTask
+				);
+			}
+			finally
+			{
+				OverlayHelper.Hide(overlay);
+			}
 		}
 	}
 }

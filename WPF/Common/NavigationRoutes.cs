@@ -11,7 +11,7 @@ public static class NavigationRoutes
 {
 	public static readonly Dictionary<string, Func<Page>> Routes = new()
 	{
-		{ "Dashboard", () => new Dashboard() },
+		{ "Dashboard", () => new DashboardPage() },
 		{ "ChucVu", () => new ChucVuPage() },
 		{ "CanLamSang", () => new CanLamSangPage() },
 		{ "ThietBi", () => new ThietBiPage() },
@@ -38,7 +38,11 @@ public static class NavigationRoutes
 		{ "PhienKhamCLS", () => new PhienKhamCLSPage() },
 
 		{ "TaiKham", () => new TaiKhamPage() },
-		{ "LieuTrinh", () => new LieuTrinhPage() }
+		{ "LieuTrinh", () => new LieuTrinhPage() },
+
+		{ "BacSi", () => new BacSiPaged() },
+		{ "BaiViet", () => new BaiVietPaged() },
+		{ "ThongKe", () => new ThongKePage() }
 
 	};
 	public static readonly Dictionary<string, string> Permissions = new()
@@ -70,7 +74,11 @@ public static class NavigationRoutes
 		{ "PhienKhamCLS", "KHAMBENH_READ" },
 
 		{ "TaiKham", "KHAMBENH_READ" },
-		{ "LieuTrinh", "KHAMBENH_READ" }
+		{ "LieuTrinh", "KHAMBENH_READ" },
+
+		{ "BacSi", "PUBLIC_READ" },
+		{ "BaiViet", "PUBLIC_READ" },
+		{ "ThongKe", "PUBLIC_READ" }
 	};
 
 	public static readonly Dictionary<string, string> Titles = new()
@@ -102,6 +110,10 @@ public static class NavigationRoutes
 		{ "PhienKhamCLS", "Phiên khám CLS" },
 
 		{ "TaiKham", "Quản lý tái khám" },
-		{ "LieuTrinh", "Quản lý liệu trình điều trị" }
+		{ "LieuTrinh", "Quản lý liệu trình điều trị" },
+
+		{ "BacSi", "QUẢN LÍ HỒ SƠ CÔNG KHAI" },
+		{ "BaiViet", "QUẢN LÍ BÀI VIẾT" },
+		{ "ThongKe", "Thống kê" },
 	};
 }
