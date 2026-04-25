@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using WPF.Client;
 using WPF.Common;
@@ -68,30 +69,20 @@ namespace WPF.Windows
 
 				var response = await _authClient.Login(loginData);
 
-				// 1. Không nhận được response
 				if (response == null)
 				{
 					await MessageHelper.ShowMessage("Không thể kết nối server!");
 					return;
 				}
 
-				// 2. API trả lỗi
-				if (!response.Success)
-				{
-					await MessageHelper.ShowMessage("Lỗi: " + (response.Message ?? "Đăng nhập thất bại!"));
-					return;
-				}
-
-				var result = response.Data;
-
-				// 3. Không có token => sai tài khoản mật khẩu
-				if (result == null || string.IsNullOrEmpty(result.AccessToken))
+				if (!response.Success|| response.Data == null || string.IsNullOrEmpty(response.Data.AccessToken))
 				{
 					await MessageHelper.ShowMessage("Tài khoản hoặc mật khẩu không đúng!");
 					return;
 				}
 
-				// 4. Lưu session
+				var result = response.Data;
+
 				Session.UserId = result.Id;
 				Session.Email = result.Email;
 				Session.Token = result.AccessToken;
@@ -123,6 +114,11 @@ namespace WPF.Windows
 		{
 			if (e.Key == Key.Enter)
 				btnLogin_Click(sender, e);
+		}
+
+		private async void btnAdminSupport_Click(object sender, RoutedEventArgs e)
+		{
+			await MessageHelper.ShowMessage("Vui lòng liên hệ admin tại \n Admin@clinic.com");
 		}
 	}
 }

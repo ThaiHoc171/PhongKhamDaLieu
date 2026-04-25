@@ -159,19 +159,19 @@
                                     FontSize="20"
                                     FontWeight="Bold"
                                     Background="#FF2A8EDA"
+                                    Foreground="White"
                                     BorderBrush="#FF4E4F4F"
                                     Click="btnLogin_Click"
                                     materialDesign:ButtonAssist.CornerRadius="20"/>
-
                             <Button x:Name="btnAdminSupport"
+                                    Click="btnAdminSupport_Click"
                                     Content="Liên hệ Admin?"
-                                    HorizontalAlignment="Right"
                                     Style="{StaticResource MaterialDesignFlatButton}"
                                     FontSize="13"
+                                    HorizontalAlignment="Right"
                                     Foreground="#1976D2"
                                     Cursor="Hand"
                                     FontWeight="Bold"/>
-
                         </StackPanel>
 
                     </Border>

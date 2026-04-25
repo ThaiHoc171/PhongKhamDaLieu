@@ -17,7 +17,23 @@ public abstract class AppClientBase
 			BaseAddress = new Uri("https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/")
 		};
 	}
+	protected async Task<bool> HasInternetAsync()
+	{
+		try
+		{
+			using var client = new HttpClient
+			{
+				Timeout = TimeSpan.FromSeconds(3)
+			};
 
+			var response = await client.GetAsync("https://www.google.com");
+			return response.IsSuccessStatusCode;
+		}
+		catch
+		{
+			return false;
+		}
+	}
 	private void AttachToken()
 	{
 		_httpClient.DefaultRequestHeaders.Authorization = null;
@@ -33,10 +49,16 @@ public abstract class AppClientBase
 	{
 		try
 		{
+			if (!await HasInternetAsync())
+				return ApiResult<T>.Fail("Không có kết nối internet");
+
 			if (attachToken)
 				AttachToken();
 
 			var response = await _httpClient.GetAsync(url);
+
+			if (!response.IsSuccessStatusCode)
+				return ApiResult<T>.Fail($"Lỗi server: {response.StatusCode}");
 
 			var json = await response.Content.ReadAsStringAsync();
 
@@ -54,6 +76,14 @@ public abstract class AppClientBase
 
 			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
 		}
+		catch (HttpRequestException)
+		{
+			return ApiResult<T>.Fail("Không thể kết nối đến server");
+		}
+		catch (TaskCanceledException)
+		{
+			return ApiResult<T>.Fail("Request timeout (mạng yếu hoặc mất kết nối)");
+		}
 		catch (Exception ex)
 		{
 			return ApiResult<T>.Fail(ex.Message);
@@ -64,6 +94,8 @@ public abstract class AppClientBase
 	{
 		try
 		{
+			if (!await HasInternetAsync())
+				return ApiResult<T>.Fail("Không có kết nối internet");
 			if (attachToken)
 				AttachToken();
 
@@ -87,6 +119,14 @@ public abstract class AppClientBase
 				return ApiResult<T>.Fail(apiResponse.Message);
 			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
 		}
+		catch (HttpRequestException)
+		{
+			return ApiResult<T>.Fail("Không thể kết nối đến server");
+		}
+		catch (TaskCanceledException)
+		{
+			return ApiResult<T>.Fail("Request timeout (mạng yếu hoặc mất kết nối)");
+		}
 		catch (Exception ex)
 		{
 			return ApiResult<T>.Fail(ex.Message);
@@ -96,6 +136,8 @@ public abstract class AppClientBase
 	{
 		try
 		{
+			if (!await HasInternetAsync())
+				return ApiResult<T>.Fail("Không có kết nối internet");
 			AttachToken();
 
 			var jsonBody = JsonSerializer.Serialize(body);
@@ -119,6 +161,14 @@ public abstract class AppClientBase
 
 			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
 		}
+		catch (HttpRequestException)
+		{
+			return ApiResult<T>.Fail("Không thể kết nối đến server");
+		}
+		catch (TaskCanceledException)
+		{
+			return ApiResult<T>.Fail("Request timeout (mạng yếu hoặc mất kết nối)");
+		}
 		catch (Exception ex)
 		{
 			return ApiResult<T>.Fail(ex.Message);
@@ -128,6 +178,8 @@ public abstract class AppClientBase
 	{
 		try
 		{
+			if (!await HasInternetAsync())
+				return ApiResult<T>.Fail("Không có kết nối internet");
 			AttachToken();
 
 			var content = new MultipartFormDataContent();
@@ -157,6 +209,14 @@ public abstract class AppClientBase
 				return ApiResult<T>.Fail(apiResponse.Message);
 
 			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
+		}
+		catch (HttpRequestException)
+		{
+			return ApiResult<T>.Fail("Không thể kết nối đến server");
+		}
+		catch (TaskCanceledException)
+		{
+			return ApiResult<T>.Fail("Request timeout (mạng yếu hoặc mất kết nối)");
 		}
 		catch (Exception ex)
 		{

@@ -220,19 +220,24 @@ public class DashboardRepository : IDashboardRepository
         var list = new List<LieuTrinhProgressReadModel>();
 
         var sql = @"
-        SELECT TOP (@Top)
-            lt.LieuTrinhID,
-            lt.TenLieuTrinh,
-            ttcn.HoTen       AS TenBenhNhan,
-            lt.TongSoBuoi,
-            COUNT(CASE WHEN lb.TrangThai = N'Hoàn thành' THEN 1 END) AS SoBuoiHoanThanh
-        FROM LieuTrinhDieuTri lt
-        INNER JOIN BenhNhan bn        ON lt.BenhNhanID  = bn.BenhNhanID
-        INNER JOIN ThongTinCaNhan ttcn ON bn.ThongTinID  = ttcn.ThongTinID
-        LEFT  JOIN LieuTrinh_BuoiDieuTri lb ON lt.LieuTrinhID = lb.LieuTrinhID
-        WHERE lt.TrangThai = N'Đang điều trị'
-        GROUP BY lt.LieuTrinhID, lt.TenLieuTrinh, ttcn.HoTen, lt.TongSoBuoi
-        ORDER BY lt.NgayBatDau DESC;";
+            SELECT TOP (@Top)
+                lt.LieuTrinhID,
+                lt.TenLieuTrinh,
+                ttcn.HoTen AS TenBenhNhan,
+                lt.TongSoBuoi,
+                COUNT(CASE WHEN lb.TrangThai = N'Hoàn thành' THEN 1 END)  AS SoBuoiHoanThanh
+            FROM LieuTrinhDieuTri lt
+            INNER JOIN BenhNhan         bn    ON lt.BenhNhanID = bn.BenhNhanID
+            INNER JOIN ThongTinCaNhan   ttcn  ON bn.ThongTinID = ttcn.ThongTinID
+            LEFT  JOIN LieuTrinh_BuoiDieuTri lb ON lt.LieuTrinhID = lb.LieuTrinhID
+            WHERE lt.TrangThai = N'Đang điều trị'
+            GROUP BY
+                lt.LieuTrinhID,
+                lt.TenLieuTrinh,
+                ttcn.HoTen,
+                lt.TongSoBuoi,
+                lt.NgayBatDau
+            ORDER BY lt.NgayBatDau DESC";
 
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();
