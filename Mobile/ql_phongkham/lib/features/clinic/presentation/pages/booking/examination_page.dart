@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ql_phongkham/core/utils/dialog_helper.dart';
+import 'package:ql_phongkham/screen/home_screen/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
@@ -37,6 +38,7 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
   CalendarFormat _format = CalendarFormat.month;
   DateTime _focusDay = DateTime.now();
   DateTime _currentDay = DateTime.now();
+  late String token;
 
   bool _dateSelected = false;
 
@@ -45,6 +47,21 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
     super.initState();
     _dateSelected = true;
     loadKhungGioConTrong();
+    loadToken();
+  }
+
+  Future<void> loadToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final Token = prefs.getString('accessToken');
+      if (Token == null) return;
+
+      setState(() {
+        token = Token;
+      });
+    } catch (e) {
+      DialogHelper.showSnacFailed(context, e.toString());
+    }
   }
 
   @override
@@ -55,6 +72,15 @@ class _LichKhamScreenState extends State<LichKhamScreen> {
         title: const Text(
           'Đặt lịch khám',
           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen(token: token)),
+            );
+          },
         ),
       ),
       body: SafeArea(

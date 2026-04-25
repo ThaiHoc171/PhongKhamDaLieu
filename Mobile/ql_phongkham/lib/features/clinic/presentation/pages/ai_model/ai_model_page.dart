@@ -1,11 +1,19 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:ql_phongkham/features/clinic/data/models/doctor_profile_model.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/ai_model_repository.dart';
+import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
+import 'package:ql_phongkham/features/clinic/presentation/widgets/home/choose_doctor.dart';
 
 class AiModelChat extends StatefulWidget {
-  const AiModelChat({super.key});
+  final List<BacSiProfileModel> bacSiList;
+  final bool isLoading;
+  const AiModelChat({
+    super.key,
+    required this.bacSiList,
+    required this.isLoading,
+  });
   @override
   State<AiModelChat> createState() => _AiModelChatState();
 }
@@ -168,7 +176,7 @@ class _AiModelChatState extends State<AiModelChat> {
     final confidence = (data['confidence'] as num).toDouble();
     final friendlyName = data['friendly_name'] ?? '';
     final aiMessage = data['ai_message'] ?? '';
-
+    final predicted_class = data['predicted_class'] ?? '';
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -221,6 +229,8 @@ class _AiModelChatState extends State<AiModelChat> {
           ),
           const SizedBox(height: 10),
           Text(aiMessage, style: const TextStyle(fontSize: 13, height: 1.5)),
+          if (predicted_class != 'invalid' && predicted_class != 'normal')
+            _buildCheck(),
         ],
       ),
     );
@@ -244,6 +254,41 @@ class _AiModelChatState extends State<AiModelChat> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCheck() {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [BoxShadow(blurRadius: 10)],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.calendar_today, size: 30, color: Colors.blue),
+            const SizedBox(height: 16),
+            AuthButton(
+              buttonText: 'Đặt lịch ngay',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChooseDoctorSection(
+                      bacSiList: widget.bacSiList,
+                      isLoading: false,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
