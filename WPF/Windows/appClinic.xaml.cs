@@ -111,7 +111,10 @@ namespace WPF.Windows
 		{
 
 		}
-
+		private void btnDashboard_Click(object sender, RoutedEventArgs e)
+		{
+			_nav.Navigate("Dashboard");
+		}
 		private void BtnChucVu_Click(object sender, RoutedEventArgs e)
 		{
 			_nav.Navigate("ChucVu");

@@ -63,6 +63,8 @@ public partial class NhanVienPage : Page
 		// BUTTONS (COMMAND PATTERN)
 		GridContent.Columns.Add(
 			SetupDataGrid.CreateIconButtonColumnVer2("Pencil", "EditCommand", "Sửa"));
+		GridContent.Columns.Add(
+			SetupDataGrid.CreateIconButtonColumnVer2("Sync", "ToogleCommand", "Sa thải / Vào làm lại"));
 
 		GridContent.Columns.Add(
 			SetupDataGrid.CreateIconButtonColumnVer2("Public", "PublicCommand", "Tạo hồ sơ công khai"));

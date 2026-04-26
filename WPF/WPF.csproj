@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\Icon\logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,6 +35,7 @@
     <Content Include="Assets\fonts\ARIALBD.TTF">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Icon\logo.ico" />
     <Content Include="Assets\Images\logo.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

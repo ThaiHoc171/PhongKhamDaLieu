@@ -4,9 +4,9 @@ using System.Windows.Input;
 using WPF.Client;
 using WPF.Common;
 using WPF.Models;
-using WPF.Windows.ChucVu;
 using WPF.Windows.NhanVien;
 using WPF.Windows.Public;
+using WPF.Windows.TaiKham;
 
 namespace WPF.ViewModels;
 
@@ -114,6 +114,38 @@ public class NhanVienViewModel : PagedViewModel
 			});
 
 		OverlayHelper.Hide(overlay);
+	});
+	public ICommand ToogleCommand => new RelayCommandWithParam<NhanVienReadListModel>(async item =>
+	{
+		if (item == null) return;
+		bool confirm = false;
+		string status = string.Empty;
+		if(item.TrangThai == "Đang làm việc")
+		{
+			confirm = await MessageHelper.Confirm(
+				$"Bạn có chắc muốn cho nhân viên'{item.HoTen}' thôi việc không?"
+			);
+			status = "Nghỉ việc";
+		}
+		if(item.TrangThai == "Nghỉ việc")
+		{
+			confirm = await MessageHelper.Confirm(
+				$"Bạn có chắc muốn cho nhân viên'{item.HoTen}' vào làm việc lại không?"
+			);
+			status = "Đang làm việc";
+		}
+
+		if (!confirm) return;
+		var res = await _client.Status(item.NhanVienID, status);
+
+		if (!res.Success)
+		{
+			SnackbarHelper.ShowError(res.Message);
+			return;
+		}
+
+		SnackbarHelper.ShowSuccess("Cập nhật thành công!");
+		await LoadData();
 	});
 	public ICommand PublicCommand => new RelayCommandWithParam<NhanVienReadListModel>(async item =>
 	{
