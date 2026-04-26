@@ -306,7 +306,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => AiModelChat()),
+                            MaterialPageRoute(
+                              builder: (_) => AiModelChat(
+                                bacSiList: bacSiList,
+                                isLoading: false,
+                              ),
+                            ),
                           );
                         },
                         child: const Text(
