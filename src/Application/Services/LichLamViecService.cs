@@ -88,7 +88,7 @@ public class LichLamViecService
 				if (await _repo.ExistsAsync(item.NhanVienID, item.Ngay, item.CaLamViec))
 					errors.Add($"Dòng {row}: Nhân viên đã có lịch ca này");
 
-				if (await _nghiRepo.IsNgayNghiAsync(item.NhanVienID, item.Ngay))
+				if (await _nghiRepo.ExistsAsync(item.NhanVienID, item.Ngay))
 					errors.Add($"Dòng {row}: Nhân viên đang nghỉ ngày này");
 
 				var count = await _repo.CountByChucVuAsync(

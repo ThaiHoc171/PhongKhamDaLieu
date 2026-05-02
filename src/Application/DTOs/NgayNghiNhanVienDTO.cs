@@ -1,8 +1,11 @@
 ﻿namespace Application.DTOs;
 public class NgayNghiRequestDTO
 {
+	[ExcelColumn ("NhanVienID")]
 	public int NhanVienID { get; set; }
+	[ExcelColumn("Ngay")]
 	public DateTime Ngay { get; set; }
+	[ExcelColumn("lyDo")]
 	public string? LyDo { get; set; }
 }
 public class NgayNghiUpdateRequestDTO

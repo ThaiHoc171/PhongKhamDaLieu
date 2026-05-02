@@ -5,9 +5,11 @@
 	{
 		Task AddAsync(NgayNghiNhanVien entity);
 		Task UpdateAsync(NgayNghiNhanVien entity);
+		Task DeleteAsync(int id);
+		Task BulkInsertAsync(List<NgayNghiNhanVien> list);
 		Task<NgayNghiNhanVien?> GetByIdAsync(int id);
 		Task<NgayNghiReadModel?> GetDetailAsync(int id);
-		Task<List<NgayNghiReadModel>> GetByNhanVienIdAsync(int nhanVienID);
-		Task<List<NgayNghiReadModel>> GetByMonthAsync(int thang, int nam);
-		Task<bool> IsNgayNghiAsync(int nhanVienID, DateTime ngay);
+		Task<(List<NgayNghiReadModel>, int)> SearchPagedAsync(string keyword, int page, int size);
+		Task<(List<NgayNghiReadModel>, int)> GetPagedAsync(int page, int size);
+		Task<bool> ExistsAsync(int nhanVienID, DateTime ngay);
 	}
