@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.Windows.CaKham;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Windows.CaKham;
 
-namespace WPF.ViewModels.CaKham;
+namespace HoanMyClinic.ViewModels.CaKham;
 
 public class BlankViewModel : PagedViewModel
 {

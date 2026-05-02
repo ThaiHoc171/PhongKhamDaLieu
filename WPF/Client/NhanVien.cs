@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WPF.Models;
-using WPF.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Common;
 
-namespace WPF.Client;
+namespace HoanMyClinic.Client;
 
 public class NhanVienClient : AppClientBase
 {

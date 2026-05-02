@@ -1,13 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.Windows.ChucVu;
-using WPF.Windows.Public;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Windows.ChucVu;
+using HoanMyClinic.Windows.Public;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class BaiVietViewModel : PagedViewModel
 {

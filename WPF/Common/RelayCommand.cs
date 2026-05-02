@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 using System.Windows;
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public class RelayCommand : ICommand
 {

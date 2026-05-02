@@ -1,4 +1,4 @@
-﻿namespace WPF.Models;
+﻿namespace HoanMyClinic.Models;
 public class CanLamSangRequest
 {
 	public string TenCLS { get; set; } = "";

@@ -1,4 +1,4 @@
-﻿namespace WPF.Models;
+﻿namespace HoanMyClinic.Models;
 public class BenhNhanRequest
 {
 	public int? TaiKhoanID { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace WPF.Models;
+﻿namespace HoanMyClinic.Models;
 public class NameHelper
 {
 	public int Id { get; set; }

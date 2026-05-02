@@ -1,11 +1,11 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class ThongKeViewModel : BaseViewModel
 {

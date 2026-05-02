@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Media;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.ViewModels.LichLamViec;
+namespace HoanMyClinic.ViewModels.LichLamViec;
 
 public class SharedViewModel : PagedViewModel
 {

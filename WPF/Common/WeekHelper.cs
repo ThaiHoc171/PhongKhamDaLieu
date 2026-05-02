@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media;
-using WPF.Models;
+using HoanMyClinic.Models;
 
-namespace WPF.Common
+namespace HoanMyClinic.Common
 {
 	public class WeekItem
 	{

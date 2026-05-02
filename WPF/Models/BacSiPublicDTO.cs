@@ -1,4 +1,4 @@
-﻿namespace WPF.Models;
+﻿namespace HoanMyClinic.Models;
 public class BacSiProfileRequestDTO
 {
 	public int NhanVienID { get; set; }

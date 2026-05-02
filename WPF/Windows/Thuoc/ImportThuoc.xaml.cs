@@ -1,11 +1,11 @@
 ﻿using Microsoft.Win32;
 using System.IO;
 using System.Windows;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.Thuoc;
+namespace HoanMyClinic.Windows.Thuoc;
 public partial class ImportThuoc : Window
 {
 	public ImportThuoc()

@@ -1,11 +1,11 @@
 ﻿using System.Windows;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.ViewModels.LieuTrinh;
+namespace HoanMyClinic.ViewModels.LieuTrinh;
 
 public class LieuTrinhDetailViewModel : BaseViewModel
 {
@@ -113,7 +113,7 @@ public class LieuTrinhDetailViewModel : BaseViewModel
 
 	public ICommand AddCommand => new RelayCommand(async () =>
 	{
-		var win = new WPF.Windows.BuoiDieuTri.AddBuoiDieuTri(_id,BenhNhan)
+		var win = new HoanMyClinic.Windows.BuoiDieuTri.AddBuoiDieuTri(_id,BenhNhan)
 		{
 			Owner = App.Current.MainWindow
 		};
@@ -135,7 +135,7 @@ public class LieuTrinhDetailViewModel : BaseViewModel
 
 			try
 			{
-				new WPF.Windows.BuoiDieuTri.ViewBuoiDieuTri(_id, BenhNhan)
+				new HoanMyClinic.Windows.BuoiDieuTri.ViewBuoiDieuTri(_id, BenhNhan)
 				{
 					Owner = Application.Current.MainWindow
 				}.ShowDialog();

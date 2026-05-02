@@ -14,11 +14,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.Public;
+namespace HoanMyClinic.Windows.Public;
 
 public partial class UpdateBaiViet : Window
 {

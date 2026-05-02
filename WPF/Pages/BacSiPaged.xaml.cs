@@ -1,10 +1,10 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
-using WPF.Common;
-using WPF.ViewModels;
+using HoanMyClinic.Common;
+using HoanMyClinic.ViewModels;
 using System.Windows;
 
-namespace WPF.Pages;
+namespace HoanMyClinic.Pages;
 
 public partial class BacSiPaged : Page
 {

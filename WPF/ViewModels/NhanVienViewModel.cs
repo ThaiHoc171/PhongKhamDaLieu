@@ -1,14 +1,14 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.Windows.NhanVien;
-using WPF.Windows.Public;
-using WPF.Windows.TaiKham;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Windows.NhanVien;
+using HoanMyClinic.Windows.Public;
+using HoanMyClinic.Windows.TaiKham;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class NhanVienViewModel : PagedViewModel
 {

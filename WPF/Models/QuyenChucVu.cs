@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace WPF.Models;
+namespace HoanMyClinic.Models;
 public class ChucVuQuyenDTO
 {
 	public int ChucVuID { get; set; }

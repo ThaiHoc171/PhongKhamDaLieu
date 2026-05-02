@@ -1,4 +1,4 @@
-﻿namespace WPF.Models;
+﻿namespace HoanMyClinic.Models;
 public class PhienKhamBenhRequestDTO
 {
 	public int PhienKhamID { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace WPF.Common;
+﻿namespace HoanMyClinic.Common;
 public class ExcelImportError
 {
 	public int Row { get; set; }

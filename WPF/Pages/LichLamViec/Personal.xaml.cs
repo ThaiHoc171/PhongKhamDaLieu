@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Pages.LichLamViec;
+namespace HoanMyClinic.Pages.LichLamViec;
 
 public partial class Personal : Page
 {

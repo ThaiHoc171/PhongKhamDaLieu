@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class BenhNhanViewModel : PagedViewModel
 {
@@ -80,7 +80,7 @@ public class BenhNhanViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new WPF.Windows.BenhNhan.AddBenhNhan
+			new HoanMyClinic.Windows.BenhNhan.AddBenhNhan
 			{
 				Owner = Application.Current.MainWindow
 			},
@@ -101,7 +101,7 @@ public class BenhNhanViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new WPF.Windows.BenhNhan.UpdateBenhNhan(item.BenhNhanID)
+			new HoanMyClinic.Windows.BenhNhan.UpdateBenhNhan(item.BenhNhanID)
 			{
 				Owner = Application.Current.MainWindow
 			},
@@ -124,8 +124,8 @@ public class BenhNhanViewModel : PagedViewModel
 		var res = await _hoso.GetByBenhNhanId(item.BenhNhanID);
 
 		Window win = res.Success && res.Data != null
-			? new WPF.Windows.HSBenhAn.UpdateHoSo(item.BenhNhanID, item.HoTen)
-			: new WPF.Windows.HSBenhAn.AddHoSo(item.BenhNhanID, item.HoTen);
+			? new HoanMyClinic.Windows.HSBenhAn.UpdateHoSo(item.BenhNhanID, item.HoTen)
+			: new HoanMyClinic.Windows.HSBenhAn.AddHoSo(item.BenhNhanID, item.HoTen);
 
 		win.Owner = Application.Current.MainWindow;
 		win.ShowDialog();

@@ -1,4 +1,4 @@
-namespace WPF.Models;
+namespace HoanMyClinic.Models;
 
 /// <summary>6 KPI cards trên đầu dashboard</summary>
 public class DashboardKpiReadModel

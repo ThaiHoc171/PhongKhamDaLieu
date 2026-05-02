@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Windows;
-using WPF.Client;
-using WPF.Common;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
 
-namespace WPF.Windows.KhamBenh;
+namespace HoanMyClinic.Windows.KhamBenh;
 
 public partial class ViewCls : Window
 {

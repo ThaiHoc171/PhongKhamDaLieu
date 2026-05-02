@@ -4,12 +4,12 @@ using System.Windows;
 using System.IO;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.Windows.TaiKham;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Windows.TaiKham;
 
-namespace WPF.ViewModels.PhienKham;
+namespace HoanMyClinic.ViewModels.PhienKham;
 
 public class ConsultationViewModel : BaseViewModel
 {
@@ -332,7 +332,7 @@ public class ConsultationViewModel : BaseViewModel
 	{
 		if (item == null) return;
 
-		var win = new WPF.Windows.KhamBenh.UpdateChanDoan(item.Id)
+		var win = new HoanMyClinic.Windows.KhamBenh.UpdateChanDoan(item.Id)
 		{
 			Owner = Application.Current.MainWindow
 		};
@@ -366,7 +366,7 @@ public class ConsultationViewModel : BaseViewModel
 	{
 		if (item == null) return;
 
-		var win = new WPF.Windows.KhamBenh.UpdateUsedThietBi(item.PhienKhamThietBiID, item.TenThietBi)
+		var win = new HoanMyClinic.Windows.KhamBenh.UpdateUsedThietBi(item.PhienKhamThietBiID, item.TenThietBi)
 		{
 			Owner = Application.Current.MainWindow
 		};
@@ -400,7 +400,7 @@ public class ConsultationViewModel : BaseViewModel
 	{
 		if (item == null) return;
 
-		var win = new WPF.Windows.KhamBenh.ViewCls(item.PhienKhamCLSID)
+		var win = new HoanMyClinic.Windows.KhamBenh.ViewCls(item.PhienKhamCLSID)
 		{
 			Owner = Application.Current.MainWindow
 		};
@@ -436,7 +436,7 @@ public class ConsultationViewModel : BaseViewModel
 	{
 		OpenWindow(() =>
 		{
-			var win = new WPF.Windows.KhamBenh.AddChanDoan(_id);
+			var win = new HoanMyClinic.Windows.KhamBenh.AddChanDoan(_id);
 			return win;
 		});
 	});
@@ -445,7 +445,7 @@ public class ConsultationViewModel : BaseViewModel
 	{
 		OpenWindow(() =>
 		{
-			var win = new WPF.Windows.KhamBenh.AddUesdThietBi(_id);
+			var win = new HoanMyClinic.Windows.KhamBenh.AddUesdThietBi(_id);
 			return win;
 		});
 	});
@@ -454,7 +454,7 @@ public class ConsultationViewModel : BaseViewModel
 	{
 		OpenWindow(() =>
 		{
-			var win = new WPF.Windows.KhamBenh.ChiDinhCLS(_id);
+			var win = new HoanMyClinic.Windows.KhamBenh.ChiDinhCLS(_id);
 			return win;
 		});
 	});
@@ -466,9 +466,9 @@ public class ConsultationViewModel : BaseViewModel
 		OpenWindow(() =>
 		{
 			if (!res.Data)
-				return new WPF.Windows.ToaThuoc.AddToaThuoc(_id);
+				return new HoanMyClinic.Windows.ToaThuoc.AddToaThuoc(_id);
 
-			return new WPF.Windows.ToaThuoc.UpdateToaThuoc(_id);
+			return new HoanMyClinic.Windows.ToaThuoc.UpdateToaThuoc(_id);
 		});
 	});
 
@@ -480,8 +480,8 @@ public class ConsultationViewModel : BaseViewModel
 		var res = await _hoso.GetByBenhNhanId(_benhNhanId);
 
 		Window win = res.Success && res.Data != null
-			? new WPF.Windows.HSBenhAn.UpdateHoSo(_benhNhanId, BenhNhan)
-			: new WPF.Windows.HSBenhAn.AddHoSo(_benhNhanId, BenhNhan);
+			? new HoanMyClinic.Windows.HSBenhAn.UpdateHoSo(_benhNhanId, BenhNhan)
+			: new HoanMyClinic.Windows.HSBenhAn.AddHoSo(_benhNhanId, BenhNhan);
 
 		win.Owner = Application.Current.MainWindow;
 		win.ShowDialog();
@@ -562,9 +562,9 @@ public class ConsultationViewModel : BaseViewModel
 		BacSi = data.NhanVien.Name;
 		NgayKham = data.NgayKham;
 		TrangThai = data.TrangThai;
-		TrieuChung = data.TrieuChung ?? "";
-		ChanDoan = data.ChanDoanCuoi ?? "";
-		GhiChu = data.GhiChu ?? "";
+		TrieuChung = data.TrieuChung ?? TrieuChung ;
+		ChanDoan = data.ChanDoanCuoi ?? ChanDoan;
+		GhiChu = data.GhiChu ?? GhiChu;
 
 		SelectedPhong = Phongs.FirstOrDefault(x => x.Id == data.PhongChucNangID);
 

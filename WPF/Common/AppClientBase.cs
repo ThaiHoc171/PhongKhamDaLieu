@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.IO;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public abstract class AppClientBase
 {
@@ -144,6 +144,47 @@ public abstract class AppClientBase
 			var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
 			var response = await _httpClient.PutAsync(url, content);
+
+			var json = await response.Content.ReadAsStringAsync();
+
+			var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(json,
+				new JsonSerializerOptions
+				{
+					PropertyNameCaseInsensitive = true
+				});
+
+			if (apiResponse == null)
+				return ApiResult<T>.Fail("Invalid server response");
+
+			if (!apiResponse.Success)
+				return ApiResult<T>.Fail(apiResponse.Message);
+
+			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
+		}
+		catch (HttpRequestException)
+		{
+			return ApiResult<T>.Fail("Không thể kết nối đến server");
+		}
+		catch (TaskCanceledException)
+		{
+			return ApiResult<T>.Fail("Request timeout (mạng yếu hoặc mất kết nối)");
+		}
+		catch (Exception ex)
+		{
+			return ApiResult<T>.Fail(ex.Message);
+		}
+	}
+	protected async Task<ApiResult<T>> DeleteAsync<T>(string url, bool attachToken = true)
+	{
+		try
+		{
+			if (!await HasInternetAsync())
+				return ApiResult<T>.Fail("Không có kết nối internet");
+
+			if (attachToken)
+				AttachToken();
+
+			var response = await _httpClient.DeleteAsync(url);
 
 			var json = await response.Content.ReadAsStringAsync();
 

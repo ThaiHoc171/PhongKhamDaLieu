@@ -1,5 +1,5 @@
-﻿using WPF.Models;
-namespace WPF.Common;
+﻿using HoanMyClinic.Models;
+namespace HoanMyClinic.Common;
 public static class Session
 {
 	public static int UserId { get; set; }

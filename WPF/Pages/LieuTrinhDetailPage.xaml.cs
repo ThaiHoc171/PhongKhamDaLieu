@@ -1,12 +1,12 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using WPF.Common;
-using WPF.ViewModels;
-using WPF.ViewModels.LieuTrinh;
-using WPF.ViewModels.PhienKham;
+using HoanMyClinic.Common;
+using HoanMyClinic.ViewModels;
+using HoanMyClinic.ViewModels.LieuTrinh;
+using HoanMyClinic.ViewModels.PhienKham;
 
-namespace WPF.Pages;
+namespace HoanMyClinic.Pages;
 
 public partial class LieuTrinhDetailPage : Page
 {

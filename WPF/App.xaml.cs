@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using WPF.Windows;
+using HoanMyClinic.Windows;
 
-namespace WPF
+namespace HoanMyClinic
 {
 	public partial class App : Application
 	{

@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 using System.Windows;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class TaiKhamViewModel : PagedViewModel
 {
@@ -116,7 +116,7 @@ public class TaiKhamViewModel : PagedViewModel
 
 			try
 			{
-				new WPF.Windows.TaiKham.ViewDetail(item.TaiKhamID)
+				new HoanMyClinic.Windows.TaiKham.ViewDetail(item.TaiKhamID)
 				{
 					Owner = Application.Current.MainWindow
 				}.ShowDialog();

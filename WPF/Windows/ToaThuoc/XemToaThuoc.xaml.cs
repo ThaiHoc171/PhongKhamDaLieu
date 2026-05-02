@@ -2,10 +2,10 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using WPF.Client;
-using WPF.Common;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
 
-namespace WPF.Windows.ToaThuoc;
+namespace HoanMyClinic.Windows.ToaThuoc;
 
 public partial class XemToaThuoc : Window
 {

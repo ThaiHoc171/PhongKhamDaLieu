@@ -1,10 +1,10 @@
 ﻿using System.Windows;
 using System.Xml.Linq;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.CaKham;
+namespace HoanMyClinic.Windows.CaKham;
 public partial class AddCaKham : Window
 {
 	public AddCaKham()

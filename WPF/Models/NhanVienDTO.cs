@@ -1,5 +1,5 @@
 ﻿
-namespace WPF.Models;
+namespace HoanMyClinic.Models;
 public class NhanVienRequestDTO
 {
 	public ThongTinRequestDTO ThongTin { get; set; } = default!;

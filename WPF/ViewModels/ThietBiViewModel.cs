@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class ThietBiViewModel : PagedViewModel
 {
@@ -84,7 +84,7 @@ public class ThietBiViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new WPF.Windows.ThietBi.ImportThietBi
+			new HoanMyClinic.Windows.ThietBi.ImportThietBi
 			{
 				Owner = Application.Current.MainWindow
 			},
@@ -103,7 +103,7 @@ public class ThietBiViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new WPF.Windows.ThietBi.AddThietBi
+			new HoanMyClinic.Windows.ThietBi.AddThietBi
 			{
 				Owner = Application.Current.MainWindow
 			},
@@ -125,7 +125,7 @@ public class ThietBiViewModel : PagedViewModel
 			OverlayHelper.Show(overlay);
 
 			await DialogHelper.OpenDialogAsync(
-				new WPF.Windows.ThietBi.UpdateThietBi(item.ThietBiID)
+				new HoanMyClinic.Windows.ThietBi.UpdateThietBi(item.ThietBiID)
 				{
 					Owner = Application.Current.MainWindow
 				},

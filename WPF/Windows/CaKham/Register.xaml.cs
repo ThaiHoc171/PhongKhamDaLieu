@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.CaKham;
+namespace HoanMyClinic.Windows.CaKham;
 
 public partial class Register : Window
 {

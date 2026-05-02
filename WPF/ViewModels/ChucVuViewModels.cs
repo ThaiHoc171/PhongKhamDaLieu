@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.Windows.ChucVu;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Windows.ChucVu;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class ChucVuViewModel : PagedViewModel
 {

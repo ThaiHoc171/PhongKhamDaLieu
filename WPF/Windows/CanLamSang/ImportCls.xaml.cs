@@ -1,11 +1,11 @@
 ﻿using Microsoft.Win32;
 using System.Windows;
-using WPF.Client;
-using WPF.Common;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
 using System.IO;
-using WPF.Models;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.CanLamSang;
+namespace HoanMyClinic.Windows.CanLamSang;
 public partial class ImportCls : Window
 {
 	public ImportCls()

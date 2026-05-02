@@ -1,13 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.Pages;
-using WPF.Windows;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Pages;
+using HoanMyClinic.Windows;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class PhongChucNangViewModel : PagedViewModel
 {
@@ -86,7 +86,7 @@ public class PhongChucNangViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new WPF.Windows.PhongChucNang.ImportThietBiPhong
+			new HoanMyClinic.Windows.PhongChucNang.ImportThietBiPhong
 			{
 				Owner = Application.Current.MainWindow
 			},
@@ -105,7 +105,7 @@ public class PhongChucNangViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new WPF.Windows.PhongChucNang.AddPhong
+			new HoanMyClinic.Windows.PhongChucNang.AddPhong
 			{
 				Owner = Application.Current.MainWindow
 			},
@@ -144,7 +144,7 @@ public class PhongChucNangViewModel : PagedViewModel
 			OverlayHelper.Show(overlay);
 
 			await DialogHelper.OpenDialogAsync(
-				new WPF.Windows.PhongChucNang.UpdatePhong(item.PhongChucNangID)
+				new HoanMyClinic.Windows.PhongChucNang.UpdatePhong(item.PhongChucNangID)
 				{
 					Owner = Application.Current.MainWindow
 				},

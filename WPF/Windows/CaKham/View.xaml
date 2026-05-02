@@ -1,4 +1,4 @@
-﻿<Window x:Class="WPF.Windows.CaKham.View"
+﻿<Window x:Class="HoanMyClinic.Windows.CaKham.View"
         Loaded="View_Loaded"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

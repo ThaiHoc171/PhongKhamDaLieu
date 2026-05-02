@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public class GreaterThanOneConverter : IValueConverter
 {

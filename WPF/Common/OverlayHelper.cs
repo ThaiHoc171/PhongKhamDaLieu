@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 public static class OverlayHelper
 {
 	public static Border? GetOverlay(FrameworkElement element)

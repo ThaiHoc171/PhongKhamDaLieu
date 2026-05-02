@@ -1,4 +1,4 @@
-﻿namespace WPF.Models;
+﻿namespace HoanMyClinic.Models;
 public class KhungGioKhamRequest
 {
 	public int CaLamViec { get; set; }

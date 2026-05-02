@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 using System.Runtime.CompilerServices;
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public abstract class PagedViewModel : BaseViewModel
 {

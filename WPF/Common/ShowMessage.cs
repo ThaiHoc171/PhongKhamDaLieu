@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace WPF.Common
+namespace HoanMyClinic.Common
 {
 	public static class MessageHelper
 	{

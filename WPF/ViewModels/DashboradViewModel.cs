@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class DashboardViewModel : BaseViewModel
 {

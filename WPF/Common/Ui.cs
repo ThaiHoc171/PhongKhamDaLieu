@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public static class Ui
 {

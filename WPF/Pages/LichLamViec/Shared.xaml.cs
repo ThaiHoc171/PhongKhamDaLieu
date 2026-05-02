@@ -1,8 +1,8 @@
 ﻿using System.Windows.Controls;
-using WPF.Common;
-using WPF.ViewModels.LichLamViec;
+using HoanMyClinic.Common;
+using HoanMyClinic.ViewModels.LichLamViec;
 
-namespace WPF.Pages.LichLamViec;
+namespace HoanMyClinic.Pages.LichLamViec;
 
 public partial class Shared : Page
 {

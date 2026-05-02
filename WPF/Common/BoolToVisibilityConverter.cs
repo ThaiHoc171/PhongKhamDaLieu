@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Data;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public class BoolToVisibilityConverter : IValueConverter
 {

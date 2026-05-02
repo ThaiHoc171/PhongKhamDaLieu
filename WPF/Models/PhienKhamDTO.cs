@@ -1,6 +1,6 @@
 ﻿
 
-namespace WPF.Models;
+namespace HoanMyClinic.Models;
 
 public class PhienKhamUpdateDTO
 {

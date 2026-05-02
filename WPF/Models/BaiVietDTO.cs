@@ -1,5 +1,5 @@
 ﻿
-namespace WPF.Models;
+namespace HoanMyClinic.Models;
 public class ThemBaiVietDTO
 {
 	public string TieuDe { get; set; } = "";

@@ -1,4 +1,4 @@
-namespace WPF.Models;
+namespace HoanMyClinic.Models;
 public class ThongKeFilterRequest
 {
     /// <summary>day | week | month | year</summary>

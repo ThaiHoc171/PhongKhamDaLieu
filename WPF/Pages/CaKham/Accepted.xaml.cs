@@ -1,9 +1,9 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
-using WPF.Common;
-using WPF.ViewModels.CaKham;
+using HoanMyClinic.Common;
+using HoanMyClinic.ViewModels.CaKham;
 
-namespace WPF.Pages.CaKham;
+namespace HoanMyClinic.Pages.CaKham;
 
 public partial class Accepted : Page
 {

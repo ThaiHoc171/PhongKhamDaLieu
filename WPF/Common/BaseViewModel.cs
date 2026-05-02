@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public class BaseViewModel : INotifyPropertyChanged
 {

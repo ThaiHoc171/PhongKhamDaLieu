@@ -1,9 +1,9 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
-using WPF.Common;
-using WPF.ViewModels;
+using HoanMyClinic.Common;
+using HoanMyClinic.ViewModels;
 
-namespace WPF.Pages.LichLamViec;
+namespace HoanMyClinic.Pages.LichLamViec;
 
 public partial class ImportLich : Page
 {

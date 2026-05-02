@@ -1,8 +1,8 @@
 ﻿using System.Windows;
-using WPF.Client;
-using WPF.Common;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
 
-namespace WPF.Windows.CaKham;
+namespace HoanMyClinic.Windows.CaKham;
 public partial class View : Window
 {
 	public View(int id)

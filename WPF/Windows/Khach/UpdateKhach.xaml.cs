@@ -1,11 +1,11 @@
 ﻿using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.Khach;
+namespace HoanMyClinic.Windows.Khach;
 
 public partial class UpdateKhach : Window
 {

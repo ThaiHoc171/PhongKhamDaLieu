@@ -1,5 +1,5 @@
 ﻿
-namespace WPF.Models;
+namespace HoanMyClinic.Models;
 public class BuoiDieuTriRequestDTO
 {
 	public int LieuTrinhID { get; set; }

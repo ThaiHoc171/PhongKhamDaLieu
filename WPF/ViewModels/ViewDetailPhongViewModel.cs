@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.Windows;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Windows;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class ViewDetailPhongViewModel : PagedViewModel
 {
@@ -108,7 +108,7 @@ public class ViewDetailPhongViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new WPF.Windows.ChiTietPhong.AddThietBiPhong(_id, _name)
+			new HoanMyClinic.Windows.ChiTietPhong.AddThietBiPhong(_id, _name)
 			{
 				Owner = Application.Current.MainWindow
 			},
@@ -135,7 +135,7 @@ public class ViewDetailPhongViewModel : PagedViewModel
 		OverlayHelper.Show(overlay);
 
 		await DialogHelper.OpenDialogAsync(
-			new WPF.Windows.ChiTietPhong.UpdateDetailThietBi(item.ChiTietID)
+			new HoanMyClinic.Windows.ChiTietPhong.UpdateDetailThietBi(item.ChiTietID)
 			{
 				Owner = Application.Current.MainWindow
 			},
@@ -173,7 +173,7 @@ public class ViewDetailPhongViewModel : PagedViewModel
 	public ICommand BackCommand => new RelayCommand(() =>
 	{
 		var parent = Application.Current.MainWindow as appClinic;
-		parent?.OpenPage(new WPF.Pages.PhongChucNangPage(), "Quản lý phòng chức năng");
+		parent?.OpenPage(new HoanMyClinic.Pages.PhongChucNangPage(), "Quản lý phòng chức năng");
 		return Task.CompletedTask;
 	});
 

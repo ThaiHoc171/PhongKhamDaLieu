@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace WPF.Common
+namespace HoanMyClinic.Common
 {
 	public static class SnackbarHelper
 	{

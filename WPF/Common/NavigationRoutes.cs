@@ -1,11 +1,11 @@
 ﻿using System.Windows.Controls;
-using WPF.Pages;
-using WPF.Pages.CaKham;
-using WPF.Pages.LichLamViec;
-using WPF.Pages.PhienKham;
-using WPF.Windows;
+using HoanMyClinic.Pages;
+using HoanMyClinic.Pages.CaKham;
+using HoanMyClinic.Pages.LichLamViec;
+using HoanMyClinic.Pages.PhienKham;
+using HoanMyClinic.Windows;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public static class NavigationRoutes
 {
@@ -29,6 +29,7 @@ public static class NavigationRoutes
 		{ "XemLichCaNhan", () => new Personal() },
 		{ "XemLichChung", () => new Shared() },
 		{ "NhapLichLam", () => new ImportLich() },
+		{ "NgayNghi", () => new NgayNghiPage() },
 
 		{ "Thuoc", () => new ThuocPage() },
 		{ "LoaiBenh", () => new LoaiBenhPage() },
@@ -65,6 +66,7 @@ public static class NavigationRoutes
 		{ "XemLichCaNhan", "LICH_READ" },
 		{ "XemLichChung", "LICH_READ" },
 		{ "NhapLichLam", "LICH_WRITE" },
+		{ "NgayNghi", "LICH_WRITE" },
 
 		{ "Thuoc", "HETHONG_READ" },
 		{ "LoaiBenh", "HETHONG_READ" },
@@ -101,6 +103,7 @@ public static class NavigationRoutes
 		{ "XemLichCaNhan", "Lịch cá nhân" },
 		{ "XemLichChung", "Lịch phòng khám" },
 		{ "NhapLichLam", "Nhập lịch làm việc" },
+		{ "NgayNghi", "Lịch nghỉ nhân viên" },
 
 		{ "Thuoc", "Quản lý thuốc" },
 		{ "LoaiBenh", "Quản lý loại bệnh" },

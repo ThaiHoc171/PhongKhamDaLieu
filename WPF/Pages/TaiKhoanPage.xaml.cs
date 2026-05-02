@@ -1,9 +1,9 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
-using WPF.Common;
-using WPF.ViewModels;
+using HoanMyClinic.Common;
+using HoanMyClinic.ViewModels;
 
-namespace WPF.Pages;
+namespace HoanMyClinic.Pages;
 
 public partial class TaiKhoanPage : Page
 {

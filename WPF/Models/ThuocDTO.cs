@@ -1,4 +1,4 @@
-﻿namespace WPF.Models;
+﻿namespace HoanMyClinic.Models;
 public class ThuocRequest
 {
 	public string TenThuoc { get; set; } = string.Empty;

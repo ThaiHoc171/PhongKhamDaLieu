@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
 
-namespace WPF.Windows
+namespace HoanMyClinic.Windows
 {
 	public partial class loginWindow : Window
 	{
@@ -40,25 +41,66 @@ namespace WPF.Windows
 			txtPassword.Visibility = Visibility.Visible;
 			txtPasswordVisible.Visibility = Visibility.Collapsed;
 		}
+		private void ClearErrors()
+		{
+			txtEmailError.Visibility = Visibility.Collapsed;
+			txtEmailError.Text = "";
+			txtPasswordError.Visibility = Visibility.Collapsed;
+			txtPasswordError.Text = "";
+		}
+
+		private void ShowFieldError(TextBlock errorBlock, string message)
+		{
+			errorBlock.Text = message;
+			errorBlock.Visibility = Visibility.Visible;
+		}
+
+		private bool ValidateForm(string email, string password)
+		{
+			ClearErrors();
+			bool isValid = true;
+
+			if (string.IsNullOrWhiteSpace(email))
+			{
+				ShowFieldError(txtEmailError, "Vui lòng nhập email!");
+				isValid = false;
+			}
+			else if (!System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+			{
+				ShowFieldError(txtEmailError, "Email không đúng định dạng!");
+				isValid = false;
+			}
+
+			if (string.IsNullOrWhiteSpace(password))
+			{
+				ShowFieldError(txtPasswordError, "Vui lòng nhập mật khẩu!");
+				isValid = false;
+			}
+			else if (password.Length < 6)
+			{
+				ShowFieldError(txtPasswordError, "Mật khẩu phải có ít nhất 6 ký tự!");
+				isValid = false;
+			}
+
+			return isValid;
+		}
 
 		private async void btnLogin_Click(object sender, RoutedEventArgs e)
 		{
+			string email = txtEmail.Text.Trim();
+			string password = checkShowPassword.IsChecked == true
+				? txtPasswordVisible.Text
+				: txtPassword.Password;
+
+			if (!ValidateForm(email, password))
+				return;
+
 			btnLogin.IsEnabled = false;
 			checkShowPassword.IsChecked = false;
 			checkShowPassword.IsEnabled = false;
+
 			try
 			{
-				string email = txtEmail.Text.Trim();
-				string password = checkShowPassword.IsChecked == true
-					? txtPasswordVisible.Text
-					: txtPassword.Password;
-
-				if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-				{
-					await MessageHelper.ShowMessage("Vui lòng nhập đầy đủ thông tin!");
-					return;
-				}
-
 				Session.Clear();
 
 				var loginData = new LoginRequestDTO
@@ -71,18 +113,20 @@ namespace WPF.Windows
 
 				if (response == null)
 				{
-					await MessageHelper.ShowMessage("Không thể kết nối server!");
+					SnackbarHelper.ShowError("Không thể kết nối server!");
 					return;
 				}
 
-				if (!response.Success|| response.Data == null || string.IsNullOrEmpty(response.Data.AccessToken))
+				if (!response.Success || response.Data == null || string.IsNullOrEmpty(response.Data.AccessToken))
 				{
-					await MessageHelper.ShowMessage("Tài khoản hoặc mật khẩu không đúng!");
+					ShowFieldError(txtPasswordError, "Tài khoản hoặc mật khẩu không đúng!");
+					txtPassword.Clear();
+					txtPasswordVisible.Text = "";
+					txtPassword.Focus();
 					return;
 				}
 
 				var result = response.Data;
-
 				Session.UserId = result.Id;
 				Session.Email = result.Email;
 				Session.Token = result.AccessToken;
@@ -96,12 +140,13 @@ namespace WPF.Windows
 				};
 				Session.VaiTro = result.VaiTro;
 				Session.Permissions = result.Quyen ?? new List<string>();
+
 				DialogResult = true;
 				Close();
 			}
 			catch (Exception ex)
 			{
-				await MessageHelper.ShowMessage("Không thể kết nối server!\n" + ex.Message);
+				SnackbarHelper.ShowError("Có lỗi xảy ra: " + ex.Message);
 			}
 			finally
 			{

@@ -1,4 +1,4 @@
-﻿<Page x:Class="WPF.Pages.PhienKham.ViewPage"
+﻿<Page x:Class="HoanMyClinic.Pages.PhienKham.ViewPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
@@ -25,7 +25,7 @@
 
                 <!-- LEFT -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Margin="5" Padding="12,6"
+                    <Button x:Name="btnBack" Margin="5" Padding="12,6"
                             Command="{Binding BackCommand}">
                         <materialDesign:PackIcon Kind="ArrowLeft"/>
                     </Button>

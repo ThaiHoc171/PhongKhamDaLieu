@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class PhienKhamCLSViewModel : PagedViewModel
 {
@@ -138,7 +138,7 @@ public class PhienKhamCLSViewModel : PagedViewModel
 				// open window
 				if (item.TrangThai is "Đang chờ" or "Đang thực hiện")
 				{
-					var win = new WPF.Windows.KhamBenh.ThucHienCLS(item.PhienKhamCLSID)
+					var win = new HoanMyClinic.Windows.KhamBenh.ThucHienCLS(item.PhienKhamCLSID)
 					{
 						Owner = Application.Current.MainWindow
 					};
@@ -166,7 +166,7 @@ public class PhienKhamCLSViewModel : PagedViewModel
 
 			try
 			{
-				new WPF.Windows.KhamBenh.ViewCls(item.PhienKhamCLSID)
+				new HoanMyClinic.Windows.KhamBenh.ViewCls(item.PhienKhamCLSID)
 				{
 					Owner = Application.Current.MainWindow
 				}.ShowDialog();

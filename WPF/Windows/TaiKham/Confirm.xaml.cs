@@ -1,10 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
 
-namespace WPF.Windows.TaiKham;
+namespace HoanMyClinic.Windows.TaiKham;
 
 public partial class Confirm : Window
 {

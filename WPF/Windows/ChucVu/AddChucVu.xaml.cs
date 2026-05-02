@@ -1,9 +1,9 @@
 ﻿using System.Windows;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.ChucVu;
+namespace HoanMyClinic.Windows.ChucVu;
 
 public partial class AddChucVu : Window
 {

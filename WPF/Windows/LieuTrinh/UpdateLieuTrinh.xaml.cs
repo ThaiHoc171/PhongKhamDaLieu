@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace WPF.Windows.LieuTrinh
+namespace HoanMyClinic.Windows.LieuTrinh
 {
 	/// <summary>
 	/// Interaction logic for UpdateLieuTrinh.xaml

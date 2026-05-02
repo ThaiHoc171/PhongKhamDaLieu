@@ -1,4 +1,4 @@
-﻿namespace WPF.Models;
+﻿namespace HoanMyClinic.Models;
 public class LoaiBenhRequest
 {
 	public string TenBenh { get; set; } = string.Empty;

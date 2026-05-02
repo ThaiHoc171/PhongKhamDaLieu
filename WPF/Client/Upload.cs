@@ -1,4 +1,4 @@
-﻿using WPF.Common;
+﻿using HoanMyClinic.Common;
 
 public class UploadClient : AppClientBase
 {

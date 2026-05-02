@@ -5,7 +5,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public static class SetupDataGrid
 {

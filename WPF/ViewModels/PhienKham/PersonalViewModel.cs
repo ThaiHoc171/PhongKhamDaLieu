@@ -1,13 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.Pages.PhienKham;
-using WPF.Windows;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Pages.PhienKham;
+using HoanMyClinic.Windows;
 
-namespace WPF.ViewModels.PhienKham;
+namespace HoanMyClinic.ViewModels.PhienKham;
 
 public class PersonalViewModel : PagedViewModel
 {

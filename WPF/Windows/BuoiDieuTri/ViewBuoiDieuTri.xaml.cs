@@ -1,8 +1,8 @@
 ﻿using System.Windows;
-using WPF.Client;
-using WPF.Common;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
 
-namespace WPF.Windows.BuoiDieuTri;
+namespace HoanMyClinic.Windows.BuoiDieuTri;
 public partial class ViewBuoiDieuTri : Window
 {
 	public ViewBuoiDieuTri(int buoiDieuTriID,string name)

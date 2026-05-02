@@ -1,5 +1,5 @@
-﻿<Page x:Class="WPF.Pages.KhachPage"
-      xmlns:conv="clr-namespace:WPF.Common"
+﻿<Page x:Class="HoanMyClinic.Pages.KhachPage"
+      xmlns:conv="clr-namespace:HoanMyClinic.Common"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"

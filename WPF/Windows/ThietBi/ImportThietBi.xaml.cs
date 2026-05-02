@@ -1,10 +1,10 @@
 ﻿using Microsoft.Win32;
 using System.Windows;
-using WPF.Client;
-using WPF.Common;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
 using System.IO;
-using WPF.Models;
-namespace WPF.Windows.ThietBi
+using HoanMyClinic.Models;
+namespace HoanMyClinic.Windows.ThietBi
 {
 	public partial class ImportThietBi : Window
 	{

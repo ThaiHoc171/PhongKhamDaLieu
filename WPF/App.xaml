@@ -1,8 +1,8 @@
-﻿<Application x:Class="WPF.App"
+﻿<Application x:Class="HoanMyClinic.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:conv="clr-namespace:WPF.Common"
+             xmlns:conv="clr-namespace:HoanMyClinic.Common"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              ShutdownMode="OnExplicitShutdown">
 

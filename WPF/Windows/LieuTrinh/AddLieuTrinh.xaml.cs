@@ -1,11 +1,11 @@
 ﻿using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.LieuTrinh;
+namespace HoanMyClinic.Windows.LieuTrinh;
 
 
 public partial class AddLieuTrinh : Window

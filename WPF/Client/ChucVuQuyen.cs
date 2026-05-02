@@ -1,6 +1,6 @@
-﻿using WPF.Common;
-using WPF.Models;
-namespace WPF.Client;
+﻿using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+namespace HoanMyClinic.Client;
 
 public class ChucVuQuyenClient : AppClientBase
 {

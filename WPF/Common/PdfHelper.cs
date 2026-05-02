@@ -9,9 +9,9 @@ using iText.Layout.Element;
 using iText.Layout.Properties;
 using Microsoft.Win32;
 using System.IO;
-using WPF.Models;
+using HoanMyClinic.Models;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public class PdfHelper
 {

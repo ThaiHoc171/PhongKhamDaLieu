@@ -1,10 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.CaNhan;
+namespace HoanMyClinic.Windows.CaNhan;
 
 
 public partial class DoiMatKhau : Window

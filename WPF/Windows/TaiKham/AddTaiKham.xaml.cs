@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System.Windows;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Windows.TaiKham;
+namespace HoanMyClinic.Windows.TaiKham;
 public partial class AddTaiKham : Window
 {
 	public AddTaiKham(int phienKhamId, int benhNhanId)

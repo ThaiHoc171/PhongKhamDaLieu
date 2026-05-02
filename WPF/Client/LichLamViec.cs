@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
-using WPF.Common;
-using WPF.Models;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
 
-namespace WPF.Client;
+namespace HoanMyClinic.Client;
 
 public class LichLamViecClient : AppClientBase
 {

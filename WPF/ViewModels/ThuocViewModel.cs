@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.Windows.Thuoc;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.Windows.Thuoc;
 
-namespace WPF.ViewModels;
+namespace HoanMyClinic.ViewModels;
 
 public class ThuocViewModel : PagedViewModel
 {

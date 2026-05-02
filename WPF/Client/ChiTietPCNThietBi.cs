@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using WPF.Common;
-using WPF.Models;
-namespace WPF.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+namespace HoanMyClinic.Client;
 public class ChiTietPCNThietBiClient : AppClientBase
 {
 	private const string BASE = "api/chitiet-pcntb";

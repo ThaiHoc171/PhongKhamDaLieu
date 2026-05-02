@@ -1,9 +1,9 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
-using WPF.Common;
-using WPF.ViewModels.PhienKham;
+using HoanMyClinic.Common;
+using HoanMyClinic.ViewModels.PhienKham;
 
-namespace WPF.Pages.PhienKham;
+namespace HoanMyClinic.Pages.PhienKham;
 
 public partial class ConsultationPage : Page
 {

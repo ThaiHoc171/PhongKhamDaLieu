@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Navigation;
-using WPF.Pages;
-using WPF.Windows;
+using HoanMyClinic.Pages;
+using HoanMyClinic.Windows;
 
-namespace WPF.Common;
+namespace HoanMyClinic.Common;
 
 public class NavigationHelper
 {

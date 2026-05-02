@@ -5,14 +5,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using WPF.Client;
-using WPF.Common;
-using WPF.Models;
-using WPF.ViewModels;
-using WPF.Windows.LoaiBenh;
-using WPF.Windows.Thuoc;
+using HoanMyClinic.Client;
+using HoanMyClinic.Common;
+using HoanMyClinic.Models;
+using HoanMyClinic.ViewModels;
+using HoanMyClinic.Windows.LoaiBenh;
+using HoanMyClinic.Windows.Thuoc;
 
-namespace WPF.Pages;
+namespace HoanMyClinic.Pages;
 
 public partial class LoaiBenhPage : Page
 {

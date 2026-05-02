@@ -1,14 +1,15 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
-using WPF.Common;
-using WPF.ViewModels.PhienKham;
-namespace WPF.Pages.PhienKham;
+using HoanMyClinic.Common;
+using HoanMyClinic.ViewModels.PhienKham;
+namespace HoanMyClinic.Pages.PhienKham;
 public partial class ViewPage : Page
 {
 	public ViewPage(int id)
 	{
 		InitializeComponent();
-
+		if (Session.VaiTro == "Admin")
+			btnBack.Visibility = System.Windows.Visibility.Collapsed;
 		var vm = new LogViewModel(id);
 		DataContext = vm;
 
@@ -19,6 +20,7 @@ public partial class ViewPage : Page
 		SetupDataGrid.ApplyStyle(DataGridCLS);
 
 		SetupColumns();
+
 	}
 
 	private void SetupColumns()

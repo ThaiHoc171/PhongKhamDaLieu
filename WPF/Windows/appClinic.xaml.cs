@@ -2,10 +2,10 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using WPF.Common;
-using WPF.Windows.CaNhan;
+using HoanMyClinic.Common;
+using HoanMyClinic.Windows.CaNhan;
 
-namespace WPF.Windows
+namespace HoanMyClinic.Windows
 {
 	public partial class appClinic : Window
 	{
@@ -242,7 +242,10 @@ namespace WPF.Windows
 		{
 			_nav.Navigate("ThongKe");
 		}
-
+		private void btnNgayNghi_Click(object sender, RoutedEventArgs e)
+		{
+			_nav.Navigate("NgayNghi");
+		}
 		private async void HoSo_Click(object sender, RoutedEventArgs e)
 		{
 			if (Session.VaiTro == "Admin")
@@ -284,5 +287,7 @@ namespace WPF.Windows
 				OverlayHelper.Hide(overlay);
 			}
 		}
-	}
+
+
+    }
 }
