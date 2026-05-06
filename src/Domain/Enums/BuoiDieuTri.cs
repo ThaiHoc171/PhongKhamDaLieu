@@ -2,7 +2,7 @@
 public enum TrangThaiBuoiDieuTriEnum
 {
 	ChoXuLy,
-	DangThucHien,
+	DangXuLy,
 	HoanThanh,
 	DaHuy
 }
@@ -13,7 +13,7 @@ public static class TrangThaiBuoiDieuTriExtensions
 		return value switch
 		{
 			"Chờ xử lý" => TrangThaiBuoiDieuTriEnum.ChoXuLy,
-			"Đang thực hiện" => TrangThaiBuoiDieuTriEnum.DangThucHien,
+			"Đang xử lý" => TrangThaiBuoiDieuTriEnum.DangXuLy,
 			"Hoàn thành" => TrangThaiBuoiDieuTriEnum.HoanThanh,
 			"Đã huỷ" => TrangThaiBuoiDieuTriEnum.DaHuy,
 			_ => throw new ArgumentException($"Trạng thái không hợp lệ: {value}")
@@ -24,7 +24,7 @@ public static class TrangThaiBuoiDieuTriExtensions
 		return value switch
 		{
 			TrangThaiBuoiDieuTriEnum.ChoXuLy => "Chờ xử lý",
-			TrangThaiBuoiDieuTriEnum.DangThucHien => "Đang thực hiện",
+			TrangThaiBuoiDieuTriEnum.DangXuLy => "Đang xử lý",
 			TrangThaiBuoiDieuTriEnum.HoanThanh => "Hoàn thành",
 			TrangThaiBuoiDieuTriEnum.DaHuy => "Đã huỷ",
 			_ => throw new ArgumentException("Trạng thái không hợp lệ")

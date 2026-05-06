@@ -58,11 +58,11 @@ public class BuoiDieuTri
 		if (TrangThai != TrangThaiBuoiDieuTriEnum.ChoXuLy)
 			throw new InvalidOperationException("Buổi điều trị không thể bắt đầu");
 		NhanVienID = nhanVienID;
-		TrangThai = TrangThaiBuoiDieuTriEnum.DangThucHien;
+		TrangThai = TrangThaiBuoiDieuTriEnum.DangXuLy;
 	}
 	public void Complete(DateTime ngayThucHien)
 	{
-		if (TrangThai != TrangThaiBuoiDieuTriEnum.DangThucHien)
+		if (TrangThai != TrangThaiBuoiDieuTriEnum.DangXuLy)
 			throw new InvalidOperationException("Buổi điều trị chưa được bắt đầu");
 		if (NgayDuKien.HasValue && ngayThucHien < NgayDuKien)
 			throw new InvalidOperationException(

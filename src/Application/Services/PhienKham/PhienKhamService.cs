@@ -140,7 +140,7 @@ public class PhienKhamService
 			var buoiDieuTri = await _buoiDieuTri.GetByCaKhamAsync(pk.CaKhamID);
 			if (buoiDieuTri != null)
 			{
-				buoiDieuTri.Start(pk.CaKhamID);
+				buoiDieuTri.Start(pk.NhanVienID);
 				await _buoiDieuTri.UpdateAsync(buoiDieuTri);
 			}
 
