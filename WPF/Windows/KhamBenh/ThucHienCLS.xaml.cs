@@ -23,7 +23,7 @@ public partial class ThucHienCLS : Window
 		var result = await _client.Detail(_id);
 		if(!result.Success || result.Data == null)
 		{
-			SnackbarHelper.ShowError("Không tìm thấy phiên khám.");
+			await MessageHelper.ShowMessage("Không tìm thấy phiên khám.");
 			this.Close();
 			return;
 		}
@@ -37,20 +37,20 @@ public partial class ThucHienCLS : Window
 		txtPerformedBy.Text = data.NhanVienThucHien?.Name ?? "Chưa thực hiện";
 	}
 
-	private void CheckUpdate()
+	private async void CheckUpdate()
 	{
-		SnackbarHelper.ShowWarning("Bạn không phải là người thực hiện CLS này!");
+		await MessageHelper.ShowMessage("Bạn không phải là người thực hiện CLS này!");
 		txtResult.IsEnabled = false;
 		txtNotes.IsEnabled = false;
 		btnUploadFile.IsEnabled = false;
 		btnSave.IsEnabled = false;
 	}
 
-	private bool ValidateInput()
+	private async Task<bool> ValidateInput()
 	{
 		if (Session.NhanVienId == null)
 		{
-			SnackbarHelper.ShowError("Không xác định được nhân viên chỉ định!");
+			await MessageHelper.ShowMessage("Không xác định được nhân viên chỉ định!");
 			return false;
 		}
 		return true;
@@ -70,7 +70,7 @@ public partial class ThucHienCLS : Window
 
 	private async void btnSave_Click(object sender, EventArgs e)
 	{
-		if (!ValidateInput())
+		if (!await ValidateInput())
 			return;
 
 
@@ -80,7 +80,7 @@ public partial class ThucHienCLS : Window
 
 			if (!uploadResult.Success)
 			{
-				SnackbarHelper.ShowError(uploadResult.Message);
+				await MessageHelper.ShowMessage(uploadResult.Message);
 				return;
 			}
 
@@ -111,12 +111,12 @@ public partial class ThucHienCLS : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{
@@ -129,11 +129,11 @@ public partial class ThucHienCLS : Window
 		this.Close();
 	}
 
-	private void btnViewFile_Click(object sender, RoutedEventArgs e)
+	private async void btnViewFile_Click(object sender, RoutedEventArgs e)
 	{
 		if(_filePath == null)
 		{
-			SnackbarHelper.ShowWarning("Không có file đính kèm!");
+			await MessageHelper.ShowMessage("Không có file đính kèm!");
 			return;
 		}
 		var url = _filePath;

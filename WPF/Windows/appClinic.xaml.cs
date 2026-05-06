@@ -248,11 +248,11 @@ namespace HoanMyClinic.Windows
 		}
 		private async void HoSo_Click(object sender, RoutedEventArgs e)
 		{
-			if (Session.VaiTro == "Admin")
-			{
-				SnackbarHelper.ShowWarning("Bạn đang sử dụng tài khoản admin");
-				return;
-			}
+			//if (Session.VaiTro == "Admin")
+			//{
+			//	await MessageHelper.ShowMessage("Bạn đang sử dụng tài khoản admin");
+			//	return;
+			//}
 
 			var overlay = OverlayHelper.GetOverlay(this);
 			OverlayHelper.Show(overlay);

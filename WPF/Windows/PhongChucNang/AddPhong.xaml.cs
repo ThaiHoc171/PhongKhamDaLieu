@@ -27,12 +27,12 @@ public partial class AddPhong : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên phòng!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên phòng!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtDescription.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập mô tả!");
+			await MessageHelper.ShowMessage("Vui lòng nhập mô tả!");
 			return;
 		}
 		var req = new PhongChucNangRequestDTO
@@ -53,12 +53,12 @@ public partial class AddPhong : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

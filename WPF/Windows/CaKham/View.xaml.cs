@@ -20,7 +20,7 @@ public partial class View : Window
 			var result = await _client.GetDetail(_id);
 			if (result?.Data == null)
 			{
-				SnackbarHelper.ShowError("Không tìm thấy ca khám.");
+				await MessageHelper.ShowMessage("Không tìm thấy ca khám.");
 				Close();
 				return;
 			}
@@ -35,7 +35,7 @@ public partial class View : Window
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 			this.Close();
 		}
 	}

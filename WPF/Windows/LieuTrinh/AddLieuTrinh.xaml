@@ -29,11 +29,11 @@
             <!-- CONTENT -->
             <Grid Grid.Row="1" Margin="20">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBox x:Name="txId" Grid.Row="0"  Margin="10"
@@ -57,7 +57,7 @@
                 </Grid>
                 
                 <TextBox x:Name="txtNotes" Grid.Row="4"
-                         Margin="10,0"
+                         Margin="10"
                          materialDesign:HintAssist.Hint="Ghi chú"/>
             </Grid>
             <!-- ================= FOOTER ================= -->

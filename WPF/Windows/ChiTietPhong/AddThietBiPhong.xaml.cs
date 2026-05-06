@@ -46,12 +46,12 @@ public partial class AddThietBiPhong : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập mã tài sản");
+			await MessageHelper.ShowMessage("Vui lòng nhập mã tài sản");
 			return;
 		}
 		if(cboThietBi.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn thiết bị");
+			await MessageHelper.ShowMessage("Vui lòng chọn thiết bị");
 			return;
 		}
 		var req = new ChiTietPCNThietBiRequest
@@ -74,12 +74,12 @@ public partial class AddThietBiPhong : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

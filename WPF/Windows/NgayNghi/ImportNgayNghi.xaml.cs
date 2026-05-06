@@ -73,7 +73,7 @@ public partial class ImportNgayNghi : Window
 		var res = await _excel.GetSheets(file);
 		if (!res.Success || res.Data == null || res.Data.Count == 0)
 		{
-			SnackbarHelper.ShowError("Không lấy được danh sách sheet");
+			await MessageHelper.ShowMessage("Không lấy được danh sách sheet");
 			cbSheet.ItemsSource = null;
 			return;
 		}
@@ -86,12 +86,12 @@ public partial class ImportNgayNghi : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtFile.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn file Excel!");
+			await MessageHelper.ShowMessage("Vui lòng chọn file Excel!");
 			return;
 		}
 		if (cbSheet.SelectedItem == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn sheet!");
+			await MessageHelper.ShowMessage("Vui lòng chọn sheet!");
 			return;
 		}
 
@@ -104,7 +104,7 @@ public partial class ImportNgayNghi : Window
 
 			if (!res.Success || res.Data == null)
 			{
-				SnackbarHelper.ShowError(res.Message);
+				await MessageHelper.ShowMessage(res.Message);
 				return;
 			}
 
@@ -121,7 +121,7 @@ public partial class ImportNgayNghi : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra khi preview!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra khi preview!");
 		}
 		finally
 		{
@@ -134,7 +134,7 @@ public partial class ImportNgayNghi : Window
 	{
 		if (!_isPreviewed || _previewData == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng Preview dữ liệu trước!");
+			await MessageHelper.ShowMessage("Vui lòng Preview dữ liệu trước!");
 			return;
 		}
 
@@ -148,7 +148,7 @@ public partial class ImportNgayNghi : Window
 
 			if (!res.Success || res.Data == null)
 			{
-				SnackbarHelper.ShowError(res.Message);
+				await MessageHelper.ShowMessage(res.Message);
 				return;
 			}
 
@@ -162,7 +162,7 @@ public partial class ImportNgayNghi : Window
 			if (errors.Count > 0)
 			{
 				txtSummary.Text = $"Preview: {_previewData.Count} dòng — Validate: {errors.Count} lỗi ❌";
-				SnackbarHelper.ShowError($"Có {errors.Count} lỗi, không thể lưu!");
+				await MessageHelper.ShowMessage($"Có {errors.Count} lỗi, không thể lưu!");
 				_isValidated = false;
 			}
 			else
@@ -176,7 +176,7 @@ public partial class ImportNgayNghi : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra khi validate!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra khi validate!");
 		}
 		finally
 		{
@@ -189,17 +189,17 @@ public partial class ImportNgayNghi : Window
 	{
 		if (!_isPreviewed)
 		{
-			SnackbarHelper.ShowError("Vui lòng Preview trước khi lưu!");
+			await MessageHelper.ShowMessage("Vui lòng Preview trước khi lưu!");
 			return;
 		}
 		if (!_isValidated)
 		{
-			SnackbarHelper.ShowError("Vui lòng Validate trước khi lưu!");
+			await MessageHelper.ShowMessage("Vui lòng Validate trước khi lưu!");
 			return;
 		}
 		if (_previewData == null || _previewData.Count == 0)
 		{
-			SnackbarHelper.ShowError("Không có dữ liệu để lưu!");
+			await MessageHelper.ShowMessage("Không có dữ liệu để lưu!");
 			return;
 		}
 
@@ -216,12 +216,12 @@ public partial class ImportNgayNghi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(res.Message);
+				await MessageHelper.ShowMessage(res.Message);
 			}
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

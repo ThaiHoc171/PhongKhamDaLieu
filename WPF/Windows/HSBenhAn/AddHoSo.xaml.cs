@@ -49,12 +49,12 @@ public partial class AddHoSo : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

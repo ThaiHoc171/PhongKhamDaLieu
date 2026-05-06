@@ -59,32 +59,25 @@ public class AcceptedViewModel : PagedViewModel
 
 		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
 		OverlayHelper.Show(overlay);
-		if (item.LoaiCaKham == "Khám")
+		var confirm = await MessageHelper.Confirm("Tạo phiên khám?");
+		if (!confirm)
 		{
-			var confirm = await MessageHelper.Confirm("Tạo phiên khám?");
-			if (!confirm)
-			{
-				OverlayHelper.Hide(overlay);
-				return;
-			}
-
-			var result = await _phien.Create(item.CaKhamID);
-
-			if (result.Success)
-			{
-				await _client.UpdateTrangThai(item.CaKhamID,
-					new CaKhamTrangThaiDTO { TrangThai = "Đang khám" });
-
-				SnackbarHelper.ShowSuccess("Tạo phiên khám thành công");
-				await LoadData();
-			}
-			else
-				SnackbarHelper.ShowError(result.Message);
+			OverlayHelper.Hide(overlay);
+			return;
 		}
-		if(item.LoaiCaKham == "Điều trị")
+
+		var result = await _phien.Create(item.CaKhamID);
+
+		if (result.Success)
 		{
-			SnackbarHelper.ShowWarning("Tính năng đang phát triển");
+			await _client.UpdateTrangThai(item.CaKhamID,
+				new CaKhamTrangThaiDTO { TrangThai = "Đang khám" });
+
+			SnackbarHelper.ShowSuccess("Tạo phiên khám thành công");
+			await LoadData();
 		}
+		else
+			SnackbarHelper.ShowError(result.Message);
 
 		OverlayHelper.Hide(overlay);
 	});

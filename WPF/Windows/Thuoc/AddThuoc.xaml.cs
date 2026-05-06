@@ -27,12 +27,12 @@ public partial class AddThuoc : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên thuốc!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên thuốc!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtActiveIngredient.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập hoạt chất!");
+			await MessageHelper.ShowMessage("Vui lòng nhập hoạt chất!");
 			return;
 		}
 		var req = new ThuocRequest
@@ -54,12 +54,12 @@ public partial class AddThuoc : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

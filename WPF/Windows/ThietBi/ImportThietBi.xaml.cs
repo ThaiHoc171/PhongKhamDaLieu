@@ -34,7 +34,7 @@ namespace HoanMyClinic.Windows.ThietBi
 
 			if (!result.Success || result.Data == null || result.Data.Count == 0)
 			{
-				SnackbarHelper.ShowError("Không lấy được danh sách sheet");
+				await MessageHelper.ShowMessage("Không lấy được danh sách sheet");
 				cbSheet.ItemsSource = null;
 				return;
 			}
@@ -75,7 +75,7 @@ namespace HoanMyClinic.Windows.ThietBi
 			var errors = lstErrors.ItemsSource as List<string>;
 			if (errors != null && errors.Count > 0)
 			{
-				SnackbarHelper.ShowError("Có lỗi trong dữ liệu, không thể lưu.");
+				await MessageHelper.ShowMessage("Có lỗi trong dữ liệu, không thể lưu.");
 				return;
 			}
 			var result = await _client.ConfirmImport(list!);
@@ -87,7 +87,7 @@ namespace HoanMyClinic.Windows.ThietBi
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		private void btnClose_Click(object sender, RoutedEventArgs e)

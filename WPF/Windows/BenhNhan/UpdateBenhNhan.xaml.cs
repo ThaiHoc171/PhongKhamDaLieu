@@ -42,7 +42,7 @@ public partial class UpdateBenhNhan : Window
 
 		if (result?.Data == null)
 		{
-			SnackbarHelper.ShowError("Không tìm thấy bệnh nhân.");
+			await MessageHelper.ShowMessage("Không tìm thấy bệnh nhân.");
 			Close();
 			return;
 		}
@@ -86,17 +86,17 @@ public partial class UpdateBenhNhan : Window
 			imgAvatar.Source = new BitmapImage(new Uri(_avatarPath));
 		}
 	}
-	private bool ValidateInput()
+	private async Task<bool> ValidateInput()
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập họ tên!");
+			await MessageHelper.ShowMessage("Vui lòng nhập họ tên!");
 			return false;
 		}
 
 		if (string.IsNullOrWhiteSpace(txtEmail.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập email!");
+			await MessageHelper.ShowMessage("Vui lòng nhập email!");
 			return false;
 		}
 
@@ -122,11 +122,11 @@ public partial class UpdateBenhNhan : Window
 	}
 	private async void btnSave_Click(object sender, RoutedEventArgs e)
 	{
-		if (!ValidateInput()) return;
+		if (!await ValidateInput()) return;
 
 		if (!IsChanged())
 		{
-			SnackbarHelper.ShowError("Không có thay đổi nào!");
+			await MessageHelper.ShowMessage("Không có thay đổi nào!");
 			return;
 		}
 
@@ -142,7 +142,7 @@ public partial class UpdateBenhNhan : Window
 
 				if (!uploadResult.Success)
 				{
-					SnackbarHelper.ShowError(uploadResult.Message);
+					await MessageHelper.ShowMessage(uploadResult.Message);
 					return;
 				}
 
@@ -169,7 +169,7 @@ public partial class UpdateBenhNhan : Window
 
 			if (!result.Success)
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 				return;
 			}
 
@@ -178,7 +178,7 @@ public partial class UpdateBenhNhan : Window
 		}
 		catch (Exception ex)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!\n" + ex.Message);
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!\n" + ex.Message);
 		}
 		finally
 		{

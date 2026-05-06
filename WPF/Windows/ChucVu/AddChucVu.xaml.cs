@@ -29,12 +29,12 @@ public partial class AddChucVu : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên chức vụ!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên chức vụ!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtDescription.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập mô tả!");
+			await MessageHelper.ShowMessage("Vui lòng nhập mô tả!");
 			return;
 		}
 		var req = new ChucVuRequest
@@ -57,12 +57,12 @@ public partial class AddChucVu : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

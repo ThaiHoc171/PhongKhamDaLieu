@@ -32,7 +32,7 @@ public partial class ViewBuoiDieuTri : Window
 		var res = await _client.Detail(_id);
 		if (!res.Success)
 		{
-			SnackbarHelper.ShowError("Không tìm thấy phiếu tái khám!");
+			await MessageHelper.ShowMessage("Không tìm thấy phiếu tái khám!");
 			this.Close();
 		}
 		if (res.Data == null)

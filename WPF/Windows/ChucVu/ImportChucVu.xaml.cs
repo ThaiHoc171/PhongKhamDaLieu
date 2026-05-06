@@ -50,7 +50,7 @@ public partial class ImportChucVu : Window
 
 		if (!res.Success || res.Data == null || res.Data.Count == 0)
 		{
-			SnackbarHelper.ShowError("Không lấy được danh sách sheet");
+			await MessageHelper.ShowMessage("Không lấy được danh sách sheet");
 			cbSheet.ItemsSource = null;
 			return;
 		}
@@ -84,7 +84,7 @@ public partial class ImportChucVu : Window
 		var errors = lstErrors.ItemsSource as List<string>;
 		if (errors != null && errors.Count > 0)
 		{
-			SnackbarHelper.ShowError("Có lỗi trong dữ liệu, không thể lưu.");
+			await MessageHelper.ShowMessage("Có lỗi trong dữ liệu, không thể lưu.");
 			return;
 		}
 		try
@@ -100,12 +100,12 @@ public partial class ImportChucVu : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(res.Message);
+				await MessageHelper.ShowMessage(res.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

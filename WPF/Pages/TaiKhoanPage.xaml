@@ -114,7 +114,7 @@
                             <materialDesign:PackIcon Kind="ChevronLeft"/>
                         </Button>
 
-                        <TextBlock Text="{Binding PageDisplay}" Margin="10,0" Padding="12,6" Width="50"
+                        <TextBlock Text="{Binding PageDisplay}" Margin="10,0" Padding="12,6" Width="90"
                                VerticalAlignment="Center"/>
 
                         <Button Margin="5,0" Padding="12,6" Command="{Binding NextCommand}" IsEnabled="{Binding CanGoNext}">

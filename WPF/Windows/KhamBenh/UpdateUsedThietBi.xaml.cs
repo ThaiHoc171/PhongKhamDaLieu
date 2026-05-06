@@ -34,7 +34,7 @@ public partial class UpdateUsedThietBi : Window
 
 			if (string.IsNullOrWhiteSpace(txtNotes.Text))
 			{
-				SnackbarHelper.ShowWarning("Vui lòng nhập ghi chú");
+				await MessageHelper.ShowMessage("Vui lòng nhập ghi chú");
 				return;
 			}
 			var req = txtNotes.Text.Trim();
@@ -47,12 +47,12 @@ public partial class UpdateUsedThietBi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

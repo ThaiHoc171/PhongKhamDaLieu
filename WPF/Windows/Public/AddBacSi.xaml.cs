@@ -51,29 +51,29 @@ public partial class AddBacSi : Window
 			imgAvatar.Source = bitmap;
 		}
 	}
-	private bool ValidateForm()
+	private async Task<bool> ValidateForm()
 	{
 		if (string.IsNullOrWhiteSpace(txtChuyenMon.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập chuyên môn!");
+			await MessageHelper.ShowMessage("Vui lòng nhập chuyên môn!");
 			txtChuyenMon.Focus();
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(txtGioiThieu.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập giới thiệu!");
+			await MessageHelper.ShowMessage("Vui lòng nhập giới thiệu!");
 			txtGioiThieu.Focus();
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(txtKinhNghiem.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập kinh ngiệm!");
+			await MessageHelper.ShowMessage("Vui lòng nhập kinh ngiệm!");
 			txtKinhNghiem.Focus();
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(txtThanhTuu.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập thành tựu!");
+			await MessageHelper.ShowMessage("Vui lòng nhập thành tựu!");
 			txtThanhTuu.Focus();
 			return false;
 		}
@@ -92,7 +92,7 @@ public partial class AddBacSi : Window
 	// ================= LƯU =================
 	private async void btnSave_Click(object sender, RoutedEventArgs e)
 	{
-		if (!ValidateForm())
+		if (!await ValidateForm())
 			return;
 
 		try
@@ -108,7 +108,7 @@ public partial class AddBacSi : Window
 
 				if (!uploadResult.Success)
 				{
-					SnackbarHelper.ShowError(uploadResult.Message);
+					await MessageHelper.ShowMessage(uploadResult.Message);
 					return;
 				}
 				if (!string.IsNullOrEmpty(uploadResult.Data))
@@ -136,12 +136,12 @@ public partial class AddBacSi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra!");
 		}
 		finally
 		{

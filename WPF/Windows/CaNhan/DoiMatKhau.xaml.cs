@@ -74,13 +74,19 @@ public partial class DoiMatKhau : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtPassword.Password))
 		{
-			SnackbarHelper.ShowWarning("Vui lòng nhập mật khẩu");
+			await MessageHelper.ShowMessage("Vui lòng nhập mật khẩu");
 			txtPassword.Focus();
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtNewPassword.Password))
 		{
-			SnackbarHelper.ShowWarning("Vui lòng nhập mật khẩu mới");
+			await MessageHelper.ShowMessage("Vui lòng nhập mật khẩu mới");
+			txtNewPassword.Focus();
+			return;
+		}
+		if (txtNewPassword.Password.Length < 6)
+		{
+			await MessageHelper.ShowMessage("Mật khẩu mới phải có ít nhất 6 ký tự");
 			txtNewPassword.Focus();
 			return;
 		}
@@ -105,12 +111,12 @@ public partial class DoiMatKhau : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

@@ -1,13 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
-using System.IO;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using HoanMyClinic.Client;
+﻿using HoanMyClinic.Client;
 using HoanMyClinic.Common;
 using HoanMyClinic.Models;
 using HoanMyClinic.Pages.PhienKham;
 using HoanMyClinic.Windows;
+using HoanMyClinic.Windows.LieuTrinh;
+using HoanMyClinic.Windows.TaiKham;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace HoanMyClinic.ViewModels.PhienKham;
 
@@ -87,11 +89,7 @@ public class LogViewModel : BaseViewModel
 	public ICommand MedicineCommand => new RelayCommand(async () =>
 	{
 		var res = await _toaThuocClient.Exists(_id);
-
-		OpenWindow(() =>
-		{
-			return new HoanMyClinic.Windows.ToaThuoc.XemToaThuoc(_id);
-		});
+		OpenWindow(() => new HoanMyClinic.Windows.ToaThuoc.XemToaThuoc(_id));
 	});
 
 	public ICommand RecordCommand => new RelayCommand(async () =>
@@ -105,11 +103,14 @@ public class LogViewModel : BaseViewModel
 			return;
 		}
 
-		OpenWindow(() =>
-		{
-			return new HoanMyClinic.Windows.HSBenhAn.ViewHoSo(_benhNhanObj.Id, _benhNhanObj.Name);
-		});
+		OpenWindow(() => new HoanMyClinic.Windows.HSBenhAn.ViewHoSo(_benhNhanObj.Id, _benhNhanObj.Name));
 	});
+
+	public ICommand RecheckCommand => new RelayCommand(() =>
+		OpenWindow(() => new AddTaiKham(_id, _benhNhanObj.Id), "Tạo phiếu tái khám thành công!"));
+
+	public ICommand TreatmentPlanCommand => new RelayCommand(() =>
+		OpenWindow(() => new AddLieuTrinh(_id, BenhNhan), "Tạo phiếu liệu trình thành công!"));
 	public ICommand ExportCommand => new RelayCommand(() =>
 	{
 		try
@@ -142,12 +143,15 @@ public class LogViewModel : BaseViewModel
 	public ICommand BackCommand => new RelayCommand(() =>
 	{
 		var parent = Application.Current.MainWindow as appClinic;
-		parent?.OpenPage(new PersonalPage(), "Phiên khám cá nhân");
+		if(Session.VaiTro == "Admin")
+			parent?.OpenPage(new SharedPage(), "Phiên khám");
+		else
+			parent?.OpenPage(new PersonalPage(), "Phiên khám cá nhân");
 	});
 
 	#endregion
 
-	private void OpenWindow(Func<Window> factory)
+	private void OpenWindow(Func<Window> factory, string? successMessage = null)
 	{
 		var win = factory();
 		win.Owner = Application.Current.MainWindow;
@@ -157,7 +161,9 @@ public class LogViewModel : BaseViewModel
 
 		try
 		{
-			win.ShowDialog();
+			var result = win.ShowDialog();
+			if (result == true && !string.IsNullOrEmpty(successMessage))
+				SnackbarHelper.ShowSuccess(successMessage);
 		}
 		finally
 		{

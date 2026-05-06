@@ -65,7 +65,7 @@ public partial class AddBenhNhan : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập họ tên!");
+			await MessageHelper.ShowMessage("Vui lòng nhập họ tên!");
 			return;
 		}
 
@@ -81,7 +81,7 @@ public partial class AddBenhNhan : Window
 
 				if (!upload.Success)
 				{
-					SnackbarHelper.ShowError(upload.Message);
+					await MessageHelper.ShowMessage(upload.Message);
 					return;
 				}
 
@@ -107,7 +107,7 @@ public partial class AddBenhNhan : Window
 
 			if (!res.Success)
 			{
-				SnackbarHelper.ShowError(res.Message);
+				await MessageHelper.ShowMessage(res.Message);
 				return;
 			}
 
@@ -116,7 +116,7 @@ public partial class AddBenhNhan : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra!");
 		}
 		finally
 		{

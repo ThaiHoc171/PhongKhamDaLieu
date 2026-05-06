@@ -155,9 +155,9 @@ public class PhienKhamService
 		{
 			return ApiResponse<bool>.Fail(ex.Message);
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
-			return ApiResponse<bool>.Fail("Có lỗi xảy ra khi bắt đầu phiên khám");
+			return ApiResponse<bool>.Fail("Có lỗi xảy ra:" + ex.Message);
 		}
 	}
 

@@ -43,7 +43,7 @@ public partial class AddTaiKham : Window
 
 		if (Session.NhanVienId == null)
 		{
-			SnackbarHelper.ShowError("Không xác định được nhân viên kê đơn!");
+			await MessageHelper.ShowMessage("Không xác định được nhân viên kê đơn!");
 			return;
 		}
 
@@ -53,7 +53,7 @@ public partial class AddTaiKham : Window
 
 		if (!comboRes.Success || comboRes.Data == null)
 		{
-			SnackbarHelper.ShowError(comboRes.Message);
+			await MessageHelper.ShowMessage(comboRes.Message);
 			return;
 		}
 
@@ -63,7 +63,7 @@ public partial class AddTaiKham : Window
 
 		if (!slotRes.Success || slotRes.Data == null)
 		{
-			SnackbarHelper.ShowError(slotRes.Message);
+			await MessageHelper.ShowMessage(slotRes.Message);
 			return;
 		}
 
@@ -97,18 +97,18 @@ public partial class AddTaiKham : Window
 	private async void btnSave_Click(object sender, EventArgs e)
 	{
 		if (dtpDate.SelectedDate < DateTime.Now)
-			SnackbarHelper.ShowError("Ngày tái khám không thể ở quá khứ!");
+			await MessageHelper.ShowMessage("Ngày tái khám không thể ở quá khứ!");
 
 		DateTime ngay = dtpDate.SelectedDate!.Value;
 		if (Session.NhanVienId == null)
 		{
-			SnackbarHelper.ShowError("Không xác định được nhân viên kê đơn!");
+			await MessageHelper.ShowMessage("Không xác định được nhân viên kê đơn!");
 			return;
 		}
 		int nhanVienId = Session.NhanVienId ?? 0;
 		if (cboKhungGio.SelectedIndex == -1)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn khung giờ!");
+			await MessageHelper.ShowMessage("Vui lòng chọn khung giờ!");
 			return;
 		}
 		int khungGio = (int)cboKhungGio.SelectedValue;
@@ -123,7 +123,7 @@ public partial class AddTaiKham : Window
 		var res = await _caKham.Register(cakham.Data, caKhamReq);
 		if (!res.Success)
 		{	
-			SnackbarHelper.ShowError("Đăng ký ca cho tái khám thất bại!\n" + res.Message);
+			await MessageHelper.ShowMessage("Đăng ký ca cho tái khám thất bại!\n" + res.Message);
 			return;
 		}
 		var req = new TaiKhamRequestDTO
@@ -145,12 +145,12 @@ public partial class AddTaiKham : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

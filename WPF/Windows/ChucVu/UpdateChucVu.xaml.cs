@@ -30,7 +30,7 @@ public partial class UpdateChucVu : Window
 		}
 		else
 		{
-			SnackbarHelper.ShowError("Không tìm thấy chức vụ.");
+			await MessageHelper.ShowMessage("Không tìm thấy chức vụ.");
 			this.Close();
 		}
 	}
@@ -50,12 +50,12 @@ public partial class UpdateChucVu : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên chức vụ!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên chức vụ!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtDescription.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập mô tả!");
+			await MessageHelper.ShowMessage("Vui lòng nhập mô tả!");
 			return;
 		}
 		var req = new ChucVuRequest
@@ -66,7 +66,7 @@ public partial class UpdateChucVu : Window
 		};
 		if(req.TenChucVu == _current.TenChucVu && req.MoTa == _current.MoTa && req.TrangThai == _current.TrangThai)
 		{
-			SnackbarHelper.ShowWarning("Không có thay đổi nào để cập nhật!");
+			await MessageHelper.ShowMessage("Không có thay đổi nào để cập nhật!");
 			return;
 		}
 		try
@@ -81,12 +81,12 @@ public partial class UpdateChucVu : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

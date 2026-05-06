@@ -71,42 +71,64 @@ public partial class AddToaThuoc : Window
 		txtDoctor.Text = Session.HoTen.Name;
 		txtId.Text = _id.ToString();
 	}
-	private void btnAdd_Click(object sender, RoutedEventArgs e)
+	private async void btnAdd_Click(object sender, RoutedEventArgs e)
 	{
 		if (cboMedicine.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn thuốc");
+			await MessageHelper.ShowMessage("Vui lòng chọn thuốc");
 			return;
 		}
 
 		if (!int.TryParse(numQuantity.Text, out int soLuong))
 		{
-			SnackbarHelper.ShowError("Số lượng không hợp lệ");
+			await MessageHelper.ShowMessage("Số lượng không hợp lệ");
 			return;
 		}
 
+		int selectedId = (int)cboMedicine.SelectedValue;
+
 		if (_editingItem != null)
 		{
-			// UPDATE
-			_editingItem.ThuocID = (int)cboMedicine.SelectedValue;
-			_editingItem.TenThuoc = cboMedicine.Text;
-			_editingItem.SoLuong = soLuong;
-			_editingItem.LieuDung = txtDosage.Text;
+			// Kiểm tra trùng khi UPDATE (bỏ qua chính item đang sửa)
+			var duplicate = Items.FirstOrDefault(x => x.ThuocID == selectedId && x != _editingItem);
+			if (duplicate != null)
+			{
+				// Cộng dồn vào item trùng, xóa item đang sửa
+				duplicate.SoLuong += soLuong;
+				duplicate.LieuDung = txtDosage.Text;
+				Items.Remove(_editingItem);
+			}
+			else
+			{
+				_editingItem.ThuocID = selectedId;
+				_editingItem.TenThuoc = cboMedicine.Text;
+				_editingItem.SoLuong = soLuong;
+				_editingItem.LieuDung = txtDosage.Text;
+			}
 
 			GridContent.Items.Refresh();
 		}
 		else
 		{
-			// ADD
-			var item = new ToaThuocItem
+			// Kiểm tra trùng khi ADD
+			var existing = Items.FirstOrDefault(x => x.ThuocID == selectedId);
+			if (existing != null)
 			{
-				ThuocID = (int)cboMedicine.SelectedValue,
-				TenThuoc = cboMedicine.Text,
-				SoLuong = soLuong,
-				LieuDung = txtDosage.Text
-			};
-
-			Items.Add(item);
+				// Cộng dồn số lượng
+				existing.SoLuong += soLuong;
+				existing.LieuDung = txtDosage.Text;
+				GridContent.Items.Refresh();
+			}
+			else
+			{
+				Items.Add(new ToaThuocItem
+				{
+					ThuocID = selectedId,
+					TenThuoc = cboMedicine.Text,
+					SoLuong = soLuong,
+					LieuDung = txtDosage.Text
+				});
+			}
 		}
 
 		// reset form
@@ -144,13 +166,13 @@ public partial class AddToaThuoc : Window
 	{
 		if (Items.Count == 0)
 		{
-			SnackbarHelper.ShowError("Chưa có thuốc nào");
+			await MessageHelper.ShowMessage("Chưa có thuốc nào");
 			return;
 		}
 
 		if (Session.NhanVienId == null)
 		{
-			SnackbarHelper.ShowError("Không xác định được nhân viên kê đơn!");
+			await MessageHelper.ShowMessage("Không xác định được nhân viên kê đơn!");
 			return;
 		}
 
@@ -175,7 +197,7 @@ public partial class AddToaThuoc : Window
 
 			if (!result.Success)
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 				return;
 			}
 
@@ -184,7 +206,7 @@ public partial class AddToaThuoc : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra!");
 		}
 		finally
 		{

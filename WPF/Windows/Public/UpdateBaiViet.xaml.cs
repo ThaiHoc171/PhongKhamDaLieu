@@ -50,7 +50,7 @@ public partial class UpdateBaiViet : Window
 
 			if (!result.Success || result.Data == null)
 			{
-				SnackbarHelper.ShowError("Không tìm thấy bài viết");
+				await MessageHelper.ShowMessage("Không tìm thấy bài viết");
 				Close();
 				return;
 			}
@@ -78,7 +78,7 @@ public partial class UpdateBaiViet : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Lỗi load dữ liệu");
+			await MessageHelper.ShowMessage("Lỗi load dữ liệu");
 			Close();
 		}
 	}
@@ -113,23 +113,23 @@ public partial class UpdateBaiViet : Window
 	}
 
 	// ================= VALIDATE =================
-	private bool ValidateForm()
+	private async Task<bool> ValidateForm()
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Nhập tiêu đề");
+			await MessageHelper.ShowMessage("Nhập tiêu đề");
 			return false;
 		}
 
 		if (string.IsNullOrWhiteSpace(txtContent.Text))
 		{
-			SnackbarHelper.ShowError("Nhập nội dung");
+			await MessageHelper.ShowMessage("Nhập nội dung");
 			return false;
 		}
 
 		if (cboDisease.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Chọn loại bệnh");
+			await MessageHelper.ShowMessage("Chọn loại bệnh");
 			return false;
 		}
 
@@ -147,7 +147,7 @@ public partial class UpdateBaiViet : Window
 	// ================= UPDATE =================
 	private async void btnSave_Click(object sender, RoutedEventArgs e)
 	{
-		if (!ValidateForm()) return;
+		if (!await ValidateForm()) return;
 
 		try
 		{
@@ -161,7 +161,7 @@ public partial class UpdateBaiViet : Window
 
 				if (!upload.Success)
 				{
-					SnackbarHelper.ShowError(upload.Message);
+					await MessageHelper.ShowMessage(upload.Message);
 					return;
 				}
 
@@ -186,7 +186,7 @@ public partial class UpdateBaiViet : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		finally
@@ -205,7 +205,7 @@ public partial class UpdateBaiViet : Window
 			SnackbarHelper.ShowSuccess("Đã đăng bài");
 			await LoadData();
 		}
-		else SnackbarHelper.ShowError(res.Message);
+		else await MessageHelper.ShowMessage(res.Message);
 	}
 
 	// ================= HIDE =================
@@ -218,7 +218,7 @@ public partial class UpdateBaiViet : Window
 			SnackbarHelper.ShowSuccess("Đã ẩn bài");
 			await LoadData();
 		}
-		else SnackbarHelper.ShowError(res.Message);
+		else await MessageHelper.ShowMessage(res.Message);
 	}
 
 	// ================= SAVE DRAFT =================
@@ -231,7 +231,7 @@ public partial class UpdateBaiViet : Window
 			SnackbarHelper.ShowSuccess("Đã lưu nháp");
 			await LoadData();
 		}
-		else SnackbarHelper.ShowError(res.Message);
+		else await MessageHelper.ShowMessage(res.Message);
 	}
 
 	// ================= DELETE =================
@@ -248,7 +248,7 @@ public partial class UpdateBaiViet : Window
 			SnackbarHelper.ShowSuccess("Đã xóa");
 			Close();
 		}
-		else SnackbarHelper.ShowError(res.Message);
+		else await MessageHelper.ShowMessage(res.Message);
 	}
 
 	private void btnClose_Click(object sender, RoutedEventArgs e)

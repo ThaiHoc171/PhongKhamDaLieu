@@ -71,7 +71,7 @@ public partial class Register : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtReason.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập lý do!");
+			await MessageHelper.ShowMessage("Vui lòng nhập lý do!");
 			return;
 		}
 		var req = new CaKhamRegister
@@ -94,12 +94,12 @@ public partial class Register : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

@@ -51,25 +51,25 @@ public partial class AddNgayNghi : Window
 		}
 	}
 
-	private bool ValidateForm()
+	private async Task<bool> ValidateForm()
 	{
 		if (cboChucVu.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn chức vụ!");
+			await MessageHelper.ShowMessage("Vui lòng chọn chức vụ!");
 			cboChucVu.Focus();
 			return false;
 		}
 
 		if (cboNhanVien.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn nhân viên!");
+			await MessageHelper.ShowMessage("Vui lòng chọn nhân viên!");
 			cboNhanVien.Focus();
 			return false;
 		}
 
 		if (dtpNgay.SelectedDate == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn ngày nghỉ!");
+			await MessageHelper.ShowMessage("Vui lòng chọn ngày nghỉ!");
 			return false;
 		}
 
@@ -85,7 +85,7 @@ public partial class AddNgayNghi : Window
 	// ================= LƯU =================
 	private async void btnSave_Click(object sender, RoutedEventArgs e)
 	{
-		if (!ValidateForm()) return;
+		if (!await ValidateForm()) return;
 
 		try
 		{
@@ -107,12 +107,12 @@ public partial class AddNgayNghi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra!");
 		}
 		finally
 		{

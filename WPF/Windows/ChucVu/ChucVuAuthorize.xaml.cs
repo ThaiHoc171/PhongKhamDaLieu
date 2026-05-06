@@ -28,7 +28,7 @@ public partial class ChucVuAuthorize : Window
 
 		if (!res.Success)
 		{
-			SnackbarHelper.ShowError(res.Message);
+			await MessageHelper.ShowMessage(res.Message);
 			this.Close();
 			return;
 		}
@@ -92,12 +92,12 @@ public partial class ChucVuAuthorize : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(res.Message);
+				await MessageHelper.ShowMessage(res.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

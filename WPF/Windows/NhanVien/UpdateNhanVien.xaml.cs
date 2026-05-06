@@ -67,7 +67,7 @@ public partial class UpdateNhanVien : Window
 
 			if (result == null || !result.Success || result.Data == null)
 			{
-				SnackbarHelper.ShowError("Không tìm thấy nhân viên.");
+				await MessageHelper.ShowMessage("Không tìm thấy nhân viên.");
 				Close();
 				return;
 			}
@@ -103,7 +103,7 @@ public partial class UpdateNhanVien : Window
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Không thể tải dữ liệu nhân viên.");
+			await MessageHelper.ShowMessage("Không thể tải dữ liệu nhân viên.");
 			Close();
 		}
 	}
@@ -138,7 +138,7 @@ public partial class UpdateNhanVien : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtHoTen.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập họ tên!");
+			await MessageHelper.ShowMessage("Vui lòng nhập họ tên!");
 			return;
 		}
 
@@ -155,7 +155,7 @@ public partial class UpdateNhanVien : Window
 
 				if (!uploadResult.Success)
 				{
-					SnackbarHelper.ShowError(uploadResult.Message);
+					await MessageHelper.ShowMessage(uploadResult.Message);
 					return;
 				}
 
@@ -187,7 +187,7 @@ public partial class UpdateNhanVien : Window
 			};
 			if (!IsThongTinChanged(thongtin) && !IsNhanVienChanged(nhanvien))
 			{
-				SnackbarHelper.ShowWarning("Không có thay đổi nào để lưu!");
+				await MessageHelper.ShowMessage("Không có thay đổi nào để lưu!");
 				return;
 			}
 			ApiResult<bool>? result = null;
@@ -214,12 +214,12 @@ public partial class UpdateNhanVien : Window
 					thongTinResult?.Message ??
 					"Cập nhật thất bại!";
 
-				SnackbarHelper.ShowError(message);
+				await MessageHelper.ShowMessage(message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

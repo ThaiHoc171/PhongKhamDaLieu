@@ -20,40 +20,40 @@ public partial class AddLoaiBenh : Window
 		cboSeverity.SelectedIndex = -1;
 		cboPopularity.SelectedIndex = -1;
 	}
-	private bool ValidateInput()
+	private async Task<bool> ValidateInput()
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
 			txtName.Focus();
-			SnackbarHelper.ShowError("Vui lòng nhập tên bệnh!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên bệnh!");
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(txtScienceName.Text))
 		{
 			txtScienceName.Focus();
-			SnackbarHelper.ShowError("Vui lòng nhập tên khoa học!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên khoa học!");
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(txtGroup.Text))
 		{
 			txtGroup.Focus();
-			SnackbarHelper.ShowError("Vui lòng nhập nhóm bệnh!");
+			await MessageHelper.ShowMessage("Vui lòng nhập nhóm bệnh!");
 			return false;
 		}
 		if (cboSeverity.SelectedIndex == -1)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn độ nghiêm trọng!");
+			await MessageHelper.ShowMessage("Vui lòng chọn độ nghiêm trọng!");
 			return false;
 		}
 		if (cboPopularity.SelectedIndex == -1 )
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn độ phổ biến!");
+			await MessageHelper.ShowMessage("Vui lòng chọn độ phổ biến!");
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(txtDescription.Text))
 		{
 			txtDescription.Focus();
-			SnackbarHelper.ShowError("Vui lòng nhập mô tả!");
+			await MessageHelper.ShowMessage("Vui lòng nhập mô tả!");
 			return false;
 		}
 
@@ -73,7 +73,7 @@ public partial class AddLoaiBenh : Window
 	}
 	private async void btnSave_Click(object sender, EventArgs e)
 	{
-		if (!ValidateInput())
+		if (!await ValidateInput())
 			return;
 		var req = new LoaiBenhRequest
 		{
@@ -97,12 +97,12 @@ public partial class AddLoaiBenh : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

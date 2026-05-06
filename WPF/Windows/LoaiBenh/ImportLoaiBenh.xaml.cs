@@ -42,7 +42,7 @@ public partial class ImportLoaiBenh : Window
 
 		if (!result.Success || result.Data == null || result.Data.Count == 0)
 		{
-			SnackbarHelper.ShowError("Không lấy được danh sách sheet");
+			await MessageHelper.ShowMessage("Không lấy được danh sách sheet");
 			cbSheet.ItemsSource = null;
 			return;
 		}
@@ -81,7 +81,7 @@ public partial class ImportLoaiBenh : Window
 			var list = gridPreview.ItemsSource as List<LoaiBenhRequest>;
 			if (list == null || !list.Any())
 			{
-				SnackbarHelper.ShowError("Chưa có dữ liệu preview");
+				await MessageHelper.ShowMessage("Chưa có dữ liệu preview");
 				return;
 			}
 
@@ -112,12 +112,12 @@ public partial class ImportLoaiBenh : Window
 				}
 				else
 				{
-					SnackbarHelper.ShowError($"Lỗi khi lưu: {res.Message}");
+					await MessageHelper.ShowMessage($"Lỗi khi lưu: {res.Message}");
 				}
 			}
 			catch (Exception ex)
 			{
-				SnackbarHelper.ShowError($"Có lỗi xảy ra khi lưu: {ex.Message}");
+				await MessageHelper.ShowMessage($"Có lỗi xảy ra khi lưu: {ex.Message}");
 			}
 			finally
 			{
@@ -127,7 +127,7 @@ public partial class ImportLoaiBenh : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra khi lưu.");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra khi lưu.");
 		}
 	}
 
@@ -138,7 +138,7 @@ public partial class ImportLoaiBenh : Window
 			var list = gridPreview.ItemsSource as List<LoaiBenhRequest>;
 			if (list == null || !list.Any())
 			{
-				SnackbarHelper.ShowError("Chưa có dữ liệu preview");
+				await MessageHelper.ShowMessage("Chưa có dữ liệu preview");
 				return;
 			}
 
@@ -146,7 +146,7 @@ public partial class ImportLoaiBenh : Window
 
 			if (!validateResult.Success)
 			{
-				SnackbarHelper.ShowError($"Validate API lỗi: {validateResult.Message}");
+				await MessageHelper.ShowMessage($"Validate API lỗi: {validateResult.Message}");
 				return;
 			}
 
@@ -154,7 +154,7 @@ public partial class ImportLoaiBenh : Window
 			if (errors != null && errors.Any())
 			{
 				lstErrors.ItemsSource = errors.SelectMany(x => x.Errors).ToList();
-				SnackbarHelper.ShowError("Có lỗi trong dữ liệu");
+				await MessageHelper.ShowMessage("Có lỗi trong dữ liệu");
 				btnSave.IsEnabled = false;
 				return;
 			}
@@ -163,7 +163,7 @@ public partial class ImportLoaiBenh : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra khi validate");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra khi validate");
 		}
 	}
 	private void btnClose_Click(object sender, RoutedEventArgs e)

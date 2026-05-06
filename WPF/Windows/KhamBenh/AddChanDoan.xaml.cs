@@ -29,16 +29,16 @@ public partial class AddChanDoan : Window
 		cboDiagnosisType.ItemsSource = new List<string> { "Chẩn đoán chính", "Chẩn đoán phát sinh" };
 		cboDiagnosisType.SelectedIndex = -1;
 	}
-	private bool ValidateInput()
+	private async Task<bool> ValidateInput()
 	{
 		if (cboDisease.SelectedIndex < 0 )
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn loại bệnh!");
+			await MessageHelper.ShowMessage("Vui lòng chọn loại bệnh!");
 			return false;
 		}
 		if (cboDiagnosisType.SelectedIndex < 0)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn loại chẩn đoán!");
+			await MessageHelper.ShowMessage("Vui lòng chọn loại chẩn đoán!");
 			return false;
 		}
 		return true;
@@ -57,7 +57,7 @@ public partial class AddChanDoan : Window
 	}
 	private async void btnSave_Click(object sender, EventArgs e)
 	{
-		if (!ValidateInput())
+		if (!await ValidateInput())
 			return;
 		var req = new PhienKhamBenhRequestDTO
 		{
@@ -79,12 +79,12 @@ public partial class AddChanDoan : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

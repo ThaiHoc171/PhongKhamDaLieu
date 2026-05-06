@@ -30,7 +30,7 @@ public partial class UpdateDetailThietBi : Window
 		}
 		else
 		{
-			SnackbarHelper.ShowError("Không tìm thấy phòng chức năng.");
+			await MessageHelper.ShowMessage("Không tìm thấy phòng chức năng.");
 			this.Close();
 		}
 	}
@@ -50,7 +50,7 @@ public partial class UpdateDetailThietBi : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên phòng!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên phòng!");
 			return;
 		}
 		var req = new ChiTietPCNThietBiUpdate
@@ -61,7 +61,7 @@ public partial class UpdateDetailThietBi : Window
 		};
 		if (_current == req)
 		{
-			SnackbarHelper.ShowWarning("Không có thay đổi nào được thực hiện!");
+			await MessageHelper.ShowMessage("Không có thay đổi nào được thực hiện!");
 			return;
 		}
 		try
@@ -77,12 +77,12 @@ public partial class UpdateDetailThietBi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

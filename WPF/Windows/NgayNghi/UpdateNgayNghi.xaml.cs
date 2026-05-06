@@ -31,7 +31,7 @@ public partial class UpdateNgayNghi : Window
 
 			if (result == null || !result.Success || result.Data == null)
 			{
-				SnackbarHelper.ShowError("Không tìm thấy ngày nghỉ.");
+				await MessageHelper.ShowMessage("Không tìm thấy ngày nghỉ.");
 				Close();
 				return;
 			}
@@ -44,7 +44,7 @@ public partial class UpdateNgayNghi : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Không thể tải dữ liệu ngày nghỉ.");
+			await MessageHelper.ShowMessage("Không thể tải dữ liệu ngày nghỉ.");
 			Close();
 		}
 	}
@@ -55,11 +55,11 @@ public partial class UpdateNgayNghi : Window
 			|| newData.LyDo != _current.LyDo;
 	}
 
-	private bool ValidateForm()
+	private async Task<bool> ValidateForm()
 	{
 		if (dtpNgay.SelectedDate == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn ngày nghỉ!");
+			await MessageHelper.ShowMessage("Vui lòng chọn ngày nghỉ!");
 			return false;
 		}
 		return true;
@@ -74,7 +74,7 @@ public partial class UpdateNgayNghi : Window
 	// ================= LƯU =================
 	private async void btnSave_Click(object sender, RoutedEventArgs e)
 	{
-		if (!ValidateForm()) return;
+		if (!await ValidateForm()) return;
 
 		var req = new NgayNghiUpdateRequestDTO
 		{
@@ -84,7 +84,7 @@ public partial class UpdateNgayNghi : Window
 
 		if (!IsChanged(req))
 		{
-			SnackbarHelper.ShowWarning("Không có thay đổi nào để lưu!");
+			await MessageHelper.ShowMessage("Không có thay đổi nào để lưu!");
 			return;
 		}
 
@@ -101,12 +101,12 @@ public partial class UpdateNgayNghi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

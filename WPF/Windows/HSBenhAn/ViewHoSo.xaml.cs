@@ -26,7 +26,7 @@ public partial class ViewHoSo : Window
 
 			if (result?.Data == null)
 			{
-				SnackbarHelper.ShowError(result?.Message ?? "Không tìm thấy dữ liệu!");
+				await MessageHelper.ShowMessage(result?.Message ?? "Không tìm thấy dữ liệu!");
 				Close();
 				return;
 			}
@@ -42,7 +42,7 @@ public partial class ViewHoSo : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Không thể tải dữ liệu, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Không thể tải dữ liệu, vui lòng thử lại!");
 			Close();
 		}
 	}

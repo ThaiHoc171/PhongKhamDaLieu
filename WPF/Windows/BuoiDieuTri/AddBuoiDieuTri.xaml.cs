@@ -28,7 +28,7 @@ public partial class AddBuoiDieuTri : Window
 		var doctor = await _nhanVien.GetCombobox(2);
 		if (!doctor.Success || doctor.Data == null)
 		{
-			SnackbarHelper.ShowError(doctor.Message);
+			await MessageHelper.ShowMessage(doctor.Message);
 			return;
 		}
 
@@ -47,14 +47,14 @@ public partial class AddBuoiDieuTri : Window
 		var comboRes = await _khungGio.GetCombobox();
 		if (!comboRes.Success || comboRes.Data == null)
 		{
-			SnackbarHelper.ShowError(comboRes.Message);
+			await MessageHelper.ShowMessage(comboRes.Message);
 			return;
 		}
 
 		var slotRes = await _caKham.GetKhungGioTrong(ngay, "Điều trị", nhanVienId);
 		if (!slotRes.Success || slotRes.Data == null)
 		{
-			SnackbarHelper.ShowError(slotRes.Message);
+			await MessageHelper.ShowMessage(slotRes.Message);
 			return;
 		}
 
@@ -94,19 +94,19 @@ public partial class AddBuoiDieuTri : Window
 	{
 		if (dtpDate.SelectedDate == null || dtpDate.SelectedDate < DateTime.Now)
 		{
-			SnackbarHelper.ShowError("Ngày điều trị không hợp lệ!");
+			await MessageHelper.ShowMessage("Ngày điều trị không hợp lệ!");
 			return;
 		}
 
 		if (cboDoctor.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn bác sĩ!");
+			await MessageHelper.ShowMessage("Vui lòng chọn bác sĩ!");
 			return;
 		}
 
 		if (cboKhungGio.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn khung giờ!");
+			await MessageHelper.ShowMessage("Vui lòng chọn khung giờ!");
 			return;
 		}
 
@@ -118,7 +118,7 @@ public partial class AddBuoiDieuTri : Window
 
 		if (!cakham.Success || cakham.Data == 0)
 		{
-			SnackbarHelper.ShowError(cakham.Message);
+			await MessageHelper.ShowMessage(cakham.Message);
 			return;
 		}
 		var req = new BuoiDieuTriRequestDTO
@@ -138,12 +138,12 @@ public partial class AddBuoiDieuTri : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

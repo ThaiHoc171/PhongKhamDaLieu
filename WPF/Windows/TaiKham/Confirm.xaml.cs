@@ -31,7 +31,7 @@ public partial class Confirm : Window
 	{
 		if (string.IsNullOrWhiteSpace(txId.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập mã phiếu tái khám!");
+			await MessageHelper.ShowMessage("Vui lòng nhập mã phiếu tái khám!");
 			return;
 		}
 		int TaiKhamId = Convert.ToInt32(txId.Text);
@@ -47,12 +47,12 @@ public partial class Confirm : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

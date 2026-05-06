@@ -35,7 +35,7 @@ public partial class UpdateLoaiBenh : Window
 
 			if (!result.Success || result.Data == null)
 			{
-				SnackbarHelper.ShowError(result.Message ?? "Không tìm thấy dữ liệu!");
+				await MessageHelper.ShowMessage(result.Message ?? "Không tìm thấy dữ liệu!");
 				Close();
 				return;
 			}
@@ -54,52 +54,52 @@ public partial class UpdateLoaiBenh : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Không thể tải dữ liệu, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Không thể tải dữ liệu, vui lòng thử lại!");
 			Close();
 		}
 	}
 
-	private bool ValidateInput()
+	private async Task<bool> ValidateInput()
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
 			txtName.Focus();
-			SnackbarHelper.ShowError("Vui lòng nhập tên bệnh!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên bệnh!");
 			return false;
 		}
 
 		if (string.IsNullOrWhiteSpace(txtScienceName.Text))
 		{
 			txtScienceName.Focus();
-			SnackbarHelper.ShowError("Vui lòng nhập tên khoa học!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên khoa học!");
 			return false;
 		}
 
 		if (string.IsNullOrWhiteSpace(txtGroup.Text))
 		{
 			txtGroup.Focus();
-			SnackbarHelper.ShowError("Vui lòng nhập nhóm bệnh!");
+			await MessageHelper.ShowMessage("Vui lòng nhập nhóm bệnh!");
 			return false;
 		}
 
 		if (cboSeverity.SelectedItem == null)
 		{
 			cboSeverity.Focus();
-			SnackbarHelper.ShowError("Vui lòng chọn độ nghiêm trọng!");
+			await MessageHelper.ShowMessage("Vui lòng chọn độ nghiêm trọng!");
 			return false;
 		}
 
 		if (cboPopularity.SelectedItem == null)
 		{
 			cboPopularity.Focus();
-			SnackbarHelper.ShowError("Vui lòng chọn độ phổ biến!");
+			await MessageHelper.ShowMessage("Vui lòng chọn độ phổ biến!");
 			return false;
 		}
 
 		if (string.IsNullOrWhiteSpace(txtDescription.Text))
 		{
 			txtDescription.Focus();
-			SnackbarHelper.ShowError("Vui lòng nhập mô tả!");
+			await MessageHelper.ShowMessage("Vui lòng nhập mô tả!");
 			return false;
 		}
 
@@ -129,18 +129,18 @@ public partial class UpdateLoaiBenh : Window
 	}
 	private async void btnSave_Click(object sender, RoutedEventArgs e)
 	{
-		if (!ValidateInput())
+		if (!await ValidateInput())
 			return;
 
 		if (_data == null)
 		{
-			SnackbarHelper.ShowError("Dữ liệu chưa được tải!");
+			await MessageHelper.ShowMessage("Dữ liệu chưa được tải!");
 			return;
 		}
 
 		if (!IsChanged(_data))
 		{
-			SnackbarHelper.ShowWarning("Không có thay đổi nào được thực hiện!");
+			await MessageHelper.ShowMessage("Không có thay đổi nào được thực hiện!");
 			return;
 		}
 
@@ -166,12 +166,12 @@ public partial class UpdateLoaiBenh : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

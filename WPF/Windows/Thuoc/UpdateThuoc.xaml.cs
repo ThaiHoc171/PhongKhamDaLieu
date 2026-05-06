@@ -25,7 +25,7 @@ public partial class UpdateThuoc : Window
 		}
 		else
 		{
-			SnackbarHelper.ShowError(result.Message);
+			await MessageHelper.ShowMessage(result.Message);
 			this.Close();
 		}
 	}
@@ -45,12 +45,12 @@ public partial class UpdateThuoc : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên thuốc!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên thuốc!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtActiveIngredient.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập hoạt chất!");
+			await MessageHelper.ShowMessage("Vui lòng nhập hoạt chất!");
 			return;
 		}
 		var req = new ThuocRequest
@@ -60,7 +60,7 @@ public partial class UpdateThuoc : Window
 		};
 		if(req == _current)
 		{
-			SnackbarHelper.ShowError("Không có thay đổi nào để lưu!");
+			await MessageHelper.ShowMessage("Không có thay đổi nào để lưu!");
 			return;
 		}
 		try
@@ -75,12 +75,12 @@ public partial class UpdateThuoc : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

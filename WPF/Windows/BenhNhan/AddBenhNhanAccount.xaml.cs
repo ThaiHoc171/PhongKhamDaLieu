@@ -27,7 +27,7 @@ public partial class AddBenhNhanAccount : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtEmail.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập email!");
+			await MessageHelper.ShowMessage("Vui lòng nhập email!");
 			return;
 		}
 		string password = string.IsNullOrWhiteSpace(txtPassword.Password) ? "123456" : txtPassword.Password;
@@ -57,17 +57,17 @@ public partial class AddBenhNhanAccount : Window
 				}
 				else
 				{
-					SnackbarHelper.ShowError(output.Message);
+					await MessageHelper.ShowMessage(output.Message);
 				}
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

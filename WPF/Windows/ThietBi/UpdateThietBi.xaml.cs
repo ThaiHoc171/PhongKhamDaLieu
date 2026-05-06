@@ -29,7 +29,7 @@ public partial class UpdateThietBi : Window
 		}
 		else
 		{
-			SnackbarHelper.ShowError("Không tìm thấy thiết bị!");
+			await MessageHelper.ShowMessage("Không tìm thấy thiết bị!");
 			this.Close();
 		}
 	}
@@ -49,12 +49,12 @@ public partial class UpdateThietBi : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên thiết bị!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên thiết bị!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtCategory.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập loại thiết bị!");
+			await MessageHelper.ShowMessage("Vui lòng nhập loại thiết bị!");
 			return;
 		}
 		var req = new ThietBiRequest
@@ -66,7 +66,7 @@ public partial class UpdateThietBi : Window
 
 		if (req.TenTB == _current.TenTB && req.LoaiTB == _current.LoaiTB && req.TrangThai == _current.TrangThai)
 		{
-			SnackbarHelper.ShowWarning("Không có thay đổi nào để cập nhật!");
+			await MessageHelper.ShowMessage("Không có thay đổi nào để cập nhật!");
 			return;
 		}
 		try
@@ -81,12 +81,12 @@ public partial class UpdateThietBi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

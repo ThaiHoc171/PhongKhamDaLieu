@@ -30,7 +30,7 @@ public partial class UpdatePhong : Window
 		}
 		else
 		{
-			SnackbarHelper.ShowError("Không tìm thấy phòng chức năng.");
+			await MessageHelper.ShowMessage("Không tìm thấy phòng chức năng.");
 			this.Close();
 		}
 	}
@@ -50,12 +50,12 @@ public partial class UpdatePhong : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên phòng!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên phòng!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtDescription.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập mô tả!");
+			await MessageHelper.ShowMessage("Vui lòng nhập mô tả!");
 			return;
 		}
 		var req = new PhongChucNangRequestDTO
@@ -65,14 +65,14 @@ public partial class UpdatePhong : Window
 		};
 		if(_current == req)
 		{
-			SnackbarHelper.ShowWarning("Không có thay đổi nào được thực hiện!");
+			await MessageHelper.ShowMessage("Không có thay đổi nào được thực hiện!");
 			return;
 		}
 		try
 		{
 			ToggleUI(false);
 
-			var res = await _client.Create(req);
+			var res = await _client.Update(_id,req);
 
 			if (res.Success)
 			{
@@ -81,12 +81,12 @@ public partial class UpdatePhong : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(res.Message);
+				await MessageHelper.ShowMessage(res.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{
@@ -97,5 +97,10 @@ public partial class UpdatePhong : Window
 	private void btnClose_Click(object sender, RoutedEventArgs e)
 	{
 		this.Close();
+	}
+
+	private void Window_Loaded(object sender, RoutedEventArgs e)
+	{
+
 	}
 }

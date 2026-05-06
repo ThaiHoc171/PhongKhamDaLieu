@@ -48,21 +48,15 @@
             <Border Grid.Row="1" Style="{StaticResource CardStyle}">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 
-                    <TextBlock Text="Khoảng:" VerticalAlignment="Center"
-                               Foreground="{StaticResource TextMuted}" Margin="0,0,8,0"/>
                     <ComboBox Width="110" Margin="0,0,16,0" Padding="10,6"
                               ItemsSource="{Binding LoaiKhoangList}"
                               SelectedItem="{Binding SelectedLoaiKhoang, Mode=TwoWay}"
                               materialDesign:HintAssist.Hint="Khoảng"/>
 
-                    <TextBlock Text="Từ ngày:" VerticalAlignment="Center"
-                               Foreground="{StaticResource TextMuted}" Margin="0,0,8,0"/>
                     <DatePicker Width="130" Margin="0,0,16,0"
                                 SelectedDate="{Binding TuNgay, Mode=TwoWay}"
                                 materialDesign:HintAssist.Hint="Từ ngày"/>
 
-                    <TextBlock Text="Đến ngày:" VerticalAlignment="Center"
-                               Foreground="{StaticResource TextMuted}" Margin="0,0,8,0"/>
                     <DatePicker Width="130" Margin="0,0,16,0"
                                 SelectedDate="{Binding DenNgay, Mode=TwoWay}"
                                 materialDesign:HintAssist.Hint="Đến ngày"/>

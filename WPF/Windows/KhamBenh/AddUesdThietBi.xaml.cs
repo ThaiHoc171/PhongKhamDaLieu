@@ -71,11 +71,11 @@ public partial class AddUesdThietBi : Window
 			cboEquipmentDetail.SelectedIndex = -1;
 		}
 	}
-	private bool ValidateInput()
+	private async Task<bool> ValidateInput()
 	{
 		if (cboEquipmentDetail.SelectedIndex < 0)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn loại thiết bị!");
+			await MessageHelper.ShowMessage("Vui lòng chọn loại thiết bị!");
 			return false;
 		}
 		return true;
@@ -94,7 +94,7 @@ public partial class AddUesdThietBi : Window
 	}
 	private async void btnSave_Click(object sender, EventArgs e)
 	{
-		if (!ValidateInput())
+		if (!await ValidateInput())
 			return;
 		var req = new PhienKhamThietBiRequestDTO
 		{
@@ -115,12 +115,12 @@ public partial class AddUesdThietBi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

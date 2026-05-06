@@ -33,7 +33,7 @@ public partial class UpdateBacSi : Window
 
 			if (result == null || !result.Success || result.Data == null)
 			{
-				SnackbarHelper.ShowError("Không tìm thấy nhân viên.");
+				await MessageHelper.ShowMessage("Không tìm thấy nhân viên.");
 				Close();
 				return;
 			}
@@ -54,7 +54,7 @@ public partial class UpdateBacSi : Window
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Không thể tải dữ liệu nhân viên.");
+			await MessageHelper.ShowMessage("Không thể tải dữ liệu nhân viên.");
 			Close();
 		}
 	}
@@ -100,7 +100,7 @@ public partial class UpdateBacSi : Window
 
 				if (!uploadResult.Success)
 				{
-					SnackbarHelper.ShowError(uploadResult.Message);
+					await MessageHelper.ShowMessage(uploadResult.Message);
 					return;
 				}
 
@@ -127,12 +127,12 @@ public partial class UpdateBacSi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

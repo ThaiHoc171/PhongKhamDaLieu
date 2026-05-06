@@ -30,12 +30,12 @@ public partial class AddThietBi : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên thiết bị!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên thiết bị!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtCategory.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập loại thiết bị!");
+			await MessageHelper.ShowMessage("Vui lòng nhập loại thiết bị!");
 			return;
 		}
 		var req = new ThietBiRequest
@@ -57,12 +57,12 @@ public partial class AddThietBi : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

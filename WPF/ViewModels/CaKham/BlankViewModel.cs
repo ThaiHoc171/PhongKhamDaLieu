@@ -85,11 +85,32 @@ public class BlankViewModel : PagedViewModel
 
 		OverlayHelper.Hide(overlay);
 	});
+	private DateTime GetStartDateTime(CaKhamListReadModel item)
+	{
+		var parts = item.TenKhungGio.Split('-');
+		if (parts.Length == 0) return item.NgayKham;
 
+		var startTimeStr = parts[0].Trim();
+
+		if (TimeSpan.TryParse(startTimeStr, out var time))
+		{
+			return item.NgayKham.Date.Add(time);
+		}
+
+		return item.NgayKham;
+	}
 	public ICommand RegisterCommand => new RelayCommandWithParam<CaKhamListReadModel>(async item =>
 	{
 		if (item == null) return;
+		var now = DateTime.Now;
 
+		var startDateTime = GetStartDateTime(item);
+		var expiredTime = startDateTime.AddHours(1);
+		if (now > expiredTime)
+		{
+			await MessageHelper.ShowMessage("Ca khám này đã quá giờ đăng ký!");
+			return;
+		}
 		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
 		OverlayHelper.Show(overlay);
 

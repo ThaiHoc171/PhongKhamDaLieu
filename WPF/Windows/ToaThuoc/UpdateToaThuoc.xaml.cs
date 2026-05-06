@@ -75,7 +75,7 @@ public partial class UpdateToaThuoc : Window
 			var data = result.Data;
 			if (data.NguoiLap.Id != Session.NhanVienId)
 			{
-				SnackbarHelper.ShowWarning("Bạn không phải nhân viên kê đơn!");
+				await MessageHelper.ShowMessage("Bạn không phải nhân viên kê đơn!");
 				IsUpdate();
 			}
 			txtDoctor.Text = data.NguoiLap.Name;
@@ -100,17 +100,17 @@ public partial class UpdateToaThuoc : Window
 		btnAdd.IsEnabled = false;
 		btnSave.IsEnabled = false;
 	}
-	private void btnAdd_Click(object sender, RoutedEventArgs e)
+	private async void btnAdd_Click(object sender, RoutedEventArgs e)
 	{
 		if (cboMedicine.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn thuốc");
+			await MessageHelper.ShowMessage("Vui lòng chọn thuốc");
 			return;
 		}
 
 		if (!int.TryParse(numQuantity.Text, out int soLuong))
 		{
-			SnackbarHelper.ShowError("Số lượng không hợp lệ");
+			await MessageHelper.ShowMessage("Số lượng không hợp lệ");
 			return;
 		}
 
@@ -173,7 +173,7 @@ public partial class UpdateToaThuoc : Window
 	{
 		if (Items == null || Items.Count == 0)
 		{
-			SnackbarHelper.ShowError("Chưa có thuốc nào trong toa");
+			await MessageHelper.ShowMessage("Chưa có thuốc nào trong toa");
 			return;
 		}
 
@@ -192,7 +192,7 @@ public partial class UpdateToaThuoc : Window
 
 			if (!result.Success)
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 				return;
 			}
 
@@ -201,7 +201,7 @@ public partial class UpdateToaThuoc : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra khi cập nhật toa thuốc");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra khi cập nhật toa thuốc");
 		}
 		finally
 		{

@@ -29,17 +29,17 @@ public partial class AddCls : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên cận lâm sàng!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên cận lâm sàng!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtDescription.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập mô tả!");
+			await MessageHelper.ShowMessage("Vui lòng nhập mô tả!");
 			return;
 		}
 		if (string.IsNullOrWhiteSpace(txtCategory.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập loại xét nghiệm!");
+			await MessageHelper.ShowMessage("Vui lòng nhập loại xét nghiệm!");
 			return;
 		}
 		var req = new CanLamSangRequest
@@ -61,12 +61,12 @@ public partial class AddCls : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

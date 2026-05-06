@@ -31,7 +31,7 @@ public partial class UpdateKhach : Window
 
 		if (result?.Data == null)
 		{
-			SnackbarHelper.ShowError("Không tìm thấy khách.");
+			await MessageHelper.ShowMessage("Không tìm thấy khách.");
 			Close();
 			return;
 		}
@@ -85,7 +85,7 @@ public partial class UpdateKhach : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập họ tên!");
+			await MessageHelper.ShowMessage("Vui lòng nhập họ tên!");
 			return;
 		}
 
@@ -102,7 +102,7 @@ public partial class UpdateKhach : Window
 
 				if (!uploadResult.Success)
 				{
-					SnackbarHelper.ShowError(uploadResult.Message);
+					await MessageHelper.ShowMessage(uploadResult.Message);
 					return;
 				}
 
@@ -136,12 +136,12 @@ public partial class UpdateKhach : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

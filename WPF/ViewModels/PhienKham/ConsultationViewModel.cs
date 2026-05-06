@@ -8,6 +8,7 @@ using HoanMyClinic.Client;
 using HoanMyClinic.Common;
 using HoanMyClinic.Models;
 using HoanMyClinic.Windows.TaiKham;
+using HoanMyClinic.Windows.LieuTrinh;
 
 namespace HoanMyClinic.ViewModels.PhienKham;
 
@@ -433,46 +434,29 @@ public class ConsultationViewModel : BaseViewModel
 	#region POPUP ACTION COMMANDS
 
 	public ICommand AddDiagnosisCommand => new RelayCommand(() =>
-	{
-		OpenWindow(() =>
-		{
-			var win = new HoanMyClinic.Windows.KhamBenh.AddChanDoan(_id);
-			return win;
-		});
-	});
+	OpenWindow(() => new HoanMyClinic.Windows.KhamBenh.AddChanDoan(_id), "Thêm chẩn đoán thành công!"));
 
 	public ICommand AddEquipmentCommand => new RelayCommand(() =>
-	{
-		OpenWindow(() =>
-		{
-			var win = new HoanMyClinic.Windows.KhamBenh.AddUesdThietBi(_id);
-			return win;
-		});
-	});
+		OpenWindow(() => new HoanMyClinic.Windows.KhamBenh.AddUesdThietBi(_id), "Thêm thiết bị thành công!"));
 
 	public ICommand OrderLabCommand => new RelayCommand(() =>
-	{
-		OpenWindow(() =>
-		{
-			var win = new HoanMyClinic.Windows.KhamBenh.ChiDinhCLS(_id);
-			return win;
-		});
-	});
+		OpenWindow(() => new HoanMyClinic.Windows.KhamBenh.ChiDinhCLS(_id), "Chỉ định CLS thành công!"));
 
 	public ICommand MedicineCommand => new RelayCommand(async () =>
 	{
 		var res = await _toaThuocClient.Exists(_id);
-
-		OpenWindow(() =>
-		{
-			if (!res.Data)
-				return new HoanMyClinic.Windows.ToaThuoc.AddToaThuoc(_id);
-
-			return new HoanMyClinic.Windows.ToaThuoc.UpdateToaThuoc(_id);
-		});
+		OpenWindow(() => !res.Data
+			? new HoanMyClinic.Windows.ToaThuoc.AddToaThuoc(_id)
+			: new HoanMyClinic.Windows.ToaThuoc.UpdateToaThuoc(_id),
+			"Lưu toa thuốc thành công!");
 	});
 
-	public ICommand RecordCommand => new RelayCommand(async() =>
+	public ICommand RecheckCommand => new RelayCommand(() =>
+		OpenWindow(() => new AddTaiKham(_id, _benhNhanId), "Tạo phiếu tái khám thành công!"));
+
+	public ICommand TreatmentPlanCommand => new RelayCommand(() =>
+		OpenWindow(() => new AddLieuTrinh(_id, BenhNhan), "Tạo phiếu liệu trình thành công!"));
+	public ICommand RecordCommand => new RelayCommand(async () =>
 	{
 		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
 		OverlayHelper.Show(overlay);
@@ -488,16 +472,8 @@ public class ConsultationViewModel : BaseViewModel
 
 		OverlayHelper.Hide(overlay);
 	});
-	public ICommand RecheckCommand => new RelayCommand(() =>
-	{
-		OpenWindow(() =>
-		{
-			return new AddTaiKham(_id, _benhNhanId);
-		});
-	});
-
 	#endregion
-	private void OpenWindow(Func<Window> factory)
+	private void OpenWindow(Func<Window> factory, string? successMessage = null)
 	{
 		var win = factory();
 		win.Owner = Application.Current.MainWindow;
@@ -511,6 +487,8 @@ public class ConsultationViewModel : BaseViewModel
 			if (result == true)
 			{
 				_ = LoadData();
+				if (!string.IsNullOrEmpty(successMessage))
+					SnackbarHelper.ShowSuccess(successMessage);
 			}
 		}
 		finally

@@ -34,7 +34,7 @@ public partial class ImportCls : Window
 
 		if (!result.Success || result.Data == null || result.Data.Count == 0)
 		{
-			SnackbarHelper.ShowError("Không lấy được danh sách sheet");
+			await MessageHelper.ShowMessage("Không lấy được danh sách sheet");
 			cbSheet.ItemsSource = null;
 			return;
 		}
@@ -83,7 +83,7 @@ public partial class ImportCls : Window
 		var errors = lstErrors.ItemsSource as List<string>;
 		if (errors != null && errors.Count > 0)
 		{
-			SnackbarHelper.ShowError("Có lỗi trong dữ liệu, không thể lưu.");
+			await MessageHelper.ShowMessage("Có lỗi trong dữ liệu, không thể lưu.");
 			return;
 		}
 		try
@@ -98,12 +98,12 @@ public partial class ImportCls : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(res.Message);
+				await MessageHelper.ShowMessage(res.Message);
 			}
 		}
 		catch (Exception ex)
 		{
-			SnackbarHelper.ShowError("Lỗi khi lưu dữ liệu: " + ex.Message);
+			await MessageHelper.ShowMessage("Lỗi khi lưu dữ liệu: " + ex.Message);
 		}
 		finally
 		{

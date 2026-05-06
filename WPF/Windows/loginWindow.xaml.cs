@@ -113,7 +113,7 @@ namespace HoanMyClinic.Windows
 
 				if (response == null)
 				{
-					SnackbarHelper.ShowError("Không thể kết nối server!");
+					await MessageHelper.ShowMessage("Không thể kết nối server!");
 					return;
 				}
 
@@ -146,7 +146,7 @@ namespace HoanMyClinic.Windows
 			}
 			catch (Exception ex)
 			{
-				SnackbarHelper.ShowError("Có lỗi xảy ra: " + ex.Message);
+				await MessageHelper.ShowMessage("Có lỗi xảy ra: " + ex.Message);
 			}
 			finally
 			{

@@ -36,40 +36,40 @@ public partial class AddLieuTrinh : Window
 	{
 		e.Handled = !Regex.IsMatch(e.Text, "^[0-9]+$");
 	}
-	private bool Validate()
+	private async Task<bool> Validate()
 	{
 		if (dtpDate.SelectedDate == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn ngày bắt đầu!");
+			await MessageHelper.ShowMessage("Vui lòng chọn ngày bắt đầu!");
 			return false;
 		}
 
 		if (dtpDate.SelectedDate.Value.Date < DateTime.Today)
 		{
-			SnackbarHelper.ShowError("Ngày bắt đầu không thể ở quá khứ!");
+			await MessageHelper.ShowMessage("Ngày bắt đầu không thể ở quá khứ!");
 			return false;
 		}
 
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tên liệu trình!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tên liệu trình!");
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(txtNumber.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập số buổi!");
+			await MessageHelper.ShowMessage("Vui lòng nhập số buổi!");
 			return false;
 		}
 
 		if (!int.TryParse(txtNumber.Text, out int soBuoi))
 		{
-			SnackbarHelper.ShowError("Số buổi không hợp lệ!");
+			await MessageHelper.ShowMessage("Số buổi không hợp lệ!");
 			return false;
 		}
 
 		if (soBuoi <= 0)
 		{
-			SnackbarHelper.ShowError("Số buổi không hợp lệ!");
+			await MessageHelper.ShowMessage("Số buổi không hợp lệ!");
 			return false;
 		}
 
@@ -78,7 +78,7 @@ public partial class AddLieuTrinh : Window
 
 	private async void btnSave_Click(object sender, EventArgs e)
 	{
-		if(!Validate())
+		if(!await Validate())
 			return;
 		var req = new LieuTrinhDieuTriRequestDTO
 		{
@@ -101,12 +101,12 @@ public partial class AddLieuTrinh : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

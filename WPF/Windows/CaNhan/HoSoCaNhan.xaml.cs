@@ -23,11 +23,11 @@ public partial class HoSoCaNhan : Window
 	public HoSoCaNhan()
 	{
 		InitializeComponent();
-		if (Session.VaiTro == "Admin")
-		{
-			SnackbarHelper.ShowWarning("Bạn đang sử dụng tài khoản admin");
-			return;
-		}
+		//if (Session.VaiTro == "Admin")
+		//{
+		//	await MessageHelper.ShowMessage("Bạn đang sử dụng tài khoản admin");
+		//	return;
+		//}
 		_id = Session.HoTen.Id;
 	}
 
@@ -60,7 +60,7 @@ public partial class HoSoCaNhan : Window
 
 			if (result == null || !result.Success || result.Data == null)
 			{
-				SnackbarHelper.ShowError("Không tìm thấy nhân viên.");
+				await MessageHelper.ShowMessage("Không tìm thấy nhân viên.");
 				Close();
 				return;
 			}
@@ -83,7 +83,7 @@ public partial class HoSoCaNhan : Window
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Không thể tải dữ liệu nhân viên.");
+			await MessageHelper.ShowMessage("Không thể tải dữ liệu nhân viên.");
 			Close();
 		}
 	}
@@ -118,7 +118,7 @@ public partial class HoSoCaNhan : Window
 	{
 		if (string.IsNullOrWhiteSpace(txtHoTen.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập họ tên!");
+			await MessageHelper.ShowMessage("Vui lòng nhập họ tên!");
 			return;
 		}
 
@@ -135,7 +135,7 @@ public partial class HoSoCaNhan : Window
 
 				if (!uploadResult.Success)
 				{
-					SnackbarHelper.ShowError(uploadResult.Message);
+					await MessageHelper.ShowMessage(uploadResult.Message);
 					return;
 				}
 
@@ -170,17 +170,17 @@ public partial class HoSoCaNhan : Window
 				}
 				else
 				{
-					SnackbarHelper.ShowError(result?.Message ?? "Cập nhật thất bại!");
+					await MessageHelper.ShowMessage(result?.Message ?? "Cập nhật thất bại!");
 				}
 			}
 			else
 			{
-				SnackbarHelper.ShowWarning("Không có thay đổi nào!");
+				await MessageHelper.ShowMessage("Không có thay đổi nào!");
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

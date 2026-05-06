@@ -20,7 +20,7 @@ public partial class ViewCls : Window
 		var result = await _client.Detail(_id);
 		if (!result.Success || result.Data == null)
 		{
-			SnackbarHelper.ShowError("Không tìm thấy phiên khám.");
+			await MessageHelper.ShowMessage("Không tìm thấy phiên khám.");
 			this.Close();
 			return;
 		}
@@ -55,11 +55,11 @@ public partial class ViewCls : Window
 			this.DragMove();
 		}
 	}
-	private void btnViewFile_Click(object sender, RoutedEventArgs e)
+	private async void btnViewFile_Click(object sender, RoutedEventArgs e)
 	{
 		if (_filePath == null)
 		{
-			SnackbarHelper.ShowWarning("Không có file đính kèm!");
+			await MessageHelper.ShowMessage("Không có file đính kèm!");
 			return;
 		}
 		var url = $"https://hoanmyclinic.s3.ap-southeast-2.amazonaws.com/{_filePath}";

@@ -31,7 +31,7 @@ public partial class UpdateHoSo : Window
 
 			if (result?.Data == null)
 			{
-				SnackbarHelper.ShowError(result?.Message ?? "Không tìm thấy dữ liệu!");
+				await MessageHelper.ShowMessage(result?.Message ?? "Không tìm thấy dữ liệu!");
 				Close();
 				return;
 			}
@@ -50,7 +50,7 @@ public partial class UpdateHoSo : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Không thể tải dữ liệu, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Không thể tải dữ liệu, vui lòng thử lại!");
 			Close();
 		}
 	}
@@ -82,13 +82,13 @@ public partial class UpdateHoSo : Window
 	{
 		if (_current == null)
 		{
-			SnackbarHelper.ShowError("Dữ liệu chưa được tải!");
+			await MessageHelper.ShowMessage("Dữ liệu chưa được tải!");
 			return;
 		}
 
 		if (!IsChanged())
 		{
-			SnackbarHelper.ShowWarning("Không có thay đổi nào!");
+			await MessageHelper.ShowMessage("Không có thay đổi nào!");
 			return;
 		}
 
@@ -110,7 +110,7 @@ public partial class UpdateHoSo : Window
 
 			if (!result.Success)
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 				return;
 			}
 
@@ -119,7 +119,7 @@ public partial class UpdateHoSo : Window
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

@@ -59,34 +59,34 @@ public partial class AddBaiViet : Window
 			imgAvatar.Source = bitmap;
 		}
 	}
-	private bool ValidateForm()
+	private async Task<bool> ValidateForm()
 	{
 		if (string.IsNullOrWhiteSpace(txtName.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tiêu đề!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tiêu đề!");
 			txtName.Focus();
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(txtTomtat.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập tóm tắt!");
+			await MessageHelper.ShowMessage("Vui lòng nhập tóm tắt!");
 			txtTomtat.Focus();
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(txtContent.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập kinh ngiệm!");
+			await MessageHelper.ShowMessage("Vui lòng nhập kinh ngiệm!");
 			txtContent.Focus();
 			return false;
 		}
 		if(cboDisease.SelectedIndex < 0)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn loại bệnh cho bài viết!");
+			await MessageHelper.ShowMessage("Vui lòng chọn loại bệnh cho bài viết!");
 			return false;
 		}
 		if (Session.UserId == 0)
 		{
-			SnackbarHelper.ShowError("Không xác định được tác giả");
+			await MessageHelper.ShowMessage("Không xác định được tác giả");
 			return false;
 		}
 		return true;
@@ -104,7 +104,7 @@ public partial class AddBaiViet : Window
 	// ================= LƯU =================
 	private async void btnSave_Click(object sender, RoutedEventArgs e)
 	{
-		if (!ValidateForm())
+		if (!await ValidateForm())
 			return;
 
 		try
@@ -119,7 +119,7 @@ public partial class AddBaiViet : Window
 
 				if (!uploadResult.Success)
 				{
-					SnackbarHelper.ShowError(uploadResult.Message);
+					await MessageHelper.ShowMessage(uploadResult.Message);
 					return;
 				}
 				if (!string.IsNullOrEmpty(uploadResult.Data))
@@ -147,12 +147,12 @@ public partial class AddBaiViet : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra!");
 		}
 		finally
 		{

@@ -29,16 +29,16 @@ public partial class ChiDinhCLS : Window
 			cboCLS.SelectedIndex = -1;
 		}
 	}
-	private bool ValidateInput()
+	private async Task<bool> ValidateInput()
 	{
 		if (cboCLS.SelectedIndex < 0)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn cận lâm sàng!");
+			await MessageHelper.ShowMessage("Vui lòng chọn cận lâm sàng!");
 			return false;
 		}
 		if(Session.NhanVienId == null)
 		{
-			SnackbarHelper.ShowError("Không xác định được nhân viên chỉ định!");
+			await MessageHelper.ShowMessage("Không xác định được nhân viên chỉ định!");
 			return false;
 		}
 		return true;
@@ -57,7 +57,7 @@ public partial class ChiDinhCLS : Window
 	}
 	private async void btnSave_Click(object sender, EventArgs e)
 	{
-		if (!ValidateInput())
+		if (! await ValidateInput())
 			return;
 		var req = new PkClsRequestDTO
 		{
@@ -80,12 +80,12 @@ public partial class ChiDinhCLS : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{

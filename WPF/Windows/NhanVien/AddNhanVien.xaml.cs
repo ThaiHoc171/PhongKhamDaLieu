@@ -62,58 +62,58 @@ public partial class AddNhanVien : Window
 			imgAvatar.Source = bitmap;
 		}
 	}
-	private bool ValidateForm()
+	private async Task<bool> ValidateForm()
 	{
 		if (string.IsNullOrWhiteSpace(txtHoTen.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập họ tên!");
+			await MessageHelper.ShowMessage("Vui lòng nhập họ tên!");
 			txtHoTen.Focus();
 			return false;
 		}
 
 		if (string.IsNullOrWhiteSpace(txtSDT.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập số điện thoại!");
+			await MessageHelper.ShowMessage("Vui lòng nhập số điện thoại!");
 			txtSDT.Focus();
 			return false;
 		}
 
 		if (string.IsNullOrWhiteSpace(txtEmail.Text))
 		{
-			SnackbarHelper.ShowError("Vui lòng nhập email!");
+			await MessageHelper.ShowMessage("Vui lòng nhập email!");
 			txtEmail.Focus();
 			return false;
 		}
 
 		if (cboChucVu.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn chức vụ!");
+			await MessageHelper.ShowMessage("Vui lòng chọn chức vụ!");
 			cboChucVu.Focus();
 			return false;
 		}
 
 		if (cboPhongLamViec.SelectedValue == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn phòng làm việc!");
+			await MessageHelper.ShowMessage("Vui lòng chọn phòng làm việc!");
 			cboPhongLamViec.Focus();
 			return false;
 		}
 
 		if (dtpNgaySinh.SelectedDate == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn ngày sinh!");
+			await MessageHelper.ShowMessage("Vui lòng chọn ngày sinh!");
 			return false;
 		}
 
 		if (dtpNgaySinh.SelectedDate > DateTime.Today)
 		{
-			SnackbarHelper.ShowError("Ngày sinh không hợp lệ!");
+			await MessageHelper.ShowMessage("Ngày sinh không hợp lệ!");
 			return false;
 		}
 
 		if (dtpNgayVaoLam.SelectedDate == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn ngày vào làm!");
+			await MessageHelper.ShowMessage("Vui lòng chọn ngày vào làm!");
 			return false;
 		}
 
@@ -128,7 +128,7 @@ public partial class AddNhanVien : Window
 	// ================= LƯU =================
 	private async void btnSave_Click(object sender, RoutedEventArgs e)
 	{
-		if (!ValidateForm())
+		if (!await ValidateForm())
 			return;
 
 		try
@@ -144,7 +144,7 @@ public partial class AddNhanVien : Window
 
 				if (!uploadResult.Success)
 				{
-					SnackbarHelper.ShowError(uploadResult.Message);
+					await MessageHelper.ShowMessage(uploadResult.Message);
 					return;
 				}
 				if (!string.IsNullOrEmpty(uploadResult.Data))
@@ -183,12 +183,12 @@ public partial class AddNhanVien : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra!");
 		}
 		finally
 		{

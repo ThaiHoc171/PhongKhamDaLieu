@@ -30,12 +30,12 @@ public partial class AddCaKham : Window
 	{
 		if (dtpBatDau.SelectedDate == null || dtpKetThuc.SelectedDate == null)
 		{
-			SnackbarHelper.ShowError("Vui lòng chọn ngày bắt đầu và kết thúc!");
+			await MessageHelper.ShowMessage("Vui lòng chọn ngày bắt đầu và kết thúc!");
 			return;
 		}
 		if (dtpBatDau.SelectedDate > dtpKetThuc.SelectedDate)
 		{
-			SnackbarHelper.ShowError("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc!");
+			await MessageHelper.ShowMessage("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc!");
 			return;
 		}
 
@@ -58,12 +58,12 @@ public partial class AddCaKham : Window
 			}
 			else
 			{
-				SnackbarHelper.ShowError(result.Message);
+				await MessageHelper.ShowMessage(result.Message);
 			}
 		}
 		catch (Exception)
 		{
-			SnackbarHelper.ShowError("Có lỗi xảy ra, vui lòng thử lại!");
+			await MessageHelper.ShowMessage("Có lỗi xảy ra, vui lòng thử lại!");
 		}
 		finally
 		{
