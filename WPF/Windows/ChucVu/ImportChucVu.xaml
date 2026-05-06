@@ -61,7 +61,6 @@
                     </Button>
                 </Grid>
 
-                <!-- SHEET + ACTION -->
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -84,9 +83,9 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- NEW: VALIDATE -->
+                    <!-- VALIDATE -->
                     <Button x:Name="btnValidate" Grid.Column="2"
-                            Margin="5,0" Width="120"
+                            Margin="5,0" Width="120" Click="btnValidate_Click" 
                             Style="{StaticResource PrimaryButton}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="Check"/>

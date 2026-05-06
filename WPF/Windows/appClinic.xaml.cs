@@ -58,6 +58,12 @@ namespace HoanMyClinic.Windows
 				btnPhienKham.Visibility = Visibility.Collapsed;
 				btnPhienKhamCaNhan.Visibility = Visibility.Visible;
 			}
+			//Session.ChucVu == "Bác sĩ khám bệnh";
+			//Session.ChucVu == "Bác sĩ điều trị";
+			//Session.ChucVu == "Y tá";
+			//Session.ChucVu == "Kỹ thuật viên";
+			//Session.ChucVu == "Lễ tân";
+
 			_nav.Navigate("Dashboard");
 		}
 		private void Header_MouseDown(object sender, MouseButtonEventArgs e)

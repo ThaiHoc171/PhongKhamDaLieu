@@ -71,5 +71,7 @@ public partial class LieuTrinhPage : Page
 		});
 		GridContent.Columns.Add(
 			SetupDataGrid.CreateIconButtonColumnVer2("Eye", "ViewCommand", "Xem"));
+		GridContent.Columns.Add(
+			SetupDataGrid.CreateIconButtonColumnVer2("Pencil", "EditCommand", "Xem"));
 	}
 }

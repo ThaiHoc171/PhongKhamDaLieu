@@ -40,7 +40,7 @@ public partial class ViewBuoiDieuTri : Window
 		var data = res.Data;
 		txtBuoi.Text = data.SoBuoi.ToString();
 		txtCaKhamId.Text =  data.CaKhamID.ToString();
-		cboDoctor.SelectedIndex = (int)data.NhanVienID!;
+		cboDoctor.SelectedValue = data.NhanVienID;
 		txtNotes.Text = data.GhiChu;
 		dtpDate.SelectedDate = data.NgayDuKien;
 		dtpDateThucHien.SelectedDate = data.NgayThucHien;

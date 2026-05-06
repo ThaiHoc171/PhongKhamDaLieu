@@ -45,4 +45,9 @@ public class ChucVuClient : AppClientBase
 	{
 		return PostAsync<bool>($"{BASE}/import/confirm", list);
 	}
+
+	// ==================== IMPORT VALIDATE ====================
+	public Task<ApiResult<ExcelImportResult<ChucVuRequest>>> ValidateImport(List<ChucVuRequest> list)
+		=> PostAsync<ExcelImportResult<ChucVuRequest>>($"{BASE}/import/validate", list);
+
 }

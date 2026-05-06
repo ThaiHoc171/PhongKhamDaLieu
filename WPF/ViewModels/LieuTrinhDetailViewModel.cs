@@ -126,7 +126,7 @@ public class LieuTrinhDetailViewModel : BaseViewModel
 		}
 	});
 	public ICommand ViewCommand =>
-		new RelayCommandWithParam<TaiKhamReadListModel>(item =>
+		new RelayCommandWithParam<BuoiDieuTriListReadModel>(item =>
 		{
 			if (item == null) return Task.CompletedTask;
 
@@ -135,7 +135,7 @@ public class LieuTrinhDetailViewModel : BaseViewModel
 
 			try
 			{
-				new HoanMyClinic.Windows.BuoiDieuTri.ViewBuoiDieuTri(_id, BenhNhan)
+				new HoanMyClinic.Windows.BuoiDieuTri.ViewBuoiDieuTri(item.BuoiDieuTriID, BenhNhan)
 				{
 					Owner = Application.Current.MainWindow
 				}.ShowDialog();

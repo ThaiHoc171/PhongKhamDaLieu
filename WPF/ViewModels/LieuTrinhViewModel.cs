@@ -122,6 +122,27 @@ public class LieuTrinhViewModel : PagedViewModel
 
 			return Task.CompletedTask;
 		});
+	public ICommand EditCommand =>
+	new RelayCommandWithParam<LieuTrinhDieuTriListReadModel>(async item =>
+	{
+		if (item == null) return;
+
+		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
+		OverlayHelper.Show(overlay);
+
+		await DialogHelper.OpenDialogAsync(
+			new HoanMyClinic.Windows.LieuTrinh.UpdateLieuTrinh(item.LieuTrinhID)
+			{
+				Owner = Application.Current.MainWindow
+			},
+			async () =>
+			{
+				await LoadData();
+				SnackbarHelper.ShowSuccess("Cập nhật thành công!");
+			});
+
+		OverlayHelper.Hide(overlay);
+	});
 	#endregion
 
 	#region LOAD

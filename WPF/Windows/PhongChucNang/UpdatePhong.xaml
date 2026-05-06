@@ -21,7 +21,7 @@
             <!-- HEADER -->
             <Border Grid.Row="0" Background="#42A5F5" Padding="12,6" MouseDown="Header_MouseDown">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <materialDesign:PackIcon Kind="PlusCircle" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
+                    <materialDesign:PackIcon Kind="EditCircle" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
                     <TextBlock Text="CẬP NHẬT PHÒNG CHỨC NĂNG" FontSize="20" Foreground="White" VerticalAlignment="Center"/>
                 </StackPanel>
             </Border>

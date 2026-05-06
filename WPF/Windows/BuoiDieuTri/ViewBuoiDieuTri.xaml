@@ -21,7 +21,7 @@
             <!-- HEADER -->
             <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}" Padding="12,6" MouseDown="Header_MouseDown">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <materialDesign:PackIcon Kind="PlusCircle" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
+                    <materialDesign:PackIcon Kind="EyeCircle" Width="50" Height="50" Margin="0,0,10,0" Foreground="White"/>
                     <TextBlock Text="CHI TIẾT BUỔI ĐIỀU TRỊ" FontSize="20" Foreground="White" VerticalAlignment="Center"/>
                 </StackPanel>
             </Border>
