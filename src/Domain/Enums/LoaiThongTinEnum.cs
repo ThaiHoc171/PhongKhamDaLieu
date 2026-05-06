@@ -1,6 +1,7 @@
 ﻿namespace Domain.Enums;
 public enum LoaiThongTinEnum
 {
+	Admin,
 	NhanVien,
 	BenhNhan,
 	Khach
@@ -10,6 +11,7 @@ public static class LoaiThongTinExtensions
 	public static string ToDbValue(this LoaiThongTinEnum loai)
 		=> loai switch
 		{
+			LoaiThongTinEnum.Admin => "Admin",
 			LoaiThongTinEnum.NhanVien => "Nhân viên",
 			LoaiThongTinEnum.BenhNhan => "Bệnh nhân",
 			LoaiThongTinEnum.Khach => "Khách",
@@ -18,6 +20,7 @@ public static class LoaiThongTinExtensions
 	public static LoaiThongTinEnum FromDbValue(string value)
 		=> value switch
 		{
+			"Admin" => LoaiThongTinEnum.Admin,
 			"Nhân viên" => LoaiThongTinEnum.NhanVien,
 			"Bệnh nhân" => LoaiThongTinEnum.BenhNhan,
 			"Khách" => LoaiThongTinEnum.Khach,

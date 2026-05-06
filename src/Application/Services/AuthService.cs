@@ -117,7 +117,12 @@ public class AuthService
 		var info = new UserInfo();
 		if (tk.VaiTro == VaiTroEnum.Admin)
 		{
-			info.HoTen = "Admin";
+			var admin = await _thongTinCaNhanRepo.GetByEmailOrSDTAsync(tk.Email, null);
+			if(admin != null)
+			{
+				info.ThongTinID = admin.ThongTinID;
+				info.HoTen = admin.HoTen;
+			}
 			return info;
 		}
 		if (tk.VaiTro == VaiTroEnum.NhanVien)
