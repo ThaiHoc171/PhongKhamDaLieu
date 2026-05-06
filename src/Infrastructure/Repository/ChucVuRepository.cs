@@ -99,7 +99,19 @@ public class ChucVuRepository : IChucVuRepository
             return MapToEntity(reader);
         return null;
     }
-    public async Task<int> AddAsync(ChucVu chucVu)
+	public async Task<bool> ExistsTenChucVuAsync(string tenChucVu)
+	{
+		const string sql = "SELECT 1 FROM ChucVu WHERE TenChucVu = @TenChucVu";
+
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@TenChucVu", SqlDbType.NVarChar, 100).Value = tenChucVu;
+
+		return await cmd.ExecuteScalarAsync() != null;
+	}
+	public async Task<int> AddAsync(ChucVu chucVu)
     {
         using var conn = new SqlConnection(_connectionString);
         await conn.OpenAsync();

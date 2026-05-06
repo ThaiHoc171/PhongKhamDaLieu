@@ -152,29 +152,28 @@
 
         <!-- ================= LOADING ================= -->
         <Grid Background="#66000000"
-              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+      Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <materialDesign:PackIcon Kind="Loading" Width="150" Height="150" Foreground="White"
+                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                 RenderTransformOrigin="0.5,0.5">
 
-            <materialDesign:PackIcon Kind="Loading"
-                                     Width="120" Height="120"
-                                     HorizontalAlignment="Center"
-                                     VerticalAlignment="Center">
                 <materialDesign:PackIcon.RenderTransform>
                     <RotateTransform x:Name="SpinnerRotate"/>
                 </materialDesign:PackIcon.RenderTransform>
-            </materialDesign:PackIcon>
 
+            </materialDesign:PackIcon>
             <Grid.Triggers>
                 <EventTrigger RoutedEvent="Loaded">
                     <BeginStoryboard>
                         <Storyboard RepeatBehavior="Forever">
                             <DoubleAnimation Storyboard.TargetName="SpinnerRotate"
-                                             Storyboard.TargetProperty="Angle"
-                                             From="0" To="360" Duration="0:0:1"/>
+                         Storyboard.TargetProperty="Angle"
+                         From="0" To="360"
+                         Duration="0:0:1"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </EventTrigger>
             </Grid.Triggers>
         </Grid>
-
     </Grid>
 </Page>

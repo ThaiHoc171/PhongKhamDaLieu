@@ -88,7 +88,34 @@ public class LoaiBenhService
 			return ApiResponse<bool>.Fail("Tên bệnh hoặc tên khoa học đã tồn tại");
 		}
 	}
+	public async Task<ApiResponse<bool>> DeleteAsync(int id)
+	{
+		if (id <= 0)
+			return ApiResponse<bool>.Fail("ID không hợp lệ");
 
+		var entity = await _repo.GetByIdAsync(id);
+
+		if (entity == null)
+			return ApiResponse<bool>.Fail("Không tìm thấy loại bệnh");
+
+		try
+		{
+			int row = await _repo.DeleteAsync(id);
+
+			if (row == 0)
+				return ApiResponse<bool>.Fail("Xóa thất bại");
+
+			return ApiResponse<bool>.SuccessResponse(true, "Xóa loại bệnh thành công");
+		}
+		catch (SqlException ex) when (ex.Number == 547)
+		{
+			return ApiResponse<bool>.Fail("Không thể xóa vì loại bệnh đang được sử dụng");
+		}
+		catch (SqlException ex)
+		{
+			return ApiResponse<bool>.Fail($"Lỗi database: {ex.Message}");
+		}
+	}
 	public async Task<ApiResponse<LoaiBenhReadModel>> GetDetailAsync(int id)
 	{
 		if (id <= 0)

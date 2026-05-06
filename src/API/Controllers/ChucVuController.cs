@@ -118,6 +118,24 @@ public class ChucVuController : ControllerBase
 			return BadRequest(response);
 		return Ok(response);
 	}
+	// ==================== IMPORT VALIDATE ====================
+	[Authorize(Policy = "NHANSU_WRITE")]
+	[HttpPost("import/validate")]
+	public async Task<ActionResult<ApiResponse<ExcelImportResult<ChucVuImport>>>> ValidateImport(
+	[FromBody] List<ChucVuImport> list)
+	{
+		if (list == null || !list.Any())
+			return BadRequest(ApiResponse<string>.Fail("Danh sách import rỗng"));
+
+		var result = await _service.ValidateImport(list);
+
+		if (!result.Success)
+			return BadRequest(result);
+
+		return Ok(result);
+	}
+
+	// ==================== IMPORT CONFIRM ====================
 	[Authorize(Policy = "NHANSU_WRITE")]
 	[HttpPost("import/confirm")]
 	public async Task<IActionResult> Import([FromBody] List<ChucVuImport> list)

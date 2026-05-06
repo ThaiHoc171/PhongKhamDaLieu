@@ -70,7 +70,8 @@ public class NgayNghiNhanVienService
 
 			if (entity == null)
 				return ApiResponse<bool>.Fail("Không tìm thấy ngày nghỉ");
-
+			if (entity.Ngay < DateTime.Today)
+				return ApiResponse<bool>.Fail("Không thể sửa ngày nghỉ đã qua");
 			if (dto.Ngay < DateTime.Today)
 				return ApiResponse<bool>.Fail("Ngày nghỉ không hợp lệ");
 

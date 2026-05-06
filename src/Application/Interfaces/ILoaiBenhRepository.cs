@@ -6,7 +6,7 @@ public interface ILoaiBenhRepository
     //--CUD
     Task<int> AddAsync(LoaiBenh entity);
     Task BulkInsertAsync(List<LoaiBenh> list);
-
+	Task<int> DeleteAsync(int id);
 	Task<int> UpdateAsync(LoaiBenh entity);
 	//--Read
 	Task<bool> ExistsTenBenhAsync(string tenBenh);

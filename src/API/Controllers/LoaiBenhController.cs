@@ -43,7 +43,20 @@ public class LoaiBenhController : ControllerBase
 
 		return Ok(result);
 	}
+	// ==================== DELETE ====================
+	[Authorize(Policy = "HETHONG_WRITE")]
+	[HttpDelete("{id}")]
+	public async Task<ActionResult<ApiResponse<bool>>> Delete(int id)
+	{
+		var result = await _service.DeleteAsync(id);
 
+		if (!result.Success)
+			return result.Message.Contains("không tìm thấy")
+				? NotFound(result)
+				: BadRequest(result);
+
+		return Ok(result);
+	}
 	// ==================== GET DETAIL ====================
 	[Authorize(Policy = "HETHONG_READ")]
 	[HttpGet("{id}")]

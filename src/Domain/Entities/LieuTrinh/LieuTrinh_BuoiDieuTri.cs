@@ -64,10 +64,6 @@ public class BuoiDieuTri
 	{
 		if (TrangThai != TrangThaiBuoiDieuTriEnum.DangXuLy)
 			throw new InvalidOperationException("Buổi điều trị chưa được bắt đầu");
-		if (NgayDuKien.HasValue && ngayThucHien < NgayDuKien)
-			throw new InvalidOperationException(
-				$"Không thể thực hiện trước ngày dự kiến ({NgayDuKien:dd/MM/yyyy})"
-			);
 		NgayThucHien = ngayThucHien;
 		TrangThai = TrangThaiBuoiDieuTriEnum.HoanThanh;
 	}

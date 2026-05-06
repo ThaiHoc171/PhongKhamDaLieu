@@ -187,6 +187,18 @@ public class LoaiBenhRepository : ILoaiBenhRepository
 
 		return row;
 	}
+	public async Task<int> DeleteAsync(int id)
+	{
+		using var conn = new SqlConnection(_connectionString);
+		await conn.OpenAsync();
+
+		var sql = "DELETE FROM LoaiBenh WHERE LoaiBenhID = @Id";
+
+		using var cmd = new SqlCommand(sql, conn);
+		cmd.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+
+		return await cmd.ExecuteNonQueryAsync();
+	}
 	public async Task BulkInsertAsync(List<LoaiBenh> list)
 	{
 		using var conn = new SqlConnection(_connectionString);

@@ -41,13 +41,13 @@ public class ChiTietPCNThietBiService
 	}
 
 	// VALIDATE BUSINESS
-	public async Task<ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>> 
-		ValidateImport(List<ChiTietPCNThietBiImport> list)
+	public async Task<ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>>
+	ValidateImport(List<ChiTietPCNThietBiImport> list)
 	{
 		var result = new ExcelImportResult<ChiTietPCNThietBiImport>();
 
 		int row = 2;
-		var maSet = new HashSet<string>();
+		var maSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 		foreach (var item in list)
 		{
@@ -60,33 +60,27 @@ public class ChiTietPCNThietBiService
 				errors.Add($"Dòng {row}: Thiết bị không hợp lệ");
 
 			if (string.IsNullOrWhiteSpace(item.MaTaiSan))
-				errors.Add($"Dòng {row}: Mã tài sản rỗng");
-			if (await _repo.ExistsMaTaiSanAsync(item.MaTaiSan))
-				errors.Add($"Dòng {row}: Mã tài sản đã tồn tại");
-			// trùng trong file
-			if (!maSet.Add(item.MaTaiSan))
-				errors.Add($"Dòng {row}: Mã tài sản bị trùng trong file");
-
-			// kiểm tra PCN thiết bị
-			var pcn = await _pcnRepo.GetByPhongAndThietBiAsync(item.PhongChucNangID, item.ThietBiID);
-			if (errors.Any())
 			{
-				result.Errors.Add(new ExcelImportError
-				{
-					Row = row,
-					Errors = errors
-				});
+				errors.Add($"Dòng {row}: Mã tài sản rỗng");
 			}
 			else
 			{
-				result.Data.Add(item);
+				if (!maSet.Add(item.MaTaiSan.Trim()))
+					errors.Add($"Dòng {row}: Mã tài sản bị trùng trong file");
+
+				else if (await _repo.ExistsMaTaiSanAsync(item.MaTaiSan))
+					errors.Add($"Dòng {row}: Mã tài sản đã tồn tại");
 			}
+
+			if (errors.Any())
+				result.Errors.Add(new ExcelImportError { Row = row, Errors = errors });
+			else
+				result.Data.Add(item);
 
 			row++;
 		}
 
-		return ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>
-			.SuccessResponse(result);
+		return ApiResponse<ExcelImportResult<ChiTietPCNThietBiImport>>.SuccessResponse(result);
 	}
 
 	// IMPORT DATA

@@ -1,22 +1,11 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using HoanMyClinic.Client;
+﻿using HoanMyClinic.Client;
 using HoanMyClinic.Common;
 using HoanMyClinic.Models;
+using Microsoft.Win32;
+using System.IO;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace HoanMyClinic.Windows.Public;
 
@@ -107,7 +96,6 @@ public partial class UpdateBaiViet : Window
 		if (dialog.ShowDialog() == true)
 		{
 			_filePath = dialog.FileName;
-
 			imgAvatar.Source = new BitmapImage(new Uri(_filePath));
 		}
 	}
@@ -182,6 +170,7 @@ public partial class UpdateBaiViet : Window
 			if (result.Success)
 			{
 				SnackbarHelper.ShowSuccess("Cập nhật thành công");
+				DialogResult = true; 
 				await LoadData();
 			}
 			else
@@ -203,6 +192,7 @@ public partial class UpdateBaiViet : Window
 		if (res.Success)
 		{
 			SnackbarHelper.ShowSuccess("Đã đăng bài");
+			DialogResult = true; 
 			await LoadData();
 		}
 		else await MessageHelper.ShowMessage(res.Message);
@@ -216,6 +206,7 @@ public partial class UpdateBaiViet : Window
 		if (res.Success)
 		{
 			SnackbarHelper.ShowSuccess("Đã ẩn bài");
+			DialogResult = true; 
 			await LoadData();
 		}
 		else await MessageHelper.ShowMessage(res.Message);
@@ -229,6 +220,7 @@ public partial class UpdateBaiViet : Window
 		if (res.Success)
 		{
 			SnackbarHelper.ShowSuccess("Đã lưu nháp");
+			DialogResult = true; 
 			await LoadData();
 		}
 		else await MessageHelper.ShowMessage(res.Message);
@@ -237,15 +229,15 @@ public partial class UpdateBaiViet : Window
 	// ================= DELETE =================
 	private async void btnDelete_Click(object sender, RoutedEventArgs e)
 	{
-		var confirm = MessageBox.Show("Xóa bài viết?", "Xác nhận", MessageBoxButton.YesNo);
+		var confirm = await MessageHelper.Confirm("Xóa bài viết?");
 
-		if (confirm != MessageBoxResult.Yes) return;
+		if (!confirm) return;
 
 		var res = await _client.Delete(_baiVietId);
 
 		if (res.Success)
 		{
-			SnackbarHelper.ShowSuccess("Đã xóa");
+			DialogResult = true; 
 			Close();
 		}
 		else await MessageHelper.ShowMessage(res.Message);
@@ -253,6 +245,7 @@ public partial class UpdateBaiViet : Window
 
 	private void btnClose_Click(object sender, RoutedEventArgs e)
 	{
+		DialogResult = true;
 		Close();
 	}
 

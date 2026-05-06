@@ -128,6 +128,44 @@ public class ChucVuService
 			return errors;
 		});
 	}
+	public async Task<ApiResponse<ExcelImportResult<ChucVuImport>>> ValidateImport(List<ChucVuImport> list)
+	{
+		var result = new ExcelImportResult<ChucVuImport>();
+		int row = 2;
+
+		var tenSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+		foreach (var item in list)
+		{
+			var errors = new List<string>();
+
+			if (string.IsNullOrWhiteSpace(item.TenChucVu))
+				errors.Add($"Dòng {row}: Tên chức vụ rỗng");
+
+			if (string.IsNullOrWhiteSpace(item.MoTa))
+				errors.Add($"Dòng {row}: Mô tả rỗng");
+
+			if (item.TrangThai != "Hoạt động" && item.TrangThai != "Vô hiệu")
+				errors.Add($"Dòng {row}: Trạng thái không hợp lệ");
+
+			// trùng trong file
+			if (!string.IsNullOrWhiteSpace(item.TenChucVu) && !tenSet.Add(item.TenChucVu))
+				errors.Add($"Dòng {row}: Tên chức vụ bị trùng trong file");
+
+			// trùng DB — cần thêm ExistsTenChucVuAsync vào repo (xem bên dưới)
+			if (!string.IsNullOrWhiteSpace(item.TenChucVu) && await _repo.ExistsTenChucVuAsync(item.TenChucVu))
+				errors.Add($"Dòng {row}: Tên chức vụ đã tồn tại");
+
+			if (errors.Any())
+				result.Errors.Add(new ExcelImportError { Row = row, Errors = errors });
+			else
+				result.Data.Add(item);
+
+			row++;
+		}
+
+		return ApiResponse<ExcelImportResult<ChucVuImport>>.SuccessResponse(result);
+	}
 	public async Task<ApiResponse<bool>> Import(List<ChucVuImport> list)
 	{
 		var entities = list.Select(x =>

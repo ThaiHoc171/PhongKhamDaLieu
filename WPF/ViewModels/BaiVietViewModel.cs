@@ -26,7 +26,6 @@ public class BaiVietViewModel : PagedViewModel
 		{
 			_keyword = value;
 			OnPropertyChanged();
-
 			_search.Debounce(400, async () =>
 			{
 				await Ui.RunAsync(async () =>
@@ -47,15 +46,12 @@ public class BaiVietViewModel : PagedViewModel
 		set
 		{
 			if (_pageSizeInput == value) return;
-
 			_pageSizeInput = value;
 			OnPropertyChanged();
-
 			_pageSize.Debounce(400, async () =>
 			{
 				if (!int.TryParse(_pageSizeInput, out int size) || size <= 0)
 					return;
-
 				await Ui.RunAsync(async () =>
 				{
 					SizePage = size;
@@ -67,8 +63,7 @@ public class BaiVietViewModel : PagedViewModel
 	}
 	#endregion
 	public List<string> StatusList { get; } =
-	new() { "Tất cả", "Đang điều trị", "Hoàn thành", "Đã hủy" };
-
+		new() { "Tất cả", "Đã đăng", "Ẩn", "Lưu trữ" };
 	private string _selectedStatus = "Tất cả";
 	public string SelectedStatus
 	{
@@ -77,7 +72,6 @@ public class BaiVietViewModel : PagedViewModel
 		{
 			_selectedStatus = value;
 			OnPropertyChanged();
-
 			Ui.RunAsync(async () =>
 			{
 				Page = 1;
@@ -88,21 +82,20 @@ public class BaiVietViewModel : PagedViewModel
 
 	private string? GetStatus()
 		=> SelectedStatus == "Tất cả" ? null : SelectedStatus;
+
 	#region COMMANDS
-
-	public ICommand RefreshCommand => new RelayCommand(() =>
+	public ICommand RefreshCommand => new RelayCommand(async () =>
 	{
-		Keyword = "";
+		_keyword = "";
+		OnPropertyChanged(nameof(Keyword));
 		Page = 1;
-		return Task.CompletedTask;
+		await LoadData();
 	});
-
 
 	public ICommand AddCommand => new RelayCommand(async () =>
 	{
 		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
 		OverlayHelper.Show(overlay);
-
 		await DialogHelper.OpenDialogAsync(
 			new AddBaiViet
 			{
@@ -113,17 +106,14 @@ public class BaiVietViewModel : PagedViewModel
 				await LoadData();
 				SnackbarHelper.ShowSuccess("Thêm bài viết thành công!");
 			});
-
 		OverlayHelper.Hide(overlay);
 	});
 
 	public ICommand EditCommand => new RelayCommandWithParam<BaiVietListReadModel>(async item =>
 	{
 		if (item == null) return;
-
 		var overlay = OverlayHelper.GetOverlay(Application.Current.MainWindow!);
 		OverlayHelper.Show(overlay);
-
 		await DialogHelper.OpenDialogAsync(
 			new UpdateBaiViet(item.BaiVietID)
 			{
@@ -134,11 +124,8 @@ public class BaiVietViewModel : PagedViewModel
 				await LoadData();
 				SnackbarHelper.ShowSuccess("Cập nhật thành công!");
 			});
-
 		OverlayHelper.Hide(overlay);
 	});
-
-
 	#endregion
 
 	#region LOAD DATA
@@ -148,9 +135,8 @@ public class BaiVietViewModel : PagedViewModel
 		{
 			IsLoading = true;
 			var status = GetStatus();
-
 			var res = string.IsNullOrWhiteSpace(Keyword)
-				? await _client.GetPaged(Page, SizePage,status)
+				? await _client.GetPaged(Page, SizePage, status)
 				: await _client.Search(Keyword, Page, SizePage, status);
 
 			if (!res.Success)
@@ -162,9 +148,7 @@ public class BaiVietViewModel : PagedViewModel
 			await Ui.Run(() =>
 			{
 				Items.Clear();
-
 				if (res.Data == null) return;
-
 				foreach (var item in res.Data.Items)
 					Items.Add(item);
 			});
