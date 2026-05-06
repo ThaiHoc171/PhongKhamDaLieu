@@ -165,6 +165,12 @@ public class AuthService
 		}
 		if (tk.VaiTro == VaiTroEnum.Khach)
 		{
+			var khach = await _thongTinCaNhanRepo.GetByEmailOrSDTAsync(tk.Email, null);
+			if (khach != null)
+			{
+				info.ThongTinID = khach.ThongTinID;
+				info.HoTen = khach.HoTen;
+			}
 			info.Quyen.AddRange(new[]
 			{
 					"PUBLIC_READ",
