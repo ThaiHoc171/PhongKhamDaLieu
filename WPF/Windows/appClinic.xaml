@@ -459,9 +459,9 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock x:Name="txtName" Text="Hi"
                                                VerticalAlignment="Center"
-                                               Margin="0,0,-10,0"/>
+                                               Margin="10"/>
                                     <Button x:Name="btnAvatar"
-                                            Width="100" Height="60"
+                                            Width="60" Height="60" Padding="6,6"
                                             Background="Transparent" BorderThickness="0"
                                             Click="btnAvatar_Click" Cursor="Hand">
                                         <Ellipse Width="45" Height="45"

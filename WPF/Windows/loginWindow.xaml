@@ -151,7 +151,7 @@
                                     Content="Đăng nhập"
                                     Height="42" Margin="0,0,0,10"
                                     FontSize="15" FontWeight="Bold"
-                                    Background="#1A4FA0" Foreground="White"
+                                    Background="#ADDAFF" Foreground="Black"
                                     BorderThickness="0" Click="btnLogin_Click"
                                     materialDesign:ButtonAssist.CornerRadius="20"/>
 
