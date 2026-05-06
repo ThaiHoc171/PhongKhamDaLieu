@@ -113,7 +113,7 @@ builder.Services.AddAuthorization(options =>
 		"PUBLIC_WRITE","PUBLIC_READ",
 		"BENHNHAN_WRITE","BENHNHAN_READ",
 		"LICH_WRITE","LICH_READ",
-		"CSVC_READ","CSVC_WRIITE",//cơ sở vật chất
+		"CSVC_READ","CSVC_WRITE",//cơ sở vật chất
 		"NHANSU_WRITE","NHANSU_READ",
 		"HETHONG_WRITE","HETHONG_READ",
 		"KHAMBENH_READ","KHAMBENH_WRITE",

@@ -35,6 +35,10 @@ using Microsoft.Data.SqlClient;
 		{
 			return ApiResponse<bool>.Fail("Tên phòng đã tồn tại");
 		}
+		catch (Exception ex)
+		{
+			return ApiResponse<bool>.Fail("Lỗi hệ thống: " + ex.Message);
+		}
 	}
  	public async Task<ApiResponse<bool>> UpdateAsync(int id, PhongChucNangRequestDTO dto)
 	{
