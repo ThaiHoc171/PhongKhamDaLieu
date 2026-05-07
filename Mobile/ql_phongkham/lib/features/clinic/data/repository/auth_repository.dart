@@ -1,14 +1,33 @@
 import 'package:ql_phongkham/core/network/api_client.dart';
+import 'package:ql_phongkham/core/services/storage_service.dart';
 import 'package:ql_phongkham/features/clinic/data/models/user_model.dart';
 
 class AuthRepository {
-  Future<UserModel> login(String email, String password) async {
+  Future<UserModel> login(
+    String email,
+    String password,
+    bool rememberMe,
+  ) async {
     final response = await ApiClient.post('auth/login', {
       "email": email,
       "matKhau": password,
     });
 
-    return UserModel.fromJson(response['data']);
+    final user = UserModel.fromJson(response['data']);
+    await StorageService.saveUser(user, rememberMe: rememberMe);
+    return user;
+  }
+
+  Future<void> logout() async {
+    final refreshToken = await StorageService.getRefreshToken();
+    if (refreshToken != null) {
+      try {
+        await ApiClient.post('auth/logout', {'refreshToken': refreshToken});
+      } catch (_) {
+        //
+      }
+    }
+    await StorageService.clear();
   }
 
   Future<void> signup(String email, String password, String vaitro) async {

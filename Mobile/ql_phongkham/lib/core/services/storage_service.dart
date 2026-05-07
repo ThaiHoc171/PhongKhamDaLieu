@@ -2,7 +2,10 @@ import 'package:ql_phongkham/features/clinic/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
-  static Future<void> saveUser(UserModel user) async {
+  static Future<void> saveUser(
+    UserModel user, {
+    bool rememberMe = false,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setInt('userId', user.id);
@@ -15,6 +18,8 @@ class StorageService {
     await prefs.setInt('thongTinId', user.thongTinId ?? 0);
     await prefs.setInt('nhanVienId', user.nhanVienId ?? 0);
     await prefs.setInt('benhNhanId', user.benhNhanId ?? 0);
+    await prefs.setStringList('quyen', user.quyen);
+    await prefs.setBool('rememberMe', rememberMe);
   }
 
   static Future<String?> getAccessToken() async {
@@ -36,5 +41,25 @@ class StorageService {
   static Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+  }
+
+  static Future<void> saveRememberMe(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('rememberMe', value);
+  }
+
+  static Future<bool> getRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('rememberMe') ?? false;
+  }
+
+  static Future<int> getThongTinId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('thongTinId') ?? 0;
+  }
+
+  static Future<String> getVaiTro() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('vaiTro') ?? '';
   }
 }
