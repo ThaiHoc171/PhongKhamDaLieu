@@ -9,7 +9,7 @@ class UserModel {
   final int? benhNhanId;
   final String? chucVu;
   final String? hoTen;
-
+  final List<String> quyen;
   UserModel({
     required this.id,
     required this.email,
@@ -21,6 +21,7 @@ class UserModel {
     this.benhNhanId,
     this.chucVu,
     this.hoTen,
+    required this.quyen,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -37,6 +38,11 @@ class UserModel {
       benhNhanId: json['benhNhanId'],
       chucVu: json['chucVu'],
       hoTen: hoTenObj != null ? hoTenObj['name'] : null,
+      quyen:
+          (json['quyen'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 }

@@ -7,9 +7,9 @@ import 'package:ql_phongkham/features/clinic/presentation/pages/profile/profile_
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_button.dart';
 import 'package:ql_phongkham/features/clinic/presentation/widgets/auth/auth_field.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/auth_repository.dart';
-import 'package:ql_phongkham/core/services/storage_service.dart';
 import 'package:ql_phongkham/screen/home_screen/home.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class LoginPage extends StatefulWidget {
   static route() => MaterialPageRoute(builder: (context) => LoginPage());
@@ -22,6 +22,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _submitted = false;
   bool isLoading = false;
+  bool _rememberMe = false;
   final formKey = GlobalKey<FormState>();
 
   final emailController = TextEditingController();
@@ -91,18 +92,39 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (v) =>
+                          setState(() => _rememberMe = v ?? false),
+                    ),
+                    const Text('Nhớ đăng nhập'),
+                  ],
+                ),
                 const SizedBox(height: 20),
                 isLoading
                     ? const CircularProgressIndicator()
                     : AuthButton(
                         buttonText: 'Đăng nhập',
-                        onPressed: () {
+                        onPressed: () async {
                           setState(() {
                             _submitted = true;
                           });
-                          if (formKey.currentState!.validate()) {
-                            login();
+
+                          if (!formKey.currentState!.validate()) return;
+
+                          // kiểm tra internet
+                          bool isConnected = await hasInternet();
+                          if (!isConnected) {
+                            DialogHelper.showSnacFailed(
+                              context,
+                              "Không có kết nối internet!",
+                            );
+                            return;
                           }
+
+                          login();
                         },
                       ),
                 const SizedBox(height: 20),
@@ -127,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(context, OtpEmailPage.route());
@@ -152,27 +174,21 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> login() async {
     try {
-      setState(() {
-        isLoading = true;
-      });
+      setState(() => isLoading = true);
 
       final repo = AuthRepository();
-
       final user = await repo.login(
         emailController.text,
         passwordController.text,
+        _rememberMe,
       );
 
-      await StorageService.saveUser(user);
-
       final fcmToken = await FirebaseMessaging.instance.getToken();
-      final taiKhoanId = user.id;
-
       if (fcmToken != null) {
         try {
-          await repo.updateFCM(fcmToken, taiKhoanId);
+          await repo.updateFCM(fcmToken, user.id);
         } catch (e) {
-          print("Update FCM failed: $e");
+          //
         }
       }
 
@@ -192,19 +208,28 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (e) {
-      DialogHelper.showSnacFailed(
-        context,
-        e.toString().replaceFirst('Exception: ', ''),
-      );
+      String errorMessage = "Đã xảy ra lỗi!";
+
+      if (e.toString().contains("SocketException") ||
+          e.toString().contains("Failed host lookup")) {
+        errorMessage = "Không có kết nối internet!";
+      } else {
+        errorMessage = e.toString().replaceFirst('Exception: ', '');
+      }
+
+      DialogHelper.showSnacFailed(context, errorMessage);
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
   bool isValidEmail(String email) {
     final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$');
     return emailRegex.hasMatch(email);
+  }
+
+  Future<bool> hasInternet() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    return connectivityResult != ConnectivityResult.none;
   }
 }

@@ -182,11 +182,10 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
                       child: const Text("Không"),
                     ),
                     TextButton(
-                      onPressed: () => Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => LoginPage()),
-                        (route) => false,
-                      ),
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                        await _handleLogout();
+                      },
                       child: const Text("Có"),
                     ),
                   ],
@@ -197,6 +196,22 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      await AuthRepository().logout();
+    } catch (_) {
+      // lỗi server vẫn logout local
+    } finally {
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => LoginPage()),
+          (route) => false,
+        );
+      }
+    }
   }
 
   String? _buildAvatarUrl(String? avatar) {

@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:ql_phongkham/core/services/navigator_service.dart';
-import 'package:ql_phongkham/features/clinic/presentation/pages/auth/login_page.dart';
+import 'package:ql_phongkham/features/clinic/presentation/pages/splash_page.dart';
 
 // Phải là top-level function
 @pragma('vm:entry-point')
@@ -106,10 +106,10 @@ class FirebaseApi {
     switch (type) {
       case 'xac_nhan':
       case 'nhac_nho':
-        NavigatorService.pushAndRemoveUntil(const LoginPage());
+        NavigatorService.pushAndRemoveUntil(const SplashPage());
         break;
       default:
-        NavigatorService.pushAndRemoveUntil(const LoginPage());
+        NavigatorService.pushAndRemoveUntil(const SplashPage());
     }
   }
 }

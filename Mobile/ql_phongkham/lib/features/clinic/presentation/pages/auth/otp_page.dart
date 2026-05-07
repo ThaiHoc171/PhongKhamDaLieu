@@ -70,7 +70,7 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
 
   Future<void> verifyOtp() async {
     final code = otpControllers.text.trim();
-    if (code.length < 6) {
+    if (code.length != 6) {
       DialogHelper.showSnacFailed(context, 'Vui lòng nhập đủ 6 chữ số');
       return;
     }
