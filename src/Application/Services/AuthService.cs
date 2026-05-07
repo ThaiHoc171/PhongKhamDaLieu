@@ -117,7 +117,8 @@ public class AuthService
 		var info = new UserInfo();
 		if (tk.VaiTro == VaiTroEnum.Admin)
 		{
-			var admin = await _thongTinCaNhanRepo.GetByEmailOrSDTAsync(tk.Email, null);
+			var thongTinId = await _thongTinCaNhanRepo.GetIdByTaiKhoanId(tk.TaiKhoanID);
+			var admin = await _thongTinCaNhanRepo.GetByIdAsync(thongTinId);
 			if(admin != null)
 			{
 				info.ThongTinID = admin.ThongTinID;
@@ -165,7 +166,8 @@ public class AuthService
 		}
 		if (tk.VaiTro == VaiTroEnum.Khach)
 		{
-			var khach = await _thongTinCaNhanRepo.GetByEmailOrSDTAsync(tk.Email, null);
+			var thongTinId = await _thongTinCaNhanRepo.GetIdByTaiKhoanId(tk.TaiKhoanID);
+			var khach = await _thongTinCaNhanRepo.GetByIdAsync(thongTinId);
 			if (khach != null)
 			{
 				info.ThongTinID = khach.ThongTinID;
