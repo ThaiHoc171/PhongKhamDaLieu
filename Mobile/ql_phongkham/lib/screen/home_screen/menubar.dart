@@ -200,6 +200,13 @@ class _MenuBarScreenState extends State<MenuBarScreen> {
 
   Future<void> _handleLogout() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final thongTinId = prefs.getInt('thongTinId');
+
+      if (thongTinId != null) {
+        await AuthRepository().updateFCM('', thongTinId);
+      }
+
       await AuthRepository().logout();
     } catch (_) {
       // lỗi server vẫn logout local

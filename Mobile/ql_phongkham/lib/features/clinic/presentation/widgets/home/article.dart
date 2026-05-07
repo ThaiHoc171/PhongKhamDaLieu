@@ -10,7 +10,6 @@ class ArticleSection extends StatefulWidget {
     super.key,
     required this.baiVietList,
     required this.isLoading,
-    // Bỏ isExpanded và onToggle
   });
 
   @override
@@ -18,7 +17,7 @@ class ArticleSection extends StatefulWidget {
 }
 
 class _ArticleSectionState extends State<ArticleSection> {
-  bool _isExpanded = false; // chỉ dùng cái này
+  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {

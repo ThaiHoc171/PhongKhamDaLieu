@@ -78,16 +78,23 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
     try {
       setState(() => isLoading = true);
 
+      print("=== [OTP] Bắt đầu verifyOtp ===");
+      print("[OTP] Email: ${widget.email}");
+      print("[OTP] Code: $code");
+
       await AuthRepository().verifyOtp(widget.email, code);
+      print("[OTP] verifyOtp thành công");
 
       if (!mounted) return;
 
       if (widget.password != null && widget.loai != null) {
+        print("[OTP] Flow: ĐĂNG KÝ");
         await AuthRepository().signup(
           widget.email,
           widget.password!,
           widget.loai!,
         );
+        print("[OTP] signup thành công");
 
         if (!mounted) return;
         DialogHelper.showSnackSuccess(context, 'Đăng ký thành công');
@@ -97,14 +104,20 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
           (route) => false,
         );
       } else {
+        print("[OTP] Flow: QUÊN MẬT KHẨU");
+
         final taikhoanid = await AuthRepository().getIdByEmail(widget.email);
+        print(
+          "[OTP] getIdByEmail trả về: $taikhoanid (type: ${taikhoanid.runtimeType})",
+        );
+
         await AuthRepository().forgetpassword(taikhoanid);
-        print("Email: ${widget.email}");
-        print("TaiKhoanID: $taikhoanid");
+        print("[OTP] forgetpassword thành công");
+
         if (!mounted) return;
         DialogHelper.showSnackSuccess(
           context,
-          'Mật khẩu đã đươc reset, Mật khẩu hiện tại là: 123456, vui lòng đăng nhập và đổi mật khẩu mới',
+          'Mật khẩu đã được reset. Mật khẩu hiện tại là: 123456, vui lòng đăng nhập và đổi mật khẩu mới',
         );
         Navigator.pushAndRemoveUntil(
           context,
@@ -113,6 +126,8 @@ class _OtpVerifyPageState extends State<OtpVerifyPage> {
         );
       }
     } catch (e) {
+      print("[OTP] ❌ Lỗi: $e");
+      print("[OTP] ❌ Lỗi runtimeType: ${e.runtimeType}");
       if (!mounted) return;
       DialogHelper.showSnacFailed(
         context,

@@ -55,12 +55,17 @@ class AuthRepository {
     final response = await ApiClient.put(
       'taikhoan/$taiKhoanId/reset-password',
       {},
+      requiresAuth: false,
     );
     return response;
   }
 
   Future<int> getIdByEmail(String email) async {
-    final response = await ApiClient.get('taikhoan/getIdByEmail?$email');
+    final encodedEmail = Uri.encodeComponent(email);
+    final response = await ApiClient.get(
+      'taikhoan/getIdByEmail/$encodedEmail',
+      requiresAuth: false,
+    );
     return response['data'];
   }
 

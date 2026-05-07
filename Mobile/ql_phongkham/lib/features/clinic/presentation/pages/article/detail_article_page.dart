@@ -60,6 +60,13 @@ class _BaiVietDetailScreenState extends State<BaiVietDetailScreen> {
       final baiVietId = widget.baiVietId;
       if (baiVietId == null) return;
       final data = await BaiVietRepository().getBaiViet(baiVietId);
+
+      // ✅ Chỉ hiển thị nếu trạng thái là "Đã đăng"
+      if (data.trangThai != "Đã đăng") {
+        if (mounted) Navigator.pop(context);
+        return;
+      }
+
       setState(() {
         baiviet = data;
       });
@@ -140,12 +147,6 @@ class _BaiVietDetailScreenState extends State<BaiVietDetailScreen> {
                               'dd/MM/yyyy HH:mm',
                             ).format(bv.ngayCapNhat!)
                           : "Chưa cập nhật",
-                    ),
-                    const SizedBox(height: 15),
-                    field(
-                      Icons.info,
-                      "Trạng thái",
-                      bv.trangThai ?? "Chưa cập nhật",
                     ),
                   ],
                 ),
