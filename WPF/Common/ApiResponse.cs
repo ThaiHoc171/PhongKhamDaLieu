@@ -1,4 +1,6 @@
-﻿namespace HoanMyClinic.Common;
+﻿using System.Text.Json;
+
+namespace HoanMyClinic.Common;
 
 public class ApiResponse<T>
 {
@@ -6,6 +8,7 @@ public class ApiResponse<T>
 	public string Message { get; set; } = "";
 	public T? Data { get; set; }
 }
+
 public class ApiResult<T>
 {
 	public bool Success { get; set; }

@@ -14,6 +14,7 @@ namespace HoanMyClinic.Windows
 			InitializeComponent();
 			SnackbarHelper.Init(MainSnackbar!);
 			txtName.Text = Session.HoTen.Name;
+			txtUserName.Text = Session.HoTen.Name;
 		}
 		public readonly NavigationHelper _nav = new NavigationHelper();
 		public void OpenPage(Page page, string title)
@@ -47,7 +48,7 @@ namespace HoanMyClinic.Windows
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			
+			// Phân quyền PhienKham
 			if (Session.VaiTro == "Admin")
 			{
 				btnPhienKham.Visibility = Visibility.Visible;
@@ -58,13 +59,63 @@ namespace HoanMyClinic.Windows
 				btnPhienKham.Visibility = Visibility.Collapsed;
 				btnPhienKhamCaNhan.Visibility = Visibility.Visible;
 			}
-			//Session.ChucVu == "Bác sĩ khám bệnh";
-			//Session.ChucVu == "Bác sĩ điều trị";
-			//Session.ChucVu == "Y tá";
-			//Session.ChucVu == "Kỹ thuật viên";
-			//Session.ChucVu == "Lễ tân";
 
+			ApplyAuthorization();
 			_nav.Navigate("Dashboard");
+		}
+
+		private void ApplyAuthorization()
+		{
+			bool isAdmin = Session.VaiTro == "Admin";
+			bool isBacSiKham = Session.ChucVu == "Bác sĩ khám bệnh";
+			bool isBacSiDieuTri = Session.ChucVu == "Bác sĩ điều trị";
+			bool isYTa = Session.ChucVu == "Y tá";
+			bool isKyThuatVien = Session.ChucVu == "Kỹ thuật viên";
+			bool isLeTan = Session.ChucVu == "Lễ tân";
+
+			// ── Nhân sự (chỉ Admin) ──────────────────────────────────────
+			expNhanSu.Visibility = isAdmin ? Visibility.Visible : Visibility.Collapsed;
+
+			// ── Tài khoản (chỉ Admin) ────────────────────────────────────
+			btnTaiKhoan.Visibility = isAdmin ? Visibility.Visible : Visibility.Collapsed;
+
+			// ── Danh mục (Admin + Bác sĩ) ───────────────────────────────
+			bool canDanhMuc = isAdmin || isBacSiKham || isBacSiDieuTri;
+			expDanhMuc.Visibility = canDanhMuc ? Visibility.Visible : Visibility.Collapsed;
+
+			// ── Điều trị / Liệu trình (Admin + Bác sĩ điều trị) ─────────
+			bool canDieuTri = isAdmin || isBacSiDieuTri;
+			expDieuTri.Visibility = canDieuTri ? Visibility.Visible : Visibility.Collapsed;
+			btnDieuTri.Visibility = canDieuTri ? Visibility.Visible : Visibility.Collapsed;
+
+			// ── CLS (Admin + Kỹ thuật viên + Bác sĩ) ────────────────────
+			bool canCls = isAdmin || isKyThuatVien || isBacSiKham || isBacSiDieuTri;
+			btnCls.Visibility = canCls ? Visibility.Visible : Visibility.Collapsed;
+			btnPkCls.Visibility = canCls ? Visibility.Visible : Visibility.Collapsed;
+
+			// ── Lịch làm việc ────────────────────────────────────────────
+			// Nhập lịch: chỉ Admin
+			btnNhapLichLam.Visibility = isAdmin ? Visibility.Visible : Visibility.Collapsed;
+			// Xem lịch chung: Admin + mọi nhân viên
+			// (giữ Visible mặc định — ai cũng xem được)
+
+			// ── CSVC / Thiết bị (Admin + Kỹ thuật viên) ─────────────────
+			bool canCsvc = isAdmin || isKyThuatVien;
+			expCSVC.Visibility = canCsvc ? Visibility.Visible : Visibility.Collapsed;
+
+			// ── Thống kê (chỉ Admin) ─────────────────────────────────────
+			expThongKe.Visibility = isAdmin ? Visibility.Visible : Visibility.Collapsed;
+
+			// ── Bệnh nhân / Khách (Lễ tân + Admin + Bác sĩ) ─────────────
+			bool canBenhNhan = isAdmin || isLeTan || isBacSiKham;
+			expBenhNhan.Visibility = canBenhNhan ? Visibility.Visible : Visibility.Collapsed;
+
+			// ── Tái khám (Bác sĩ khám + Admin) ──────────────────────────
+			bool canTaiKham = isAdmin || isBacSiKham;
+			btnTaiKham.Visibility = canTaiKham ? Visibility.Visible : Visibility.Collapsed;
+
+			// ── Ngày nghỉ (Admin) ─────────────────────────────────────────
+			btnNgayNghi.Visibility = isAdmin ? Visibility.Visible : Visibility.Collapsed;
 		}
 		private void Header_MouseDown(object sender, MouseButtonEventArgs e)
 		{

@@ -81,7 +81,8 @@
                                                 <TextBlock Text="Phiên khám cá nhân" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnPkCls"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnPkCls_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -89,7 +90,8 @@
                                                 <TextBlock Text="Xét nghiệm / CLS" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnTaiKham"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnTaiKham_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -111,7 +113,8 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <StackPanel Margin="16,0,0,4">
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnDieuTri"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnDieuTri_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -133,7 +136,8 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <StackPanel Margin="16,0,0,4">
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnBenhNhan"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnBenhNhan_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -141,7 +145,8 @@
                                                 <TextBlock Text="Bệnh nhân" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnKhach"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnKhach_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -209,7 +214,8 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <StackPanel Margin="16,0,0,4">
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnXemLichCaNhan"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnXemLichCaNhan_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -217,7 +223,8 @@
                                                 <TextBlock Text="Lịch của tôi" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnXemLichChung"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnXemLichChung_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -225,7 +232,8 @@
                                                 <TextBlock Text="Lịch phòng khám" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnNhapLichLam" 
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnNhapLichLam_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -233,7 +241,8 @@
                                                 <TextBlock Text="Đăng ký lịch làm" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnNgayNghi"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnNgayNghi_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -255,7 +264,8 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <StackPanel Margin="16,0,0,4">
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnNhanVien"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnNhanVien_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -263,7 +273,8 @@
                                                 <TextBlock Text="Nhân viên" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnChucVu"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="BtnChucVu_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -271,7 +282,8 @@
                                                 <TextBlock Text="Chức vụ" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnTaiKhoan" 
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnTaiKhoan_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -293,7 +305,8 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <StackPanel Margin="16,0,0,4">
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnPhong"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnPhong_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -301,7 +314,8 @@
                                                 <TextBlock Text="Phòng chức năng" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnThietBi"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnThietBi_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -309,7 +323,8 @@
                                                 <TextBlock Text="Thiết bị y tế" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnCls"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnCls_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -331,7 +346,8 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <StackPanel Margin="16,0,0,4">
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnThuoc"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnThuoc_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -339,7 +355,8 @@
                                                 <TextBlock Text="Thuốc" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnLoaiBenh"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnLoaiBenh_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -361,7 +378,8 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <StackPanel Margin="16,0,0,4">
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnThongKe"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnThongKe_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -383,7 +401,8 @@
                                         </StackPanel>
                                     </Expander.Header>
                                     <StackPanel Margin="16,0,0,4">
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnBacSi"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnBacSi_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -391,7 +410,8 @@
                                                 <TextBlock Text="Hồ sơ bác sĩ" Margin="8,0,0,0"/>
                                             </StackPanel>
                                         </Button>
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        <Button x:Name="btnBaiViet"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
                                                 Foreground="White" HorizontalContentAlignment="Left"
                                                 Click="btnBaiViet_Click">
                                             <StackPanel Orientation="Horizontal">
@@ -485,7 +505,7 @@
                                             <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.3"/>
                                         </Border.Effect>
                                         <StackPanel>
-                                            <TextBlock Text="Admin" FontWeight="Bold" Margin="8" FontSize="14"/>
+                                            <TextBlock x:Name="txtUserName" FontWeight="Bold" Margin="8" FontSize="14"/>
                                             <Separator Margin="0,5"/>
                                             <Button Content="Hồ sơ"
                                                     Style="{StaticResource MaterialDesignFlatButton}"

@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.IO;
 
 namespace HoanMyClinic.Common;
@@ -10,6 +11,11 @@ public abstract class AppClientBase
 {
 	protected static readonly HttpClient _httpClient;
 
+	private static readonly JsonSerializerOptions _jsonOptions = new()
+	{
+		PropertyNameCaseInsensitive = true
+	};
+
 	static AppClientBase()
 	{
 		_httpClient = new HttpClient
@@ -17,6 +23,7 @@ public abstract class AppClientBase
 			BaseAddress = new Uri("https://clinicjwt-api-bperhwd0dne7c9c0.southeastasia-01.azurewebsites.net/")
 		};
 	}
+
 	protected async Task<bool> HasInternetAsync()
 	{
 		try
@@ -34,6 +41,7 @@ public abstract class AppClientBase
 			return false;
 		}
 	}
+
 	private void AttachToken()
 	{
 		_httpClient.DefaultRequestHeaders.Authorization = null;
@@ -43,6 +51,27 @@ public abstract class AppClientBase
 			_httpClient.DefaultRequestHeaders.Authorization =
 				new AuthenticationHeaderValue("Bearer", Session.Token);
 		}
+	}
+
+	// ── Helper chung: deserialize 2 bước, tránh crash khi data: null ──
+	private static ApiResult<T> ParseResponse<T>(string json)
+	{
+		var raw = JsonSerializer.Deserialize<ApiResponse<JsonElement>>(json, _jsonOptions);
+
+		if (raw == null)
+			return ApiResult<T>.Fail("Invalid server response");
+
+		if (!raw.Success)
+			return ApiResult<T>.Fail(raw.Message);
+
+		T? data = default;
+		if (raw.Data.ValueKind != JsonValueKind.Null &&
+			raw.Data.ValueKind != JsonValueKind.Undefined)
+		{
+			data = JsonSerializer.Deserialize<T>(raw.Data.GetRawText(), _jsonOptions);
+		}
+
+		return ApiResult<T>.SuccessResult(data, raw.Message);
 	}
 
 	protected async Task<ApiResult<T>> GetAsync<T>(string url, bool attachToken = true)
@@ -56,25 +85,9 @@ public abstract class AppClientBase
 				AttachToken();
 
 			var response = await _httpClient.GetAsync(url);
-
-			if (!response.IsSuccessStatusCode)
-				return ApiResult<T>.Fail($"Lỗi server: {response.StatusCode}");
-
 			var json = await response.Content.ReadAsStringAsync();
 
-			var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(json,
-				new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-
-			if (apiResponse == null)
-				return ApiResult<T>.Fail("Invalid server response");
-
-			if (!apiResponse.Success)
-				return ApiResult<T>.Fail(apiResponse.Message);
-
-			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
+			return ParseResponse<T>(json);
 		}
 		catch (HttpRequestException)
 		{
@@ -96,6 +109,7 @@ public abstract class AppClientBase
 		{
 			if (!await HasInternetAsync())
 				return ApiResult<T>.Fail("Không có kết nối internet");
+
 			if (attachToken)
 				AttachToken();
 
@@ -103,21 +117,9 @@ public abstract class AppClientBase
 			var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
 			var response = await _httpClient.PostAsync(url, content);
-
 			var json = await response.Content.ReadAsStringAsync();
 
-			var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(json,
-				new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-
-			if (apiResponse == null)
-				return ApiResult<T>.Fail("Invalid server response");
-
-			if (!apiResponse.Success)
-				return ApiResult<T>.Fail(apiResponse.Message);
-			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
+			return ParseResponse<T>(json);
 		}
 		catch (HttpRequestException)
 		{
@@ -132,34 +134,23 @@ public abstract class AppClientBase
 			return ApiResult<T>.Fail(ex.Message);
 		}
 	}
+
 	protected async Task<ApiResult<T>> PutAsync<T>(string url, object? body)
 	{
 		try
 		{
 			if (!await HasInternetAsync())
 				return ApiResult<T>.Fail("Không có kết nối internet");
+
 			AttachToken();
 
 			var jsonBody = JsonSerializer.Serialize(body);
 			var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
 			var response = await _httpClient.PutAsync(url, content);
-
 			var json = await response.Content.ReadAsStringAsync();
 
-			var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(json,
-				new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-
-			if (apiResponse == null)
-				return ApiResult<T>.Fail("Invalid server response");
-
-			if (!apiResponse.Success)
-				return ApiResult<T>.Fail(apiResponse.Message);
-
-			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
+			return ParseResponse<T>(json);
 		}
 		catch (HttpRequestException)
 		{
@@ -174,6 +165,7 @@ public abstract class AppClientBase
 			return ApiResult<T>.Fail(ex.Message);
 		}
 	}
+
 	protected async Task<ApiResult<T>> DeleteAsync<T>(string url, bool attachToken = true)
 	{
 		try
@@ -185,22 +177,9 @@ public abstract class AppClientBase
 				AttachToken();
 
 			var response = await _httpClient.DeleteAsync(url);
-
 			var json = await response.Content.ReadAsStringAsync();
 
-			var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(json,
-				new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-
-			if (apiResponse == null)
-				return ApiResult<T>.Fail("Invalid server response");
-
-			if (!apiResponse.Success)
-				return ApiResult<T>.Fail(apiResponse.Message);
-
-			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
+			return ParseResponse<T>(json);
 		}
 		catch (HttpRequestException)
 		{
@@ -215,16 +194,17 @@ public abstract class AppClientBase
 			return ApiResult<T>.Fail(ex.Message);
 		}
 	}
+
 	protected async Task<ApiResult<T>> PostFileAsync<T>(string url, string filePath)
 	{
 		try
 		{
 			if (!await HasInternetAsync())
 				return ApiResult<T>.Fail("Không có kết nối internet");
+
 			AttachToken();
 
 			var content = new MultipartFormDataContent();
-
 			var fileBytes = await File.ReadAllBytesAsync(filePath);
 			var fileContent = new ByteArrayContent(fileBytes);
 
@@ -234,22 +214,9 @@ public abstract class AppClientBase
 			content.Add(fileContent, "file", Path.GetFileName(filePath));
 
 			var response = await _httpClient.PostAsync(url, content);
-
 			var json = await response.Content.ReadAsStringAsync();
 
-			var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(json,
-				new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-
-			if (apiResponse == null)
-				return ApiResult<T>.Fail("Invalid server response");
-
-			if (!apiResponse.Success)
-				return ApiResult<T>.Fail(apiResponse.Message);
-
-			return ApiResult<T>.SuccessResult(apiResponse.Data, apiResponse.Message);
+			return ParseResponse<T>(json);
 		}
 		catch (HttpRequestException)
 		{
@@ -264,6 +231,7 @@ public abstract class AppClientBase
 			return ApiResult<T>.Fail(ex.Message);
 		}
 	}
+
 	private string GetContentType(string filePath)
 	{
 		var ext = Path.GetExtension(filePath).ToLower();
@@ -275,20 +243,16 @@ public abstract class AppClientBase
 			".gif" => "image/gif",
 			".webp" => "image/webp",
 			".bmp" => "image/bmp",
-
 			".pdf" => "application/pdf",
-
 			".doc" => "application/msword",
 			".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-
 			".xls" => "application/vnd.ms-excel",
 			".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-
 			".txt" => "text/plain",
-
 			_ => "application/octet-stream"
 		};
 	}
+
 	protected async Task<ApiResult<string>> PostAllFileAsync(string url, string filePath, string folder)
 	{
 		try
@@ -301,24 +265,15 @@ public abstract class AppClientBase
 			var fileContent = new ByteArrayContent(fileBytes);
 
 			var contentType = GetContentType(filePath);
-
-			fileContent.Headers.ContentType =
-				new MediaTypeHeaderValue(contentType);
+			fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
 			content.Add(fileContent, "file", Path.GetFileName(filePath));
-
 			content.Add(new StringContent(folder), "folder");
 
 			var response = await _httpClient.PostAsync(url, content);
-
 			var json = await response.Content.ReadAsStringAsync();
 
-			var result = JsonSerializer.Deserialize<UploadResponse>(
-				json,
-				new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
+			var result = JsonSerializer.Deserialize<UploadResponse>(json, _jsonOptions);
 
 			if (result == null)
 				return ApiResult<string>.Fail("Invalid server response");
@@ -330,6 +285,7 @@ public abstract class AppClientBase
 			return ApiResult<string>.Fail(ex.Message);
 		}
 	}
+
 	private class UploadResponse
 	{
 		public string? Url { get; set; }
