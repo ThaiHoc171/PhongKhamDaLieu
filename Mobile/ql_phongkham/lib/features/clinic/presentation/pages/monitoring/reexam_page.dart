@@ -31,7 +31,10 @@ class _LichTaiKhamPageState extends State<LichTaiKhamPage> {
         isLoading = false;
       });
     } catch (e) {
-      setState(() => isLoading = false);
+      setState(() {
+        taiKham = null;
+        isLoading = false;
+      });
     }
   }
 
@@ -53,6 +56,9 @@ class _LichTaiKhamPageState extends State<LichTaiKhamPage> {
   }
 
   Widget _buildContent() {
+    if (taiKham == null || taiKham!.taiKhamID == 0) {
+      return _buildEmpty();
+    }
     final ngay = taiKham!.ngayDuKien.toString().split(' ')[0];
     final checkNgay = kiemTraLich(taiKham!.ngayDuKien);
     if (taiKham!.taiKhamID == 0) {

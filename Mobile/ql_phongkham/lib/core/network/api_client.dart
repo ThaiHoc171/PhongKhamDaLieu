@@ -35,7 +35,6 @@ class ApiClient {
     return false;
   }
 
-  // ✅ Thêm tham số requiresAuth
   static Future<dynamic> _request(
     Future<http.Response> Function(String? token) apiCall, {
     bool requiresAuth = true,

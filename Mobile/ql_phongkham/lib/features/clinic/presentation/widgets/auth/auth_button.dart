@@ -14,6 +14,7 @@ class AuthButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity, // ✅ thay vì hardcode 395
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [
@@ -27,9 +28,9 @@ class AuthButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(7),
       ),
       child: ElevatedButton(
-        onPressed: onPressed, // 🔥 quan trọng
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          fixedSize: const Size(395, 55),
+          minimumSize: const Size(double.infinity, 55),
           backgroundColor: AppPallete.transparentColor,
           shadowColor: AppPallete.transparentColor,
         ),

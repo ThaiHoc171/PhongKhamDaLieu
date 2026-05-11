@@ -88,6 +88,15 @@ class _DanhSachCaKhamPageState extends State<DanhSachCaKhamPage> {
 
           return InkWell(
             onTap: () {
+              final now = DateTime.now();
+
+              final ngayKham = DateTime(
+                item.ngayKham.year,
+                item.ngayKham.month,
+                item.ngayKham.day,
+              );
+
+              final homNay = DateTime(now.year, now.month, now.day);
               if (item.trangThai == 'Hoàn thành') {
                 Navigator.push(
                   context,
@@ -95,7 +104,16 @@ class _DanhSachCaKhamPageState extends State<DanhSachCaKhamPage> {
                     builder: (_) => DetailExamScreen(caKhamId: item.caKhamID),
                   ),
                 );
+              } else {
+                if (ngayKham.isBefore(homNay)) {
+                  DialogHelper.showThongBao(
+                    context,
+                    "Không thể thao tác với ca khám đã qua",
+                  );
+                  return;
+                }
               }
+
               if (item.trangThai == 'Đã đặt' ||
                   item.trangThai == 'Đã xác nhận') {
                 showDialog(

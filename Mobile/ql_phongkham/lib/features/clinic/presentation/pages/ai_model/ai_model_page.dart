@@ -176,6 +176,7 @@ class _AiModelChatState extends State<AiModelChat> {
     final confidence = (data['confidence'] as num).toDouble();
     final friendlyName = data['friendly_name'] ?? '';
     final aiMessage = data['ai_message'] ?? '';
+    final Messagee = data['message'] ?? '';
     final predicted_class = data['predicted_class'] ?? '';
     return Container(
       padding: const EdgeInsets.all(12),
@@ -228,8 +229,13 @@ class _AiModelChatState extends State<AiModelChat> {
             ),
           ),
           const SizedBox(height: 10),
-          Text(aiMessage, style: const TextStyle(fontSize: 13, height: 1.5)),
-          if (predicted_class != 'invalid' && predicted_class != 'normal')
+          Text(
+            aiMessage.isNotEmpty ? aiMessage : Messagee,
+            style: const TextStyle(fontSize: 13, height: 1.5),
+          ),
+          if (predicted_class != 'invalid' &&
+              predicted_class != 'normal' &&
+              aiMessage.isNotEmpty)
             _buildCheck(),
         ],
       ),

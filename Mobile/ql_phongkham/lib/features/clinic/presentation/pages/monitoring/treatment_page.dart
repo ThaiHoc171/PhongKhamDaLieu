@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ql_phongkham/core/utils/dialog_helper.dart';
 import 'package:ql_phongkham/features/clinic/data/models/treatment_model.dart';
 import 'package:ql_phongkham/features/clinic/data/repository/booking_repository.dart';
 import 'package:ql_phongkham/features/clinic/presentation/pages/exam/detail_exam_page.dart';
@@ -27,17 +26,22 @@ class _LieuTrinhDieuTriPageState extends State<LieuTrinhDieuTriPage> {
     try {
       final repo = LichKhamRepository();
 
-      final results = await repo.checkDieuTriPending(widget.benhNhanId);
-      final dieuTri = results;
+      final dieuTri = await repo.checkDieuTriPending(widget.benhNhanId);
 
-      final buoidieutri = await repo.getBuoiDieuTri(dieuTri!.lieuTrinhID);
-      caKhamList = buoidieutri;
+      if (dieuTri == null) {
+        setState(() {});
+        return;
+      }
+
+      final buoidieutri = await repo.getBuoiDieuTri(dieuTri.lieuTrinhID);
 
       setState(() {
+        caKhamList = buoidieutri;
         soBuoi = dieuTri.tongSoBuoi;
+        lieuTrinhId = dieuTri.lieuTrinhID;
       });
     } catch (e) {
-      DialogHelper.showThongBao(context, e.toString());
+      setState(() {});
     }
   }
 

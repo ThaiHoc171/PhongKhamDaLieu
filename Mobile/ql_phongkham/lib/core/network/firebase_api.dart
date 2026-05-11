@@ -66,37 +66,43 @@ class FirebaseApi {
   }
 
   Future<void> initNotifications() async {
-    // 1. Xin quyền
-    await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    try {
+      await _firebaseMessaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    } catch (_) {}
 
-    // 2. Lấy FCM token
-    final fcmToken = await _firebaseMessaging.getToken();
-    print('FCM Token: $fcmToken');
+    try {
+      final fcmToken = await _firebaseMessaging.getToken().timeout(
+        const Duration(seconds: 10),
+      );
+      print('FCM Token: $fcmToken');
+    } catch (e) {
+      print('FCM Token lỗi: $e');
+    }
 
-    // 3. Setup local notifications
     await _initLocalNotifications();
 
-    // 4. Khi app đang MỞ → dùng local notif để hiện banner
     FirebaseMessaging.onMessage.listen((message) {
       _showNotification(message);
     });
 
-    // 5. Khi app ở BACKGROUND rồi bấm vào thông báo
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       _handleNotificationTap(message);
     });
 
-    // 6. Khi app TẮT HOÀN TOÀN rồi bấm vào thông báo
-    final initialMessage = await _firebaseMessaging.getInitialMessage();
-    if (initialMessage != null) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      _handleNotificationTap(initialMessage);
-    }
-    // 7. Background handler
+    try {
+      final initialMessage = await _firebaseMessaging
+          .getInitialMessage()
+          .timeout(const Duration(seconds: 5));
+      if (initialMessage != null) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        _handleNotificationTap(initialMessage);
+      }
+    } catch (_) {}
+
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
   }
 
